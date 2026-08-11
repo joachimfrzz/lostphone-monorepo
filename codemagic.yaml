@@ -1,0 +1,63 @@
+# Canal TestFlight — jalon-duel D49 (Flutter vs Swift)
+# CANAL PRINCIPAL (décision 2026-08-10) : réutilise l'infrastructure Codemagic existante
+# de l'ancienne piste SwiftUI — intégration App Store Connect « Codemagic » déjà configurée,
+# Bundle ID existant com.lostphone.game (fiche app + TestFlight déjà actifs).
+# Fallback : .github/workflows/testflight.yml (manuel, nécessite les secrets ASC_*).
+#
+# Numéros de build : décalés de +100 pour ne jamais entrer en collision avec les
+# builds 1-27 de l'ancienne app SwiftUI sur la même fiche TestFlight.
+
+workflows:
+  duel-flutter-testflight:
+    name: Duel D49 — Flutter TestFlight
+    max_build_duration: 45
+    instance_type: mac_mini_m2
+
+    integrations:
+      app_store_connect: Codemagic
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.lostphone.game
+      flutter: stable
+      xcode: latest
+      vars:
+        APP_DIR: "moteur"
+
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+
+    scripts:
+      - name: Restaurer les fichiers binaires (icônes)
+        script: |
+          bash outils/decode-binaires.sh
+
+      - name: Dépendances Flutter
+        script: |
+          cd $APP_DIR
+          flutter pub get
+
+      - name: Signature (profils via intégration App Store Connect)
+        script: |
+          xcode-project use-profiles
+
+      - name: Build IPA
+        script: |
+          cd $APP_DIR
+          flutter build ipa --release \
+            --build-number=$((100 + PROJECT_BUILD_NUMBER)) \
+            --export-options-plist=/Users/builder/export_options.plist
+
+    artifacts:
+      - moteur/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

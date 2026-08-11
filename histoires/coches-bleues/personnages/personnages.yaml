@@ -1,0 +1,32 @@
+format_version: 1
+personnages:
+  sarah:
+    nom: "Sarah Lemaire"
+    age: 34
+    role: proprietaire
+    signature: { registre: naturel_soigne, rythme: blocs_moyens, emojis: moderes,
+                 tics: ["franchement", "bref", "ma Chlo"], derive: "rajeunit avec marc" }
+  chloe:
+    nom: "Chloé"
+    age: 35
+    role: porteuse
+    signature: { registre: realiste_brut, rythme: rafale, emojis: rares_violents,
+                 tics: ["attends", "nan mais", "je te jure", "Sar'"],
+                 mecanique: "phrase complète ponctuée = gravité" }
+  thomas:
+    nom: "Thomas"
+    age: 29
+    role: fausse_piste
+    signature: { registre: naturel_simple, rythme: blocs_courts_hesitants, emojis: ["👍","🙏"],
+                 tics: ["désolé de demander", "je te jure que"], canal_important: vocaux }
+  marc:
+    nom: "Marc ❤️"
+    age: 41
+    role: antagoniste
+    signature: { registre: calque_etrange, rythme: blocs_reguliers_9h_17h, emojis: rangées_kitsch,
+                 tics: ["ma chérie", "ma reine", "mon trésor"], mecanique: "sa signature EST un indice",
+                 comportement: deflexion_systematique }
+  maman:
+    nom: "Maman"
+    role: texture
+    signature: { registre: pave_un_doigt, ponctuation: "aucune puis !!!", mecanique: "signe ses textos" }

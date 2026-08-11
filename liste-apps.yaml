@@ -1,0 +1,32 @@
+# Liste des applications de Lost Phone — fournie par l'utilisateur le 2026-07-21 (70 apps)
+# Critique et priorisation par l'assistant (cercles) — arbitrage utilisateur attendu (→ D48).
+# Vision : TOUT sera designé à terme (D47) ; les cercles fixent l'ORDRE, pas le périmètre.
+format_version: 1
+
+cercle_1_noyau_v1:  # Requis par Coches bleues + universels de presque toute histoire (16)
+  systeme: [Téléphone, Messages, Contacts, Mail, Safari, Photos, Calendrier, Notes, Rappels, Horloge, Calculatrice, Réglages, Localiser, Plans]
+  tierces: [WhatsApp, "Banque classique (Ma Banque)"]
+
+cercle_2_socle_etendu:  # Fortes récurrentes, à designer juste après le noyau (20)
+  communication: [Messenger, FaceTime]        # FaceTime = AJOUT proposé (visio = scènes fortes)
+  reseaux: [Instagram, Snapchat, Facebook, X, LinkedIn]
+  vie: [Santé, Météo, Dictaphone, Fichiers, Wallet]
+  narratif_fort: [Tinder, ChatGPT, Spotify, YouTube]
+  deplacements_paiement: [Uber, "Uber Eats", PayPal]
+
+cercle_3_a_la_demande:  # Designées quand une histoire les exige (le reste, ~34)
+  communication: [Telegram, Signal, Discord]
+  ia: [Gemini, Grok]                          # ChatGPT d'abord (cheffe de famille)
+  dating: [Hinge, Bumble]                     # Tinder d'abord
+  streaming: [Netflix, "Prime Video", "Disney+", TikTok, "Apple Music"]  # Spotify/YouTube d'abord
+  productivite: ["Google Drive", Dropbox, iCloud, Gmail]                 # Mail d'abord
+  deplacements: [Bolt, Heetch, "SNCF Connect", Waze, Airbnb, Booking, Flighty, Deliveroo]
+  paiement: [Coinbase, Revolut, Wise]         # pépite narrative (arnaques crypto) — attend son histoire
+  shopping: [Amazon, Vinted, Leboncoin, AliExpress]
+  utilitaires: [Shazam, Strava, "Maison (Home)", "App Store"]
+
+notes_de_critique:
+  doublons_familles: "Une app CHEFFE par famille designée d'abord : Mail (avant Gmail), ChatGPT (avant Gemini/Grok), Tinder (avant Hinge/Bumble), Spotify (avant Apple Music), WhatsApp (avant Telegram/Signal). Amazon apparaissait en double : dédoublonnée."
+  pepites_de_la_liste: "Localiser (disparitions !), Santé (le corps raconte : sommeil, rythme cardiaque la nuit du drame), CoinBase (arnaques crypto), ChatGPT (lire les conversations IA du propriétaire = le confessionnal moderne, inédit dans le genre), Maison (caméras/serrures connectées)."
+  couts_design_eleves: "Players vidéo et feeds infinis (TikTok, Netflix, Prime, Disney+, YouTube) = les surfaces les plus chères pour la plus faible densité d'indices ; approche proposée : designer d'abord leurs ÉCRANS D'INDICES (profils, historiques, 'continuer à regarder') avant les players complets."
+  retrait_propose: "Appareil Photo (présent dans les captures initiales, absent de la liste finale) : non nécessaire — l'app Photos suffit pour l'enquête ; prendre des photos est une action joueur rare (réintroduire si une histoire l'exige)."

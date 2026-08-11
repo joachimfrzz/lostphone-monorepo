@@ -1,0 +1,27 @@
+# Glossaire du projet
+
+- **canon** — Ensemble des faits et décisions validés par l'utilisateur. Seul l'utilisateur peut y promouvoir un élément.
+- **registre** — Liste vivante des questions ouvertes, recommandations, idées, risques et tensions tenue par l'assistant.
+- **socle** — La couche réutilisable du produit : le téléphone crédible et ses systèmes, communs à toutes les histoires.
+- **diégèse / diégétique** — Ce qui existe à l'intérieur de la fiction. Une mécanique diégétique est perçue par le joueur comme un élément naturel du téléphone, pas comme une interface de jeu.
+- **checkpoint de comprehension** — Moment où le jeu demande au joueur d'exprimer librement ce qu'il a compris ; validation sur le sens, enrobage narratif.
+- **reformulation canonique** — Pattern : après un checkpoint, le jeu énonce SA conclusion (jamais le texte brut du joueur) pour protéger la cohérence narrative.
+- **posture** — Statut du joueur dans la fiction : témoin invisible, inconnu reconnu, ou usurpateur. Attribut déclaré par histoire.
+- **contrat de possession** — Triplet obligatoire établi en début d'histoire : comment le joueur a le téléphone / pourquoi il le garde / pourquoi fouiller est légitime.
+- **telephone vivant** — Capacité canon : le téléphone évolue en cours de partie (messages, appels, notifications, événements) quand le scénario le justifie.
+- **tranche verticale** — Mini-histoire complète exerçant tous les systèmes cœur, servant de preuve de bout en bout avant l'investissement dans le volume.
+- **portefeuille de scenarios contrastes** — 3-5 esquisses d'histoires divergentes servant de banc d'essai aux décisions de socle.
+- **grammaire de l enquete** — Vocabulaire conceptuel commun proposé : fait, indice, source, lien, déduction, révélation, checkpoint.
+- **ADR** — Architecture Decision Record — une décision importante = un fichier daté (contexte, options, choix, conséquences).
+- **jurisprudence des principes** — Pratique ACTÉE (D16) : chaque collision de principes tranchée est consignée avec sa raison (décision datée) et fait précédent, enrichissant la constitution de cas concrets.
+- **piège de la plateforme** — Échec classique : construire la plateforme/les outils dans l'abstrait avant le contenu concret, puis payer deux fois.
+- **fair play** — Règle d'enquête : toute vérité (ou réfutation de fausse piste) doit être atteignable par recoupement des éléments présents dans le téléphone, jamais par méta-connaissance.
+- **preuve par le geste** — Vérification de la compréhension par une action informée (taper un code déduit, appeler la bonne personne, transmettre la bonne pièce, prendre la bonne décision) — co-prioritaire avec l'expression libre depuis D14. Sans ambiguïté, valable dans toutes les langues.
+- **silence plausible** — Plancher de réponse du monde à toute tentative hors-chemin : non-réponse réaliste (répondeur, message jamais lu, numéro non attribué) plutôt que mur d'interface. Canon depuis D12.
+- **texture innocentable** — Règle de la photo du lac (D13) : tout élément de vie qui ressemble à un indice doit pouvoir être élucidé par recoupement — vrai indice ou écartable. L'enquête du joueur aboutit toujours.
+- **porteur de checkpoint** — Le personnage (ou canal diégétique) qui porte la vérification de compréhension dans une histoire. Déclaré par histoire ; personnage, jamais oracle (D14).
+- **sortie de secours diegetique** — Obligation D14 : tout checkpoint d'expression prévoit sa résolution alternative en fiction (bascule vers une action, question simplifiée, hypothèse portée par le personnage) après N tentatives rejetées.
+- **monde qui t attend** — Défaut connu du déclenchement événementiel : le joueur perçoit que le monde ne bouge que quand il progresse. Contré par l'exigence de brouillage de causalité (D10).
+- **regle de la photo du lac** — Alias parlant de la texture innocentable (D13). Voir texture_innocentable.
+- **fond au jeu forme a la fiction** — Règle de préséance D16 : quand des principes se contredisent, la compréhension/jouabilité commande CE QUI se passe, l'immersion commande COMMENT ça se présente.
+- **local d abord prouve** — Contrainte D18 : l'interprétation de l'expression libre fonctionne sur l'appareil du joueur (zéro coût d'usage, hors ligne, vie privée) ; la suite d'évaluation sur la tranche verticale en prouve la qualité ; échec de la preuve = fait nouveau à arbitrer.

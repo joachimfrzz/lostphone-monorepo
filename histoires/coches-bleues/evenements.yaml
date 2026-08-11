@@ -1,0 +1,24 @@
+# Moteur vivant (D10) : conditions → effets, délais variables (brouillage anti « monde qui t'attend »)
+format_version: 1
+evenements:
+  - id: b0-appel-chloe
+    quand: { scene: ouverture }
+    effet: { type: appel_entrant, de: chloe, script: ouverture-chloe }
+  - id: b0-message-marc
+    quand: { pendant: b0-appel-chloe }
+    effet: { type: message_entrant, conversation: marc, message: m-060 }
+  - id: b1-relance-chloe
+    quand: { etat: a_lu_conversation_marc }
+    delai: { min_s: 40, max_s: 120 }
+    effet: { type: message_entrant, de: chloe, texte: "alors ?? c'est qui ce marc ??" }
+  - id: b2-maman-decorrele
+    quand: { temps_de_jeu_min: 12 }
+    effet: { type: message_entrant, de: maman, texte: "ma cherie jai vu a la tele un reportage sur les kines tu travailles trop il faut te reposer !!! tu viens dimanche ??? bisous maman" }
+  - id: b3-retour-recherche
+    quand: { etat: photo_envoyee_a_chloe }
+    delai: { min_s: 90, max_s: 150 }
+    effet: { type: messages_entrants, de: chloe, script: retour-matteo }
+  - id: b4-marc-actif
+    quand: { etat: apres_cp4 }
+    delai: { min_s: 60, max_s: 300 }
+    effet: { type: message_entrant, conversation: marc, texte: "Mon amour tu ne réponds pas ? Tout est prêt pour demain. Je pense à toi ❤️🌹" }

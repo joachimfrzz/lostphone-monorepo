@@ -1,0 +1,15 @@
+# Manifest — déclarations de la checklist d'histoire (D32, section 1)
+format_version: 1
+id: coches-bleues
+titre: "Coches bleues"
+version: 0.1.0            # gel D20 : la publication figera une version taguée
+role: jalon-zero          # tranche verticale (D37-D43)
+declarations:
+  posture: inconnu_reconnu
+  porteur: chloe
+  mix_temporel: { moteur: evenementiel, battements_scenarises: true, temps_reel: false }
+  ton: tension_contemporaine
+  format_duree: affaire_courte          # cible 45-60 min
+  multi_fins: { actif: true, fins: [f1_sauvee, f2_trop_tard, f3_erreur] }
+  politique_vu_lu: { accuses_lecture_proprietaire: desactives, detection_scenarisee: false }
+langues: [fr]

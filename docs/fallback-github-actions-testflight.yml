@@ -1,0 +1,106 @@
+# NOTE : fichier de SECOURS non actif. Pour l utiliser : le copier vers .github/workflows/testflight.yml
+# (l integration Hyperagent ne peut pas ecrire dans .github/workflows/ — permission workflow absente).
+# Canal TestFlight — jalon-duel D49 (Flutter vs Swift)
+# Construit l'app iOS du prototype et l'envoie sur TestFlight.
+# Signature : cloud signing Apple via clé API App Store Connect (aucun certificat manuel).
+# Secrets requis (Settings → Secrets and variables → Actions) :
+#   ASC_KEY_ID       — ID de la clé API App Store Connect (ex. 2X9R4HXF34)
+#   ASC_ISSUER_ID    — Issuer ID (UUID, visible sur la page des clés)
+#   ASC_API_KEY_P8   — contenu INTÉGRAL du fichier .p8 (avec les lignes BEGIN/END)
+#   APPLE_TEAM_ID    — Team ID Apple Developer (10 caractères, page Membership)
+
+name: TestFlight (duel D49)
+
+# FALLBACK non actif — canal principal : codemagic.yaml (décision 2026-08-10, réutilisation du canal existant)
+# Déclenchement manuel uniquement (nécessiterait les 4 secrets ASC_* décrits dans docs/ops-canal-testflight.md)
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: testflight
+  cancel-in-progress: false
+
+jobs:
+  build-and-upload:
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Installer la clé API App Store Connect
+        run: |
+          mkdir -p ~/private_keys
+          printf '%s' "${{ secrets.ASC_API_KEY_P8 }}" > ~/private_keys/AuthKey_${ASC_KEY_ID}.p8
+          wc -c ~/private_keys/AuthKey_${ASC_KEY_ID}.p8
+
+      - name: Dépendances Flutter
+        working-directory: moteur
+        run: flutter pub get
+
+      - name: Build iOS (sans signature, numéro de build unique)
+        working-directory: moteur
+        run: flutter build ios --release --no-codesign --build-number=${{ github.run_number }}
+
+      - name: Archive signée (cloud signing)
+        working-directory: moteur/ios
+        run: |
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" archive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${ASC_KEY_ID}.p8 \
+            -authenticationKeyID "${ASC_KEY_ID}" \
+            -authenticationKeyIssuerID "${ASC_ISSUER_ID}" \
+            DEVELOPMENT_TEAM="${APPLE_TEAM_ID}" \
+            CODE_SIGN_STYLE=Automatic
+
+      - name: Export IPA
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>teamID</key><string>${APPLE_TEAM_ID}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><false/>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${ASC_KEY_ID}.p8 \
+            -authenticationKeyID "${ASC_KEY_ID}" \
+            -authenticationKeyIssuerID "${ASC_ISSUER_ID}"
+          ls -la "$RUNNER_TEMP/export"
+
+      - name: Upload vers TestFlight (fastlane pilot)
+        run: |
+          cat > "$RUNNER_TEMP/asc_key.json" <<JSON
+          {
+            "key_id": "${ASC_KEY_ID}",
+            "issuer_id": "${ASC_ISSUER_ID}",
+            "key": $(python3 -c "import json,os; print(json.dumps(open(os.path.expanduser('~/private_keys/AuthKey_${ASC_KEY_ID}.p8')).read()))"),
+            "in_house": false
+          }
+          JSON
+          IPA=$(ls "$RUNNER_TEMP"/export/*.ipa | head -1)
+          fastlane pilot upload \
+            --api_key_path "$RUNNER_TEMP/asc_key.json" \
+            --ipa "$IPA" \
+            --skip_waiting_for_build_processing true
+
+      - name: Nettoyage de la clé
+        if: always()
+        run: rm -f ~/private_keys/AuthKey_${ASC_KEY_ID}.p8 "$RUNNER_TEMP/asc_key.json"

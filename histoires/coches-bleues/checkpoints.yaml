@@ -1,0 +1,33 @@
+# Checkpoints (D14/D31) — extrait : CP4, avec suite d'évaluation v1 (porte de qualité D18)
+format_version: 1
+checkpoints:
+  - id: cp4-expression-majeure
+    type: fenetre_expression
+    porteur: chloe
+    amorce: "Dis-moi ce que tu penses qu'il se passe. Vraiment."
+    intentions:
+      - id: arnaque
+        prototypes: ["c'est une arnaque", "marc n'existe pas", "on lui soutire de l'argent",
+                     "sarah est victime d'un romance scam", "les photos sont volées, le marin est faux"]
+        reponse_script: cp4-valide
+      - id: fausse_piste_thomas
+        prototypes: ["c'est thomas", "son frère la saigne", "thomas profite d'elle"]
+        reponse_script: cp4-doute-thomas
+      - id: partiel_tromperie
+        prototypes: ["marc la trompe", "il voit quelqu'un d'autre"]
+        reponse_script: cp4-recadre-argent
+    sortie_de_secours: { apres_rejets: 2, script: cp4-bascule-geste,
+                         texte: "attends, plus simple : envoie-moi juste UNE capture de ce qui te fait flipper" }
+    suite_evaluation:
+      doivent_passer:
+        - "c'est une arnaque, marc existe pas"
+        - "elle se fait manipuler pour du fric"
+        - "jsp mais le mec lui soutire de l'argent, 3000 balles demain !!"
+        - "sarah est victime d'un romance scam"
+        - "le marin c'est du fake, les photos sont volées"
+      doivent_echouer:
+        - { texte: "marc est bizarre", raison: trop_vague }
+        - { texte: "sarah a des problèmes d'argent", raison: a_cote }
+        - { texte: "c'est thomas", raison: fausse_piste, intention_attendue: fausse_piste_thomas }
+        - { texte: "je sais pas", raison: aveu }
+        - { texte: "ils vont se marier ?", raison: contresens }

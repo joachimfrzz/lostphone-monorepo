@@ -1,0 +1,10 @@
+# Couche d'assets de marque (D40) — identités échangeables, jamais en dur.
+# Doctrine : noms réels en développement ; révision + avis juridique avant toute exposition publique.
+format_version: 1
+os:
+  nom: null            # l'OS fictif n'affiche pas de marque en jeu (D26)
+apps:
+  messagerie:  { nom: "WhatsApp",  substitution: "Bulle" }
+  banque:      { nom: "Ma Banque", substitution: "Banque du Rhône" }
+  rencontre:   { nom: "Tinder",    substitution: "Lumen" }
+  reseau_social: { nom: "Instagram", substitution: "Prisma" }

@@ -1,0 +1,15 @@
+# Conversation « Marc ❤️ » — l'arnaque, de mars à aujourd'hui (extrait de référence acte 0-1).
+# Coches : marc lit TOUJOURS instantanément (coches bleues immédiates). Le titre du jeu vit ici.
+format_version: 1
+contact: marc
+messages:
+  - { id: m-001, de: marc, date: "2026-03-14T10:12", texte: "Bonjour Sarah ❤️ Je suis très heureux de ton message. Comment se passe ta journée à toi ?" }
+  - { id: m-002, de: sarah, date: "2026-03-14T12:40", texte: "Bien ! C'est bizarre, j'ai l'impression qu'on se connaît depuis longtemps. Bref 😊 Tu es où là, en mer ?" }
+  - { id: m-014, de: marc, date: "2026-04-02T09:03", texte: "Ma chérie ❤️🌹🌹 Cette nuit j'ai pensé à notre maison près de Cassis. Tu es la reine de mon cœur." }
+  - { id: m-021, de: sarah, date: "2026-04-19T22:51", texte: "Tu me manques. C'est ridicule non ? On s'est jamais vus et tu me manques ❤️" }
+  - { id: m-030, de: marc, date: "2026-05-06T11:20", texte: "Mon amour, la connexion satellite du navire est suspendue. 300 euros pour la rétablir. Sans cela nous ne pouvons plus parler… Je rembourse à Marseille, promis de mon cœur." , indice: escalade_1 }
+  - { id: m-041, de: marc, date: "2026-06-11T14:47", texte: "Un colis pour toi est bloqué en douane ma reine. 800 euros de frais. C'est mon cadeau pour toi, j'ai honte de demander." , indice: escalade_2 }
+  - { id: m-047, de: marc, date: "2026-06-28T21:58", texte: "Bonne nuit, chère Monique." , indice: monique }
+  - { id: m-048, de: marc, date: "2026-06-28T21:59", texte: "Pardon ma chérie !! Je pensais à ma tante Monique, je suis fatigué ce soir. Bonne nuit mon trésor ❤️" }
+  - { id: m-055, de: marc, date: "2026-07-16T10:31", texte: "Ma solde est bloquée par la compagnie. Il faut payer la caution de débarquement : 3000 euros. Sinon pas de Marseille le 28… Voici le compte de l'agent maritime : FR76 XXXX (M. OKAFOR AGENT MARITIME)." , indice: iban_tiers }
+  - { id: m-060, de: marc, date: "2026-07-20T17:41", texte: "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges comme je t'ai dit ❤️" , indice: consigne_suppression, declencheur: ouverture }

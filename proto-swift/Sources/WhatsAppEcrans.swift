@@ -6,13 +6,18 @@ import SwiftUI
 // ============================================================ AVATAR SILHOUETTE
 struct AvatarSilhouette: View {
     var taille: CGFloat = 52
+    var image: String? = nil
     var body: some View {
         ZStack {
-            Circle().fill(Color(hex: 0x6E7A84))
-            Image(systemName: "person.fill")
-                .font(.system(size: taille * 0.54))
-                .foregroundStyle(Color(hex: 0xCFD9DE))
-                .offset(y: taille * 0.08)
+            if let image {
+                Image(image).resizable().scaledToFill()
+            } else {
+                Circle().fill(Color(hex: 0x6E7A84))
+                Image(systemName: "person.fill")
+                    .font(.system(size: taille * 0.54))
+                    .foregroundStyle(Color(hex: 0xCFD9DE))
+                    .offset(y: taille * 0.08)
+            }
         }
         .frame(width: taille, height: taille)
         .clipShape(Circle())
@@ -78,7 +83,10 @@ struct AppelsVue: View {
                         }
                         Spacer()
                         Text(r.4).font(.system(size: 15)).foregroundStyle(waTexte2)
-                        Image(systemName: "info.circle").font(.system(size: 20)).foregroundStyle(waTexte)
+                        NavigationLink(destination: InfosContactVue(
+                            nom: r.0, numero: DonneesWA.fiches[r.0]?.numero ?? "")) {
+                            Image(systemName: "info.circle").font(.system(size: 20)).foregroundStyle(waTexte)
+                        }
                     }
                     .listRowBackground(waNoir)
                     .listRowSeparatorTint(Color(hex: 0x222222))
@@ -95,6 +103,7 @@ struct ActionRonde: View {
     let symbole: String
     let nom: String
     var vert: Bool = false
+    @State private var alerteVisible = false
     var body: some View {
         VStack(spacing: 7) {
             Circle()
@@ -104,6 +113,11 @@ struct ActionRonde: View {
                     .font(.system(size: 20))
                     .foregroundStyle(vert ? waVertDoux : waTexte))
             Text(nom).font(.system(size: 13)).foregroundStyle(waTexte)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { alerteVisible = true }
+        .alert(ErreurLambda.message(nom.count * 3 + symbole.count), isPresented: $alerteVisible) {
+            Button("OK", role: .cancel) {}
         }
     }
 }
@@ -171,19 +185,21 @@ struct GroupeReglages: View {
         VStack(spacing: 0) {
             ForEach(0..<lignes.count, id: \.self) { i in
                 let l = lignes[i]
-                HStack(spacing: 14) {
-                    Image(systemName: l.0).font(.system(size: 17)).foregroundStyle(waTexte)
-                        .frame(width: 26)
-                    Text(l.1).font(.system(size: 17)).foregroundStyle(waTexte)
-                    Spacer()
-                    if l.2 == "point" {
-                        Circle().fill(waVertDoux).frame(width: 10, height: 10)
-                        Image(systemName: "arrow.up.right").font(.system(size: 13)).foregroundStyle(waTexte2)
-                    } else {
-                        Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(waTexte2)
+                NavigationLink(destination: SousReglageVue(titre: l.1)) {
+                    HStack(spacing: 14) {
+                        Image(systemName: l.0).font(.system(size: 17)).foregroundStyle(waTexte)
+                            .frame(width: 26)
+                        Text(l.1).font(.system(size: 17)).foregroundStyle(waTexte)
+                        Spacer()
+                        if l.2 == "point" {
+                            Circle().fill(waVertDoux).frame(width: 10, height: 10)
+                            Image(systemName: "arrow.up.right").font(.system(size: 13)).foregroundStyle(waTexte2)
+                        } else {
+                            Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(waTexte2)
+                        }
                     }
+                    .padding(.horizontal, 16).padding(.vertical, 13)
                 }
-                .padding(.horizontal, 16).padding(.vertical, 13)
                 if i < lignes.count - 1 {
                     Divider().background(Color(hex: 0x2A2A2A)).padding(.leading, 56)
                 }
@@ -272,7 +288,7 @@ struct InfosContactVue: View {
 
             ScrollView {
                 VStack(spacing: 0) {
-                    AvatarSilhouette(taille: 110).padding(.top, 10)
+                    AvatarSilhouette(taille: 110, image: nom == "Marc ❤️" ? "AvatarMarc" : nil).padding(.top, 10)
                     Text(nom).font(.system(size: 26, weight: .bold)).foregroundStyle(waTexte).padding(.top, 10)
                     Text(numero).font(.system(size: 16)).foregroundStyle(waTexte2).padding(.top, 2)
 

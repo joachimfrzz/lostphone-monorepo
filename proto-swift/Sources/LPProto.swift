@@ -285,6 +285,7 @@ struct WhatsAppListeView: View {
     @State private var menuPlus = false
     @State private var menuCamera = false
     @State private var menuPoints = false
+    @ObservedObject private var envois = EnvoisJoueur.partage
 
     private let convs: [(String, String, String, String?, Bool)] = [
         ("Marc ❤️", "17:41", "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges co…", "1", true),
@@ -295,9 +296,19 @@ struct WhatsAppListeView: View {
         ("Marie kiné", "vendredi", "✓✓ ok pour l'échange de créneaux jeudi 👍", nil, false),
     ]
 
+    // L'aperçu de la liste reflète le dernier message envoyé par le joueur (persistant)
+    private var convsVivantes: [(String, String, String, String?, Bool)] {
+        convs.map { c in
+            if let derniers = envois.parContact[c.0], case .msg(_, let t, let h)? = derniers.last {
+                return (c.0, h, "Vous : " + t, nil, c.4)
+            }
+            return c
+        }
+    }
+
     // D51-1 : les filtres et la recherche fonctionnent réellement
     private var convsFiltrees: [(String, String, String, String?, Bool)] {
-        var r = convs
+        var r = convsVivantes
         if filtre == 1 { r = r.filter { $0.4 } }
         if filtre == 2 { r = r.filter { $0.0 == "Marc ❤️" || $0.0 == "Chloé" } }
         if filtre == 3 { r = r.filter { $0.0 == "Les filles 💃" } }

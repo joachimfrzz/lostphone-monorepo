@@ -61,3 +61,65 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
+
+  # ——————————————————————————— Prétendant SwiftUI (duel D49) ———————————————————————————
+  # Lancement MANUEL uniquement (Start new build → ce workflow).
+  # Builds numérotés 2xx (Flutter = 1xx) : les deux prétendants coexistent dans TestFlight,
+  # on bascule de l'un à l'autre via « Versions précédentes ».
+  duel-swift-testflight:
+    name: Duel D49 — Swift TestFlight
+    max_build_duration: 45
+    instance_type: mac_mini_m2
+
+    integrations:
+      app_store_connect: Codemagic
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.lostphone.game
+      xcode: latest
+
+    scripts:
+      - name: Restaurer les fichiers binaires (icônes)
+        script: |
+          bash outils/decode-binaires.sh
+
+      - name: Icône de l'app Swift (réutilise la 1024 du proto Flutter)
+        script: |
+          cp moteur/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png \
+             proto-swift/Assets.xcassets/AppIcon.appiconset/icon-1024.png
+
+      - name: Installer XcodeGen
+        script: |
+          brew install xcodegen || (brew update && brew install xcodegen)
+          xcodegen --version
+
+      - name: Générer le projet Xcode
+        script: |
+          cd proto-swift
+          xcodegen generate
+
+      - name: Numéro de build (série 2xx)
+        script: |
+          cd proto-swift
+          agvtool new-version -all $((200 + BUILD_NUMBER))
+
+      - name: Signature (profils via intégration App Store Connect)
+        script: |
+          xcode-project use-profiles
+
+      - name: Build IPA
+        script: |
+          xcode-project build-ipa \
+            --project proto-swift/LPProtoSwift.xcodeproj \
+            --scheme LPProtoSwift
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

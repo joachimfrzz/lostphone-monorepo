@@ -11,6 +11,7 @@ enum ElementConv {
     case msg(Bool, String, String)
     case riche(Bool, String, String, String?, String?, String?)
     case vocal(Bool, String, String)
+    case vocalAudio(Bool, String, String, String, String) // recu, durée, heure, fichier, transcription
     case appel(Bool, String, String, String?, String, Bool)
     case image(Bool, String)
     case album(Bool, Int, String)
@@ -74,7 +75,7 @@ enum DonneesWA {
         .jour("28 juin"),
         .msg(true, "Bonne nuit, chère Monique.", "21:58"),
         .msg(true, "Pardon ma chérie !! Je pensais à ma tante Monique, je suis fatigué ce soir. Bonne nuit mon trésor ❤️", "21:59"),
-        .vocal(true, "0:47", "22:03"),
+        .vocalAudio(true, "0:18", "22:03", "vocal-marc", "Ma chérie… c'est moi. Écoute, pour le prénom tout à l'heure… je suis confus. Monique, c'est ma tante, je pense beaucoup à elle en ce moment, elle est souffrante. Toi, tu es mon seul amour, Sarah. Ne doute jamais de moi. Dors bien mon trésor… à demain."),
         .jour("5 juillet"),
         .appel(true, "video.fill", "Appel vidéo", "19 s", "20:31", false),
         .msg(false, "C'était court 😢 Je t'ai à peine vu, ça coupait tout le temps", "20:34"),
@@ -104,7 +105,7 @@ enum DonneesWA {
         .msg(true, "Sarah. Réponds-moi. T'es passée à la banque ???", "19:12"),
         .appel(true, "phone.arrow.down.left", "Appel vocal manqué", "Appuyez pour rappeler", "19:32", true),
         .appel(true, "phone.arrow.down.left", "Appel vocal manqué", "Appuyez pour rappeler", "19:33", true),
-        .vocal(true, "0:19", "19:34"),
+        .vocalAudio(true, "0:08", "19:34", "vocal-chloe", "Sarah, c'est moi. Bon, tu réponds pas… Rappelle-moi dès que t'as mon message, d'accord ? C'est important. C'est à propos de Marc. S'il te plaît… rappelle-moi."),
         .msg(true, "Je passe chez toi demain matin. On va vérifier ce mec ENSEMBLE. Ne vire RIEN d'ici là, promets-le moi.", "19:35"),
     ]
 
@@ -137,8 +138,8 @@ enum DonneesWA {
         .msg(true, "les hortensias de cette année !! ton père est trop fier", "11:31"),
         .msg(false, "Magnifiques 😍 Vous me gardez des boutures hein", "12:15"),
         .jour("vendredi"),
-        .vocal(true, "1:12", "17:44"),
-        .msg(false, "Maman on a dit : tu ÉCRIS tes messages 😂 1 minute de vocal pour dire que le rôti est au four", "18:01"),
+        .vocalAudio(true, "0:19", "17:44", "vocal-maman", "Allô ma chérie, c'est maman ! Alors dis-moi, pour dimanche… le rôti, je le mets au four à quelle heure ? Ton père dit midi, moi je dis onze heures et demie… Rappelle-moi ! Ah, et ramène-moi mon tupperware, le bleu. Bisous bisous ma chérie."),
+        .msg(false, "Maman on a dit : tu ÉCRIS tes messages 😂 Un vocal entier pour un rôti", "18:01"),
         .jour("dimanche"),
         .msg(true, "tu viens dimanche ??? bisous maman", "10:05"),
     ]
@@ -165,6 +166,7 @@ struct ConversationVue: View {
     let nomContact: String
     @State private var elements: [ElementConv]
     @State private var saisie = ""
+    @State private var appelVisible = false
 
     init(nomContact: String) {
         self.nomContact = nomContact
@@ -189,7 +191,7 @@ struct ConversationVue: View {
                 .padding(.leading, 8)
                 NavigationLink(destination: InfosContactVue(nom: fiche.nom, numero: fiche.numero)) {
                     HStack(spacing: 9) {
-                        AvatarSilhouette(taille: 38)
+                        AvatarSilhouette(taille: 38, image: nomContact == "Marc ❤️" ? "AvatarMarc" : nil)
                         VStack(alignment: .leading, spacing: 0) {
                             Text(fiche.nom).font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)
                             Text(fiche.sousTitre).font(.system(size: 12.5)).foregroundStyle(waTexte2)
@@ -248,6 +250,10 @@ struct ConversationVue: View {
         }
         .background(waNoir)
         .toolbar(.hidden, for: .navigationBar)
+        .fullScreenCover(isPresented: $appelVisible) {
+            AppelVue(nom: "Marc ❤️", fichier: "appel-marc",
+                     transcription: "Allô ? Sarah ? Tu m'entends mon amour ?… La connexion est très mauvaise ici, je t'appelle depuis le pont… Tu me manques tellement. Plus que quelques jours mon trésor… Je te rappelle plus tard, d'accord ? Je t'aime.")
+        }
     }
 
     private func envoyer() {
@@ -277,8 +283,14 @@ struct ConversationVue: View {
             BulleRiche(recu: r, texte: t, heure: h, citationNom: cn, citationTexte: ct, reaction: re)
                 .contextMenu { menuMessage }
         case .vocal(let r, let d, let h): BulleVocale(recu: r, duree: d, heure: h)
+        case .vocalAudio(let r, let d, let h, let f, let tr):
+            BulleVocaleAudio(recu: r, duree: d, heure: h, fichier: f, transcription: tr)
         case .appel(let r, let s, let t, let st, let h, let rouge):
             BulleAppel(recu: r, symbole: s, titre: t, sousTitre: st, heure: h, rouge: rouge)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if nomContact == "Marc ❤️" { appelVisible = true }
+                }
         case .image(let r, let h): BulleImage(recu: r, heure: h).contextMenu { menuMessage }
         case .album(let r, let n, let h): BulleAlbum(recu: r, total: n, heure: h)
         case .video(let r, let d, let h): BulleVideo(recu: r, duree: d, heure: h)
@@ -306,6 +318,7 @@ struct ConversationVue: View {
 
 // ============================================================ ONGLET ACTUS (statuts + chaînes)
 struct ActusVue: View {
+    @State private var suivies: Set<String> = []
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -361,10 +374,14 @@ struct ActusVue: View {
                             AvatarSilhouette(taille: 44)
                             Text(c).font(.system(size: 16.5, weight: .semibold)).foregroundStyle(waTexte)
                             Spacer()
-                            Text("Suivre").font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(Color(hex: 0x062E1C))
+                            Text(suivies.contains(c) ? "Suivi ✓" : "Suivre")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(suivies.contains(c) ? waTexte2 : Color(hex: 0x062E1C))
                                 .padding(.horizontal, 16).padding(.vertical, 7)
-                                .background(waVertVif, in: Capsule())
+                                .background(suivies.contains(c) ? Color(hex: 0x1C242B) : waVertVif, in: Capsule())
+                                .onTapGesture {
+                                    if suivies.contains(c) { suivies.remove(c) } else { suivies.insert(c) }
+                                }
                         }
                         .padding(.horizontal, 20).padding(.vertical, 8)
                     }

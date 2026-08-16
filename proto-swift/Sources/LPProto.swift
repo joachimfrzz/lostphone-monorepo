@@ -284,6 +284,7 @@ struct WhatsAppListeView: View {
     @State private var recherche = ""
     @State private var menuPlus = false
     @State private var menuCamera = false
+    @State private var menuPoints = false
 
     private let convs: [(String, String, String, String?, Bool)] = [
         ("Marc ❤️", "17:41", "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges co…", "1", true),
@@ -341,6 +342,13 @@ struct WhatsAppListeView: View {
                     }
                 }
                 .padding(.horizontal, 14).padding(.bottom, 6)
+
+                // Geste home réel : balayer vers le haut depuis le bord inférieur quitte l'app
+                Color.clear.frame(height: 10)
+                    .contentShape(Rectangle())
+                    .gesture(DragGesture(minimumDistance: 20).onEnded { v in
+                        if v.translation.height < -35 { dismiss() }
+                    })
             }
             .toolbar(.hidden, for: .navigationBar)
         }
@@ -349,7 +357,7 @@ struct WhatsAppListeView: View {
     private var discussions: some View {
         VStack(spacing: 0) {
             HStack(spacing: 10) {
-                RondAction(symbole: "ellipsis") { dismiss() }
+                RondAction(symbole: "ellipsis") { menuPoints = true }
                 Spacer()
                 RondAction(symbole: "camera.fill") { menuCamera = true }
                 RondAction(symbole: "plus", fond: waVertVif, teinte: Color(hex: 0x062E1C), gras: true) { menuPlus = true }
@@ -360,6 +368,12 @@ struct WhatsAppListeView: View {
                 Button("Nouvelle discussion") {}
                 Button("Nouveau groupe") {}
                 Button("Nouvelle communauté") {}
+                Button("Annuler", role: .cancel) {}
+            }
+            .confirmationDialog("", isPresented: $menuPoints, titleVisibility: .hidden) {
+                Button("Sélectionner des discussions") {}
+                Button("Tout marquer comme lu") {}
+                Button("Réglages") {}
                 Button("Annuler", role: .cancel) {}
             }
             .confirmationDialog("Appareil photo", isPresented: $menuCamera, titleVisibility: .visible) {
@@ -478,12 +492,19 @@ struct RondAction: View {
     var teinte: Color = waTexte
     var gras: Bool = false
     var action: (() -> Void)? = nil
+    @State private var alerteVisible = false
     var body: some View {
         Circle().fill(fond).frame(width: 40, height: 40)
             .overlay(Image(systemName: symbole)
                 .font(.system(size: 17, weight: gras ? .bold : .semibold))
                 .foregroundStyle(teinte))
-            .onTapGesture { action?() }
+            .onTapGesture {
+                // D51-1 : aucun bouton mort — action réelle ou réponse banale variée
+                if let action { action() } else { alerteVisible = true }
+            }
+            .alert(ErreurLambda.message(symbole.count * 7 + 3), isPresented: $alerteVisible) {
+                Button("OK", role: .cancel) {}
+            }
     }
 }
 
@@ -536,12 +557,7 @@ struct LigneConv: View {
     let c: (String, String, String, String?, Bool)
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            ZStack {
-                Circle().fill(Color(hex: 0x6E7A84))
-                Image(systemName: "person.fill")
-                    .font(.system(size: 30)).foregroundStyle(Color(hex: 0xCFD9DE)).offset(y: 5)
-            }
-            .frame(width: 56, height: 56).clipShape(Circle())
+            AvatarSilhouette(taille: 56, image: c.0 == "Marc ❤️" ? "AvatarMarc" : nil)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .firstTextBaseline) {
                     Text(c.0).font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)

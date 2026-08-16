@@ -254,6 +254,8 @@ struct ArchiveesVue: View {
 // ============================================================ INFOS DU CONTACT (Marc ❤️)
 struct InfosContactVue: View {
     @Environment(\.dismiss) private var dismiss
+    var nom: String = "Marc ❤️"
+    var numero: String = "+33 7 49 12 53 08"
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -271,8 +273,8 @@ struct InfosContactVue: View {
             ScrollView {
                 VStack(spacing: 0) {
                     AvatarSilhouette(taille: 110).padding(.top, 10)
-                    Text("Marc ❤️").font(.system(size: 26, weight: .bold)).foregroundStyle(waTexte).padding(.top, 10)
-                    Text("+33 7 49 12 53 08").font(.system(size: 16)).foregroundStyle(waTexte2).padding(.top, 2)
+                    Text(nom).font(.system(size: 26, weight: .bold)).foregroundStyle(waTexte).padding(.top, 10)
+                    Text(numero).font(.system(size: 16)).foregroundStyle(waTexte2).padding(.top, 2)
 
                     HStack(spacing: 12) {
                         BoutonInfo(symbole: "phone.fill", nom: "Audio")
@@ -304,7 +306,7 @@ struct InfosContactVue: View {
                         Divider().background(Color(hex: 0x2A2A2A)).padding(.leading, 16)
                         HStack(spacing: 14) {
                             Image(systemName: "person.badge.plus").font(.system(size: 17)).foregroundStyle(waVertDoux).frame(width: 26)
-                            Text("Créer un groupe avec Marc ❤️").font(.system(size: 17)).foregroundStyle(waVertDoux)
+                            Text("Créer un groupe avec \(nom)").font(.system(size: 17)).foregroundStyle(waVertDoux)
                             Spacer()
                         }
                         .padding(.horizontal, 16).padding(.vertical, 13)
@@ -313,9 +315,9 @@ struct InfosContactVue: View {
                     .padding(.horizontal, 16).padding(.bottom, 18)
 
                     VStack(spacing: 0) {
-                        LigneAction(texte: "Bloquer Marc ❤️", rouge: true)
+                        LigneAction(texte: "Bloquer \(nom)", rouge: true)
                         Divider().background(Color(hex: 0x2A2A2A)).padding(.leading, 16)
-                        LigneAction(texte: "Signaler Marc ❤️", rouge: true)
+                        LigneAction(texte: "Signaler \(nom)", rouge: true)
                     }
                     .background(Color(hex: 0x161717), in: RoundedRectangle(cornerRadius: 14))
                     .padding(.horizontal, 16)

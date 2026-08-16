@@ -3,7 +3,6 @@
 // Objectif : juger la fidélité Flutter à l'œil, sur iPhone (build web CanvasKit).
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 void main() => runApp(const LostPhoneProto());
 
@@ -26,7 +25,7 @@ class LostPhoneProto extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Coches bleues — proto',
       theme: base.copyWith(
-        textTheme: GoogleFonts.interTextTheme(base.textTheme),
+        textTheme: base.textTheme,
         scaffoldBackgroundColor: Colors.black,
       ),
       home: const Cadre(),
@@ -122,16 +121,17 @@ class _VerrouillageState extends State<Verrouillage> {
               const SizedBox(height: 22),
               const Icon(Icons.lock, color: Colors.white, size: 19),
               const SizedBox(height: 12),
-              Text('lundi 20 juillet',
-                  style: GoogleFonts.inter(
-                      color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600)),
-              Text('19:47',
-                  style: GoogleFonts.inter(
+              const Text('lundi 20 juillet',
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 21, fontWeight: FontWeight.w600)),
+              // iOS 16+ : horloge GRASSE (plus la fine d'avant iOS 16)
+              const Text('19:47',
+                  style: TextStyle(
                       color: Colors.white,
-                      fontSize: 97,
-                      fontWeight: FontWeight.w300,
-                      height: 1.02,
-                      letterSpacing: -2)),
+                      fontSize: 92,
+                      fontWeight: FontWeight.w700,
+                      height: 1.04,
+                      letterSpacing: -2.5)),
               const Spacer(),
               const NotifVerre(
                   couleurIcone: Color(0xFF25D366),
@@ -156,10 +156,7 @@ class _VerrouillageState extends State<Verrouillage> {
                         RondVerre(icone: Icons.flashlight_on),
                         RondVerre(icone: Icons.camera_alt)
                       ])),
-              const SizedBox(height: 18),
-              Text('Balayer vers le haut pour déverrouiller',
-                  style: GoogleFonts.inter(color: Colors.white60, fontSize: 12)),
-              const SizedBox(height: 10),
+              const SizedBox(height: 24),
               const BarreHome(),
               const SizedBox(height: 8),
             ])),
@@ -213,18 +210,18 @@ class NotifVerre extends StatelessWidget {
                     Row(children: [
                       Expanded(
                           child: Text(app,
-                              style: GoogleFonts.inter(
+                              style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600))),
                       Text(quand,
-                          style: GoogleFonts.inter(color: Colors.white54, fontSize: 13)),
+                          style: TextStyle(color: Colors.white54, fontSize: 13)),
                     ]),
                     const SizedBox(height: 2),
                     Text(corps,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(
+                        style: TextStyle(
                             color: Colors.white.withValues(alpha: .95),
                             fontSize: 14.5,
                             height: 1.25)),
@@ -268,7 +265,7 @@ class BarreStatut extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Row(children: [
           Text(heure,
-              style: GoogleFonts.inter(
+              style: TextStyle(
                   color: Colors.white, fontSize: 16.5, fontWeight: FontWeight.w600)),
           const Spacer(),
           Row(
@@ -325,8 +322,8 @@ class Accueil extends StatelessWidget {
     final apps = <(String, Widget)>[
       ('Horloge', _ic(const Color(0xFF1C1C1E), const Icon(Icons.watch_later_outlined, color: Colors.white, size: 30))),
       ('Calendrier', _ic(Colors.white, Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text('LUN.', style: GoogleFonts.inter(color: const Color(0xFFFF3B30), fontSize: 9, fontWeight: FontWeight.w600)),
-        Text('20', style: GoogleFonts.inter(color: Colors.black, fontSize: 26, fontWeight: FontWeight.w300, height: 1))
+        Text('LUN.', style: TextStyle(color: const Color(0xFFFF3B30), fontSize: 9, fontWeight: FontWeight.w600)),
+        Text('20', style: TextStyle(color: Colors.black, fontSize: 26, fontWeight: FontWeight.w300, height: 1))
       ]))),
       ('Photos', _ic(Colors.white, const Icon(Icons.filter_vintage, color: Color(0xFFE64980), size: 34))),
       ('Plans', _ic(const Color(0xFF34C3FF), const Icon(Icons.near_me, color: Colors.white, size: 30))),
@@ -370,12 +367,12 @@ class Accueil extends StatelessWidget {
                       child: Row(children: [
                         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Text('Lyon',
-                              style: GoogleFonts.inter(
+                              style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600)),
                           Text('24°',
-                              style: GoogleFonts.inter(
+                              style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 36,
                                   fontWeight: FontWeight.w300,
@@ -384,7 +381,7 @@ class Accueil extends StatelessWidget {
                         const Spacer(),
                         Text('Nuit dégagée\nMax. 29°  Min. 18°',
                             textAlign: TextAlign.right,
-                            style: GoogleFonts.inter(
+                            style: TextStyle(
                                 color: Colors.white.withValues(alpha: .85),
                                 fontSize: 12.5,
                                 height: 1.5)),
@@ -418,7 +415,7 @@ class Accueil extends StatelessWidget {
                       const Icon(Icons.search, color: Colors.white70, size: 14),
                       const SizedBox(width: 6),
                       Text('Recherche',
-                          style: GoogleFonts.inter(
+                          style: TextStyle(
                               color: Colors.white.withValues(alpha: .85), fontSize: 12.5)),
                     ])))),
         const SizedBox(height: 14),
@@ -486,7 +483,7 @@ class AppIcone extends StatelessWidget {
                 width: 320,
                 backgroundColor: const Color(0xFF28282A),
                 content: Text('Prototype-duel : seule WhatsApp est ouverte',
-                    textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 12.5)),
+                    textAlign: TextAlign.center, style: TextStyle(fontSize: 12.5)),
                 duration: const Duration(milliseconds: 1600))),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Stack(clipBehavior: Clip.none, children: [
@@ -504,7 +501,7 @@ class AppIcone extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12)),
                       child: Center(
                           child: Text(badge!,
-                              style: GoogleFonts.inter(
+                              style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600))))),
@@ -512,106 +509,174 @@ class AppIcone extends StatelessWidget {
           if (nom.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(nom,
-                style: GoogleFonts.inter(
+                style: TextStyle(
                     color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w500)),
           ],
         ]),
       );
 }
 
-// ============================================================ WHATSAPP
+// ============================================================ WHATSAPP (idiome iOS)
+// Réf. fidélité : WhatsApp iOS mode sombre — onglets en bas, grand titre,
+// bulles arrondies 16, texte 16.5, saisie iOS (+ / champ / caméra / micro).
+const waVert = Color(0xFF25D366); // accent iOS (badges, actions)
+
 class WhatsAppListe extends StatelessWidget {
   const WhatsAppListe({super.key});
   @override
   Widget build(BuildContext context) {
     final convs = <(String, Color, String, String, String, String?, bool)>[
       ('M', const Color(0xFF5B7C99), 'Marc ❤️', '17:41',
-          'N\'oublie pas : 11h30. Après-demain je te tiens dans mes b…', '1', true),
+          "N'oublie pas : 11h30. Après-demain je te tiens dans mes b…", '1', true),
       ('C', const Color(0xFFC76B8F), 'Chloé', '19:33', '📞 Appel vocal manqué', '2', true),
-      ('T', const Color(0xFF6B8F71), 'Thomas', 'sam.', '🎤 0:42', null, false),
-      ('M', const Color(0xFF8F7C6B), 'Maman', 'dim.', 'tu viens dimanche ??? bisous maman', null, false),
-      ('M', const Color(0xFF7C6B8F), 'Marie kiné', 'ven.', '✓✓ ok pour l\'échange de créneaux jeudi 👍', null, false),
+      ('T', const Color(0xFF6B8F71), 'Thomas', 'samedi', '🎤 0:42', null, false),
+      ('M', const Color(0xFF8F7C6B), 'Maman', 'dimanche',
+          'tu viens dimanche ??? bisous maman', null, false),
+      ('M', const Color(0xFF7C6B8F), 'Marie kiné', 'vendredi',
+          "✓✓ ok pour l'échange de créneaux jeudi 👍", null, false),
     ];
     return Scaffold(
         backgroundColor: waFond,
-        floatingActionButton: Container(
-            width: 58,
-            height: 58,
-            decoration: BoxDecoration(
-                color: waAccent,
-                borderRadius: BorderRadius.circular(17),
-                boxShadow: [
-                  BoxShadow(
-                      color: waAccent.withValues(alpha: .4),
-                      blurRadius: 18,
-                      offset: const Offset(0, 6))
-                ]),
-            child: const Icon(Icons.add_comment, color: Color(0xFF111B21), size: 24)),
         body: SafeArea(
+            bottom: false,
             child: Column(children: [
-          const SizedBox(height: 8),
-          const BarreStatut(),
-          Padding(
-              padding: const EdgeInsets.fromLTRB(18, 12, 18, 6),
-              child: Row(children: [
-                Text('WhatsApp',
-                    style: GoogleFonts.inter(
-                        color: waTexte, fontSize: 22, fontWeight: FontWeight.w700)),
-                const Spacer(),
-                const Icon(Icons.camera_alt_outlined, color: waTexte2, size: 22),
-                const SizedBox(width: 22),
-                GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(Icons.close, color: waTexte2, size: 22)),
-              ])),
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                  decoration: BoxDecoration(
-                      color: waPanneau, borderRadius: BorderRadius.circular(22)),
+              const SizedBox(height: 8),
+              const BarreStatut(),
+              // ——— Grand titre iOS + actions rondes
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 16, 4),
                   child: Row(children: [
-                    const Icon(Icons.search, color: waTexte2, size: 18),
+                    const Text('Discussions',
+                        style: TextStyle(
+                            color: waTexte,
+                            fontSize: 33,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: .2)),
+                    const Spacer(),
+                    _rond(Icons.more_horiz, onTap: () => Navigator.pop(context)),
                     const SizedBox(width: 10),
-                    Text('Rechercher ou démarrer une discussion',
-                        style: GoogleFonts.inter(color: waTexte2, fontSize: 14)),
-                  ]))),
-          Padding(
-              padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
-              child: Row(children: [
-                _puce('Toutes', true),
-                _puce('Non lues', false),
-                _puce('Favoris', false),
-                _puce('Groupes', false),
+                    _rond(Icons.camera_alt_outlined),
+                    const SizedBox(width: 10),
+                    _rond(Icons.add, fond: waVert, couleur: const Color(0xFF0B141A)),
+                  ])),
+              // ——— Recherche iOS
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 6, 16, 4),
+                  child: Container(
+                      height: 38,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                          color: const Color(0xFF1C242B),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: const Row(children: [
+                        Icon(Icons.search, color: waTexte2, size: 19),
+                        SizedBox(width: 6),
+                        Text('Rechercher',
+                            style: TextStyle(color: waTexte2, fontSize: 16.5)),
+                      ]))),
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
+                  child: Row(children: [
+                    _puce('Toutes', true),
+                    _puce('Non lues', false),
+                    _puce('Favoris', false),
+                    _puce('Groupes', false),
+                  ])),
+              Expanded(
+                  child: ListView(padding: EdgeInsets.zero, children: [
+                for (final c in convs)
+                  LigneConv(
+                      initiale: c.$1,
+                      couleur: c.$2,
+                      nom: c.$3,
+                      quand: c.$4,
+                      apercu: c.$5,
+                      pastille: c.$6,
+                      active: c.$7,
+                      onTap: c.$3 == 'Marc ❤️'
+                          ? () => Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => const ConversationMarc()))
+                          : null),
               ])),
-          Expanded(
-              child: ListView(children: [
-            for (final c in convs)
-              LigneConv(
-                  initiale: c.$1,
-                  couleur: c.$2,
-                  nom: c.$3,
-                  quand: c.$4,
-                  apercu: c.$5,
-                  pastille: c.$6,
-                  active: c.$7,
-                  onTap: c.$3 == 'Marc ❤️'
-                      ? () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const ConversationMarc()))
-                      : null),
-          ])),
-        ])));
+              // ——— Barre d'onglets iOS
+              Container(
+                  decoration: const BoxDecoration(
+                      color: Color(0xFF161B20),
+                      border:
+                          Border(top: BorderSide(color: Color(0xFF2A3238), width: .5))),
+                  padding: const EdgeInsets.only(top: 7, bottom: 4),
+                  child: const Row(children: [
+                    _Onglet(icone: Icons.sync, nom: 'Mises à jour'),
+                    _Onglet(icone: Icons.call_outlined, nom: 'Appels'),
+                    _Onglet(icone: Icons.groups_outlined, nom: 'Communautés'),
+                    _Onglet(icone: Icons.chat, nom: 'Discussions', actif: true, badge: '3'),
+                    _Onglet(icone: Icons.settings_outlined, nom: 'Réglages'),
+                  ])),
+              const SizedBox(height: 4),
+              const BarreHome(),
+              const SizedBox(height: 8),
+            ])));
   }
+
+  static Widget _rond(IconData ic, {VoidCallback? onTap, Color? fond, Color? couleur}) =>
+      GestureDetector(
+          onTap: onTap,
+          child: Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                  color: fond ?? const Color(0xFF1C242B), shape: BoxShape.circle),
+              child: Icon(ic, color: couleur ?? waTexte, size: 19)));
 
   Widget _puce(String t, bool on) => Container(
       margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 6),
       decoration: BoxDecoration(
-          color: on ? waAccent.withValues(alpha: .22) : waPanneau,
+          color: on ? const Color(0xFF103629) : const Color(0xFF1C242B),
           borderRadius: BorderRadius.circular(16)),
       child: Text(t,
-          style: GoogleFonts.inter(
-              color: on ? const Color(0xFF00D9A3) : waTexte2, fontSize: 12.5)));
+          style: TextStyle(
+              color: on ? const Color(0xFF66D07E) : waTexte2,
+              fontSize: 14,
+              fontWeight: on ? FontWeight.w600 : FontWeight.w400)));
+}
+
+class _Onglet extends StatelessWidget {
+  final IconData icone;
+  final String nom;
+  final bool actif;
+  final String? badge;
+  const _Onglet({required this.icone, required this.nom, this.actif = false, this.badge});
+  @override
+  Widget build(BuildContext context) => Expanded(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+        Stack(clipBehavior: Clip.none, children: [
+          Icon(icone, color: actif ? waVert : waTexte2, size: 24),
+          if (badge != null)
+            Positioned(
+                top: -4,
+                right: -10,
+                child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    height: 16,
+                    constraints: const BoxConstraints(minWidth: 16),
+                    decoration: const BoxDecoration(
+                        color: waVert,
+                        borderRadius: BorderRadius.all(Radius.circular(8))),
+                    child: Center(
+                        child: Text(badge!,
+                            style: const TextStyle(
+                                color: Color(0xFF0B141A),
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700))))),
+        ]),
+        const SizedBox(height: 3),
+        Text(nom,
+            style: TextStyle(
+                color: actif ? waVert : waTexte2,
+                fontSize: 10,
+                fontWeight: actif ? FontWeight.w600 : FontWeight.w400)),
+      ]));
 }
 
 class LigneConv extends StatelessWidget {
@@ -634,35 +699,33 @@ class LigneConv extends StatelessWidget {
   Widget build(BuildContext context) => InkWell(
       onTap: onTap,
       child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
           child: Row(children: [
             CircleAvatar(
-                radius: 25,
+                radius: 26,
                 backgroundColor: couleur,
                 child: Text(initiale,
-                    style: GoogleFonts.inter(
+                    style: const TextStyle(
                         color: Colors.white, fontSize: 21, fontWeight: FontWeight.w600))),
-            const SizedBox(width: 13),
+            const SizedBox(width: 12),
             Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
                 Expanded(
                     child: Text(nom,
-                        style: GoogleFonts.inter(
-                            color: waTexte, fontSize: 16.5, fontWeight: FontWeight.w500))),
+                        style: const TextStyle(
+                            color: waTexte, fontSize: 17, fontWeight: FontWeight.w600))),
                 Text(quand,
-                    style: GoogleFonts.inter(
-                        color: active ? waAccent : waTexte2,
-                        fontSize: 12,
-                        fontWeight: active ? FontWeight.w600 : FontWeight.w400)),
+                    style: TextStyle(
+                        color: active ? waVert : waTexte2, fontSize: 14.5)),
               ]),
-              const SizedBox(height: 2.5),
+              const SizedBox(height: 2),
               Row(children: [
                 Expanded(
                     child: Text(apercu,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(color: waTexte2, fontSize: 14))),
+                        style: const TextStyle(color: waTexte2, fontSize: 15))),
                 if (pastille != null)
                   Container(
                       margin: const EdgeInsets.only(left: 8),
@@ -670,12 +733,12 @@ class LigneConv extends StatelessWidget {
                       height: 20,
                       constraints: const BoxConstraints(minWidth: 20),
                       decoration: BoxDecoration(
-                          color: waAccent, borderRadius: BorderRadius.circular(10)),
+                          color: waVert, borderRadius: BorderRadius.circular(10)),
                       child: Center(
                           child: Text(pastille!,
-                              style: GoogleFonts.inter(
-                                  color: const Color(0xFF0B141A),
-                                  fontSize: 11.5,
+                              style: const TextStyle(
+                                  color: Color(0xFF0B141A),
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w700)))),
               ]),
             ])),
@@ -688,15 +751,15 @@ class ConversationMarc extends StatelessWidget {
 
   static const _messages = <(bool, String, String, String?)>[
     (true, 'Bonjour Sarah ❤️ Je suis très heureux de ton message. Comment se passe ta journée à toi ?', '10:12', '14 mars'),
-    (false, 'Bien ! C\'est bizarre, j\'ai l\'impression qu\'on se connaît depuis longtemps. Bref 😊 Tu es où là, en mer ?', '12:40', null),
+    (false, "Bien ! C'est bizarre, j'ai l'impression qu'on se connaît depuis longtemps. Bref 😊 Tu es où là, en mer ?", '12:40', null),
     (true, 'Ma chérie ❤️🌹🌹 Cette nuit j\'ai pensé à notre maison près de Cassis. Tu es la reine de mon cœur.', '09:03', '2 avril'),
-    (false, 'Tu me manques. C\'est ridicule non ? On s\'est jamais vus et tu me manques ❤️', '22:51', '19 avril'),
+    (false, "Tu me manques. C'est ridicule non ? On s'est jamais vus et tu me manques ❤️", '22:51', '19 avril'),
     (true, 'Mon amour, la connexion satellite du navire est suspendue. 300 euros pour la rétablir. Sans cela nous ne pouvons plus parler… Je rembourse à Marseille, promis de mon cœur.', '11:20', '6 mai'),
-    (true, 'Un colis pour toi est bloqué en douane ma reine. 800 euros de frais. C\'est mon cadeau pour toi, j\'ai honte de demander.', '14:47', '11 juin'),
+    (true, "Un colis pour toi est bloqué en douane ma reine. 800 euros de frais. C'est mon cadeau pour toi, j'ai honte de demander.", '14:47', '11 juin'),
     (true, 'Bonne nuit, chère Monique.', '21:58', '28 juin'),
     (true, 'Pardon ma chérie !! Je pensais à ma tante Monique, je suis fatigué ce soir. Bonne nuit mon trésor ❤️', '21:59', null),
-    (true, 'Ma solde est bloquée par la compagnie. Il faut payer la caution de débarquement : 3000 euros. Sinon pas de Marseille le 28… Voici le compte de l\'agent maritime : FR76 XXXX (M. OKAFOR AGENT MARITIME).', '10:31', '16 juillet'),
-    (true, 'N\'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges comme je t\'ai dit ❤️', '17:41', 'aujourd\'hui'),
+    (true, "Ma solde est bloquée par la compagnie. Il faut payer la caution de débarquement : 3000 euros. Sinon pas de Marseille le 28… Voici le compte de l'agent maritime : FR76 XXXX (M. OKAFOR AGENT MARITIME).", '10:31', '16 juillet'),
+    (true, "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges comme je t'ai dit ❤️", '17:41', "aujourd'hui"),
   ];
 
   @override
@@ -704,139 +767,146 @@ class ConversationMarc extends StatelessWidget {
     return Scaffold(
         backgroundColor: waFond,
         body: SafeArea(
+            bottom: false,
             child: Column(children: [
-          const SizedBox(height: 8),
-          const BarreStatut(),
-          Container(
-              color: waPanneau,
-              padding: const EdgeInsets.fromLTRB(4, 8, 14, 10),
-              child: Row(children: [
-                IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back, color: waTexte2, size: 24)),
-                const CircleAvatar(
-                    radius: 19,
-                    backgroundColor: Color(0xFF5B7C99),
-                    child: Text('M',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600))),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('Marc ❤️',
-                      style: GoogleFonts.inter(
-                          color: waTexte, fontSize: 16.5, fontWeight: FontWeight.w600)),
-                  Text('en ligne',
-                      style: GoogleFonts.inter(color: waTexte2, fontSize: 12.5)),
-                ])),
-                const Icon(Icons.videocam_outlined, color: waTexte2, size: 24),
-                const SizedBox(width: 20),
-                const Icon(Icons.call_outlined, color: waTexte2, size: 22),
-                const SizedBox(width: 20),
-                const Icon(Icons.more_vert, color: waTexte2, size: 22),
-              ])),
-          Expanded(
-              child: Container(
-                  color: const Color(0xFF0B141A),
-                  child: ListView(
-                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
-                      children: [
-                        for (final m in _messages) ...[
-                          if (m.$4 != null)
-                            Center(
-                                child: Container(
-                                    margin: const EdgeInsets.only(top: 12, bottom: 8),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 13, vertical: 5),
+              const SizedBox(height: 8),
+              const BarreStatut(),
+              // ——— Header iOS : chevron vert, avatar, nom, appels
+              Container(
+                  color: const Color(0xFF161B20),
+                  padding: const EdgeInsets.fromLTRB(2, 6, 14, 8),
+                  child: Row(children: [
+                    GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 6),
+                            child:
+                                Icon(Icons.arrow_back_ios_new, color: waVert, size: 22))),
+                    const CircleAvatar(
+                        radius: 18,
+                        backgroundColor: Color(0xFF5B7C99),
+                        child: Text('M',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600))),
+                    const SizedBox(width: 9),
+                    const Expanded(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          Text('Marc ❤️',
+                              style: TextStyle(
+                                  color: waTexte,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600)),
+                          Text('en ligne',
+                              style: TextStyle(color: waTexte2, fontSize: 12.5)),
+                        ])),
+                    const Icon(Icons.videocam_outlined, color: waVert, size: 26),
+                    const SizedBox(width: 22),
+                    const Icon(Icons.call_outlined, color: waVert, size: 22),
+                  ])),
+              Expanded(
+                  child: Container(
+                      color: const Color(0xFF0B141A),
+                      child: ListView(
+                          padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
+                          children: [
+                            for (final m in _messages) ...[
+                              if (m.$4 != null)
+                                Center(
+                                    child: Container(
+                                        margin:
+                                            const EdgeInsets.only(top: 12, bottom: 8),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 13, vertical: 5),
+                                        decoration: BoxDecoration(
+                                            color: const Color(0xFF182229),
+                                            borderRadius: BorderRadius.circular(9)),
+                                        child: Text(m.$4!,
+                                            style: const TextStyle(
+                                                color: waTexte2, fontSize: 12.5)))),
+                              Align(
+                                  alignment: m.$1
+                                      ? Alignment.centerLeft
+                                      : Alignment.centerRight,
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 4),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(11, 7, 11, 7),
+                                    constraints: BoxConstraints(
+                                        maxWidth:
+                                            MediaQuery.of(context).size.width * .75),
                                     decoration: BoxDecoration(
-                                        color: const Color(0xFF182229),
-                                        borderRadius: BorderRadius.circular(9)),
-                                    child: Text(m.$4!,
-                                        style: GoogleFonts.inter(
-                                            color: waTexte2, fontSize: 12)))),
-                          Align(
-                              alignment:
-                                  m.$1 ? Alignment.centerLeft : Alignment.centerRight,
-                              child: Container(
-                                margin: const EdgeInsets.only(bottom: 3),
-                                padding: const EdgeInsets.fromLTRB(9, 6.5, 9, 6),
-                                constraints: BoxConstraints(
-                                    maxWidth:
-                                        MediaQuery.of(context).size.width * .78),
-                                decoration: BoxDecoration(
-                                    color: m.$1 ? waBulleRecu : waBulleEnvoi,
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(m.$1 ? 2 : 10),
-                                        topRight: Radius.circular(m.$1 ? 10 : 2),
-                                        bottomLeft: const Radius.circular(10),
-                                        bottomRight: const Radius.circular(10)),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 1.5,
-                                          offset: Offset(0, 1))
-                                    ]),
-                                child: Wrap(
-                                    alignment: WrapAlignment.end,
-                                    crossAxisAlignment: WrapCrossAlignment.end,
-                                    children: [
-                                      Text(m.$2,
-                                          style: GoogleFonts.inter(
-                                              color: waTexte,
-                                              fontSize: 14.5,
-                                              height: 1.38)),
-                                      Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 9, top: 6),
-                                          child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(m.$3,
-                                                    style: GoogleFonts.inter(
-                                                        color: waTexte.withValues(
-                                                            alpha: .5),
-                                                        fontSize: 10.5)),
-                                                if (!m.$1) ...[
-                                                  const SizedBox(width: 3),
-                                                  const Icon(Icons.done_all,
-                                                      color: cocheBleue, size: 15),
-                                                ],
-                                              ])),
-                                    ]),
-                              )),
-                        ],
-                        const SizedBox(height: 6),
-                      ]))),
-          Container(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-              child: Row(children: [
-                Expanded(
-                    child: Container(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-                        decoration: BoxDecoration(
-                            color: waPanneau, borderRadius: BorderRadius.circular(24)),
-                        child: Row(children: [
-                          const Icon(Icons.emoji_emotions_outlined,
-                              color: waTexte2, size: 22),
-                          const SizedBox(width: 12),
-                          Text('Message',
-                              style: GoogleFonts.inter(color: waTexte2, fontSize: 14.5)),
-                          const Spacer(),
-                          const Icon(Icons.attach_file, color: waTexte2, size: 20),
-                          const SizedBox(width: 14),
-                          const Icon(Icons.camera_alt_outlined, color: waTexte2, size: 20),
-                        ]))),
-                const SizedBox(width: 9),
-                Container(
-                    width: 48,
-                    height: 48,
-                    decoration:
-                        const BoxDecoration(color: waAccent, shape: BoxShape.circle),
-                    child: const Icon(Icons.mic, color: Color(0xFF0B141A), size: 22)),
-              ])),
-        ])));
+                                        color: m.$1 ? waBulleRecu : waBulleEnvoi,
+                                        // iOS : bulles bien arrondies (16), pas les 8-10 d'Android
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(m.$1 ? 5 : 16),
+                                            topRight: Radius.circular(m.$1 ? 16 : 5),
+                                            bottomLeft: const Radius.circular(16),
+                                            bottomRight: const Radius.circular(16))),
+                                    child: Wrap(
+                                        alignment: WrapAlignment.end,
+                                        crossAxisAlignment: WrapCrossAlignment.end,
+                                        children: [
+                                          // iOS : corps de texte ~17, pas 14.5
+                                          Text(m.$2,
+                                              style: const TextStyle(
+                                                  color: waTexte,
+                                                  fontSize: 16.5,
+                                                  height: 1.3)),
+                                          Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8, top: 7),
+                                              child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Text(m.$3,
+                                                        style: TextStyle(
+                                                            color: waTexte
+                                                                .withValues(alpha: .5),
+                                                            fontSize: 11)),
+                                                    if (!m.$1) ...[
+                                                      const SizedBox(width: 3),
+                                                      const Icon(Icons.done_all,
+                                                          color: cocheBleue, size: 16),
+                                                    ],
+                                                  ])),
+                                        ]),
+                                  )),
+                            ],
+                            const SizedBox(height: 6),
+                          ]))),
+              // ——— Saisie iOS : « + », champ avec autocollant, caméra, micro (pas de rond vert Android)
+              Container(
+                  color: const Color(0xFF161B20),
+                  padding: const EdgeInsets.fromLTRB(10, 7, 12, 8),
+                  child: Row(children: [
+                    const Icon(Icons.add, color: waVert, size: 28),
+                    const SizedBox(width: 8),
+                    Expanded(
+                        child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                                color: const Color(0xFF1C242B),
+                                borderRadius: BorderRadius.circular(19),
+                                border: Border.all(
+                                    color: const Color(0xFF2A3238), width: .5)),
+                            child: const Row(children: [
+                              Spacer(),
+                              Icon(Icons.sticky_note_2_outlined,
+                                  color: waTexte2, size: 20),
+                            ]))),
+                    const SizedBox(width: 12),
+                    const Icon(Icons.camera_alt_outlined, color: waVert, size: 24),
+                    const SizedBox(width: 16),
+                    const Icon(Icons.mic_none, color: waVert, size: 24),
+                  ])),
+              const SizedBox(height: 2),
+              const BarreHome(),
+              const SizedBox(height: 8),
+            ])));
   }
 }

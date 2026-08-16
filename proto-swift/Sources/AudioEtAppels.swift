@@ -15,7 +15,9 @@ final class LecteurAudio: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func bascule(_ fichier: String) {
         if fichierActif == fichier { arret(); return }
         arret()
-        guard let url = Bundle.main.url(forResource: fichier, withExtension: "mp3") else { return }
+        let url = Bundle.main.url(forResource: fichier, withExtension: "mp3")
+            ?? Bundle.main.url(forResource: fichier, withExtension: "mp3", subdirectory: "Ressources")
+        guard let url else { return }
         try? AVAudioSession.sharedInstance().setCategory(.playback)
         try? AVAudioSession.sharedInstance().setActive(true)
         lecteur = try? AVAudioPlayer(contentsOf: url)
@@ -105,14 +107,21 @@ struct BulleVocaleAudio: View {
 }
 
 // ============================================================ ÉCRAN D'APPEL AUDIO (écoutable)
+// Deux modes (règle utilisateur du 16/08) : soit l'appel fait partie de l'histoire et il connecte
+// (mode .histoire, voix + transcription), soit il sonne dans le vide (mode .sansReponse — défaut).
+enum ModeAppel {
+    case sansReponse
+    case histoire(fichier: String, transcription: String)
+}
+
 struct AppelVue: View {
     @Environment(\.dismiss) private var dismiss
     let nom: String
-    let fichier: String
-    let transcription: String
+    var mode: ModeAppel = .sansReponse
     @ObservedObject private var lecteur = LecteurAudio.partage
     @State private var secondes = 0
     @State private var transcriptionVisible = true
+    @State private var statut = "appel…"
     private let tic = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -125,12 +134,12 @@ struct AppelVue: View {
                     .padding(.top, 18)
                 AvatarSilhouette(taille: 110, image: nom == "Marc ❤️" ? "AvatarMarc" : nil).padding(.top, 30)
                 Text(nom).font(.system(size: 28, weight: .semibold)).foregroundStyle(waTexte).padding(.top, 14)
-                Text(String(format: "%d:%02d", secondes / 60, secondes % 60))
+                Text(statut)
                     .font(.system(size: 16)).foregroundStyle(waTexte2).padding(.top, 4)
 
                 Spacer()
 
-                if transcriptionVisible {
+                if case .histoire(_, let transcription) = mode, transcriptionVisible, secondes > 0 {
                     Text(transcription)
                         .font(.system(size: 15)).italic()
                         .foregroundStyle(waTexte.opacity(0.75))
@@ -144,13 +153,14 @@ struct AppelVue: View {
 
                 HStack(spacing: 26) {
                     RondAppel(symbole: "speaker.wave.2.fill", actif: true)
-                    RondAppel(symbole: "video.slash.fill")
                     RondAppel(symbole: "mic.slash.fill")
-                    Button {
-                        Haptique.leger()
-                        transcriptionVisible.toggle()
-                    } label: {
-                        RondAppel(symbole: "text.bubble.fill", actif: transcriptionVisible)
+                    if case .histoire = mode {
+                        Button {
+                            Haptique.leger()
+                            transcriptionVisible.toggle()
+                        } label: {
+                            RondAppel(symbole: "text.bubble.fill", actif: transcriptionVisible)
+                        }
                     }
                     Button {
                         lecteur.arret()
@@ -164,9 +174,25 @@ struct AppelVue: View {
                 .padding(.bottom, 40)
             }
         }
-        .onAppear { lecteur.bascule(fichier) }
+        .onAppear {
+            if case .histoire(let fichier, _) = mode {
+                statut = "0:00"
+                lecteur.bascule(fichier)
+            }
+        }
         .onDisappear { lecteur.arret() }
-        .onReceive(tic) { _ in secondes += 1 }
+        .onReceive(tic) { _ in
+            secondes += 1
+            switch mode {
+            case .histoire:
+                statut = String(format: "%d:%02d", secondes / 60, secondes % 60)
+            case .sansReponse:
+                // Sonne ~8 s, puis ne répond pas, puis raccroche tout seul
+                if secondes >= 11 { dismiss() }
+                else if secondes >= 8 { statut = "Ne répond pas" }
+                else { statut = "appel…" }
+            }
+        }
     }
 }
 
@@ -188,13 +214,52 @@ enum Haptique {
     }
 }
 
-// ============================================================ SOUS-RÉGLAGE GÉNÉRIQUE (D51-1)
-// Chaque ligne de réglages ouvre un écran plausible : rien n'est un bouton mort.
+// ============================================================ SOUS-RÉGLAGES RÉELS (règle 16/08)
+// Chaque écran connu a son VRAI contenu ; les autres : un chargement qui échoue, comme une vraie app.
+enum LigneReglage {
+    case interrupteur(String, Bool)
+    case valeur(String, String)
+    case navigation(String)
+    case destructif(String)
+}
+
+enum ContenuReglages {
+    static let ecrans: [String: [LigneReglage]] = [
+        "Notifications": [.interrupteur("Afficher les notifications", true),
+                          .valeur("Son", "Note"),
+                          .interrupteur("Pastilles", true),
+                          .interrupteur("Notifications groupées", false)],
+        "Compte": [.valeur("Adresse e-mail", "sar•••@icloud.com"),
+                   .navigation("Changer de numéro"),
+                   .navigation("Demander les infos de mon compte"),
+                   .destructif("Supprimer le compte")],
+        "Confidentialité": [.valeur("Dernière connexion", "Tout le monde"),
+                            .valeur("Photo de profil", "Mes contacts"),
+                            .interrupteur("Confirmations de lecture", true),
+                            .navigation("Contacts bloqués")],
+        "Apparence": [.valeur("Thème", "Sombre"),
+                      .navigation("Fond d'écran par défaut"),
+                      .valeur("Taille du texte", "Standard")],
+        "Discussions": [.valeur("Sauvegarde", "iCloud · hier à 03:12"),
+                        .interrupteur("Enregistrer dans Photos", false),
+                        .navigation("Exporter l'historique")],
+        "Stockage et données": [.valeur("Utilisation du réseau", "1,2 Go envoyés"),
+                                .valeur("Téléchargement auto", "Wi-Fi"),
+                                .valeur("Gérer le stockage", "5,7 Mo")],
+        "Aide": [.navigation("Centre d'aide"),
+                 .navigation("Nous contacter"),
+                 .navigation("Conditions et confidentialité")],
+        "Thème de la discussion": [.valeur("Thème", "Par défaut"),
+                                   .navigation("Choisir un fond d'écran")],
+        "Messages éphémères": [.valeur("Durée", "Désactivés")],
+    ]
+}
+
 struct SousReglageVue: View {
     @Environment(\.dismiss) private var dismiss
     let titre: String
-    @State private var interrupteur1 = true
-    @State private var interrupteur2 = false
+    @State private var etats: [Int: Bool] = [:]
+    @State private var chargementEchoue = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -209,36 +274,82 @@ struct SousReglageVue: View {
             }
             .padding(.horizontal, 16).padding(.vertical, 10)
 
-            ScrollView {
-                VStack(spacing: 0) {
+            if let lignes = ContenuReglages.ecrans[titre] {
+                ScrollView {
                     VStack(spacing: 0) {
-                        HStack {
-                            Text("Activé").font(.system(size: 17)).foregroundStyle(waTexte)
-                            Spacer()
-                            Toggle("", isOn: $interrupteur1).labelsHidden().tint(waVertVif)
+                        ForEach(0..<lignes.count, id: \.self) { i in
+                            ligneVue(lignes[i], index: i)
+                            if i < lignes.count - 1 {
+                                Divider().background(Color(hex: 0x2A2A2A)).padding(.leading, 16)
+                            }
                         }
-                        .padding(.horizontal, 16).padding(.vertical, 11)
-                        Divider().background(Color(hex: 0x2A2A2A)).padding(.leading, 16)
-                        HStack {
-                            Text("Aperçus").font(.system(size: 17)).foregroundStyle(waTexte)
-                            Spacer()
-                            Toggle("", isOn: $interrupteur2).labelsHidden().tint(waVertVif)
-                        }
-                        .padding(.horizontal, 16).padding(.vertical, 11)
                     }
                     .background(Color(hex: 0x161717), in: RoundedRectangle(cornerRadius: 14))
                     .padding(.horizontal, 16).padding(.top, 14)
-
-                    Text("Ces réglages s'appliquent à \(titre.lowercased()).")
-                        .font(.system(size: 13)).foregroundStyle(waTexte2)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 30).padding(.top, 8)
-                    Spacer(minLength: 60)
                 }
+            } else if chargementEchoue {
+                Spacer()
+                Image(systemName: "wifi.exclamationmark").font(.system(size: 34)).foregroundStyle(waTexte2)
+                Text(ErreurLambda.message(titre.count))
+                    .font(.system(size: 15)).foregroundStyle(waTexte2)
+                    .multilineTextAlignment(.center).padding(.horizontal, 40).padding(.top, 10)
+                Button("Réessayer") {
+                    chargementEchoue = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) { chargementEchoue = true }
+                }
+                .font(.system(size: 16, weight: .semibold)).foregroundStyle(waVertDoux).padding(.top, 14)
+                Spacer()
+            } else {
+                Spacer()
+                ProgressView().tint(waTexte2).scaleEffect(1.3)
+                Spacer()
             }
         }
         .background(waNoir.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
+        .onAppear {
+            if ContenuReglages.ecrans[titre] == nil {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) { chargementEchoue = true }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func ligneVue(_ l: LigneReglage, index: Int) -> some View {
+        switch l {
+        case .interrupteur(let nom, let defaut):
+            HStack {
+                Text(nom).font(.system(size: 17)).foregroundStyle(waTexte)
+                Spacer()
+                Toggle("", isOn: Binding(
+                    get: { etats[index] ?? defaut },
+                    set: { etats[index] = $0 })).labelsHidden().tint(waVertVif)
+            }
+            .padding(.horizontal, 16).padding(.vertical, 11)
+        case .valeur(let nom, let valeur):
+            HStack {
+                Text(nom).font(.system(size: 17)).foregroundStyle(waTexte)
+                Spacer()
+                Text(valeur).font(.system(size: 16)).foregroundStyle(waTexte2)
+                Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundStyle(waTexte2)
+            }
+            .padding(.horizontal, 16).padding(.vertical, 12)
+        case .navigation(let nom):
+            NavigationLink(destination: SousReglageVue(titre: nom)) {
+                HStack {
+                    Text(nom).font(.system(size: 17)).foregroundStyle(waTexte)
+                    Spacer()
+                    Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundStyle(waTexte2)
+                }
+                .padding(.horizontal, 16).padding(.vertical, 12)
+            }
+        case .destructif(let nom):
+            HStack {
+                Text(nom).font(.system(size: 17)).foregroundStyle(Color(hex: 0xF25B5B))
+                Spacer()
+            }
+            .padding(.horizontal, 16).padding(.vertical, 12)
+        }
     }
 }
 

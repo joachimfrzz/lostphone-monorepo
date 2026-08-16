@@ -15,7 +15,6 @@ targets:
       - Sources
       - Assets.xcassets
       - path: Ressources
-        type: folder
         buildPhase: resources
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.lostphone.game

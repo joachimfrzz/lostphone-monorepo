@@ -187,9 +187,10 @@ struct AppelVue: View {
             case .histoire:
                 statut = String(format: "%d:%02d", secondes / 60, secondes % 60)
             case .sansReponse:
-                // Sonne ~8 s, puis ne répond pas, puis raccroche tout seul
+                // Wording WhatsApp réel : appel… → sonnerie… → Indisponible → raccroche
                 if secondes >= 11 { dismiss() }
-                else if secondes >= 8 { statut = "Ne répond pas" }
+                else if secondes >= 8 { statut = "Indisponible" }
+                else if secondes >= 2 { statut = "sonnerie…" }
                 else { statut = "appel…" }
             }
         }
@@ -221,6 +222,18 @@ enum LigneReglage {
     case valeur(String, String)
     case navigation(String)
     case destructif(String)
+}
+
+// États vides RÉELS (comme le vrai WhatsApp) pour les écrans sans contenu
+enum EcranVide {
+    static let messages: [String: String] = [
+        "Important": "Aucun message important",
+        "Listes": "Créez des listes pour organiser vos discussions",
+        "Messages de diffusion": "Aucune liste de diffusion",
+        "Contacts bloqués": "Aucun contact bloqué",
+        "Appareils connectés": "Utilisez WhatsApp sur d'autres appareils",
+        "Exporter l'historique": "Choisissez une discussion à exporter",
+    ]
 }
 
 enum ContenuReglages {
@@ -259,7 +272,6 @@ struct SousReglageVue: View {
     @Environment(\.dismiss) private var dismiss
     let titre: String
     @State private var etats: [Int: Bool] = [:]
-    @State private var chargementEchoue = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -287,31 +299,28 @@ struct SousReglageVue: View {
                     .background(Color(hex: 0x161717), in: RoundedRectangle(cornerRadius: 14))
                     .padding(.horizontal, 16).padding(.top, 14)
                 }
-            } else if chargementEchoue {
+            } else if let vide = EcranVide.messages[titre] {
+                // État vide réel, sobre — comme le vrai
                 Spacer()
-                Image(systemName: "wifi.exclamationmark").font(.system(size: 34)).foregroundStyle(waTexte2)
-                Text(ErreurLambda.message(titre.count))
-                    .font(.system(size: 15)).foregroundStyle(waTexte2)
-                    .multilineTextAlignment(.center).padding(.horizontal, 40).padding(.top, 10)
-                Button("Réessayer") {
-                    chargementEchoue = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) { chargementEchoue = true }
+                Text(vide).font(.system(size: 15)).foregroundStyle(waTexte2)
+                    .multilineTextAlignment(.center).padding(.horizontal, 40)
+                if titre == "Appareils connectés" {
+                    Text("Associer un appareil").font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(Color(hex: 0x062E1C))
+                        .padding(.horizontal, 22).padding(.vertical, 12)
+                        .background(waVertVif, in: Capsule())
+                        .padding(.top, 18)
                 }
-                .font(.system(size: 16, weight: .semibold)).foregroundStyle(waVertDoux).padding(.top, 14)
                 Spacer()
             } else {
+                // Chargement discret qui n'aboutit pas (comportement d'app réel, sans drame)
                 Spacer()
-                ProgressView().tint(waTexte2).scaleEffect(1.3)
+                ProgressView().tint(waTexte2).scaleEffect(1.2)
                 Spacer()
             }
         }
         .background(waNoir.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
-        .onAppear {
-            if ContenuReglages.ecrans[titre] == nil {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) { chargementEchoue = true }
-            }
-        }
     }
 
     @ViewBuilder
@@ -357,12 +366,9 @@ struct SousReglageVue: View {
 // Jamais deux fois la même : le message dépend du contexte (graine déterministe).
 enum ErreurLambda {
     private static let messages = [
-        "Impossible de charger le contenu. Réessayez plus tard.",
-        "Cette fonctionnalité nécessite une connexion Internet.",
-        "Une erreur s'est produite. Réessayez. (WA-2201)",
-        "Service momentanément indisponible.",
-        "Le chargement a expiré. Vérifiez votre connexion.",
-        "Action impossible pour le moment.",
+        "Une erreur s'est produite. Réessayez plus tard.",
+        "Réessayez plus tard.",
+        "Aucune connexion Internet.",
     ]
     static func message(_ graine: Int) -> String {
         messages[abs(graine) % messages.count]

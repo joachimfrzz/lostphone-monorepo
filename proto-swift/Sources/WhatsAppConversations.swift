@@ -9,6 +9,7 @@ enum ElementConv {
     case jour(String)
     case systeme(String)
     case msg(Bool, String, String)
+    case msgGroupe(String, UInt, String, String) // expéditeur, couleur, texte, heure
     case riche(Bool, String, String, String?, String?, String?)
     case vocal(Bool, String, String)
     case vocalAudio(Bool, String, String, String, String) // recu, durée, heure, fichier, transcription
@@ -41,10 +42,12 @@ enum DonneesWA {
         "Thomas": FicheContact(nom: "Thomas", sousTitre: "vu aujourd'hui à 15:12", numero: "+33 6 51 33 90 12"),
         "Maman": FicheContact(nom: "Maman", sousTitre: "vu aujourd'hui à 12:04", numero: "+33 6 88 41 27 30"),
         "Marie kiné": FicheContact(nom: "Marie kiné", sousTitre: "vu hier à 18:40", numero: "+33 6 02 55 18 64"),
+        "Les filles 💃": FicheContact(nom: "Les filles 💃", sousTitre: "Chloé, Julie, Vous", numero: "Groupe · 3 membres"),
     ]
 
     static func conversation(_ nom: String) -> [ElementConv] {
         switch nom {
+        case "Les filles 💃": return filles
         case "Marc ❤️": return marc
         case "Chloé": return chloe
         case "Thomas": return thomas
@@ -86,6 +89,21 @@ enum DonneesWA {
                "Marc ❤️", "Ma solde est bloquée par la compagnie. Il faut payer la caution de débarquement : 3000 euros…", nil),
         .jour("aujourd'hui"),
         .msg(true, "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges comme je t'ai dit ❤️", "17:41"),
+    ]
+
+    // ——— Le groupe (noms colorés par membre, comme le vrai)
+    static let filles: [ElementConv] = [
+        .systeme("Les messages et les appels sont chiffrés de bout en bout."),
+        .jour("mardi"),
+        .msgGroupe("Julie", 0x6EB1F7, "Brunch samedi ?? Le nouveau place Sathonay, il paraît que c'est incroyable", "12:41"),
+        .msgGroupe("Chloé", 0xE17BB2, "OUI. J'ai besoin de potins et de pancakes", "12:44"),
+        .msg(false, "Je peux pas avant 13h, j'ai un truc le matin 🙈", "13:02"),
+        .msgGroupe("Chloé", 0xE17BB2, "Un « truc ». Bien mystérieuse la meuf depuis des mois 👀", "13:04"),
+        .msgGroupe("Julie", 0x6EB1F7, "C'est quand que tu nous le présentes ton marin là ?? 😏⚓️", "13:05"),
+        .msg(false, "Bientôt ! Il arrive le 28 😍", "13:11"),
+        .msgGroupe("Julie", 0x6EB1F7, "ENFIN. Bon 13h alors, je réserve", "13:12"),
+        .jour("aujourd'hui"),
+        .msgGroupe("Chloé", 0xE17BB2, "Julie appelle-moi stp", "19:40"),
     ]
 
     // ——— La meilleure amie qui s'inquiète (porteuse du joueur)
@@ -160,6 +178,15 @@ enum DonneesWA {
     ]
 }
 
+// ============================================================ MESSAGES ENVOYÉS (persistants)
+final class EnvoisJoueur: ObservableObject {
+    static let partage = EnvoisJoueur()
+    @Published var parContact: [String: [ElementConv]] = [:]
+    func ajouter(_ contact: String, _ element: ElementConv) {
+        parContact[contact, default: []].append(element)
+    }
+}
+
 // ============================================================ VUE GÉNÉRIQUE
 struct ConversationVue: View {
     @Environment(\.dismiss) private var dismiss
@@ -170,7 +197,8 @@ struct ConversationVue: View {
 
     init(nomContact: String) {
         self.nomContact = nomContact
-        _elements = State(initialValue: DonneesWA.conversation(nomContact))
+        _elements = State(initialValue: DonneesWA.conversation(nomContact)
+                          + (EnvoisJoueur.partage.parContact[nomContact] ?? []))
     }
 
     private var fiche: FicheContact {
@@ -251,8 +279,8 @@ struct ConversationVue: View {
         .background(waNoir)
         .toolbar(.hidden, for: .navigationBar)
         .fullScreenCover(isPresented: $appelVisible) {
-            AppelVue(nom: "Marc ❤️", fichier: "appel-marc",
-                     transcription: "Allô ? Sarah ? Tu m'entends mon amour ?… La connexion est très mauvaise ici, je t'appelle depuis le pont… Tu me manques tellement. Plus que quelques jours mon trésor… Je te rappelle plus tard, d'accord ? Je t'aime.")
+            // Règle 16/08 : soit l'appel fait partie de l'histoire, soit personne ne décroche.
+            AppelVue(nom: nomContact)
         }
     }
 
@@ -261,8 +289,10 @@ struct ConversationVue: View {
         guard !t.isEmpty else { return }
         let df = DateFormatter()
         df.dateFormat = "HH:mm"
+        let element = ElementConv.msg(false, t, df.string(from: Date()))
+        EnvoisJoueur.partage.ajouter(nomContact, element)
         withAnimation(.spring(duration: 0.3)) {
-            elements.append(.msg(false, t, df.string(from: Date())))
+            elements.append(element)
         }
         saisie = ""
     }
@@ -279,6 +309,23 @@ struct ConversationVue: View {
         case .systeme(let t): MessageSysteme(texte: t)
         case .msg(let r, let t, let h):
             Bulle(recu: r, texte: t, heure: h).contextMenu { menuMessage }
+        case .msgGroupe(let exp, let coul, let t, let h):
+            EnveloppeBulle(recu: true) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(exp).font(.system(size: 13.5, weight: .semibold))
+                        .foregroundStyle(Color(hex: coul))
+                    HStack(alignment: .bottom, spacing: 8) {
+                        Text(t).font(.system(size: 17)).foregroundStyle(waTexte)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text(h).font(.system(size: 11.5)).foregroundStyle(waTexte.opacity(0.55))
+                    }
+                }
+                .padding(.horizontal, 10).padding(.vertical, 7)
+                .background(waBulleRecu)
+                .clipShape(.rect(topLeadingRadius: 5, bottomLeadingRadius: 18,
+                                 bottomTrailingRadius: 18, topTrailingRadius: 18))
+            }
+            .contextMenu { menuMessage }
         case .riche(let r, let t, let h, let cn, let ct, let re):
             BulleRiche(recu: r, texte: t, heure: h, citationNom: cn, citationTexte: ct, reaction: re)
                 .contextMenu { menuMessage }
@@ -288,9 +335,7 @@ struct ConversationVue: View {
         case .appel(let r, let s, let t, let st, let h, let rouge):
             BulleAppel(recu: r, symbole: s, titre: t, sousTitre: st, heure: h, rouge: rouge)
                 .contentShape(Rectangle())
-                .onTapGesture {
-                    if nomContact == "Marc ❤️" { appelVisible = true }
-                }
+                .onTapGesture { appelVisible = true }
         case .image(let r, let h): BulleImage(recu: r, heure: h).contextMenu { menuMessage }
         case .album(let r, let n, let h): BulleAlbum(recu: r, total: n, heure: h)
         case .video(let r, let d, let h): BulleVideo(recu: r, duree: d, heure: h)

@@ -311,9 +311,9 @@ struct WhatsAppListeView: View {
                 waNoir.ignoresSafeArea()
                 Group {
                     switch onglet {
-                    case 0: PlaceholderOnglet(titre: "Actus", message: "Aucune actu récente")
+                    case 0: ActusVue()
                     case 1: AppelsVue()
-                    case 2: PlaceholderOnglet(titre: "Communautés", message: "Restez en contact avec une communauté")
+                    case 2: CommunautesVue()
                     case 4: VousVue()
                     default: discussions
                     }
@@ -413,17 +413,17 @@ struct WhatsAppListeView: View {
             } else {
                 List {
                     ForEach(convsFiltrees, id: \.0) { c in
-                        Group {
-                            if c.0 == "Marc ❤️" {
-                                NavigationLink(destination: ConversationMarcView()) { LigneConv(c: c) }
-                            } else if c.0 == "Thomas" {
-                                NavigationLink(destination: ConversationThomasView()) { LigneConv(c: c) }
-                            } else {
-                                LigneConv(c: c)
-                            }
-                        }
+                        NavigationLink(destination: ConversationVue(nomContact: c.0)) { LigneConv(c: c) }
                         .listRowBackground(waNoir)
                         .listRowSeparatorTint(Color(hex: 0x222222))
+                        // D51-1 : balayages natifs (réponse plausible, logique moteur plus tard)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button { } label: { Label("Archiver", systemImage: "archivebox.fill") }.tint(Color(hex: 0x25303A))
+                            Button { } label: { Label("Plus", systemImage: "ellipsis") }.tint(Color(hex: 0x3A3A3C))
+                        }
+                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                            Button { } label: { Label("Non lu", systemImage: "message.badge.filled.fill") }.tint(Color(hex: 0x1D6F4C))
+                        }
                     }
                 }
                 .listStyle(.plain)
@@ -563,129 +563,6 @@ struct LigneConv: View {
             }
         }
         .padding(.vertical, 5)
-    }
-}
-
-// ————— Conversation « Marc ❤️ » — Coches bleues, composants riches (itération 4) —————
-enum ElementConv {
-    case jour(String)
-    case msg(Bool, String, String)
-    case riche(Bool, String, String, String?, String?, String?)
-    case vocal(Bool, String, String)
-    case appel(Bool, String, String, String?, String, Bool)
-}
-
-struct ConversationMarcView: View {
-    @Environment(\.dismiss) private var dismiss
-
-    private static let elements: [ElementConv] = [
-        .jour("14 mars"),
-        .msg(true, "Bonjour Sarah ❤️ Je suis très heureux de ton message. Comment se passe ta journée à toi ?", "10:12"),
-        .msg(false, "Bien ! C'est bizarre, j'ai l'impression qu'on se connaît depuis longtemps. Bref 😊 Tu es où là, en mer ?", "12:40"),
-        .jour("2 avril"),
-        .riche(true, "Ma chérie ❤️🌹🌹 Cette nuit j'ai pensé à notre maison près de Cassis. Tu es la reine de mon cœur.", "09:03", nil, nil, "❤️"),
-        .jour("19 avril"),
-        .msg(false, "Tu me manques. C'est ridicule non ? On s'est jamais vus et tu me manques ❤️", "22:51"),
-        .jour("6 mai"),
-        .appel(true, "video.slash.fill", "Appel vidéo manqué", "Appuyez pour rappeler", "09:47", true),
-        .msg(true, "Mon amour, la connexion satellite du navire est suspendue. 300 euros pour la rétablir. Sans cela nous ne pouvons plus parler… Je rembourse à Marseille, promis de mon cœur.", "11:20"),
-        .jour("11 juin"),
-        .msg(true, "Un colis pour toi est bloqué en douane ma reine. 800 euros de frais. C'est mon cadeau pour toi, j'ai honte de demander.", "14:47"),
-        .jour("28 juin"),
-        .msg(true, "Bonne nuit, chère Monique.", "21:58"),
-        .msg(true, "Pardon ma chérie !! Je pensais à ma tante Monique, je suis fatigué ce soir. Bonne nuit mon trésor ❤️", "21:59"),
-        .vocal(true, "0:47", "22:03"),
-        .jour("5 juillet"),
-        .appel(true, "video.fill", "Appel vidéo", "19 s", "20:31", false),
-        .msg(false, "C'était court 😢 Je t'ai à peine vu, ça coupait tout le temps", "20:34"),
-        .msg(true, "Le réseau du navire mon amour. Bientôt tu me verras en vrai, plus d'écran entre nous ❤️", "20:41"),
-        .jour("16 juillet"),
-        .msg(true, "Ma solde est bloquée par la compagnie. Il faut payer la caution de débarquement : 3000 euros. Sinon pas de Marseille le 28… Voici le compte de l'agent maritime : FR76 XXXX (M. OKAFOR AGENT MARITIME).", "10:31"),
-        .riche(false, "D'accord mon amour. J'ai rendez-vous à la banque lundi à 11h30, tout sera réglé ❤️", "11:02",
-               "Marc ❤️", "Ma solde est bloquée par la compagnie. Il faut payer la caution de débarquement : 3000 euros…", nil),
-        .jour("aujourd'hui"),
-        .msg(true, "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges comme je t'ai dit ❤️", "17:41"),
-    ]
-
-    var body: some View {
-        VStack(spacing: 0) {
-            // ——— Header : chevron, avatar + nom (tap → Infos du contact), pilule appels
-            HStack(spacing: 9) {
-                Button { dismiss() } label: {
-                    HStack(spacing: 3) {
-                        Image(systemName: "chevron.left").font(.system(size: 22, weight: .semibold))
-                        Text("3").font(.system(size: 15))
-                    }
-                    .foregroundStyle(waTexte)
-                }
-                .padding(.leading, 8)
-                NavigationLink(destination: InfosContactVue()) {
-                    HStack(spacing: 9) {
-                        AvatarSilhouette(taille: 38)
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text("Marc ❤️").font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)
-                            Text("en ligne aujourd'hui à 17:41").font(.system(size: 12.5)).foregroundStyle(waTexte2)
-                        }
-                    }
-                }
-                Spacer()
-                HStack(spacing: 22) {
-                    Image(systemName: "video").font(.system(size: 19))
-                    Image(systemName: "phone").font(.system(size: 17))
-                }
-                .foregroundStyle(waTexte)
-                .padding(.horizontal, 18).padding(.vertical, 10)
-                .background(Color(hex: 0x1C201E), in: Capsule())
-            }
-            .padding(.horizontal, 8).padding(.vertical, 6)
-            .background(Color(hex: 0x111312))
-
-            // ——— Fil sur fond doodle
-            ScrollView {
-                LazyVStack(spacing: 4) {
-                    ForEach(0..<Self.elements.count, id: \.self) { i in
-                        switch Self.elements[i] {
-                        case .jour(let j):
-                            Text(j)
-                                .font(.system(size: 12.5)).foregroundStyle(waTexte2)
-                                .padding(.horizontal, 13).padding(.vertical, 5)
-                                .background(waCarte, in: RoundedRectangle(cornerRadius: 10))
-                                .padding(.top, 12).padding(.bottom, 8)
-                        case .msg(let recu, let texte, let heure):
-                            Bulle(recu: recu, texte: texte, heure: heure)
-                        case .riche(let recu, let texte, let heure, let cn, let ct, let re):
-                            BulleRiche(recu: recu, texte: texte, heure: heure,
-                                       citationNom: cn, citationTexte: ct, reaction: re)
-                        case .vocal(let recu, let duree, let heure):
-                            BulleVocale(recu: recu, duree: duree, heure: heure)
-                        case .appel(let recu, let sym, let titre, let st, let heure, let rouge):
-                            BulleAppel(recu: recu, symbole: sym, titre: titre,
-                                       sousTitre: st, heure: heure, rouge: rouge)
-                        }
-                    }
-                    Spacer(minLength: 6)
-                }
-                .padding(.horizontal, 12).padding(.vertical, 12)
-            }
-            .background(ZStack { waNoir; MotifDiscussion() })
-
-            // ——— Saisie iOS 26
-            HStack(spacing: 14) {
-                Image(systemName: "plus").font(.system(size: 24, weight: .regular)).foregroundStyle(waTexte)
-                HStack {
-                    Spacer()
-                    Image(systemName: "theatermask.and.paintbrush").font(.system(size: 17)).foregroundStyle(waTexte2)
-                }
-                .padding(.horizontal, 14).padding(.vertical, 10)
-                .background(waSaisie, in: Capsule())
-                Image(systemName: "camera").font(.system(size: 21)).foregroundStyle(waTexte)
-                Image(systemName: "mic").font(.system(size: 21)).foregroundStyle(waTexte)
-            }
-            .padding(.horizontal, 14).padding(.vertical, 8)
-            .background(waNoir)
-        }
-        .background(waNoir)
-        .toolbar(.hidden, for: .navigationBar)
     }
 }
 

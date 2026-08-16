@@ -279,15 +279,31 @@ let cocheBleue = Color(hex: 0x53BDEB)
 
 struct WhatsAppListeView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var onglet = 3  // 0 Actus, 1 Appels, 2 Communautés, 3 Discussions, 4 Vous
+    @State private var onglet = 3
+    @State private var filtre = 0          // 0 Toutes, 1 Non lues, 2 Favoris, 3 Groupes
+    @State private var recherche = ""
+    @State private var menuPlus = false
+    @State private var menuCamera = false
 
     private let convs: [(String, String, String, String?, Bool)] = [
         ("Marc ❤️", "17:41", "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges co…", "1", true),
         ("Chloé", "19:33", "📞 Appel vocal manqué", "2", true),
-        ("Thomas", "samedi", "🎤 0:42", nil, false),
+        ("Thomas", "samedi", "🤙 Trop fort ce sticker 😂", nil, false),
         ("Maman", "dimanche", "tu viens dimanche ??? bisous maman", nil, false),
         ("Marie kiné", "vendredi", "✓✓ ok pour l'échange de créneaux jeudi 👍", nil, false),
     ]
+
+    // D51-1 : les filtres et la recherche fonctionnent réellement
+    private var convsFiltrees: [(String, String, String, String?, Bool)] {
+        var r = convs
+        if filtre == 1 { r = r.filter { $0.4 } }
+        if filtre == 2 { r = r.filter { $0.0 == "Marc ❤️" || $0.0 == "Chloé" } }
+        if filtre == 3 { r = [] }
+        if !recherche.isEmpty {
+            r = r.filter { $0.0.localizedCaseInsensitiveContains(recherche) || $0.2.localizedCaseInsensitiveContains(recherche) }
+        }
+        return r
+    }
 
     var body: some View {
         NavigationStack {
@@ -303,7 +319,6 @@ struct WhatsAppListeView: View {
                     }
                 }
 
-                // ——— Barre d'onglets FLOTTANTE (pilule) + bouton Vous
                 HStack(spacing: 10) {
                     HStack(spacing: 0) {
                         OngletFlottant(symbole: "circle.dashed", nom: "Actus", actif: onglet == 0, pointVert: true) { onglet = 0 }
@@ -336,20 +351,35 @@ struct WhatsAppListeView: View {
             HStack(spacing: 10) {
                 RondAction(symbole: "ellipsis") { dismiss() }
                 Spacer()
-                RondAction(symbole: "camera.fill")
-                RondAction(symbole: "plus", fond: waVertVif, teinte: Color(hex: 0x062E1C), gras: true)
+                RondAction(symbole: "camera.fill") { menuCamera = true }
+                RondAction(symbole: "plus", fond: waVertVif, teinte: Color(hex: 0x062E1C), gras: true) { menuPlus = true }
             }
             .padding(.horizontal, 16).padding(.top, 8)
+            // D51-1 : menus natifs plausibles sur chaque bouton
+            .confirmationDialog("", isPresented: $menuPlus, titleVisibility: .hidden) {
+                Button("Nouvelle discussion") {}
+                Button("Nouveau groupe") {}
+                Button("Nouvelle communauté") {}
+                Button("Annuler", role: .cancel) {}
+            }
+            .confirmationDialog("Appareil photo", isPresented: $menuCamera, titleVisibility: .visible) {
+                Button("Prendre une photo") {}
+                Button("Photothèque") {}
+                Button("Annuler", role: .cancel) {}
+            }
             HStack {
                 Text("Discussions").font(.system(size: 34, weight: .bold)).foregroundStyle(waTexte)
                 Spacer()
             }
             .padding(.horizontal, 20).padding(.top, 12)
 
+            // D51-1 : vraie recherche (clavier réel), placeholder adaptatif comme le vrai
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass").foregroundStyle(waTexte2).font(.system(size: 17))
-                Text("Demander à Meta AI ou...").foregroundStyle(waTexte2).font(.system(size: 17))
-                Spacer()
+                TextField("", text: $recherche,
+                          prompt: Text(filtre == 1 ? "Rechercher dans Non lues" : "Demander à Meta AI ou...")
+                            .foregroundStyle(waTexte2))
+                    .font(.system(size: 17)).foregroundStyle(waTexte)
             }
             .padding(.horizontal, 16).frame(height: 44)
             .background(waChamp, in: Capsule())
@@ -357,10 +387,10 @@ struct WhatsAppListeView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    Puce(texte: "Toutes", active: true)
-                    Puce(texte: "Non lues 2", active: false)
-                    Puce(texte: "Favoris", active: false)
-                    Puce(texte: "Groupes", active: false)
+                    PuceActive(texte: "Toutes", active: filtre == 0) { filtre = 0 }
+                    PuceActive(texte: "Non lues 2", active: filtre == 1) { filtre = 1 }
+                    PuceActive(texte: "Favoris", active: filtre == 2) { filtre = 2 }
+                    PuceActive(texte: "Groupes", active: filtre == 3) { filtre = 3 }
                 }
                 .padding(.horizontal, 16)
             }
@@ -375,23 +405,47 @@ struct WhatsAppListeView: View {
                 .padding(.horizontal, 26).padding(.vertical, 14)
             }
 
-            List {
-                ForEach(convs, id: \.0) { c in
-                    Group {
-                        if c.0 == "Marc ❤️" {
-                            NavigationLink(destination: ConversationMarcView()) { LigneConv(c: c) }
-                        } else {
-                            LigneConv(c: c)
+            if convsFiltrees.isEmpty {
+                Spacer()
+                Text(filtre == 3 ? "Aucun groupe" : "Aucun résultat")
+                    .font(.system(size: 15)).foregroundStyle(waTexte2)
+                Spacer()
+            } else {
+                List {
+                    ForEach(convsFiltrees, id: \.0) { c in
+                        Group {
+                            if c.0 == "Marc ❤️" {
+                                NavigationLink(destination: ConversationMarcView()) { LigneConv(c: c) }
+                            } else if c.0 == "Thomas" {
+                                NavigationLink(destination: ConversationThomasView()) { LigneConv(c: c) }
+                            } else {
+                                LigneConv(c: c)
+                            }
                         }
+                        .listRowBackground(waNoir)
+                        .listRowSeparatorTint(Color(hex: 0x222222))
                     }
-                    .listRowBackground(waNoir)
-                    .listRowSeparatorTint(Color(hex: 0x222222))
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .padding(.bottom, 70)
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .padding(.bottom, 70)
         }
+    }
+}
+
+struct PuceActive: View {
+    let texte: String
+    let active: Bool
+    let action: () -> Void
+    var body: some View {
+        Text(texte)
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(active ? waChipActifTexte : waTexte2)
+            .padding(.horizontal, 15).padding(.vertical, 8)
+            .background(active ? waChipActifFond : waChipInactif, in: Capsule())
+            .contentShape(Capsule())
+            .onTapGesture(perform: action)
     }
 }
 

@@ -191,14 +191,18 @@ final class EnvoisJoueur: ObservableObject {
 struct ConversationVue: View {
     @Environment(\.dismiss) private var dismiss
     let nomContact: String
-    @State private var elements: [ElementConv]
+    @ObservedObject private var envois = EnvoisJoueur.partage
     @State private var saisie = ""
     @State private var appelVisible = false
 
+    // Le fil = données d'histoire + envois persistants du joueur (observés en direct,
+    // plus d'instantané figé : la vue pré-créée par la liste reste toujours à jour)
+    private var elements: [ElementConv] {
+        DonneesWA.conversation(nomContact) + (envois.parContact[nomContact] ?? [])
+    }
+
     init(nomContact: String) {
         self.nomContact = nomContact
-        _elements = State(initialValue: DonneesWA.conversation(nomContact)
-                          + (EnvoisJoueur.partage.parContact[nomContact] ?? []))
     }
 
     private var fiche: FicheContact {
@@ -229,7 +233,11 @@ struct ConversationVue: View {
                 Spacer()
                 HStack(spacing: 22) {
                     Image(systemName: "video").font(.system(size: 19))
+                        .contentShape(Rectangle())
+                        .onTapGesture { appelVisible = true }
                     Image(systemName: "phone").font(.system(size: 17))
+                        .contentShape(Rectangle())
+                        .onTapGesture { appelVisible = true }
                 }
                 .foregroundStyle(waTexte)
                 .padding(.horizontal, 18).padding(.vertical, 10)
@@ -251,7 +259,7 @@ struct ConversationVue: View {
                 }
                 .background(ZStack { waNoir; MotifDiscussion() })
                 .onAppear { defileur.scrollTo("fin", anchor: .bottom) }
-                .onChange(of: elements.count) { defileur.scrollTo("fin", anchor: .bottom) }
+                .onChange(of: envois.parContact[nomContact]?.count ?? 0) { defileur.scrollTo("fin", anchor: .bottom) }
             }
 
             // ——— Saisie FONCTIONNELLE : écrire envoie vraiment (heure réelle)
@@ -290,9 +298,8 @@ struct ConversationVue: View {
         let df = DateFormatter()
         df.dateFormat = "HH:mm"
         let element = ElementConv.msg(false, t, df.string(from: Date()))
-        EnvoisJoueur.partage.ajouter(nomContact, element)
         withAnimation(.spring(duration: 0.3)) {
-            elements.append(element)
+            envois.ajouter(nomContact, element)
         }
         saisie = ""
     }

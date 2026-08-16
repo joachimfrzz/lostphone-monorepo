@@ -1,0 +1,28 @@
+# Prototype-duel D49 — prétendant SwiftUI (généré par XcodeGen sur le CI)
+name: LPProtoSwift
+options:
+  bundleIdPrefix: com.lostphone
+settings:
+  MARKETING_VERSION: "1.0.0"
+  CURRENT_PROJECT_VERSION: "200"
+  VERSIONING_SYSTEM: apple-generic
+targets:
+  LPProtoSwift:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Sources
+      - Assets.xcassets
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.lostphone.game
+      ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      TARGETED_DEVICE_FAMILY: "1"
+      SWIFT_VERSION: "5.9"
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: LP Proto
+        ITSAppUsesNonExemptEncryption: false
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]

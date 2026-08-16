@@ -289,6 +289,7 @@ struct WhatsAppListeView: View {
     private let convs: [(String, String, String, String?, Bool)] = [
         ("Marc ❤️", "17:41", "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges co…", "1", true),
         ("Chloé", "19:33", "📞 Appel vocal manqué", "2", true),
+        ("Les filles 💃", "19:40", "Chloé : Julie appelle-moi stp", nil, false),
         ("Thomas", "samedi", "🤙 Trop fort ce sticker 😂", nil, false),
         ("Maman", "dimanche", "tu viens dimanche ??? bisous maman", nil, false),
         ("Marie kiné", "vendredi", "✓✓ ok pour l'échange de créneaux jeudi 👍", nil, false),
@@ -299,7 +300,7 @@ struct WhatsAppListeView: View {
         var r = convs
         if filtre == 1 { r = r.filter { $0.4 } }
         if filtre == 2 { r = r.filter { $0.0 == "Marc ❤️" || $0.0 == "Chloé" } }
-        if filtre == 3 { r = [] }
+        if filtre == 3 { r = r.filter { $0.0 == "Les filles 💃" } }
         if !recherche.isEmpty {
             r = r.filter { $0.0.localizedCaseInsensitiveContains(recherche) || $0.2.localizedCaseInsensitiveContains(recherche) }
         }
@@ -404,7 +405,7 @@ struct WhatsAppListeView: View {
                     PuceActive(texte: "Toutes", active: filtre == 0) { filtre = 0 }
                     PuceActive(texte: "Non lues 2", active: filtre == 1) { filtre = 1 }
                     PuceActive(texte: "Favoris", active: filtre == 2) { filtre = 2 }
-                    PuceActive(texte: "Groupes", active: filtre == 3) { filtre = 3 }
+                    PuceActive(texte: "Groupes 1", active: filtre == 3) { filtre = 3 }
                 }
                 .padding(.horizontal, 16)
             }
@@ -591,7 +592,7 @@ struct Bulle: View {
             if !recu { Spacer(minLength: 60) }
             VStack(alignment: .trailing, spacing: 0) {
                 Text(texte).font(.system(size: 17)).foregroundStyle(waTexte)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
                 HStack(spacing: 3) {
                     Text(heure).font(.system(size: 11.5)).foregroundStyle(waTexte.opacity(0.55))
                     if !recu {

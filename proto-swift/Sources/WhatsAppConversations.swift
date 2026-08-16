@@ -9,6 +9,7 @@ enum ElementConv {
     case jour(String)
     case systeme(String)
     case msg(Bool, String, String)
+    case msgJoueur(String, String) // message tapé par le joueur : ✓ gris, jamais distribué (D54)
     case msgGroupe(String, UInt, String, String) // expéditeur, couleur, texte, heure
     case riche(Bool, String, String, String?, String?, String?)
     case vocal(Bool, String, String)
@@ -297,7 +298,7 @@ struct ConversationVue: View {
         guard !t.isEmpty else { return }
         let df = DateFormatter()
         df.dateFormat = "HH:mm"
-        let element = ElementConv.msg(false, t, df.string(from: Date()))
+        let element = ElementConv.msgJoueur(t, df.string(from: Date()))
         withAnimation(.spring(duration: 0.3)) {
             envois.ajouter(nomContact, element)
         }
@@ -316,6 +317,9 @@ struct ConversationVue: View {
         case .systeme(let t): MessageSysteme(texte: t)
         case .msg(let r, let t, let h):
             Bulle(recu: r, texte: t, heure: h).contextMenu { menuMessage }
+        case .msgJoueur(let t, let h):
+            // D54 : hors des moments d'histoire, l'envoi reste en non-distribution discrète (✓ gris)
+            Bulle(recu: false, texte: t, heure: h, distribue: false).contextMenu { menuMessage }
         case .msgGroupe(let exp, let coul, let t, let h):
             EnveloppeBulle(recu: true) {
                 VStack(alignment: .leading, spacing: 2) {

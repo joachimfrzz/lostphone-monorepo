@@ -70,21 +70,21 @@ struct AppelsVue: View {
             List {
                 ForEach(0..<recents.count, id: \.self) { i in
                     let r = recents[i]
-                    HStack(spacing: 12) {
-                        AvatarSilhouette(taille: 46)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(r.0)
-                                .font(.system(size: 17, weight: .regular))
-                                .foregroundStyle(r.1 ? Color(hex: 0xF25B5B) : waTexte)
-                            HStack(spacing: 5) {
-                                Image(systemName: r.2).font(.system(size: 13)).foregroundStyle(waTexte2)
-                                Text(r.3).font(.system(size: 14.5)).foregroundStyle(waTexte2)
+                    NavigationLink(destination: InfosContactVue(
+                        nom: r.0, numero: DonneesWA.fiches[r.0]?.numero ?? "")) {
+                        HStack(alignment: .center, spacing: 12) {
+                            AvatarSilhouette(taille: 46, image: r.0 == "Marc ❤️" ? "AvatarMarc" : nil)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(r.0)
+                                    .font(.system(size: 17, weight: .regular))
+                                    .foregroundStyle(r.1 ? Color(hex: 0xF25B5B) : waTexte)
+                                HStack(spacing: 5) {
+                                    Image(systemName: r.2).font(.system(size: 13)).foregroundStyle(waTexte2)
+                                    Text(r.3).font(.system(size: 14.5)).foregroundStyle(waTexte2)
+                                }
                             }
-                        }
-                        Spacer()
-                        Text(r.4).font(.system(size: 15)).foregroundStyle(waTexte2)
-                        NavigationLink(destination: InfosContactVue(
-                            nom: r.0, numero: DonneesWA.fiches[r.0]?.numero ?? "")) {
+                            Spacer()
+                            Text(r.4).font(.system(size: 15)).foregroundStyle(waTexte2)
                             Image(systemName: "info.circle").font(.system(size: 20)).foregroundStyle(waTexte)
                         }
                     }
@@ -293,8 +293,8 @@ struct InfosContactVue: View {
                     Text(numero).font(.system(size: 16)).foregroundStyle(waTexte2).padding(.top, 2)
 
                     HStack(spacing: 12) {
-                        BoutonInfo(symbole: "phone.fill", nom: "Audio")
-                        BoutonInfo(symbole: "video.fill", nom: "Vidéo")
+                        BoutonInfo(symbole: "phone.fill", nom: "Audio", contact: nom)
+                        BoutonInfo(symbole: "video.fill", nom: "Vidéo", contact: nom)
                         BoutonInfo(symbole: "magnifyingglass", nom: "Rechercher")
                     }
                     .padding(.top, 16).padding(.horizontal, 16)
@@ -349,6 +349,9 @@ struct InfosContactVue: View {
 struct BoutonInfo: View {
     let symbole: String
     let nom: String
+    var contact: String = ""
+    @State private var appelVisible = false
+    @State private var alerteVisible = false
     var body: some View {
         VStack(spacing: 6) {
             Image(systemName: symbole).font(.system(size: 19)).foregroundStyle(waVertDoux)
@@ -356,6 +359,16 @@ struct BoutonInfo: View {
         }
         .frame(maxWidth: .infinity).padding(.vertical, 12)
         .background(Color(hex: 0x161717), in: RoundedRectangle(cornerRadius: 12))
+        .contentShape(Rectangle())
+        .onTapGesture {
+            if nom == "Audio" || nom == "Vidéo" { appelVisible = true } else { alerteVisible = true }
+        }
+        .fullScreenCover(isPresented: $appelVisible) {
+            AppelVue(nom: contact) // sonne sans réponse (règle 16/08)
+        }
+        .alert(ErreurLambda.message(nom.count + 2), isPresented: $alerteVisible) {
+            Button("OK", role: .cancel) {}
+        }
     }
 }
 
@@ -467,6 +480,7 @@ struct BulleRiche: View {
                 }
                 HStack(alignment: .bottom, spacing: 8) {
                     Text(texte).font(.system(size: 17)).foregroundStyle(waTexte)
+                        .fixedSize(horizontal: false, vertical: true)
                     HStack(spacing: 3) {
                         Text(heure).font(.system(size: 11.5)).foregroundStyle(waTexte.opacity(0.55))
                         if !recu {

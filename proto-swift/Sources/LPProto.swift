@@ -299,8 +299,9 @@ struct WhatsAppListeView: View {
     // L'aperçu de la liste reflète le dernier message envoyé par le joueur (persistant)
     private var convsVivantes: [(String, String, String, String?, Bool)] {
         convs.map { c in
-            if let derniers = envois.parContact[c.0], case .msg(_, let t, let h)? = derniers.last {
-                return (c.0, h, "Vous : " + t, nil, c.4)
+            if let dernier = envois.parContact[c.0]?.last {
+                if case .msgJoueur(let t, let h) = dernier { return (c.0, h, "Vous : " + t, nil, c.4) }
+                if case .msg(_, let t, let h) = dernier { return (c.0, h, "Vous : " + t, nil, c.4) }
             }
             return c
         }
@@ -598,6 +599,7 @@ struct Bulle: View {
     let recu: Bool
     let texte: String
     let heure: String
+    var distribue: Bool = true // D54 : faux = un seul ✓ gris (message du joueur, jamais distribué)
     var body: some View {
         HStack {
             if !recu { Spacer(minLength: 60) }
@@ -607,8 +609,12 @@ struct Bulle: View {
                 HStack(spacing: 3) {
                     Text(heure).font(.system(size: 11.5)).foregroundStyle(waTexte.opacity(0.55))
                     if !recu {
-                        Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(cocheBleue)
-                        Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(cocheBleue).padding(.leading, -7)
+                        if distribue {
+                            Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(cocheBleue)
+                            Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(cocheBleue).padding(.leading, -7)
+                        } else {
+                            Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(waTexte2)
+                        }
                     }
                 }
                 .padding(.top, 3)

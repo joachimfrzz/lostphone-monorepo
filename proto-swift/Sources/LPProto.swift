@@ -259,91 +259,125 @@ struct AppIcone: View {
     }
 }
 
-// ============================================================ WHATSAPP (idiome iOS)
-let waFond = Color(hex: 0x111B21)
-let waTexte = Color(hex: 0xE9EDEF)
-let waTexte2 = Color(hex: 0x8696A0)
-let waVert = Color(hex: 0x25D366)
-let waBulleEnvoi = Color(hex: 0x005C4B)
-let waBulleRecu = Color(hex: 0x202C33)
+// ============================================================ WHATSAPP (iOS 26, mesuré sur captures réelles du 16/08)
+// Couleurs échantillonnées pixel par pixel dans references/whatsapp/ :
+let waNoir = Color(hex: 0x0A0A0A)        // fond liste
+let waChamp = Color(hex: 0x222222)       // barre de recherche
+let waChipInactif = Color(hex: 0x161717)
+let waChipActifFond = Color(hex: 0xE0FCD6)
+let waChipActifTexte = Color(hex: 0x1A3429)
+let waVertDoux = Color(hex: 0x5BBD6C)    // heures non-lues, badges
+let waVertVif = Color(hex: 0x25D366)     // bouton +
+let waBulleEnvoi = Color(hex: 0x144D37)
+let waBulleRecu = Color(hex: 0x242626)
+let waTabBar = Color(hex: 0x1D1D1D)
+let waSaisie = Color(hex: 0x282828)
+let waCarte = Color(hex: 0x1D1E1E)       // pilules de date, cartes d'appel
+let waTexte = Color(hex: 0xF2F2F2)
+let waTexte2 = Color(hex: 0x8E8E93)
 let cocheBleue = Color(hex: 0x53BDEB)
 
 struct WhatsAppListeView: View {
     @Environment(\.dismiss) private var dismiss
 
-    private let convs: [(String, UInt, String, String, String, String?, Bool)] = [
-        ("M", 0x5B7C99, "Marc ❤️", "17:41", "N'oublie pas : 11h30. Après-demain je te tiens dans mes b…", "1", true),
-        ("C", 0xC76B8F, "Chloé", "19:33", "📞 Appel vocal manqué", "2", true),
-        ("T", 0x6B8F71, "Thomas", "samedi", "🎤 0:42", nil, false),
-        ("M", 0x8F7C6B, "Maman", "dimanche", "tu viens dimanche ??? bisous maman", nil, false),
-        ("M", 0x7C6B8F, "Marie kiné", "vendredi", "✓✓ ok pour l'échange de créneaux jeudi 👍", nil, false),
+    private let convs: [(String, String, String, String?, Bool)] = [
+        ("Marc ❤️", "17:41", "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges co…", "1", true),
+        ("Chloé", "19:33", "📞 Appel vocal manqué", "2", true),
+        ("Thomas", "samedi", "🎤 0:42", nil, false),
+        ("Maman", "dimanche", "tu viens dimanche ??? bisous maman", nil, false),
+        ("Marie kiné", "vendredi", "✓✓ ok pour l'échange de créneaux jeudi 👍", nil, false),
     ]
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Grand titre + actions rondes
-                HStack(spacing: 10) {
-                    Text("Discussions").font(.system(size: 33, weight: .bold)).foregroundStyle(waTexte)
-                    Spacer()
-                    RondAction(symbole: "ellipsis") { dismiss() }
-                    RondAction(symbole: "camera")
-                    RondAction(symbole: "plus", fond: waVert, teinte: Color(hex: 0x0B141A))
-                }
-                .padding(.horizontal, 18).padding(.top, 10)
+            ZStack(alignment: .bottom) {
+                waNoir.ignoresSafeArea()
+                VStack(spacing: 0) {
+                    // ——— Actions rondes + grand titre
+                    HStack(spacing: 10) {
+                        RondAction(symbole: "ellipsis") { dismiss() }
+                        Spacer()
+                        RondAction(symbole: "camera.fill")
+                        RondAction(symbole: "plus", fond: waVertVif, teinte: Color(hex: 0x062E1C), gras: true)
+                    }
+                    .padding(.horizontal, 16).padding(.top, 8)
+                    HStack {
+                        Text("Discussions").font(.system(size: 34, weight: .bold)).foregroundStyle(waTexte)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 20).padding(.top, 12)
 
-                // Recherche iOS
-                HStack(spacing: 6) {
-                    Image(systemName: "magnifyingglass").foregroundStyle(waTexte2).font(.system(size: 16))
-                    Text("Rechercher").foregroundStyle(waTexte2).font(.system(size: 16.5))
-                    Spacer()
-                }
-                .padding(.horizontal, 10).frame(height: 38)
-                .background(Color(hex: 0x1C242B), in: RoundedRectangle(cornerRadius: 10))
-                .padding(.horizontal, 16).padding(.top, 10)
+                    // ——— Recherche « Meta AI » (capsule)
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass").foregroundStyle(waTexte2).font(.system(size: 17))
+                        Text("Demander à Meta AI ou...").foregroundStyle(waTexte2).font(.system(size: 17))
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16).frame(height: 44)
+                    .background(waChamp, in: Capsule())
+                    .padding(.horizontal, 16).padding(.top, 14)
 
-                // Filtres
-                HStack(spacing: 8) {
-                    Puce(texte: "Toutes", active: true)
-                    Puce(texte: "Non lues", active: false)
-                    Puce(texte: "Favoris", active: false)
-                    Puce(texte: "Groupes", active: false)
-                    Spacer()
-                }
-                .padding(.horizontal, 16).padding(.top, 12).padding(.bottom, 4)
+                    // ——— Filtres avec compteurs
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            Puce(texte: "Toutes", active: true)
+                            Puce(texte: "Non lues 20", active: false)
+                            Puce(texte: "Favoris", active: false)
+                            Puce(texte: "Groupes 4", active: false)
+                        }
+                        .padding(.horizontal, 16)
+                    }
+                    .padding(.top, 12)
 
-                // Conversations
-                List {
-                    ForEach(convs, id: \.2) { c in
-                        Group {
-                            if c.2 == "Marc ❤️" {
-                                NavigationLink(destination: ConversationMarcView()) {
+                    // ——— Archivées
+                    HStack(spacing: 26) {
+                        Image(systemName: "archivebox").font(.system(size: 17)).foregroundStyle(waTexte2)
+                        Text("Archivées").font(.system(size: 16, weight: .semibold)).foregroundStyle(waTexte)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 26).padding(.vertical, 14)
+
+                    // ——— Conversations
+                    List {
+                        ForEach(convs, id: \.0) { c in
+                            Group {
+                                if c.0 == "Marc ❤️" {
+                                    NavigationLink(destination: ConversationMarcView()) { LigneConv(c: c) }
+                                } else {
                                     LigneConv(c: c)
                                 }
-                            } else {
-                                LigneConv(c: c)
                             }
+                            .listRowBackground(waNoir)
+                            .listRowSeparatorTint(Color(hex: 0x222222))
                         }
-                        .listRowBackground(waFond)
-                        .listRowSeparatorTint(Color(hex: 0x222D34))
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .padding(.bottom, 70)
                 }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
 
-                // Barre d'onglets iOS
-                HStack {
-                    Onglet(symbole: "arrow.triangle.2.circlepath", nom: "Mises à jour")
-                    Onglet(symbole: "phone", nom: "Appels")
-                    Onglet(symbole: "person.3", nom: "Communautés")
-                    Onglet(symbole: "message.fill", nom: "Discussions", actif: true, badge: "3")
-                    Onglet(symbole: "gearshape", nom: "Réglages")
+                // ——— Barre d'onglets FLOTTANTE (pilule) + bouton Vous
+                HStack(spacing: 10) {
+                    HStack(spacing: 0) {
+                        OngletFlottant(symbole: "circle.dashed", nom: "Actus", pointVert: true)
+                        OngletFlottant(symbole: "phone", nom: "Appels")
+                        OngletFlottant(symbole: "person.3", nom: "Communautés")
+                        OngletFlottant(symbole: "bubble.left.and.bubble.right.fill", nom: "Discussions", actif: true, badge: "3")
+                    }
+                    .padding(.vertical, 8).padding(.horizontal, 6)
+                    .background(waTabBar, in: Capsule())
+                    VStack(spacing: 3) {
+                        ZStack {
+                            Circle().fill(Color(hex: 0x143D2B)).frame(width: 34, height: 34)
+                            Image(systemName: "person.crop.circle.fill").font(.system(size: 20)).foregroundStyle(waVertDoux)
+                        }
+                        Text("Vous").font(.system(size: 10)).foregroundStyle(waTexte2)
+                    }
+                    .padding(.vertical, 6).padding(.horizontal, 10)
+                    .background(waTabBar, in: Capsule())
                 }
-                .padding(.top, 7)
-                .background(Color(hex: 0x161B20))
-                .overlay(alignment: .top) { Rectangle().fill(Color(hex: 0x2A3238)).frame(height: 0.5) }
+                .padding(.horizontal, 14).padding(.bottom, 6)
             }
-            .background(waFond.ignoresSafeArea())
             .toolbar(.hidden, for: .navigationBar)
         }
     }
@@ -351,12 +385,15 @@ struct WhatsAppListeView: View {
 
 struct RondAction: View {
     let symbole: String
-    var fond: Color = Color(hex: 0x1C242B)
+    var fond: Color = Color(hex: 0x1C1C1E)
     var teinte: Color = waTexte
+    var gras: Bool = false
     var action: (() -> Void)? = nil
     var body: some View {
-        Circle().fill(fond).frame(width: 34, height: 34)
-            .overlay(Image(systemName: symbole).font(.system(size: 15, weight: .semibold)).foregroundStyle(teinte))
+        Circle().fill(fond).frame(width: 40, height: 40)
+            .overlay(Image(systemName: symbole)
+                .font(.system(size: 17, weight: gras ? .bold : .semibold))
+                .foregroundStyle(teinte))
             .onTapGesture { action?() }
     }
 }
@@ -366,156 +403,191 @@ struct Puce: View {
     let active: Bool
     var body: some View {
         Text(texte)
-            .font(.system(size: 14, weight: active ? .semibold : .regular))
-            .foregroundStyle(active ? Color(hex: 0x66D07E) : waTexte2)
-            .padding(.horizontal, 13).padding(.vertical, 6)
-            .background(active ? Color(hex: 0x103629) : Color(hex: 0x1C242B), in: Capsule())
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(active ? waChipActifTexte : waTexte2)
+            .padding(.horizontal, 15).padding(.vertical, 8)
+            .background(active ? waChipActifFond : waChipInactif, in: Capsule())
     }
 }
 
-struct Onglet: View {
+struct OngletFlottant: View {
     let symbole: String
     let nom: String
     var actif: Bool = false
     var badge: String? = nil
+    var pointVert: Bool = false
     var body: some View {
         VStack(spacing: 3) {
             Image(systemName: symbole)
-                .font(.system(size: 21))
-                .foregroundStyle(actif ? waVert : waTexte2)
+                .font(.system(size: 20))
+                .foregroundStyle(actif ? waTexte : waTexte2)
                 .overlay(alignment: .topTrailing) {
                     if let badge {
-                        Text(badge).font(.system(size: 10.5, weight: .bold))
-                            .foregroundStyle(Color(hex: 0x0B141A))
-                            .padding(.horizontal, 5).frame(minWidth: 16, minHeight: 16)
-                            .background(waVert, in: Capsule())
-                            .offset(x: 12, y: -6)
+                        Text(badge).font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(Color(hex: 0x062E1C))
+                            .padding(.horizontal, 5).frame(minWidth: 17, minHeight: 17)
+                            .background(waVertDoux, in: Capsule())
+                            .offset(x: 12, y: -7)
+                    } else if pointVert {
+                        Circle().fill(waVertDoux).frame(width: 7, height: 7).offset(x: 4, y: -2)
                     }
                 }
             Text(nom).font(.system(size: 10, weight: actif ? .semibold : .regular))
-                .foregroundStyle(actif ? waVert : waTexte2)
+                .foregroundStyle(actif ? waTexte : waTexte2)
         }
-        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 10).padding(.vertical, 4)
+        .background(actif ? Color(hex: 0x303030) : .clear, in: Capsule())
     }
 }
 
 struct LigneConv: View {
-    let c: (String, UInt, String, String, String, String?, Bool)
+    let c: (String, String, String, String?, Bool)
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            // Avatar par défaut WhatsApp : silhouette grise (pas d'initiales colorées)
             ZStack {
                 Circle().fill(Color(hex: 0x6E7A84))
                 Image(systemName: "person.fill")
-                    .font(.system(size: 28))
-                    .foregroundStyle(Color(hex: 0xCFD9DE))
-                    .offset(y: 4)
+                    .font(.system(size: 30)).foregroundStyle(Color(hex: 0xCFD9DE)).offset(y: 5)
             }
-            .frame(width: 52, height: 52)
-            .clipShape(Circle())
+            .frame(width: 56, height: 56).clipShape(Circle())
             VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    Text(c.2).font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)
+                HStack(alignment: .firstTextBaseline) {
+                    Text(c.0).font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)
                     Spacer()
-                    Text(c.3).font(.system(size: 14.5)).foregroundStyle(c.6 ? waVert : waTexte2)
+                    Text(c.1).font(.system(size: 15)).foregroundStyle(c.4 ? waVertDoux : waTexte2)
                 }
                 HStack(alignment: .top) {
-                    // iOS : aperçu sur DEUX lignes
-                    Text(c.4).font(.system(size: 15)).foregroundStyle(waTexte2)
+                    Text(c.2).font(.system(size: 15)).foregroundStyle(waTexte2)
                         .lineLimit(2).multilineTextAlignment(.leading)
                     Spacer()
-                    if let p = c.5 {
+                    if let p = c.3 {
                         Text(p).font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(Color(hex: 0x0B141A))
-                            .padding(.horizontal, 6).frame(minWidth: 20, minHeight: 20)
-                            .background(waVert, in: Capsule())
+                            .foregroundStyle(Color(hex: 0x062E1C))
+                            .padding(.horizontal, 6).frame(minWidth: 21, minHeight: 21)
+                            .background(waVertDoux, in: Capsule())
+                            .padding(.top, 4)
                     }
                 }
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 5)
     }
 }
 
-// ————— Conversation « Marc ❤️ » —————
+// ————— Conversation « Marc ❤️ » — contenu de Coches bleues, habillage mesuré —————
+enum ElementConv {
+    case jour(String)
+    case message(recu: Bool, texte: String, heure: String)
+    case appelManque(heure: String)
+}
+
 struct ConversationMarcView: View {
     @Environment(\.dismiss) private var dismiss
 
-    private static let messages: [(Bool, String, String, String?)] = [
-        (true, "Bonjour Sarah ❤️ Je suis très heureux de ton message. Comment se passe ta journée à toi ?", "10:12", "14 mars"),
-        (false, "Bien ! C'est bizarre, j'ai l'impression qu'on se connaît depuis longtemps. Bref 😊 Tu es où là, en mer ?", "12:40", nil),
-        (true, "Ma chérie ❤️🌹🌹 Cette nuit j'ai pensé à notre maison près de Cassis. Tu es la reine de mon cœur.", "09:03", "2 avril"),
-        (false, "Tu me manques. C'est ridicule non ? On s'est jamais vus et tu me manques ❤️", "22:51", "19 avril"),
-        (true, "Mon amour, la connexion satellite du navire est suspendue. 300 euros pour la rétablir. Sans cela nous ne pouvons plus parler… Je rembourse à Marseille, promis de mon cœur.", "11:20", "6 mai"),
-        (true, "Un colis pour toi est bloqué en douane ma reine. 800 euros de frais. C'est mon cadeau pour toi, j'ai honte de demander.", "14:47", "11 juin"),
-        (true, "Bonne nuit, chère Monique.", "21:58", "28 juin"),
-        (true, "Pardon ma chérie !! Je pensais à ma tante Monique, je suis fatigué ce soir. Bonne nuit mon trésor ❤️", "21:59", nil),
-        (true, "Ma solde est bloquée par la compagnie. Il faut payer la caution de débarquement : 3000 euros. Sinon pas de Marseille le 28… Voici le compte de l'agent maritime : FR76 XXXX (M. OKAFOR AGENT MARITIME).", "10:31", "16 juillet"),
-        (true, "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges comme je t'ai dit ❤️", "17:41", "aujourd'hui"),
+    private static let elements: [ElementConv] = [
+        .jour("14 mars"),
+        .message(recu: true, texte: "Bonjour Sarah ❤️ Je suis très heureux de ton message. Comment se passe ta journée à toi ?", heure: "10:12"),
+        .message(recu: false, texte: "Bien ! C'est bizarre, j'ai l'impression qu'on se connaît depuis longtemps. Bref 😊 Tu es où là, en mer ?", heure: "12:40"),
+        .jour("2 avril"),
+        .message(recu: true, texte: "Ma chérie ❤️🌹🌹 Cette nuit j'ai pensé à notre maison près de Cassis. Tu es la reine de mon cœur.", heure: "09:03"),
+        .jour("19 avril"),
+        .message(recu: false, texte: "Tu me manques. C'est ridicule non ? On s'est jamais vus et tu me manques ❤️", heure: "22:51"),
+        .jour("6 mai"),
+        .appelManque(heure: "21:12"),
+        .message(recu: true, texte: "Mon amour, la connexion satellite du navire est suspendue. 300 euros pour la rétablir. Sans cela nous ne pouvons plus parler… Je rembourse à Marseille, promis de mon cœur.", heure: "11:20"),
+        .jour("11 juin"),
+        .message(recu: true, texte: "Un colis pour toi est bloqué en douane ma reine. 800 euros de frais. C'est mon cadeau pour toi, j'ai honte de demander.", heure: "14:47"),
+        .jour("28 juin"),
+        .message(recu: true, texte: "Bonne nuit, chère Monique.", heure: "21:58"),
+        .message(recu: true, texte: "Pardon ma chérie !! Je pensais à ma tante Monique, je suis fatigué ce soir. Bonne nuit mon trésor ❤️", heure: "21:59"),
+        .jour("16 juillet"),
+        .message(recu: true, texte: "Ma solde est bloquée par la compagnie. Il faut payer la caution de débarquement : 3000 euros. Sinon pas de Marseille le 28… Voici le compte de l'agent maritime : FR76 XXXX (M. OKAFOR AGENT MARITIME).", heure: "10:31"),
+        .jour("aujourd'hui"),
+        .message(recu: true, texte: "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges comme je t'ai dit ❤️", heure: "17:41"),
     ]
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header iOS
+            // ——— Header : chevron, avatar, nom / en ligne, pilule appels
             HStack(spacing: 9) {
                 Button { dismiss() } label: {
-                    Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(waVert)
+                    Image(systemName: "chevron.left").font(.system(size: 22, weight: .semibold)).foregroundStyle(waTexte)
                 }
-                .padding(.leading, 6)
-                Circle().fill(Color(hex: 0x5B7C99)).frame(width: 36, height: 36)
-                    .overlay(Text("M").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white))
+                .padding(.leading, 8)
+                ZStack {
+                    Circle().fill(Color(hex: 0x6E7A84))
+                    Image(systemName: "person.fill").font(.system(size: 20)).foregroundStyle(Color(hex: 0xCFD9DE)).offset(y: 3)
+                }
+                .frame(width: 38, height: 38).clipShape(Circle())
                 VStack(alignment: .leading, spacing: 0) {
                     Text("Marc ❤️").font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)
-                    Text("en ligne").font(.system(size: 12.5)).foregroundStyle(waTexte2)
+                    Text("en ligne aujourd'hui à 17:41").font(.system(size: 12.5)).foregroundStyle(waTexte2)
                 }
                 Spacer()
-                Image(systemName: "video").font(.system(size: 21)).foregroundStyle(waVert)
-                Image(systemName: "phone").font(.system(size: 18)).foregroundStyle(waVert).padding(.leading, 14)
+                HStack(spacing: 22) {
+                    Image(systemName: "video").font(.system(size: 19))
+                    Image(systemName: "phone").font(.system(size: 17))
+                }
+                .foregroundStyle(waTexte)
+                .padding(.horizontal, 18).padding(.vertical, 10)
+                .background(Color(hex: 0x1C201E), in: Capsule())
             }
-            .padding(.horizontal, 12).padding(.vertical, 8)
-            .background(Color(hex: 0x161B20))
+            .padding(.horizontal, 8).padding(.vertical, 6)
+            .background(Color(hex: 0x111312))
 
-            // Messages
+            // ——— Fil de messages sur fond doodle
             ScrollView {
                 LazyVStack(spacing: 4) {
-                    ForEach(0..<Self.messages.count, id: \.self) { i in
-                        let m = Self.messages[i]
-                        if let jour = m.3 {
-                            Text(jour)
+                    ForEach(0..<Self.elements.count, id: \.self) { i in
+                        switch Self.elements[i] {
+                        case .jour(let j):
+                            Text(j)
                                 .font(.system(size: 12.5)).foregroundStyle(waTexte2)
                                 .padding(.horizontal, 13).padding(.vertical, 5)
-                                .background(Color(hex: 0x182229), in: RoundedRectangle(cornerRadius: 9))
+                                .background(waCarte, in: RoundedRectangle(cornerRadius: 10))
                                 .padding(.top, 12).padding(.bottom, 8)
+                        case .message(let recu, let texte, let heure):
+                            Bulle(recu: recu, texte: texte, heure: heure)
+                        case .appelManque(let heure):
+                            HStack {
+                                HStack(spacing: 14) {
+                                    Circle().fill(Color(hex: 0x3A1518)).frame(width: 44, height: 44)
+                                        .overlay(Image(systemName: "video.slash.fill").font(.system(size: 17)).foregroundStyle(Color(hex: 0xF25B5B)))
+                                    VStack(alignment: .leading, spacing: 1) {
+                                        Text("Appel vidéo manqué").font(.system(size: 16, weight: .semibold)).foregroundStyle(waTexte)
+                                        Text("Appuyez pour rappeler").font(.system(size: 14)).foregroundStyle(waTexte2)
+                                    }
+                                    Text(heure).font(.system(size: 11.5)).foregroundStyle(waTexte2)
+                                        .padding(.leading, 8).padding(.top, 18)
+                                }
+                                .padding(.horizontal, 13).padding(.vertical, 10)
+                                .background(waCarte, in: RoundedRectangle(cornerRadius: 16))
+                                Spacer(minLength: 80)
+                            }
                         }
-                        Bulle(recu: m.0, texte: m.1, heure: m.2)
                     }
+                    Spacer(minLength: 6)
                 }
-                .padding(.horizontal, 14).padding(.vertical, 12)
+                .padding(.horizontal, 12).padding(.vertical, 12)
             }
-            .background(
-                ZStack {
-                    Color(hex: 0x0B141A)
-                    MotifDiscussion() // motif « doodle » discret du vrai WhatsApp
-                }
-            )
+            .background(ZStack { waNoir; MotifDiscussion() })
 
-            // Saisie iOS
-            HStack(spacing: 10) {
-                Image(systemName: "plus").font(.system(size: 24)).foregroundStyle(waVert)
+            // ——— Saisie iOS 26 : « + » blanc, champ sombre avec autocollant, caméra et micro BLANCS
+            HStack(spacing: 14) {
+                Image(systemName: "plus").font(.system(size: 24, weight: .regular)).foregroundStyle(waTexte)
                 HStack {
                     Spacer()
-                    Image(systemName: "face.smiling").font(.system(size: 18)).foregroundStyle(waTexte2)
+                    Image(systemName: "theatermask.and.paintbrush").font(.system(size: 17)).foregroundStyle(waTexte2)
                 }
-                .padding(.horizontal, 14).padding(.vertical, 9)
-                .background(Color(hex: 0x1C242B), in: RoundedRectangle(cornerRadius: 19))
-                .overlay(RoundedRectangle(cornerRadius: 19).stroke(Color(hex: 0x2A3238), lineWidth: 0.5))
-                Image(systemName: "camera").font(.system(size: 20)).foregroundStyle(waVert)
-                Image(systemName: "mic").font(.system(size: 20)).foregroundStyle(waVert)
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                .background(waSaisie, in: Capsule())
+                Image(systemName: "camera").font(.system(size: 21)).foregroundStyle(waTexte)
+                Image(systemName: "mic").font(.system(size: 21)).foregroundStyle(waTexte)
             }
-            .padding(.horizontal, 12).padding(.vertical, 8)
-            .background(Color(hex: 0x161B20))
+            .padding(.horizontal, 14).padding(.vertical, 8)
+            .background(waNoir)
         }
-        .background(waFond)
+        .background(waNoir)
         .toolbar(.hidden, for: .navigationBar)
     }
 }
@@ -528,10 +600,10 @@ struct Bulle: View {
         HStack {
             if !recu { Spacer(minLength: 60) }
             VStack(alignment: .trailing, spacing: 0) {
-                Text(texte).font(.system(size: 16.5)).foregroundStyle(waTexte)
+                Text(texte).font(.system(size: 17)).foregroundStyle(waTexte)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 HStack(spacing: 3) {
-                    Text(heure).font(.system(size: 11)).foregroundStyle(waTexte.opacity(0.5))
+                    Text(heure).font(.system(size: 11.5)).foregroundStyle(waTexte.opacity(0.55))
                     if !recu {
                         Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(cocheBleue)
                         Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(cocheBleue).padding(.leading, -7)
@@ -539,10 +611,10 @@ struct Bulle: View {
                 }
                 .padding(.top, 3)
             }
-            .padding(.horizontal, 11).padding(.vertical, 7)
+            .padding(.horizontal, 12).padding(.vertical, 8)
             .background(recu ? waBulleRecu : waBulleEnvoi)
-            .clipShape(.rect(topLeadingRadius: recu ? 5 : 16, bottomLeadingRadius: 16,
-                             bottomTrailingRadius: 16, topTrailingRadius: recu ? 16 : 5))
+            .clipShape(.rect(topLeadingRadius: 18, bottomLeadingRadius: recu ? 5 : 18,
+                             bottomTrailingRadius: recu ? 18 : 5, topTrailingRadius: 18))
             if recu { Spacer(minLength: 60) }
         }
     }

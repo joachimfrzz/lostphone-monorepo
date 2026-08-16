@@ -139,6 +139,7 @@ struct RondVerre: View {
 // ============================================================ ACCUEIL
 struct AccueilView: View {
     @State private var whatsappOuvert = false
+    @State private var telephoneOuvert = false
 
     private let apps: [(String, Color, String, Color)] = [
         ("Horloge", Color(hex: 0x1C1C1E), "clock", .white),
@@ -209,7 +210,9 @@ struct AccueilView: View {
                 // Dock (vrai verre, sans étiquettes)
                 HStack {
                     Spacer()
-                    AppIcone(nom: "", fond: Color(hex: 0x2FC74F), symbole: "phone.fill", teinte: .white, badge: "2")
+                    AppIcone(nom: "", fond: Color(hex: 0x2FC74F), symbole: "phone.fill", teinte: .white, badge: "2") {
+                        telephoneOuvert = true
+                    }
                     Spacer()
                     AppIcone(nom: "", fond: Color(hex: 0x2FC74F), symbole: "message.fill", teinte: .white)
                     Spacer()
@@ -224,6 +227,7 @@ struct AccueilView: View {
             }
         }
         .fullScreenCover(isPresented: $whatsappOuvert) { WhatsAppListeView() }
+        .fullScreenCover(isPresented: $telephoneOuvert) { TelephoneVue() }
     }
 }
 
@@ -234,6 +238,7 @@ struct AppIcone: View {
     let teinte: Color
     var badge: String? = nil
     var action: (() -> Void)? = nil
+    @State private var alerteVisible = false
 
     var body: some View {
         VStack(spacing: 6) {
@@ -255,7 +260,12 @@ struct AppIcone: View {
                 Text(nom).font(.system(size: 11.5, weight: .medium)).foregroundStyle(.white)
             }
         }
-        .onTapGesture { action?() }
+        .onTapGesture {
+            if let action { action() } else { alerteVisible = true }
+        }
+        .alert(ErreurLambda.message(nom.count + symbole.count), isPresented: $alerteVisible) {
+            Button("OK", role: .cancel) {}
+        }
     }
 }
 
@@ -562,7 +572,12 @@ struct OngletFlottant: View {
         .padding(.horizontal, 10).padding(.vertical, 4)
         .background(actif ? Color(hex: 0x303030) : .clear, in: Capsule())
         .contentShape(Rectangle())
-        .onTapGesture { action?() }
+        .onTapGesture {
+            if let action { action() } else { alerteVisible = true }
+        }
+        .alert(ErreurLambda.message(nom.count + symbole.count), isPresented: $alerteVisible) {
+            Button("OK", role: .cancel) {}
+        }
     }
 }
 

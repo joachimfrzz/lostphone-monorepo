@@ -33,10 +33,17 @@ struct VerrouillageView: View {
 
     private var ecranVerrouille: some View {
         ZStack {
+            // Vrai fond d'écran photo (Sarah & Chloé au festival — canon D46)
+            Image("FondEcran")
+                .resizable().scaledToFill()
+                .ignoresSafeArea()
+            // Voile de lisibilité comme sur iOS (léger, haut et bas)
             LinearGradient(
-                colors: [Color(hex: 0x120E24), Color(hex: 0x2A1747),
-                         Color(hex: 0x63295C), Color(hex: 0xC25A52)],
-                startPoint: .topLeading, endPoint: .bottomTrailing
+                stops: [.init(color: .black.opacity(0.38), location: 0),
+                        .init(color: .black.opacity(0.05), location: 0.3),
+                        .init(color: .black.opacity(0.05), location: 0.65),
+                        .init(color: .black.opacity(0.35), location: 1)],
+                startPoint: .top, endPoint: .bottom
             ).ignoresSafeArea()
 
             VStack(spacing: 0) {
@@ -146,15 +153,19 @@ struct AccueilView: View {
         ("Localiser", Color(hex: 0x32D74B), "dot.radiowaves.left.and.right", .white),
         ("Santé", .white, "heart.fill", Color(hex: 0xFA5252)),
         ("Ma Banque", Color(hex: 0x123E6B), "building.columns.fill", .white),
+        ("Musique", .white, "music.note", Color(hex: 0xFA2D48)),
+        ("App Store", Color(hex: 0x0A84FF), "square.stack.3d.up.fill", .white),
+        ("Fichiers", .white, "folder.fill", Color(hex: 0x0A84FF)),
+        ("Dictaphone", Color(hex: 0x1C1C1E), "waveform", Color(hex: 0xFF3B30)),
     ]
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [Color(hex: 0x0C0919), Color(hex: 0x1D1033),
-                         Color(hex: 0x43203F), Color(hex: 0x7C3A35)],
-                startPoint: .topLeading, endPoint: .bottomTrailing
-            ).ignoresSafeArea()
+            // Même photo que le verrouillage, assombrie (comportement iOS réel)
+            Image("FondEcran")
+                .resizable().scaledToFill()
+                .ignoresSafeArea()
+            Color.black.opacity(0.30).ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Widget météo (vrai verre)
@@ -391,17 +402,27 @@ struct Onglet: View {
 struct LigneConv: View {
     let c: (String, UInt, String, String, String, String?, Bool)
     var body: some View {
-        HStack(spacing: 12) {
-            Circle().fill(Color(hex: c.1)).frame(width: 52, height: 52)
-                .overlay(Text(c.0).font(.system(size: 21, weight: .semibold)).foregroundStyle(.white))
+        HStack(alignment: .top, spacing: 12) {
+            // Avatar par défaut WhatsApp : silhouette grise (pas d'initiales colorées)
+            ZStack {
+                Circle().fill(Color(hex: 0x6E7A84))
+                Image(systemName: "person.fill")
+                    .font(.system(size: 28))
+                    .foregroundStyle(Color(hex: 0xCFD9DE))
+                    .offset(y: 4)
+            }
+            .frame(width: 52, height: 52)
+            .clipShape(Circle())
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
                     Text(c.2).font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)
                     Spacer()
                     Text(c.3).font(.system(size: 14.5)).foregroundStyle(c.6 ? waVert : waTexte2)
                 }
-                HStack {
-                    Text(c.4).font(.system(size: 15)).foregroundStyle(waTexte2).lineLimit(1)
+                HStack(alignment: .top) {
+                    // iOS : aperçu sur DEUX lignes
+                    Text(c.4).font(.system(size: 15)).foregroundStyle(waTexte2)
+                        .lineLimit(2).multilineTextAlignment(.leading)
                     Spacer()
                     if let p = c.5 {
                         Text(p).font(.system(size: 12, weight: .bold))
@@ -471,7 +492,12 @@ struct ConversationMarcView: View {
                 }
                 .padding(.horizontal, 14).padding(.vertical, 12)
             }
-            .background(Color(hex: 0x0B141A))
+            .background(
+                ZStack {
+                    Color(hex: 0x0B141A)
+                    MotifDiscussion() // motif « doodle » discret du vrai WhatsApp
+                }
+            )
 
             // Saisie iOS
             HStack(spacing: 10) {
@@ -519,6 +545,33 @@ struct Bulle: View {
                              bottomTrailingRadius: 16, topTrailingRadius: recu ? 16 : 5))
             if recu { Spacer(minLength: 60) }
         }
+    }
+}
+
+// ————— Motif de fond de discussion (approximation du doodle WhatsApp) —————
+struct MotifDiscussion: View {
+    private static let symboles = ["heart", "star", "cup.and.saucer", "leaf", "music.note",
+                                   "moon", "paperplane", "camera", "gift", "sun.min",
+                                   "cloud", "bicycle", "book", "airplane", "pawprint"]
+    var body: some View {
+        GeometryReader { geo in
+            let cols = 6
+            let lignes = 14
+            ForEach(0..<(cols * lignes), id: \.self) { i in
+                let c = i % cols
+                let l = i / cols
+                Image(systemName: Self.symboles[(i * 7) % Self.symboles.count])
+                    .font(.system(size: 17))
+                    .foregroundStyle(.white.opacity(0.035))
+                    .rotationEffect(.degrees(Double((i * 37) % 60) - 30))
+                    .position(
+                        x: (CGFloat(c) + (l % 2 == 0 ? 0.5 : 1.0)) * geo.size.width / CGFloat(cols),
+                        y: (CGFloat(l) + 0.5) * geo.size.height / CGFloat(lignes)
+                    )
+            }
+        }
+        .allowsHitTesting(false)
+        .clipped()
     }
 }
 

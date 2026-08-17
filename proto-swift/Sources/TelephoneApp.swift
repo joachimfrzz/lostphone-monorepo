@@ -20,6 +20,7 @@ struct AppelRecent {
     let type: String       // "portable", "WhatsApp audio", "FaceTime vidéo"…
     let date: String
     let compte: Int        // (2), (3)…
+    let duree: String?     // nil si manqué
 }
 
 struct MessageVocal {
@@ -32,14 +33,14 @@ struct MessageVocal {
 
 enum DonneesTel {
     static let recents: [AppelRecent] = [
-        AppelRecent(nom: "Chloé", manque: true, sortant: false, type: "portable", date: "19:33", compte: 2),
-        AppelRecent(nom: "Agence Bellecour", manque: false, sortant: false, type: "portable", date: "mercredi", compte: 1),
-        AppelRecent(nom: "Marc ❤️", manque: false, sortant: false, type: "WhatsApp vidéo", date: "5 juil.", compte: 1),
-        AppelRecent(nom: "Maman", manque: false, sortant: true, type: "portable", date: "dim. 12 juil.", compte: 1),
-        AppelRecent(nom: "Marc ❤️", manque: true, sortant: false, type: "WhatsApp vidéo", date: "6 mai", compte: 1),
-        AppelRecent(nom: "Marie kiné", manque: false, sortant: true, type: "portable", date: "mardi", compte: 1),
-        AppelRecent(nom: "Chloé", manque: false, sortant: true, type: "portable", date: "jeudi", compte: 1),
-        AppelRecent(nom: "Thomas", manque: false, sortant: false, type: "portable", date: "sam.", compte: 1),
+        AppelRecent(nom: "Chloé", manque: true, sortant: false, type: "portable", date: "19:33", compte: 2, duree: nil),
+        AppelRecent(nom: "Agence Bellecour", manque: false, sortant: false, type: "portable", date: "mercredi", compte: 1, duree: "4 minutes"),
+        AppelRecent(nom: "Marc ❤️", manque: false, sortant: false, type: "WhatsApp vidéo", date: "5 juil.", compte: 1, duree: "19 secondes"),
+        AppelRecent(nom: "Maman", manque: false, sortant: true, type: "portable", date: "dim. 12 juil.", compte: 1, duree: "12 minutes"),
+        AppelRecent(nom: "Marc ❤️", manque: true, sortant: false, type: "WhatsApp vidéo", date: "6 mai", compte: 1, duree: nil),
+        AppelRecent(nom: "Marie kiné", manque: false, sortant: true, type: "portable", date: "mardi", compte: 1, duree: "6 minutes"),
+        AppelRecent(nom: "Chloé", manque: false, sortant: true, type: "portable", date: "jeudi", compte: 1, duree: "3 minutes"),
+        AppelRecent(nom: "Thomas", manque: false, sortant: false, type: "portable", date: "sam.", compte: 1, duree: "8 minutes"),
     ]
 
     static let contacts: [(String, String)] = [
@@ -269,7 +270,7 @@ struct TelFicheVue: View {
                     }
                     .padding(.top, 16)
 
-                    // Historique
+                    // Historique — DÉRIVÉ du même journal que l'onglet Récents (cohérence R3)
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
                             Text("Historique des appels").font(.system(size: 16)).foregroundStyle(telTexte)
@@ -277,14 +278,26 @@ struct TelFicheVue: View {
                             Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundStyle(telTexte2)
                         }
                         .padding(.horizontal, 14).padding(.top, 12)
-                        Text("Appel entrant").font(.system(size: 14)).foregroundStyle(telTexte2)
-                            .padding(.horizontal, 14).padding(.top, 6)
-                        HStack {
-                            Text("1 minute").font(.system(size: 13)).foregroundStyle(telTexte2)
-                            Spacer()
-                            Text("Hier · 21:54").font(.system(size: 13)).foregroundStyle(telTexte2)
+                        let historique = DonneesTel.recents.filter { $0.nom == nom }.prefix(3)
+                        if historique.isEmpty {
+                            Text("Aucun appel récent").font(.system(size: 14)).foregroundStyle(telTexte2)
+                                .padding(.horizontal, 14).padding(.vertical, 10)
+                        } else {
+                            ForEach(Array(historique.enumerated()), id: \.offset) { _, a in
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(a.manque ? "Appel manqué" : (a.sortant ? "Appel sortant" : "Appel entrant"))
+                                        .font(.system(size: 14))
+                                        .foregroundStyle(a.manque ? telRouge : telTexte2)
+                                    HStack {
+                                        Text(a.duree ?? "Sans réponse").font(.system(size: 13)).foregroundStyle(telTexte2)
+                                        Spacer()
+                                        Text(a.date).font(.system(size: 13)).foregroundStyle(telTexte2)
+                                    }
+                                }
+                                .padding(.horizontal, 14).padding(.top, 6)
+                            }
+                            Color.clear.frame(height: 12)
                         }
-                        .padding(.horizontal, 14).padding(.bottom, 12).padding(.top, 1)
                     }
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
                     .padding(.horizontal, 16).padding(.top, 20)

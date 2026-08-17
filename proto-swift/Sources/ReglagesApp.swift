@@ -97,8 +97,9 @@ struct RegGeneriqueVue: View {
                 VStack(spacing: 10) {
                     Image(systemName: "wifi.exclamationmark")
                         .font(.system(size: 34)).foregroundStyle(regTexte2)
-                    Text(ErreurLambda.message(nom.count))
+                    Text("Impossible de charger « \(nom) ». Vérifiez votre connexion.")
                         .font(.system(size: 15)).foregroundStyle(regTexte2)
+                        .multilineTextAlignment(.center).padding(.horizontal, 40)
                 }
             } else {
                 ProgressView().tint(regTexte2)
@@ -1777,7 +1778,7 @@ struct FondEcranVue: View {
         .navigationBarTitleDisplayMode(.inline)
         .alert("Fond d'écran", isPresented: $erreur) {
             Button("OK", role: .cancel) {}
-        } message: { Text(ErreurLambda.message(11)) }
+        } message: { Text(ErreurLambda.reponse("code.requis")) }
     }
 }
 

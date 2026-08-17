@@ -141,6 +141,7 @@ struct AccueilView: View {
     @State private var whatsappOuvert = false
     @State private var telephoneOuvert = false
     @State private var messagesOuvert = false
+    @State private var reglagesOuvert = false
 
     private let apps: [(String, Color, String, Color)] = [
         ("Horloge", Color(hex: 0x1C1C1E), "clock", .white),
@@ -189,7 +190,8 @@ struct AccueilView: View {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4),
                           spacing: 20) {
                     ForEach(apps, id: \.0) { a in
-                        AppIcone(nom: a.0, fond: a.1, symbole: a.2, teinte: a.3)
+                        AppIcone(nom: a.0, fond: a.1, symbole: a.2, teinte: a.3,
+                                 action: a.0 == "Réglages" ? { reglagesOuvert = true } : nil)
                     }
                     AppIcone(nom: "WhatsApp", fond: Color(hex: 0x25D366),
                              symbole: "message.fill", teinte: .white, badge: "1") {
@@ -232,6 +234,7 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $whatsappOuvert) { WhatsAppListeView() }
         .fullScreenCover(isPresented: $telephoneOuvert) { TelephoneVue() }
         .fullScreenCover(isPresented: $messagesOuvert) { MessagesVue() }
+        .fullScreenCover(isPresented: $reglagesOuvert) { ReglagesVue() }
     }
 }
 

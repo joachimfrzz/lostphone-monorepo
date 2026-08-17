@@ -140,6 +140,7 @@ struct RondVerre: View {
 struct AccueilView: View {
     @State private var whatsappOuvert = false
     @State private var telephoneOuvert = false
+    @State private var messagesOuvert = false
 
     private let apps: [(String, Color, String, Color)] = [
         ("Horloge", Color(hex: 0x1C1C1E), "clock", .white),
@@ -214,7 +215,9 @@ struct AccueilView: View {
                         telephoneOuvert = true
                     }
                     Spacer()
-                    AppIcone(nom: "", fond: Color(hex: 0x2FC74F), symbole: "message.fill", teinte: .white)
+                    AppIcone(nom: "", fond: Color(hex: 0x2FC74F), symbole: "message.fill", teinte: .white, badge: "3") {
+                        messagesOuvert = true
+                    }
                     Spacer()
                     AppIcone(nom: "", fond: Color(hex: 0x0A84FF), symbole: "envelope.fill", teinte: .white)
                     Spacer()
@@ -228,6 +231,7 @@ struct AccueilView: View {
         }
         .fullScreenCover(isPresented: $whatsappOuvert) { WhatsAppListeView() }
         .fullScreenCover(isPresented: $telephoneOuvert) { TelephoneVue() }
+        .fullScreenCover(isPresented: $messagesOuvert) { MessagesVue() }
     }
 }
 

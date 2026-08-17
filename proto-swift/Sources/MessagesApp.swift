@@ -309,7 +309,7 @@ struct MessagesVue: View {
                     Text("Messages")
                         .font(.system(size: 33, weight: .bold)).foregroundStyle(msgTexte)
                         .padding(.horizontal, 18).padding(.top, 56).padding(.bottom, 8)
-                    ForEach(convs) { conv in
+                    ForEach(Array(convs.enumerated()), id: \.element.id) { indice, conv in
                         HStack(spacing: 0) {
                             if modeSelection {
                                 Image(systemName: selection.contains(conv.id) ? "checkmark.circle.fill" : "circle")
@@ -326,6 +326,11 @@ struct MessagesVue: View {
                                     LigneConvMsg(conv: conv)
                                 }.buttonStyle(.plain)
                             }
+                        }
+                        // Mini-lignes de séparation entre conversations (référence IMG_3486)
+                        if indice < convs.count - 1 {
+                            Divider().overlay(Color.white.opacity(0.13))
+                                .padding(.leading, 73).padding(.trailing, 16)
                         }
                     }
                     Color.clear.frame(height: 90)
@@ -892,10 +897,14 @@ struct MsgIndesirablesVue: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         Color.clear.frame(height: 60)
-                        ForEach(magasin.indesirables) { conv in
+                        ForEach(Array(magasin.indesirables.enumerated()), id: \.element.id) { indice, conv in
                             NavigationLink { MsgConvVue(conv: conv) } label: {
                                 LigneConvMsg(conv: conv)
                             }.buttonStyle(.plain)
+                            if indice < magasin.indesirables.count - 1 {
+                                Divider().overlay(Color.white.opacity(0.13))
+                                    .padding(.leading, 73).padding(.trailing, 16)
+                            }
                         }
                     }
                 }

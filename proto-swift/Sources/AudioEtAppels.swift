@@ -362,9 +362,50 @@ struct SousReglageVue: View {
     }
 }
 
-// ============================================================ ERREURS BANALES VARIÉES (D51-1)
-// Jamais deux fois la même : le message dépend du contexte (graine déterministe).
+// ============================================================ RÉPONSES BANALES DÉTERMINISTES (D56)
+// Doctrine des 4 anneaux : ce catalogue sert l'anneau 3 (actions qui sortiraient du téléphone).
+// Règles : même bouton = toujours la même réponse ; deux boutons différents ne partagent
+// jamais la même formulation ; chaque message est du même TYPE que l'action (réseau, matériel,
+// compte, partage, contenu vide) et formulé comme iOS le ferait.
 enum ErreurLambda {
+    static let catalogue: [String: String] = [
+        // Système / apps
+        "app.attente": "Cette app sera de nouveau disponible après la mise à jour d'iOS programmée cette nuit.",
+        "appstore": "Impossible de se connecter à l'App Store.",
+        "camera": "Appareil photo indisponible.",
+        "mail": "Aucun compte e-mail configuré.",
+        "partage": "Aucune app disponible pour le partage.",
+        "code.requis": "Cette action nécessite le code de l'iPhone.",
+        "reseau": "Connexion au serveur impossible. Vérifiez votre connexion.",
+        // Messages
+        "photos.vide": "Photothèque indisponible pendant la synchronisation iCloud.",
+        "autocollants": "Aucun autocollant installé.",
+        "sondage": "Les sondages ne sont pas disponibles dans cette conversation.",
+        "programmation": "L'envoi programmé est indisponible.",
+        "intelligence": "Apple Intelligence n'est pas disponible sur cet iPhone.",
+        "playground": "Image Playground n'est pas disponible sur cet iPhone.",
+        "modif.contact": "Impossible de modifier ce contact.",
+        // Téléphone
+        "favoris": "Impossible d'ajouter aux favoris pour le moment.",
+        "liste": "Impossible d'ajouter à une liste pour le moment.",
+        "urgence": "Impossible de modifier les contacts d'urgence.",
+        "blocage": "Le blocage est indisponible pour le moment.",
+        "signalement": "Le signalement est indisponible pour le moment.",
+        // WhatsApp
+        "recherche.conv": "La recherche dans la conversation est indisponible.",
+        "planifier": "Aucun événement à planifier avec ce contact.",
+        "clavier.wa": "Ouvrez l'app Téléphone pour composer un numéro.",
+        "wa.appeler": "Sélectionnez un contact dans la liste pour l'appeler.",
+        "wa.favoris": "Aucun favori pour le moment.",
+        "menu.indisponible": "Menu indisponible pour le moment.",
+        "creation.indisponible": "Création indisponible pour le moment.",
+        // Générique (dernier recours uniquement)
+        "generique": "Réessayez plus tard.",
+    ]
+    static func reponse(_ cle: String) -> String {
+        catalogue[cle] ?? catalogue["generique"]!
+    }
+    // Ancien pot commun (avant D56) — conservé pour compatibilité, ne plus utiliser.
     private static let messages = [
         "Une erreur s'est produite. Réessayez plus tard.",
         "Réessayez plus tard.",

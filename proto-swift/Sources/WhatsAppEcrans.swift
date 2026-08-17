@@ -104,6 +104,7 @@ struct ActionRonde: View {
     let nom: String
     var vert: Bool = false
     @State private var alerteVisible = false
+    @State private var appelVisible = false
     var body: some View {
         VStack(spacing: 7) {
             Circle()
@@ -115,9 +116,23 @@ struct ActionRonde: View {
             Text(nom).font(.system(size: 13)).foregroundStyle(waTexte)
         }
         .contentShape(Rectangle())
-        .onTapGesture { alerteVisible = true }
-        .alert(ErreurLambda.message(nom.count * 3 + symbole.count), isPresented: $alerteVisible) {
+        .onTapGesture {
+            // D56 anneau 1 : la tuile d'un contact lance un vrai appel (qui sonne sans réponse, D53)
+            if vert { appelVisible = true } else { alerteVisible = true }
+        }
+        .fullScreenCover(isPresented: $appelVisible) { AppelVue(nom: nom) }
+        .alert(ErreurLambda.reponse(cleBanale), isPresented: $alerteVisible) {
             Button("OK", role: .cancel) {}
+        }
+    }
+
+    private var cleBanale: String {
+        switch nom {
+        case "Appeler": return "wa.appeler"
+        case "Planifier": return "planifier"
+        case "Clavier": return "clavier.wa"
+        case "Favoris": return "wa.favoris"
+        default: return "generique"
         }
     }
 }
@@ -366,7 +381,8 @@ struct BoutonInfo: View {
         .fullScreenCover(isPresented: $appelVisible) {
             AppelVue(nom: contact) // sonne sans réponse (règle 16/08)
         }
-        .alert(ErreurLambda.message(nom.count + 2), isPresented: $alerteVisible) {
+        .alert(ErreurLambda.reponse(nom == "Rechercher" ? "recherche.conv" : "generique"),
+               isPresented: $alerteVisible) {
             Button("OK", role: .cancel) {}
         }
     }

@@ -270,8 +270,20 @@ struct AppIcone: View {
         .onTapGesture {
             if let action { action() } else { alerteVisible = true }
         }
-        .alert(ErreurLambda.message(nom.count + symbole.count), isPresented: $alerteVisible) {
+        // D56 anneau 3 : cause système unique et cohérente pour toutes les apps pas encore construites
+        .alert(nomAffiche, isPresented: $alerteVisible) {
             Button("OK", role: .cancel) {}
+        } message: {
+            Text(nom == "App Store" ? ErreurLambda.reponse("appstore") : ErreurLambda.reponse("app.attente"))
+        }
+    }
+
+    private var nomAffiche: String {
+        if !nom.isEmpty { return nom }
+        switch symbole {
+        case "envelope.fill": return "Mail"
+        case "safari.fill": return "Safari"
+        default: return "App"
         }
     }
 }
@@ -532,9 +544,19 @@ struct RondAction: View {
                 // D51-1 : aucun bouton mort — action réelle ou réponse banale variée
                 if let action { action() } else { alerteVisible = true }
             }
-            .alert(ErreurLambda.message(symbole.count * 7 + 3), isPresented: $alerteVisible) {
+            .alert(ErreurLambda.reponse(cleBanale), isPresented: $alerteVisible) {
                 Button("OK", role: .cancel) {}
             }
+    }
+
+    // D56 : réponse déterministe propre à chaque bouton
+    private var cleBanale: String {
+        switch symbole {
+        case "camera.fill": return "camera"
+        case "ellipsis": return "menu.indisponible"
+        case "plus": return "creation.indisponible"
+        default: return "generique"
+        }
     }
 }
 

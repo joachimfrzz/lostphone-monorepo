@@ -572,12 +572,7 @@ struct OngletFlottant: View {
         .padding(.horizontal, 10).padding(.vertical, 4)
         .background(actif ? Color(hex: 0x303030) : .clear, in: Capsule())
         .contentShape(Rectangle())
-        .onTapGesture {
-            if let action { action() } else { alerteVisible = true }
-        }
-        .alert(ErreurLambda.message(nom.count + symbole.count), isPresented: $alerteVisible) {
-            Button("OK", role: .cancel) {}
-        }
+        .onTapGesture { action?() }
     }
 }
 

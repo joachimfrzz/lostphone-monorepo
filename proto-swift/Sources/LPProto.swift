@@ -51,7 +51,7 @@ struct VerrouillageView: View {
                     .font(.system(size: 17))
                     .foregroundStyle(.white)
                     .padding(.top, 24)
-                Text("lundi 20 juillet")
+                Text("lundi 17 août")
                     .font(.system(size: 21, weight: .semibold))
                     .foregroundStyle(.white)
                     .padding(.top, 10)

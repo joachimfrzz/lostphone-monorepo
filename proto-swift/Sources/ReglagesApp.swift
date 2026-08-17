@@ -177,29 +177,29 @@ struct ReglagesVue: View {
                             RegSeparateur()
                             RegLigne(symbole: "antenna.radiowaves.left.and.right", fond: regVert, nom: "Données cellulaires") { DonneesCellVue() }
                             RegSeparateur()
-                            RegLigne(symbole: "person.2.wave.2.fill", fond: regVert, nom: "Partage de connexion") { RegGeneriqueVue(nom: "Partage de connexion") }
+                            RegLigne(symbole: "person.2.wave.2.fill", fond: regVert, nom: "Partage de connexion") { RegContenuVue(nom: "Partage de connexion") }
                             RegSeparateur()
                             RegLigne(symbole: "battery.100", fond: regVert, nom: "Batterie") { BatterieVue() }
                             RegSeparateur()
-                            RegLigne(symbole: "network", fond: regBleu, nom: "VPN", valeur: "Déconnecté") { RegGeneriqueVue(nom: "VPN") }
+                            RegLigne(symbole: "network", fond: regBleu, nom: "VPN", valeur: "Déconnecté") { RegContenuVue(nom: "VPN") }
                         }
 
                         RegGroupe {
                             RegLigne(symbole: "gear", fond: Color(hex: 0x8E8E93), nom: "Général") { GeneralVue() }
                             RegSeparateur()
-                            RegLigne(symbole: "accessibility", fond: regBleu, nom: "Accessibilité") { RegGeneriqueVue(nom: "Accessibilité") }
+                            RegLigne(symbole: "accessibility", fond: regBleu, nom: "Accessibilité") { RegContenuVue(nom: "Accessibilité") }
                             RegSeparateur()
-                            RegLigne(symbole: "camera.fill", fond: Color(hex: 0x8E8E93), nom: "Appareil photo") { RegGeneriqueVue(nom: "Appareil photo") }
+                            RegLigne(symbole: "camera.fill", fond: Color(hex: 0x8E8E93), nom: "Appareil photo") { RegContenuVue(nom: "Appareil photo") }
                             RegSeparateur()
-                            RegLigne(symbole: "sparkles", fond: Color(hex: 0x5E5CE6), nom: "Apple Intelligence et Siri") { RegGeneriqueVue(nom: "Apple Intelligence et Siri") }
+                            RegLigne(symbole: "sparkles", fond: Color(hex: 0x5E5CE6), nom: "Apple Intelligence et Siri") { RegContenuVue(nom: "Apple Intelligence et Siri") }
                             RegSeparateur()
-                            RegLigne(symbole: "button.horizontal.top.press", fond: regBleu, nom: "Bouton Action") { RegGeneriqueVue(nom: "Bouton Action") }
+                            RegLigne(symbole: "button.horizontal.top.press", fond: regBleu, nom: "Bouton Action") { RegContenuVue(nom: "Bouton Action") }
                             RegSeparateur()
                             RegLigne(symbole: "switch.2", fond: Color(hex: 0x8E8E93), nom: "Centre de contrôle") { CentreControleVue() }
                             RegSeparateur()
                             RegLigne(symbole: "square.grid.3x3.fill", fond: regBleu, nom: "Écran d'accueil et bibliothèque d'apps") { EcranAccueilVue() }
                             RegSeparateur()
-                            RegLigne(symbole: "clock.fill", fond: Color(hex: 0x30B0C7), nom: "En veille") { RegGeneriqueVue(nom: "En veille") }
+                            RegLigne(symbole: "clock.fill", fond: Color(hex: 0x30B0C7), nom: "En veille") { RegContenuVue(nom: "En veille") }
                             RegSeparateur()
                             RegLigne(symbole: "photo.on.rectangle", fond: Color(hex: 0x30B0C7), nom: "Fond d'écran") { FondEcranVue() }
                             RegSeparateur()
@@ -213,7 +213,7 @@ struct ReglagesVue: View {
                             RegSeparateur()
                             RegLigne(symbole: "speaker.wave.3.fill", fond: regRouge, nom: "Sons et vibrations") { SonsVue() }
                             RegSeparateur()
-                            RegLigne(symbole: "moon.fill", fond: Color(hex: 0x5E5CE6), nom: "Concentration") { RegGeneriqueVue(nom: "Concentration") }
+                            RegLigne(symbole: "moon.fill", fond: Color(hex: 0x5E5CE6), nom: "Concentration") { RegContenuVue(nom: "Concentration") }
                             RegSeparateur()
                             RegLigne(symbole: "hourglass", fond: Color(hex: 0x5E5CE6), nom: "Temps d'écran") { TempsEcranVue() }
                         }
@@ -221,7 +221,7 @@ struct ReglagesVue: View {
                         RegGroupe {
                             RegLigne(symbole: "faceid", fond: regVert, nom: "Face ID et code") { FaceIDVue() }
                             RegSeparateur()
-                            RegLigne(symbole: "sos", fond: regRouge, nom: "Appel d'urgence") { RegGeneriqueVue(nom: "Appel d'urgence") }
+                            RegLigne(symbole: "sos", fond: regRouge, nom: "Appel d'urgence") { RegContenuVue(nom: "Appel d'urgence") }
                             RegSeparateur()
                             RegLigne(symbole: "hand.raised.fill", fond: regBleu, nom: "Confidentialité et sécurité") { ConfidentialiteVue() }
                         }
@@ -229,7 +229,7 @@ struct ReglagesVue: View {
                         RegGroupe {
                             RegLigne(symbole: "creditcard.fill", fond: Color(hex: 0x32ADE6), nom: "Cartes et Apple Pay") { CartesPayVue() }
                             RegSeparateur()
-                            RegLigne(symbole: "gamecontroller.fill", fond: Color(hex: 0x8E8E93), nom: "Game Center") { RegGeneriqueVue(nom: "Game Center") }
+                            RegLigne(symbole: "gamecontroller.fill", fond: Color(hex: 0x8E8E93), nom: "Game Center") { RegContenuVue(nom: "Game Center") }
                             RegSeparateur()
                             RegLigne(symbole: "icloud.fill", fond: regBleu, nom: "iCloud") { ICloudVue() }
                         }
@@ -448,9 +448,9 @@ struct CompteAppleVue: View {
                     RegGroupe {
                         RegLigne(symbole: "icloud.fill", fond: regBleu, nom: "iCloud", valeur: "200 Go") { ICloudVue() }
                         RegSeparateur()
-                        RegLigne(symbole: "figure.2.and.child.holdinghands", fond: Color(hex: 0xFF9F0A), nom: "Famille", valeur: "Configurer") { RegGeneriqueVue(nom: "Famille") }
+                        RegLigne(symbole: "figure.2.and.child.holdinghands", fond: Color(hex: 0xFF9F0A), nom: "Famille", valeur: "Configurer") { RegContenuVue(nom: "Famille") }
                         RegSeparateur()
-                        RegLigne(symbole: "location.fill", fond: regVert, nom: "Localiser") { RegGeneriqueVue(nom: "Localiser") }
+                        RegLigne(symbole: "location.fill", fond: regVert, nom: "Localiser") { RegContenuVue(nom: "Localiser") }
                         RegSeparateur()
                         RegLigne(symbole: "play.rectangle.fill", fond: regBleu, nom: "Contenu multimédia et achats") { RegGeneriqueVue(nom: "Contenu multimédia et achats") }
                         RegSeparateur()
@@ -470,7 +470,7 @@ struct CompteAppleVue: View {
                         }
                         .padding(.horizontal, 14).padding(.vertical, 9)
                         RegSeparateur(retrait: 56)
-                        RegLigne(symbole: "ipad", fond: Color(hex: 0x1C1C1E), nom: "iPad de Sarah", valeur: "") { RegGeneriqueVue(nom: "iPad de Sarah") }
+                        RegLigne(symbole: "ipad", fond: Color(hex: 0x1C1C1E), nom: "iPad de Sarah", valeur: "") { RegContenuVue(nom: "iPad de Sarah") }
                     }
 
                     RegGroupe {
@@ -1410,22 +1410,22 @@ struct GeneralVue: View {
                         RegLigne(symbole: "applelogo", fond: regRouge, nom: "AppleCare et garantie") { RegGeneriqueVue(nom: "AppleCare et garantie") }
                     }
                     RegGroupe {
-                        RegLigne(symbole: "dot.radiowaves.right", fond: regBleu, nom: "AirDrop") { RegGeneriqueVue(nom: "AirDrop") }
+                        RegLigne(symbole: "dot.radiowaves.right", fond: regBleu, nom: "AirDrop") { RegContenuVue(nom: "AirDrop") }
                         RegSeparateur()
-                        RegLigne(symbole: "play.tv", fond: regBleu, nom: "AirPlay et Continuité") { RegGeneriqueVue(nom: "AirPlay et Continuité") }
+                        RegLigne(symbole: "play.tv", fond: regBleu, nom: "AirPlay et Continuité") { RegContenuVue(nom: "AirPlay et Continuité") }
                         RegSeparateur()
-                        RegLigne(symbole: "rectangle.inset.filled", fond: Color(hex: 0x8E8E93), nom: "Image dans l'image") { RegGeneriqueVue(nom: "Image dans l'image") }
+                        RegLigne(symbole: "rectangle.inset.filled", fond: Color(hex: 0x8E8E93), nom: "Image dans l'image") { RegContenuVue(nom: "Image dans l'image") }
                         RegSeparateur()
-                        RegLigne(symbole: "camera.viewfinder", fond: Color(hex: 0x8E8E93), nom: "Capture d'écran") { RegGeneriqueVue(nom: "Capture d'écran") }
+                        RegLigne(symbole: "camera.viewfinder", fond: Color(hex: 0x8E8E93), nom: "Capture d'écran") { RegContenuVue(nom: "Capture d'écran") }
                         RegSeparateur()
-                        RegLigne(symbole: "car.fill", fond: regVert, nom: "CarPlay") { RegGeneriqueVue(nom: "CarPlay") }
+                        RegLigne(symbole: "car.fill", fond: regVert, nom: "CarPlay") { RegContenuVue(nom: "CarPlay") }
                     }
                     RegGroupe {
-                        RegLigne(symbole: "arrow.clockwise", fond: Color(hex: 0x8E8E93), nom: "Actualiser en arrière-plan") { RegGeneriqueVue(nom: "Actualiser en arrière-plan") }
+                        RegLigne(symbole: "arrow.clockwise", fond: Color(hex: 0x8E8E93), nom: "Actualiser en arrière-plan") { RegContenuVue(nom: "Actualiser en arrière-plan") }
                         RegSeparateur()
-                        RegLigne(symbole: "keyboard", fond: Color(hex: 0x8E8E93), nom: "Clavier") { RegGeneriqueVue(nom: "Clavier") }
+                        RegLigne(symbole: "keyboard", fond: Color(hex: 0x8E8E93), nom: "Clavier") { RegContenuVue(nom: "Clavier") }
                         RegSeparateur()
-                        RegLigne(symbole: "globe", fond: Color(hex: 0x8E8E93), nom: "Langue et région") { RegGeneriqueVue(nom: "Langue et région") }
+                        RegLigne(symbole: "globe", fond: Color(hex: 0x8E8E93), nom: "Langue et région") { RegContenuVue(nom: "Langue et région") }
                     }
                     Color.clear.frame(height: 30)
                 }
@@ -2091,24 +2091,24 @@ struct ConfidentialiteVue: View {
             ScrollView {
                 VStack(spacing: 14) {
                     RegGroupe {
-                        RegLigne(symbole: "location.fill", fond: regBleu, nom: "Service de localisation", valeur: "Oui") { RegGeneriqueVue(nom: "Service de localisation") }
+                        RegLigne(symbole: "location.fill", fond: regBleu, nom: "Service de localisation", valeur: "Oui") { RegContenuVue(nom: "Service de localisation") }
                         RegSeparateur()
-                        RegLigne(symbole: "hand.raised.fill", fond: regBleu, nom: "Suivi") { RegGeneriqueVue(nom: "Suivi") }
+                        RegLigne(symbole: "hand.raised.fill", fond: regBleu, nom: "Suivi") { RegContenuVue(nom: "Suivi") }
                     }
                     .padding(.top, 12)
                     RegGroupe {
-                        RegLigne(symbole: "person.2.fill", fond: Color(hex: 0x32ADE6), nom: "Contacts") { RegGeneriqueVue(nom: "Contacts") }
+                        RegLigne(symbole: "person.2.fill", fond: Color(hex: 0x32ADE6), nom: "Contacts") { RegContenuVue(nom: "Contacts", cle: "acces.contacts") }
                         RegSeparateur()
-                        RegLigne(symbole: "photo.fill", fond: Color(hex: 0xE64980), nom: "Photos") { RegGeneriqueVue(nom: "Photos") }
+                        RegLigne(symbole: "photo.fill", fond: Color(hex: 0xE64980), nom: "Photos") { RegContenuVue(nom: "Photos", cle: "acces.photos") }
                         RegSeparateur()
-                        RegLigne(symbole: "mic.fill", fond: Color(hex: 0xFF9F0A), nom: "Micro") { RegGeneriqueVue(nom: "Micro") }
+                        RegLigne(symbole: "mic.fill", fond: Color(hex: 0xFF9F0A), nom: "Micro") { RegContenuVue(nom: "Micro", cle: "acces.micro") }
                         RegSeparateur()
-                        RegLigne(symbole: "camera.fill", fond: regVert, nom: "Appareil photo") { RegGeneriqueVue(nom: "Appareil photo") }
+                        RegLigne(symbole: "camera.fill", fond: regVert, nom: "Appareil photo") { RegContenuVue(nom: "Appareil photo", cle: "acces.camera") }
                     }
                     RegGroupe {
-                        RegLigne(symbole: "checkerboard.shield", fond: Color(hex: 0x8E8E93), nom: "Contrôle de sécurité") { RegGeneriqueVue(nom: "Contrôle de sécurité") }
+                        RegLigne(symbole: "checkerboard.shield", fond: Color(hex: 0x8E8E93), nom: "Contrôle de sécurité") { RegContenuVue(nom: "Contrôle de sécurité") }
                         RegSeparateur()
-                        RegLigne(symbole: "exclamationmark.shield.fill", fond: regRouge, nom: "Analyse et améliorations") { RegGeneriqueVue(nom: "Analyse et améliorations") }
+                        RegLigne(symbole: "exclamationmark.shield.fill", fond: regRouge, nom: "Analyse et améliorations") { RegContenuVue(nom: "Analyse et améliorations") }
                     }
                     Color.clear.frame(height: 30)
                 }
@@ -2301,7 +2301,7 @@ struct AppsListeVue: View {
                 VStack(spacing: 14) {
                     RegGroupe {
                         ForEach(Array(apps.enumerated()), id: \.offset) { i, a in
-                            NavigationLink { RegGeneriqueVue(nom: a) } label: {
+                            NavigationLink { RegAppVue(nom: a) } label: {
                                 HStack(spacing: 12) {
                                     RegIcone(symbole: "app.fill", fond: Color(hex: 0x3A3A3E))
                                     Text(a).font(.system(size: 16)).foregroundStyle(regTexte)
@@ -2320,6 +2320,300 @@ struct AppsListeVue: View {
             }
         }
         .navigationTitle("Apps")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+
+// ============================================================ CONTENU RÉEL DES ÉCRANS LOCAUX (D56 anneau 2)
+// Un réglage local ne peut pas échouer : chaque écran a son vrai contenu statique.
+// L'échec réseau (RegGeneriqueVue) est réservé aux écrans réellement en ligne.
+enum LigneRC {
+    case titre(String)
+    case bascule(String, Bool)
+    case valeur(String, String)
+    case note(String)
+}
+
+enum ContenuEcrans {
+    static let ecrans: [String: [LigneRC]] = [
+        "Partage de connexion": [
+            .bascule("Autoriser d'autres utilisateurs", false),
+            .valeur("Mot de passe Wi-Fi", "flamant-rose-72"),
+            .note("Le partage de connexion de « iPhone de Sarah » est visible par vos autres appareils lorsque vous êtes connectée à iCloud."),
+        ],
+        "VPN": [
+            .valeur("État", "Déconnecté"),
+            .note("Aucune configuration VPN enregistrée."),
+        ],
+        "Accessibilité": [
+            .titre("Vision"),
+            .valeur("VoiceOver", "Désactivé"),
+            .valeur("Zoom", "Désactivé"),
+            .valeur("Taille du texte", "Par défaut"),
+            .titre("Physique et moteur"),
+            .valeur("AssistiveTouch", "Désactivé"),
+            .titre("Audition"),
+            .bascule("Audio mono", false),
+        ],
+        "Appareil photo": [
+            .bascule("Grille", true),
+            .bascule("Miroiter la photo de face", true),
+            .valeur("Formats", "Haute efficacité"),
+            .valeur("Enregistrement vidéo", "4K à 30 i/s"),
+            .bascule("Correction de l'objectif", true),
+        ],
+        "Apple Intelligence et Siri": [
+            .valeur("Apple Intelligence", "Non disponible"),
+            .note("Apple Intelligence n'est pas disponible sur cet iPhone."),
+            .titre("Siri"),
+            .bascule("Détecter « Dis Siri »", true),
+            .valeur("Langue", "Français (France)"),
+            .valeur("Voix de Siri", "Française (voix 3)"),
+        ],
+        "Bouton Action": [
+            .valeur("Action", "Mode silencieux"),
+            .note("Maintenez le bouton Action enfoncé pour activer ou désactiver le mode silencieux."),
+        ],
+        "En veille": [
+            .bascule("En veille", true),
+            .note("L'iPhone affiche l'horloge et les widgets lorsqu'il charge, posé sur le côté."),
+            .bascule("Mode nuit", true),
+        ],
+        "Concentration": [
+            .valeur("Ne pas déranger", "Désactivé"),
+            .valeur("Sommeil", "22:30 – 07:00"),
+            .valeur("Travail", "Désactivé"),
+            .note("Les concentrations se synchronisent sur tous vos appareils."),
+        ],
+        "Appel d'urgence": [
+            .bascule("Appel en maintenant enfoncé", true),
+            .bascule("Appel par 5 pressions", false),
+            .valeur("Contacts d'urgence", "Maman"),
+            .note("L'iPhone peut appeler les services d'urgence et prévenir vos contacts d'urgence."),
+        ],
+        "Game Center": [
+            .valeur("Profil", "sarah_lvsr"),
+            .bascule("Invitations d'amis", true),
+            .bascule("Joueurs à proximité", false),
+        ],
+        "Famille": [
+            .valeur("Partage familial", "Désactivé"),
+            .note("Partagez vos abonnements, votre musique, vos films et tout achat de contenu multimédia avec jusqu'à cinq personnes."),
+        ],
+        "Localiser": [
+            .bascule("Localiser mon iPhone", true),
+            .bascule("Réseau Localiser", true),
+            .bascule("Envoyer la dernière position", true),
+            .valeur("Partager ma position", "Chloé"),
+            .note("Votre position est partagée depuis cet iPhone."),
+        ],
+        "iPad de Sarah": [
+            .valeur("Modèle", "iPad Air"),
+            .valeur("Version", "iPadOS 26.4"),
+            .valeur("Sauvegarde", "14 août"),
+            .note("Cet appareil apparaîtra en ligne lorsqu'il sera connecté à Internet."),
+        ],
+        "AirDrop": [
+            .valeur("Réception", "Contacts uniquement"),
+            .bascule("Utiliser les données cellulaires", true),
+        ],
+        "AirPlay et Continuité": [
+            .bascule("Transfert automatique vers AirPlay", true),
+            .bascule("Handoff", true),
+        ],
+        "Image dans l'image": [
+            .bascule("Démarrer automatiquement", true),
+            .note("La vidéo continue dans une fenêtre flottante lorsque vous quittez l'app."),
+        ],
+        "Capture d'écran": [
+            .valeur("Enregistrer dans", "Photos"),
+        ],
+        "CarPlay": [
+            .note("Aucune voiture jumelée."),
+        ],
+        "Actualiser en arrière-plan": [
+            .bascule("Actualiser en arrière-plan", true),
+            .bascule("WhatsApp", true),
+            .bascule("Messages", true),
+            .bascule("Safari", false),
+            .bascule("Ma Banque", true),
+        ],
+        "Clavier": [
+            .bascule("Majuscules automatiques", true),
+            .bascule("Correction automatique", true),
+            .valeur("Claviers", "2"),
+            .valeur("Dictée", "Activée"),
+        ],
+        "Langue et région": [
+            .valeur("Langue de l'iPhone", "Français (France)"),
+            .valeur("Région", "France"),
+            .valeur("Calendrier", "Grégorien"),
+            .valeur("Température", "°C"),
+        ],
+        "Service de localisation": [
+            .bascule("Service de localisation", true),
+            .titre("Apps"),
+            .valeur("WhatsApp", "Pendant l'utilisation"),
+            .valeur("Plans", "Pendant l'utilisation"),
+            .valeur("Messages", "Jamais"),
+            .valeur("Météo", "Toujours"),
+        ],
+        "Suivi": [
+            .bascule("Autoriser les demandes de suivi", false),
+            .note("Les nouvelles demandes de suivi des apps sont automatiquement refusées."),
+        ],
+        "acces.contacts": [
+            .note("Les apps ci-dessous ont demandé l'accès à vos contacts."),
+            .bascule("WhatsApp", true),
+            .bascule("Meetic", true),
+        ],
+        "acces.photos": [
+            .valeur("WhatsApp", "Accès complet"),
+            .valeur("Meetic", "Photos sélectionnées"),
+            .valeur("Ma Banque", "Aucun accès"),
+        ],
+        "acces.micro": [
+            .bascule("WhatsApp", true),
+            .bascule("Dictaphone", true),
+        ],
+        "acces.camera": [
+            .bascule("WhatsApp", true),
+            .bascule("Meetic", true),
+        ],
+        "Contrôle de sécurité": [
+            .note("Vérifiez qui a accès à vos informations, et gérez le partage avec des personnes et des apps."),
+            .valeur("Partage avec des personnes", "1 personne"),
+        ],
+        "Analyse et améliorations": [
+            .bascule("Partager l'analyse de l'iPhone", false),
+            .bascule("Améliorer Siri et la dictée", false),
+        ],
+    ]
+}
+
+struct RegContenuVue: View {
+    let nom: String
+    var cle: String? = nil
+    @State private var bascules: [Int: Bool] = [:]
+
+    private var lignes: [LigneRC] { ContenuEcrans.ecrans[cle ?? nom] ?? [] }
+
+    // Regroupe les lignes en sections (titre → en-tête, note → pied de section)
+    private var sections: [(entete: String?, rangs: [(Int, LigneRC)], pied: String?)] {
+        var resultat: [(String?, [(Int, LigneRC)], String?)] = []
+        var entete: String? = nil
+        var rangs: [(Int, LigneRC)] = []
+        for (i, l) in lignes.enumerated() {
+            switch l {
+            case .titre(let t):
+                if !rangs.isEmpty { resultat.append((entete, rangs, nil)); rangs = [] }
+                entete = t
+            case .note(let n):
+                resultat.append((entete, rangs, n)); rangs = []; entete = nil
+            default:
+                rangs.append((i, l))
+            }
+        }
+        if !rangs.isEmpty { resultat.append((entete, rangs, nil)) }
+        return resultat
+    }
+
+    var body: some View {
+        ZStack {
+            regFond.ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 14) {
+                    ForEach(Array(sections.enumerated()), id: \.offset) { _, section in
+                        if let entete = section.entete {
+                            Text(entete).font(.system(size: 13)).foregroundStyle(regTexte2)
+                                .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
+                        }
+                        if !section.rangs.isEmpty {
+                            RegGroupe {
+                                ForEach(Array(section.rangs.enumerated()), id: \.offset) { j, rang in
+                                    vue(rang.0, rang.1)
+                                    if j < section.rangs.count - 1 { RegSeparateur(retrait: 14) }
+                                }
+                            }
+                        }
+                        if let pied = section.pied {
+                            Text(pied).font(.system(size: 12.5)).foregroundStyle(regTexte2)
+                                .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
+                        }
+                    }
+                    Color.clear.frame(height: 30)
+                }
+                .padding(.top, 12)
+            }
+        }
+        .navigationTitle(nom)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    @ViewBuilder private func vue(_ indice: Int, _ ligne: LigneRC) -> some View {
+        switch ligne {
+        case .bascule(let nom, let defaut):
+            HStack {
+                Text(nom).font(.system(size: 16)).foregroundStyle(regTexte)
+                Spacer()
+                Toggle("", isOn: Binding(
+                    get: { bascules[indice] ?? defaut },
+                    set: { bascules[indice] = $0 }
+                )).labelsHidden().tint(regVert)
+            }
+            .padding(.horizontal, 14).padding(.vertical, 6)
+        case .valeur(let nom, let valeur):
+            HStack {
+                Text(nom).font(.system(size: 16)).foregroundStyle(regTexte)
+                Spacer()
+                Text(valeur).font(.system(size: 16)).foregroundStyle(regTexte2)
+            }
+            .padding(.horizontal, 14).padding(.vertical, 9)
+        default:
+            EmptyView()
+        }
+    }
+}
+
+// Écran de réglages d'une app (structure réelle observée sur la vidéo — écran Fiverr)
+struct RegAppVue: View {
+    let nom: String
+    @State private var siri = true
+    @State private var arrierePlan = true
+    @State private var cellulaires = true
+    @State private var notifications = true
+    var body: some View {
+        ZStack {
+            regFond.ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 14) {
+                    Text("Autoriser « \(nom) » à accéder à :").font(.system(size: 13)).foregroundStyle(regTexte2)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20).padding(.top, 12)
+                    RegGroupe {
+                        LigneBascule(nom: "Siri et recherche", valeur: $siri)
+                        RegSeparateur(retrait: 14)
+                        LigneBascule(nom: "Notifications", valeur: $notifications)
+                        RegSeparateur(retrait: 14)
+                        LigneBascule(nom: "Actualisation en arrière-plan", valeur: $arrierePlan)
+                        RegSeparateur(retrait: 14)
+                        LigneBascule(nom: "Données cellulaires", valeur: $cellulaires)
+                    }
+                    Text("Langue préférée").font(.system(size: 13)).foregroundStyle(regTexte2)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
+                    RegGroupe {
+                        HStack {
+                            Text("Langue").font(.system(size: 16)).foregroundStyle(regTexte)
+                            Spacer()
+                            Text("Français").font(.system(size: 16)).foregroundStyle(regTexte2)
+                        }
+                        .padding(14)
+                    }
+                    Color.clear.frame(height: 30)
+                }
+            }
+        }
+        .navigationTitle(nom)
         .navigationBarTitleDisplayMode(.inline)
     }
 }

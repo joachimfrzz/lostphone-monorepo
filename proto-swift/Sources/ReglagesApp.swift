@@ -1057,89 +1057,106 @@ struct DonneesCellVue: View {
     }
 }
 
-// ============================================================ BATTERIE (à fiabiliser avec une capture)
+// ============================================================ BATTERIE (fidèle à la vidéo du 17/08, 12h10)
 struct BatterieVue: View {
-    @State private var economie = false
-    // 24 barres : activité nocturne marquée (canon : les appels du soir avec « Marc »)
-    private let niveaux: [CGFloat] = [88, 86, 84, 83, 82, 80, 78, 77, 76, 74, 70, 66,
-                                      62, 60, 55, 52, 50, 46, 44, 40, 55, 75, 90, 82]
-    private let activite: [CGFloat] = [4, 2, 1, 1, 0, 0, 1, 3, 6, 8, 5, 9,
-                                       7, 4, 6, 8, 10, 7, 9, 14, 18, 16, 12, 8]
+    @State private var pourcentage = true
     var body: some View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 14) {
-                    RegGroupe {
-                        LigneBascule(nom: "Mode économie d'énergie", valeur: $economie)
-                    }
-                    .padding(.top, 12)
-
-                    Text("Niveau de la batterie").font(.system(size: 13)).foregroundStyle(regTexte2)
-                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
-                    RegGroupe {
-                        VStack(alignment: .leading, spacing: 10) {
-                            HStack(alignment: .bottom, spacing: 3) {
-                                ForEach(0..<niveaux.count, id: \.self) { i in
-                                    RoundedRectangle(cornerRadius: 1.5)
-                                        .fill(regVert.opacity(0.85))
-                                        .frame(height: niveaux[i] * 0.7)
-                                        .frame(maxWidth: .infinity)
-                                }
-                            }
-                            .frame(height: 70, alignment: .bottom)
-                            HStack {
-                                Text("00 h").font(.system(size: 10)).foregroundStyle(regTexte2)
-                                Spacer()
-                                Text("12 h").font(.system(size: 10)).foregroundStyle(regTexte2)
-                                Spacer()
-                                Text("Maintenant").font(.system(size: 10)).foregroundStyle(regTexte2)
-                            }
-                            Text("Dernière charge complète : il y a 9 h").font(.system(size: 12.5)).foregroundStyle(regTexte2)
-                        }
-                        .padding(14)
-                    }
-
-                    Text("Activité").font(.system(size: 13)).foregroundStyle(regTexte2)
-                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
-                    RegGroupe {
-                        VStack(alignment: .leading, spacing: 10) {
-                            HStack(alignment: .bottom, spacing: 3) {
-                                ForEach(0..<activite.count, id: \.self) { i in
-                                    RoundedRectangle(cornerRadius: 1.5)
-                                        .fill(regBleu.opacity(0.85))
-                                        .frame(height: max(2, activite[i] * 3.4))
-                                        .frame(maxWidth: .infinity)
-                                }
-                            }
-                            .frame(height: 66, alignment: .bottom)
-                            Text("Forte activité en soirée (20 h – 23 h)").font(.system(size: 12.5)).foregroundStyle(regTexte2)
-                        }
-                        .padding(14)
-                    }
-
-                    Text("Activité par app").font(.system(size: 13)).foregroundStyle(regTexte2)
-                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
-                    RegGroupe {
-                        LigneActivite(nom: "WhatsApp", part: "43 %")
-                        RegSeparateur(retrait: 14)
-                        LigneActivite(nom: "Safari", part: "21 %")
-                        RegSeparateur(retrait: 14)
-                        LigneActivite(nom: "Téléphone", part: "12 %")
-                        RegSeparateur(retrait: 14)
-                        LigneActivite(nom: "Photos", part: "8 %")
-                        RegSeparateur(retrait: 14)
-                        LigneActivite(nom: "Ma Banque", part: "6 %")
-                    }
-
-                    RegGroupe {
-                        HStack {
-                            Text("État de la batterie").font(.system(size: 16)).foregroundStyle(regTexte)
+                    // Gros pourcentage + dernier niveau de charge
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(alignment: .firstTextBaseline, spacing: 3) {
+                            Text("34").font(.system(size: 44, weight: .semibold)).foregroundStyle(regTexte)
+                            Text("%").font(.system(size: 20, weight: .semibold)).foregroundStyle(regTexte2)
                             Spacer()
-                            Text("Capacité max. 87 %").font(.system(size: 15)).foregroundStyle(regTexte2)
-                            Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(regTexte2.opacity(0.6))
+                            Image(systemName: "info.circle").font(.system(size: 16)).foregroundStyle(regTexte2)
+                        }
+                        Text("Dernier niveau de charge : 78 % 07:12")
+                            .font(.system(size: 12.5)).foregroundStyle(regTexte2)
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Capsule().fill(Color(hex: 0x2C2C2E))
+                                Capsule().fill(regVert).frame(width: geo.size.width * 0.34)
+                            }
+                        }
+                        .frame(height: 5)
+                    }
+                    .padding(.horizontal, 20).padding(.top, 12)
+
+                    Text("Utilisation quotidienne").font(.system(size: 13)).foregroundStyle(regTexte2)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
+                    RegGroupe {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Vous avez utilisé plus de batterie aujourd'hui qu'en temps normal à 12:10.")
+                                .font(.system(size: 14)).foregroundStyle(regTexte)
+                            GraphSemaineBatterie()
+                            HStack(spacing: 5) {
+                                Circle().fill(regTexte2).frame(width: 5, height: 5)
+                                Text("Journée entière").font(.system(size: 11)).foregroundStyle(regTexte2)
+                                Circle().fill(Color(hex: 0xFF9F0A)).frame(width: 5, height: 5)
+                                Text("Quotidiennement à 12:10").font(.system(size: 11)).foregroundStyle(regTexte2)
+                            }
                         }
                         .padding(14)
+                    }
+
+                    Text("Activité des apps et du système").font(.system(size: 13)).foregroundStyle(regTexte2)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
+                    RegGroupe {
+                        LigneAppBatterie(nom: "WhatsApp", detail: "1h 12min de plus à l'écran", part: "24 %", alerte: true)
+                        RegSeparateur()
+                        LigneAppBatterie(nom: "Safari", detail: "18min de plus à l'écran", part: "9 %", alerte: true)
+                        RegSeparateur()
+                        LigneAppBatterie(nom: "Téléphone", detail: "À l'écran : 21min", part: "8 %", alerte: true)
+                        RegSeparateur()
+                        LigneAppBatterie(nom: "Écran d'accueil et verrouillé", detail: "À l'écran : 14min", part: "6 %", alerte: true)
+                        RegSeparateur()
+                        NavigationLink { UtilisationBatterieVue() } label: {
+                            HStack {
+                                Text("Voir toute l'utilisation de la batterie")
+                                    .font(.system(size: 16)).foregroundStyle(regTexte)
+                                Spacer()
+                                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(regTexte2.opacity(0.6))
+                            }
+                            .padding(14)
+                            .contentShape(Rectangle())
+                        }.buttonStyle(.plain)
+                    }
+
+                    RegGroupe {
+                        NavigationLink { EtatSanteVue() } label: {
+                            HStack {
+                                Text("État de santé de la batterie").font(.system(size: 16)).foregroundStyle(regTexte)
+                                Spacer()
+                                Text("Normal").font(.system(size: 16)).foregroundStyle(regTexte2)
+                                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(regTexte2.opacity(0.6))
+                            }
+                            .padding(14)
+                            .contentShape(Rectangle())
+                        }.buttonStyle(.plain)
+                        RegSeparateur(retrait: 14)
+                        HStack {
+                            Text("En charge").font(.system(size: 16)).foregroundStyle(regTexte)
+                            Spacer()
+                            Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(regTexte2.opacity(0.6))
+                        }
+                        .padding(14)
+                        RegSeparateur(retrait: 14)
+                        HStack {
+                            Text("Mode d'alimentation").font(.system(size: 16)).foregroundStyle(regTexte)
+                            Spacer()
+                            Text("Adaptatif").font(.system(size: 16)).foregroundStyle(regTexte2)
+                            Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(regTexte2.opacity(0.6))
+                        }
+                        .padding(14)
+                        RegSeparateur(retrait: 14)
+                        LigneBascule(nom: "Pourcentage de la batterie", valeur: $pourcentage)
                     }
                     Color.clear.frame(height: 30)
                 }
@@ -1147,6 +1164,216 @@ struct BatterieVue: View {
         }
         .navigationTitle("Batterie")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// Comparaison Moyenne / Aujourd'hui + barres hebdomadaires (L M M J V S D L, aujourd'hui en orange)
+struct GraphSemaineBatterie: View {
+    private let jours = ["L", "M", "M", "J", "V", "S", "D", "L"]
+    private let hauteurs: [CGFloat] = [34, 42, 30, 38, 46, 58, 72, 86]
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 26) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Moyenne").font(.system(size: 12)).foregroundStyle(regTexte2)
+                    HStack(alignment: .firstTextBaseline, spacing: 2) {
+                        Text("21").font(.system(size: 20, weight: .semibold)).foregroundStyle(regTexte)
+                        Text("%").font(.system(size: 12)).foregroundStyle(regTexte2)
+                    }
+                }
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Aujourd'hui").font(.system(size: 12)).foregroundStyle(Color(hex: 0xFF9F0A))
+                    HStack(alignment: .firstTextBaseline, spacing: 2) {
+                        Text("43").font(.system(size: 20, weight: .semibold)).foregroundStyle(Color(hex: 0xFF9F0A))
+                        Text("%").font(.system(size: 12)).foregroundStyle(Color(hex: 0xFF9F0A))
+                    }
+                }
+                Spacer()
+            }
+            HStack(alignment: .bottom, spacing: 10) {
+                ForEach(0..<jours.count, id: \.self) { i in
+                    VStack(spacing: 4) {
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(i == jours.count - 1 ? Color(hex: 0xFF9F0A) : Color(hex: 0x3A3A3E))
+                            .frame(height: hauteurs[i])
+                        Text(jours[i]).font(.system(size: 10)).foregroundStyle(regTexte2)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                Text("Moyenne").font(.system(size: 10)).foregroundStyle(regTexte2)
+            }
+            .frame(height: 108, alignment: .bottom)
+        }
+    }
+}
+
+// Détail « Utilisation de la batterie » : graphique 24 h avec pic de charge vert + liste par app
+struct UtilisationBatterieVue: View {
+    private let heures: [CGFloat] = [14, 10, 8, 6, 5, 4, 6, 30, 12, 10, 14, 18,
+                                     10, 8, 12, 16, 10, 14, 20, 34, 44, 38, 26, 12]
+    var body: some View {
+        ZStack {
+            regFond.ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 14) {
+                    Text("Utilisation quotidienne").font(.system(size: 13)).foregroundStyle(regTexte2)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20).padding(.top, 12)
+                    RegGroupe {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Vous avez utilisé plus de batterie aujourd'hui qu'en temps normal à 12:10.")
+                                .font(.system(size: 14)).foregroundStyle(regTexte)
+                            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                                Text("43 %").font(.system(size: 24, weight: .semibold)).foregroundStyle(Color(hex: 0xFF9F0A))
+                                Spacer()
+                                Text("17 août 2026").font(.system(size: 12)).foregroundStyle(regTexte2)
+                            }
+                            // 24 h : pic de charge (vert) à 7 h, activité du soir
+                            HStack(alignment: .bottom, spacing: 3) {
+                                ForEach(0..<heures.count, id: \.self) { i in
+                                    RoundedRectangle(cornerRadius: 1.5)
+                                        .fill(i == 7 ? regVert : Color(hex: 0xFF9F0A).opacity(0.8))
+                                        .frame(height: max(2, heures[i] * 1.7))
+                                        .frame(maxWidth: .infinity)
+                                }
+                            }
+                            .frame(height: 80, alignment: .bottom)
+                            HStack {
+                                Text("00 h").font(.system(size: 10)).foregroundStyle(regTexte2)
+                                Spacer()
+                                Text("06").font(.system(size: 10)).foregroundStyle(regTexte2)
+                                Spacer()
+                                Text("12 h").font(.system(size: 10)).foregroundStyle(regTexte2)
+                                Spacer()
+                                Text("18").font(.system(size: 10)).foregroundStyle(regTexte2)
+                            }
+                            HStack(spacing: 40) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Écran actif").font(.system(size: 12)).foregroundStyle(regTexte2)
+                                    Text("4h 51min").font(.system(size: 18, weight: .semibold)).foregroundStyle(regTexte)
+                                }
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Écran inactif").font(.system(size: 12)).foregroundStyle(regTexte2)
+                                    Text("38min").font(.system(size: 18, weight: .semibold)).foregroundStyle(regTexte)
+                                }
+                            }
+                        }
+                        .padding(14)
+                    }
+
+                    Text("Utilisation de la batterie par app").font(.system(size: 13)).foregroundStyle(regTexte2)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
+                    RegGroupe {
+                        LigneAppBatterie(nom: "WhatsApp", detail: "À l'écran : 3h 42min · En arrière-plan : 26min", part: "24 %", alerte: true)
+                        RegSeparateur()
+                        LigneAppBatterie(nom: "Safari", detail: "À l'écran : 48min", part: "9 %", alerte: true)
+                        RegSeparateur()
+                        LigneAppBatterie(nom: "Téléphone", detail: "À l'écran : 21min", part: "8 %", alerte: true)
+                        RegSeparateur()
+                        LigneAppBatterie(nom: "Photos", detail: "À l'écran : 12min", part: "4 %", alerte: false)
+                        RegSeparateur()
+                        LigneAppBatterie(nom: "Ma Banque", detail: "À l'écran : 6min", part: "2 %", alerte: false)
+                        RegSeparateur()
+                        Text("En afficher plus").font(.system(size: 15)).foregroundStyle(regBleu)
+                            .frame(maxWidth: .infinity, alignment: .leading).padding(14)
+                    }
+
+                    Text("Autres utilisations de la batterie").font(.system(size: 13)).foregroundStyle(regTexte2)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
+                    RegGroupe {
+                        LigneAppBatterie(nom: "Écran d'accueil et verrouillé", detail: "À l'écran : 14min", part: "6 %", alerte: true)
+                    }
+                    Color.clear.frame(height: 30)
+                }
+            }
+        }
+        .navigationTitle("Utilisation de la batterie")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct EtatSanteVue: View {
+    var body: some View {
+        ZStack {
+            regFond.ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 14) {
+                    RegGroupe {
+                        HStack {
+                            Text("État de santé de la batterie").font(.system(size: 16)).foregroundStyle(regTexte)
+                            Spacer()
+                            Text("Normal").font(.system(size: 16)).foregroundStyle(regTexte2)
+                        }
+                        .padding(14)
+                    }
+                    .padding(.top, 12)
+                    Text("Les performances de la batterie de cet iPhone sont normales. Batterie et garantie…")
+                        .font(.system(size: 12.5)).foregroundStyle(regTexte2)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
+                    RegGroupe {
+                        HStack {
+                            Text("Capacité maximum").font(.system(size: 16)).foregroundStyle(regTexte)
+                            Spacer()
+                            Text("89 %").font(.system(size: 16)).foregroundStyle(regTexte2)
+                        }
+                        .padding(14)
+                    }
+                    Text("Ceci est une mesure de la capacité de la batterie comparée à lorsqu'elle était neuve. Une capacité plus faible peut réduire le nombre d'heures d'utilisation possibles entre les recharges.")
+                        .font(.system(size: 12.5)).foregroundStyle(regTexte2)
+                        .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
+                    RegGroupe {
+                        HStack {
+                            Text("Comptage de cycles").font(.system(size: 16)).foregroundStyle(regTexte)
+                            Spacer()
+                            Text("412").font(.system(size: 16)).foregroundStyle(regTexte2)
+                        }
+                        .padding(14)
+                    }
+                    RegGroupe {
+                        HStack {
+                            Text("Date de fabrication").font(.system(size: 16)).foregroundStyle(regTexte)
+                            Spacer()
+                            Text("Octobre 2023").font(.system(size: 16)).foregroundStyle(regTexte2)
+                        }
+                        .padding(14)
+                        RegSeparateur(retrait: 14)
+                        HStack {
+                            Text("Première utilisation").font(.system(size: 16)).foregroundStyle(regTexte)
+                            Spacer()
+                            Text("Novembre 2023").font(.system(size: 16)).foregroundStyle(regTexte2)
+                        }
+                        .padding(14)
+                    }
+                    Color.clear.frame(height: 30)
+                }
+            }
+        }
+        .navigationTitle("État de santé de la batterie")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct LigneAppBatterie: View {
+    let nom: String
+    let detail: String
+    let part: String
+    let alerte: Bool
+    var body: some View {
+        HStack(spacing: 12) {
+            RegIcone(symbole: "app.fill", fond: Color(hex: 0x3A3A3E))
+            VStack(alignment: .leading, spacing: 1) {
+                Text(nom).font(.system(size: 15.5)).foregroundStyle(regTexte)
+                Text(detail).font(.system(size: 12)).foregroundStyle(regTexte2)
+            }
+            Spacer()
+            if alerte {
+                Image(systemName: "exclamationmark.circle.fill")
+                    .font(.system(size: 13)).foregroundStyle(Color(hex: 0xFF9F0A))
+            }
+            Text(part).font(.system(size: 15)).foregroundStyle(regTexte)
+            Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(regTexte2.opacity(0.6))
+        }
+        .padding(.horizontal, 14).padding(.vertical, 8)
     }
 }
 

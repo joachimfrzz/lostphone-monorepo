@@ -550,7 +550,12 @@ struct MsgConvVue: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                             menuPlus = false
-                            erreurTexte = ErreurLambda.message(conv.nom.count + i)
+                            // D56 : réponse déterministe du même type que l'action
+                            let cles = ["Appareil photo": "camera", "Photos": "photos.vide",
+                                        "Autocollants": "autocollants", "Sondages": "sondage",
+                                        "Envoyer plus tard": "programmation", "Genmoji": "intelligence",
+                                        "Image Playground": "playground"]
+                            erreurTexte = ErreurLambda.reponse(cles[String(parts[0])] ?? "generique")
                             erreurVisible = true
                         }
                     }
@@ -676,7 +681,7 @@ struct MsgFicheVue: View {
                             .padding(.horizontal, 14).padding(.vertical, 8)
                             .background(msgChamp, in: Capsule())
                             .onTapGesture {
-                                erreurTexte = ErreurLambda.message(conv.nom.count + 3)
+                                erreurTexte = ErreurLambda.reponse("modif.contact")
                                 erreurVisible = true
                             }
                     }
@@ -690,7 +695,7 @@ struct MsgFicheVue: View {
                         RondFicheMsg(symbole: "phone.fill") { appelAudio = true }
                         RondFicheMsg(symbole: "video.fill") { appelAudio = true }
                         RondFicheMsg(symbole: "envelope.fill") {
-                            erreurTexte = ErreurLambda.message(conv.nom.count + 7)
+                            erreurTexte = ErreurLambda.reponse("mail")
                             erreurVisible = true
                         }
                     }

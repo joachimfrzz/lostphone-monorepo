@@ -222,6 +222,7 @@ struct TelFicheVue: View {
     @Environment(\.dismiss) private var dismiss
     let nom: String
     @State private var appelVisible = false
+    @State private var messagesVisible = false
 
     private var numero: String {
         DonneesTel.contacts.first(where: { $0.0 == nom })?.1 ?? "numéro masqué"
@@ -263,10 +264,10 @@ struct TelFicheVue: View {
                     Text(nom).font(.system(size: 30, weight: .bold)).foregroundStyle(telTexte).padding(.top, 10)
 
                     HStack(spacing: 14) {
-                        RondFiche(symbole: "message.fill") { }
+                        RondFiche(symbole: "message.fill") { messagesVisible = true }
                         RondFiche(symbole: "phone.fill") { appelVisible = true }
                         RondFiche(symbole: "video.fill") { appelVisible = true }
-                        RondFiche(symbole: "envelope.fill") { }
+                        RondFiche(symbole: "envelope.fill")
                     }
                     .padding(.top, 16)
 
@@ -345,20 +346,28 @@ struct TelFicheVue: View {
         .fullScreenCover(isPresented: $appelVisible) {
             AppelTelVue(destinataire: nom == "Marc ❤️" ? "Marc ❤️" : nom, numero: numero)
         }
+        // D56 anneau 1 : le bouton message ouvre la VRAIE conversation Messages du contact
+        .fullScreenCover(isPresented: $messagesVisible) {
+            MsgConvVue(conv: DonneesMsg.convs.first(where: { $0.nom == nom })
+                ?? ConvMsg(nom: nom, numero: numero, service: "Message texte · SMS",
+                           bleu: false, inconnu: false, apercu: "", date: "", elements: []))
+        }
     }
 }
 
 struct RondFiche: View {
     let symbole: String
-    var action: () -> Void
+    var action: (() -> Void)? = nil
     @State private var alerteVisible = false
     var body: some View {
         Circle().fill(.ultraThinMaterial).frame(width: 54, height: 54)
             .overlay(Image(systemName: symbole).font(.system(size: 19)).foregroundStyle(telTexte))
             .onTapGesture {
-                if symbole == "phone.fill" || symbole == "video.fill" { action() } else { alerteVisible = true }
+                if let action { action() } else { alerteVisible = true }
             }
-            .alert(ErreurLambda.message(symbole.count), isPresented: $alerteVisible) {
+            // D56 : réponse déterministe du même type que l'action
+            .alert(ErreurLambda.reponse(symbole == "envelope.fill" ? "mail" : "generique"),
+                   isPresented: $alerteVisible) {
                 Button("OK", role: .cancel) {}
             }
     }
@@ -376,9 +385,19 @@ struct LigneFiche: View {
         .padding(.horizontal, 14).padding(.vertical, 12)
         .contentShape(Rectangle())
         .onTapGesture { alerteVisible = true }
-        .alert(ErreurLambda.message(texte.count), isPresented: $alerteVisible) {
+        // D56 : réponse déterministe propre à chaque ligne
+        .alert(ErreurLambda.reponse(cleBanale), isPresented: $alerteVisible) {
             Button("OK", role: .cancel) {}
         }
+    }
+
+    private var cleBanale: String {
+        if texte.hasPrefix("Partager") { return "partage" }
+        if texte.contains("favoris") { return "favoris" }
+        if texte.contains("liste") { return "liste" }
+        if texte.contains("urgence") { return "urgence" }
+        if texte.hasPrefix("Bloquer") { return "blocage" }
+        return "generique"
     }
 }
 

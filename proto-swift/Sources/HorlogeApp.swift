@@ -215,6 +215,8 @@ struct AlarmeEditionVue: View {
     @State private var h: Int = 0
     @State private var m: Int = 0
     @State private var rappel = true
+    @State private var sonnerie = "Radial"
+    @State private var dureeRappel = "9 min"
 
     var body: some View {
         NavigationStack {
@@ -233,7 +235,8 @@ struct AlarmeEditionVue: View {
 
                 List {
                     Section {
-                        LigneAlarme(titre: "Récurrence", valeur: alarme.recurrence)
+                        LigneChoix(titre: "Récurrence", valeur: $alarme.recurrence,
+                                   options: ["Jamais", "Chaque jour", "En semaine", "Chaque samedi", "Chaque dimanche"])
                         HStack {
                             Text("Description").foregroundStyle(.white)
                             Spacer()
@@ -242,14 +245,16 @@ struct AlarmeEditionVue: View {
                                 .frame(maxWidth: 180)
                         }
                         .listRowBackground(Color(hex: 0x2C2C2E))
-                        LigneAlarme(titre: "Sonnerie", valeur: "Radial")
+                        LigneChoix(titre: "Sonnerie", valeur: $sonnerie,
+                                   options: ["Radial", "Reflet", "Départ", "Aube", "Éclats", "Aucun"])
                         HStack {
                             Text("Rappel d'alarme").foregroundStyle(.white)
                             Spacer()
                             Toggle("", isOn: $rappel).labelsHidden().tint(Color(hex: 0x32D74B))
                         }
                         .listRowBackground(Color(hex: 0x2C2C2E))
-                        if rappel { LigneAlarme(titre: "Durée du rappel", valeur: "9 min", valeurOrange: true) }
+                        if rappel { LigneChoix(titre: "Durée du rappel", valeur: $dureeRappel,
+                                                               options: ["1 min", "5 min", "9 min", "15 min"], valeurOrange: true) }
                     }
                     if !creation {
                         Section {
@@ -298,22 +303,28 @@ struct AlarmeEditionVue: View {
     }
 }
 
-struct LigneAlarme: View {
+struct LigneChoix: View {
     let titre: String
-    let valeur: String
+    @Binding var valeur: String
+    let options: [String]
     var valeurOrange: Bool = false
-    @State private var alerte = false
     var body: some View {
-        HStack {
-            Text(titre).foregroundStyle(.white)
-            Spacer()
-            Text(valeur).foregroundStyle(valeurOrange ? .orange : .secondary)
-            Image(systemName: "chevron.up.chevron.down").font(.system(size: 11)).foregroundStyle(.secondary)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture { alerte = true }
-        .alert(titre, isPresented: $alerte) { Button("OK", role: .cancel) {} } message: {
-            Text(ErreurLambda.reponse("horloge." + titre.lowercased()))
+        Menu {
+            ForEach(options, id: \.self) { o in
+                Button {
+                    valeur = o
+                } label: {
+                    if o == valeur { Label(o, systemImage: "checkmark") } else { Text(o) }
+                }
+            }
+        } label: {
+            HStack {
+                Text(titre).foregroundStyle(.white)
+                Spacer()
+                Text(valeur).foregroundStyle(valeurOrange ? .orange : .secondary)
+                Image(systemName: "chevron.up.chevron.down").font(.system(size: 11)).foregroundStyle(.secondary)
+            }
+            .contentShape(Rectangle())
         }
         .listRowBackground(Color(hex: 0x2C2C2E))
     }
@@ -398,6 +409,8 @@ struct MinuteursVue: View {
     @State private var duree: TimeInterval = 0
     @State private var enPause = false
     @State private var resteEnPause: TimeInterval = 0
+    @State private var descriptionMinuteur = ""
+    @State private var sonnerieMinuteur = "Radial"
 
     private var actif: Bool { fin != nil }
 
@@ -502,11 +515,18 @@ struct MinuteursVue: View {
                         }
                         .padding(.horizontal, 24)
                         VStack(spacing: 0) {
-                            LigneAlarme(titre: "Description", valeur: "Minuteur")
-                                .padding(.horizontal, 16).padding(.vertical, 12)
-                                .background(Color(hex: 0x1C1C1E))
+                            HStack {
+                                Text("Description").foregroundStyle(.white)
+                                Spacer()
+                                TextField("Minuteur", text: $descriptionMinuteur)
+                                    .multilineTextAlignment(.trailing).foregroundStyle(.secondary)
+                                    .frame(maxWidth: 160)
+                            }
+                            .padding(.horizontal, 16).padding(.vertical, 12)
+                            .background(Color(hex: 0x1C1C1E))
                             Divider().overlay(Color(hex: 0x2C2C2E))
-                            LigneAlarme(titre: "Sonnerie", valeur: "Radial")
+                            LigneChoix(titre: "Sonnerie", valeur: $sonnerieMinuteur,
+                                       options: ["Radial", "Reflet", "Départ", "Aube", "Éclats"])
                                 .padding(.horizontal, 16).padding(.vertical, 12)
                                 .background(Color(hex: 0x1C1C1E))
                         }

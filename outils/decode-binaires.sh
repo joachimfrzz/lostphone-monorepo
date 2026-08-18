@@ -23,3 +23,8 @@ if [ -f outils/pellicule3.tar.b64 ]; then
   tar xf /tmp/pellicule3.tar
   echo "Captures restaurées ($(tar tf /tmp/pellicule3.tar | wc -l | tr -d ' ') images)."
 fi
+if [ -f outils/memos.tar.b64 ]; then
+  python3 -c "import base64; open('/tmp/memos.tar','wb').write(base64.b64decode(open('outils/memos.tar.b64').read()))"
+  tar xf /tmp/memos.tar
+  echo "Mémos vocaux restaurés ($(tar tf /tmp/memos.tar | wc -l | tr -d ' ') fichiers)."
+fi

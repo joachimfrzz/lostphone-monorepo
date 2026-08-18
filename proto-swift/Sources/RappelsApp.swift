@@ -245,9 +245,9 @@ struct FiltreVue: View {
                             if !t.isEmpty {
                                 magasin.rappels.append(Rappel(titre: t,
                                                               liste: titre == "Courses" ? "Courses" : "Rappels",
-                                                              aujourdhui: titre == "Aujourd'hui",
+                                                              urgent: titre == "Urgent",
                                                               drapeau: titre == "Avec drapeau",
-                                                              urgent: titre == "Urgent"))
+                                                              aujourdhui: titre == "Aujourd'hui"))
                             }
                             nouveau = ""
                         }

@@ -143,6 +143,8 @@ struct AccueilView: View {
     @State private var messagesOuvert = false
     @State private var reglagesOuvert = false
     @State private var photosOuvert = false
+    @State private var horlogeOuverte = false
+    @State private var calculatriceOuverte = false
 
     private let apps: [(String, Color, String, Color)] = [
         ("Horloge", Color(hex: 0x1C1C1E), "clock", .white),
@@ -162,6 +164,16 @@ struct AccueilView: View {
         ("Fichiers", .white, "folder.fill", Color(hex: 0x0A84FF)),
         ("Dictaphone", Color(hex: 0x1C1C1E), "waveform", Color(hex: 0xFF3B30)),
     ]
+
+    private func actionPour(_ nom: String) -> (() -> Void)? {
+        switch nom {
+        case "Réglages": return { reglagesOuvert = true }
+        case "Photos": return { photosOuvert = true }
+        case "Horloge": return { horlogeOuverte = true }
+        case "Calculatrice": return { calculatriceOuverte = true }
+        default: return nil
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -192,8 +204,7 @@ struct AccueilView: View {
                           spacing: 20) {
                     ForEach(apps, id: \.0) { a in
                         AppIcone(nom: a.0, fond: a.1, symbole: a.2, teinte: a.3,
-                                 action: a.0 == "Réglages" ? { reglagesOuvert = true }
-                                       : a.0 == "Photos" ? { photosOuvert = true } : nil)
+                                 action: actionPour(a.0))
                     }
                     AppIcone(nom: "WhatsApp", fond: Color(hex: 0x25D366),
                              symbole: "message.fill", teinte: .white, badge: "1") {
@@ -238,6 +249,8 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $messagesOuvert) { MessagesVue() }
         .fullScreenCover(isPresented: $reglagesOuvert) { ReglagesVue() }
         .fullScreenCover(isPresented: $photosOuvert) { PhotosVue() }
+        .fullScreenCover(isPresented: $horlogeOuverte) { HorlogeVue() }
+        .fullScreenCover(isPresented: $calculatriceOuverte) { CalculatriceVue() }
     }
 }
 

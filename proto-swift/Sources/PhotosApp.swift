@@ -146,6 +146,9 @@ enum DonneesPhotos {
         PhotoItem(id: "p38", nomFichier: "IMG_3284", date: "1 janv. 2026 · 00:00", mois: "Janv. 2026", annee: "2026",
                   lieu: "Lyon 3e", legende: "BONNE ANNÉE 🎉 (floue mais parfaite)",
                   motsCles: ["nouvel an", "julie", "chloé", "amies", "selfie", "flou"], selfie: true, iso: "ISO 1000", taille: "1,4 Mo"),
+        PhotoItem(id: "p39", nomFichier: "IMG_3295", date: "12 mars 2026 · 21:12", mois: "Mars 2026", annee: "2026",
+                  lieu: "—", legende: "Capture d'écran — profil Meetic",
+                  motsCles: ["capture", "meetic", "marc", "profil"], capture: true, iso: "—", taille: "1,1 Mo"),
         PhotoItem(id: "p69", nomFichier: "IMG_3298", date: "26 mars 2026 · 14:12", mois: "Mars 2026", annee: "2026",
                   lieu: "Lyon 1er", legende: "Nouvelle photo de profil ?",
                   motsCles: ["selfie", "portrait", "café", "profil"], selfie: true, iso: "ISO 100", taille: "1,3 Mo"),
@@ -179,6 +182,9 @@ enum DonneesPhotos {
         PhotoItem(id: "p48", nomFichier: "IMG_3363", date: "12 juin 2026 · 22:15", mois: "Juin 2026", annee: "2026",
                   lieu: "—", legende: "Le dernier rayon 🌅",
                   motsCles: ["marc", "coucher de soleil", "mer", "nuit"], iso: "—", taille: "358 Ko"),
+        PhotoItem(id: "p67", nomFichier: "IMG_3364", date: "13 juin 2026 · 16:40", mois: "Juin 2026", annee: "2026",
+                  lieu: "—", legende: "Capture d'écran — reçu Western Union",
+                  motsCles: ["capture", "western union", "transfert", "argent"], capture: true, iso: "—", taille: "512 Ko"),
         PhotoItem(id: "p50", nomFichier: "IMG_3365", date: "14 juin 2026 · 23:20", mois: "Juin 2026", annee: "2026",
                   lieu: "—", legende: "Mon officier ⚓️",
                   motsCles: ["marc", "marin", "bateau", "uniforme"], iso: "—", taille: "198 Ko"),
@@ -191,12 +197,18 @@ enum DonneesPhotos {
         PhotoItem(id: "p53", nomFichier: "IMG_3375", date: "4 juil. 2026 · 01:13", mois: "Juil. 2026", annee: "2026",
                   lieu: "Lyon 1er", legende: "",
                   motsCles: ["nuit", "insomnie"], iso: "ISO 3200", taille: "1,2 Mo"),
+        PhotoItem(id: "p54", nomFichier: "IMG_3376", date: "5 juil. 2026 · 20:32", mois: "Juil. 2026", annee: "2026",
+                  lieu: "—", legende: "Capture d'écran — appel vidéo",
+                  motsCles: ["capture", "marc", "visio", "appel"], capture: true, iso: "—", taille: "486 Ko"),
         PhotoItem(id: "p55", nomFichier: "IMG_3378", date: "9 juil. 2026 · 14:05", mois: "Juil. 2026", annee: "2026",
                   lieu: "Lyon 4e", legende: "L'attente…",
                   motsCles: ["kiné", "salle d'attente", "santé"], iso: "ISO 320", taille: "2,0 Mo"),
         PhotoItem(id: "p56", nomFichier: "IMG_3379", date: "9 juil. 2026 · 15:22", mois: "Juil. 2026", annee: "2026",
                   lieu: "Lyon 1er", legende: "Le programme des 3 prochaines semaines 🙃",
                   motsCles: ["kiné", "ordonnance", "genouillère", "santé"], iso: "ISO 200", taille: "1,8 Mo"),
+        PhotoItem(id: "p66", nomFichier: "IMG_3381", date: "17 juil. 2026 · 09:12", mois: "Juil. 2026", annee: "2026",
+                  lieu: "—", legende: "Capture d'écran — WhatsApp",
+                  motsCles: ["capture", "whatsapp", "marc", "argent"], capture: true, iso: "—", taille: "894 Ko"),
         PhotoItem(id: "p61", nomFichier: "IMG_3384", date: "9 août 2026 · 15:30", mois: "Août 2026", annee: "2026",
                   lieu: "Quais de Saône, Lyon", legende: "",
                   motsCles: ["quais", "gris", "photo"], iso: "ISO 100", taille: "2,5 Mo"),
@@ -209,9 +221,24 @@ enum DonneesPhotos {
         PhotoItem(id: "p64", nomFichier: "IMG_3390", date: "12 août 2026 · 09:41", mois: "Août 2026", annee: "2026",
                   lieu: "Lyon 1er", legende: "",
                   motsCles: ["document", "carte"], iso: "ISO 400", taille: "1,4 Mo"),
+        PhotoItem(id: "p58", nomFichier: "IMG_3391", date: "12 août 2026 · 09:44", mois: "Août 2026", annee: "2026",
+                  lieu: "—", legende: "Capture d'écran — RIB",
+                  motsCles: ["capture", "rib", "banque", "lcl"], capture: true, iso: "—", taille: "428 Ko"),
+        PhotoItem(id: "p59", nomFichier: "IMG_3393", date: "16 août 2026 · 09:30", mois: "Août 2026", annee: "2026",
+                  lieu: "—", legende: "Capture d'écran — SMS",
+                  motsCles: ["capture", "sms", "banque", "sécurité"], capture: true, iso: "—", taille: "402 Ko"),
+        PhotoItem(id: "p57", nomFichier: "IMG_3394", date: "16 août 2026 · 18:12", mois: "Août 2026", annee: "2026",
+                  lieu: "—", legende: "Capture d'écran — virement",
+                  motsCles: ["capture", "virement", "banque", "lcl", "argent"], capture: true, iso: "—", taille: "631 Ko"),
+        PhotoItem(id: "p60", nomFichier: "IMG_3395", date: "16 août 2026 · 22:47", mois: "Août 2026", annee: "2026",
+                  lieu: "—", legende: "Capture d'écran — Notes",
+                  motsCles: ["capture", "note", "documents", "banque"], capture: true, iso: "—", taille: "398 Ko"),
         PhotoItem(id: "p65", nomFichier: "IMG_3392", date: "15 août 2026 · 21:08", mois: "Août 2026", annee: "2026",
                   lieu: "Lyon 1er", legende: "",
                   motsCles: ["fenêtre", "soir", "attente"], iso: "ISO 640", taille: "1,6 Mo"),
+        PhotoItem(id: "p68", nomFichier: "IMG_3396", date: "16 août 2026 · 23:12", mois: "Août 2026", annee: "2026",
+                  lieu: "—", legende: "Capture d'écran — Safari",
+                  motsCles: ["capture", "safari", "recherche"], capture: true, iso: "—", taille: "917 Ko"),
     ]
 
     static func parMois() -> [(String, [PhotoItem])] {
@@ -252,7 +279,7 @@ enum ChargeurPhoto {
 final class MagasinPhotos: ObservableObject {
     static let partage = MagasinPhotos()
     @Published var favoris: Set<String> = Set(DonneesPhotos.toutes.filter { $0.favori }.map { $0.id })
-    @Published var supprimees: Set<String> = []
+    @Published var supprimees: Set<String> = ["p66", "p67", "p68"]
 
     var visibles: [PhotoItem] { DonneesPhotos.toutes.filter { !supprimees.contains($0.id) } }
     var lesFavoris: [PhotoItem] { visibles.filter { favoris.contains($0.id) } }

@@ -226,7 +226,7 @@ struct ListeMemosVue: View {
                                 } label: { Label(m.favori ? "Retirer des favoris" : "Ajouter aux favoris", systemImage: "heart") }
                                 Button {
                                     if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) {
-                                        var copie = magasin.memos[i]
+                                        let copie = magasin.memos[i]
                                         let nouvelle = MemoVocal(titre: copie.titre + " copie", dateTexte: copie.dateTexte,
                                                                  duree: copie.duree, fichier: copie.fichier,
                                                                  transcription: copie.transcription, favori: false, dossier: copie.dossier)

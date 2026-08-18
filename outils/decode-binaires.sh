@@ -12,3 +12,9 @@ if [ -f outils/pellicule.tar.b64 ]; then
   tar xf /tmp/pellicule.tar
   echo "Pellicule restaurée ($(tar tf /tmp/pellicule.tar | wc -l | tr -d ' ') photos)."
 fi
+if ls outils/pellicule2.tar.b64.part* >/dev/null 2>&1; then
+  cat outils/pellicule2.tar.b64.part* > /tmp/pellicule2.b64
+  python3 -c "import base64; open('/tmp/pellicule2.tar','wb').write(base64.b64decode(open('/tmp/pellicule2.b64').read()))"
+  tar xf /tmp/pellicule2.tar
+  echo "Pellicule vague 2 restaurée ($(tar tf /tmp/pellicule2.tar | wc -l | tr -d ' ') photos)."
+fi

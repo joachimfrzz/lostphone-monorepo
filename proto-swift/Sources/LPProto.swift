@@ -145,6 +145,7 @@ struct AccueilView: View {
     @State private var photosOuvert = false
     @State private var horlogeOuverte = false
     @State private var calculatriceOuverte = false
+    @State private var meteoOuverte = false
 
     private let apps: [(String, Color, String, Color)] = [
         ("Horloge", Color(hex: 0x1C1C1E), "clock", .white),
@@ -171,6 +172,7 @@ struct AccueilView: View {
         case "Photos": return { photosOuvert = true }
         case "Horloge": return { horlogeOuverte = true }
         case "Calculatrice": return { calculatriceOuverte = true }
+        case "Météo": return { meteoOuverte = true }
         default: return nil
         }
     }
@@ -251,6 +253,7 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $photosOuvert) { PhotosVue() }
         .fullScreenCover(isPresented: $horlogeOuverte) { HorlogeVue() }
         .fullScreenCover(isPresented: $calculatriceOuverte) { CalculatriceVue() }
+        .fullScreenCover(isPresented: $meteoOuverte) { MeteoVue() }
     }
 }
 

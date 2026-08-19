@@ -150,6 +150,7 @@ struct AccueilView: View {
     @State private var rappelsOuverts = false
     @State private var dictaphoneOuvert = false
     @State private var banqueOuverte = false
+    @State private var calendrierOuvert = false
 
     private let apps: [(String, Color, String, Color)] = [
         ("Horloge", Color(hex: 0x1C1C1E), "clock", .white),
@@ -181,6 +182,7 @@ struct AccueilView: View {
         case "Rappels": return { rappelsOuverts = true }
         case "Dictaphone": return { dictaphoneOuvert = true }
         case "Ma Banque": return { banqueOuverte = true }
+        case "Calendrier": return { calendrierOuvert = true }
         default: return nil
         }
     }
@@ -266,6 +268,7 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $rappelsOuverts) { RappelsVue() }
         .fullScreenCover(isPresented: $dictaphoneOuvert) { DictaphoneVue() }
         .fullScreenCover(isPresented: $banqueOuverte) { MaBanqueVue() }
+        .fullScreenCover(isPresented: $calendrierOuvert) { CalendrierVue() }
     }
 }
 

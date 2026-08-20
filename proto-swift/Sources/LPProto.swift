@@ -154,6 +154,7 @@ struct AccueilView: View {
     @State private var localiserOuvert = false
     @State private var mailOuvert = false
     @State private var plansOuverts = false
+    @State private var safariOuvert = false
 
     private let apps: [(String, Color, String, Color)] = [
         ("Horloge", Color(hex: 0x1C1C1E), "clock", .white),
@@ -255,7 +256,9 @@ struct AccueilView: View {
                         mailOuvert = true
                     }
                     Spacer()
-                    AppIcone(nom: "", fond: Color(hex: 0xF2F2F7), symbole: "safari.fill", teinte: Color(hex: 0x0A84FF))
+                    AppIcone(nom: "", fond: Color(hex: 0xF2F2F7), symbole: "safari.fill", teinte: Color(hex: 0x0A84FF)) {
+                        safariOuvert = true
+                    }
                     Spacer()
                 }
                 .padding(.vertical, 15)
@@ -279,6 +282,7 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $localiserOuvert) { LocaliserVue() }
         .fullScreenCover(isPresented: $mailOuvert) { MailVue() }
         .fullScreenCover(isPresented: $plansOuverts) { PlansVue() }
+        .fullScreenCover(isPresented: $safariOuvert) { SafariVue() }
     }
 }
 

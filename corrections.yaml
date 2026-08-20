@@ -1,32 +1,42 @@
-# Registre des correctifs — Lost Phone (créé le 20/08/2026, jugement du cercle 1)
-# File 1 = PATRONS (transversaux, corrigés en priorité — contaminent les apps futures)
-# File 2 = LOCAUX (par lots aux jalons de cercle)
-format_version: 1
+# corrections.yaml — registre des correctifs (D60)
+# File 1 = patrons transverses (P). File 2 = correctifs locaux, par cercle.
+# Mise à jour : 20/08/2026 23h55 — passe correctifs cercle 1 exécutée.
 
 patrons:
-  - id: P1
-    titre: "Geste home : conflit avec le Centre de contrôle des iPhone à bouton (SE)"
-    proposition: "Barre home FICTIVE dessinée (le jeu simule un iPhone moderne sur tout appareil) + sortie par swipe/tap sur zone au-dessus du bord système. Amende partiellement D50 (barre d'état reste la vraie)."
-    statut: EN ATTENTE D'ARBITRAGE
-  - id: P2
-    titre: "Tout bouton affiché doit être réellement utilisable (durcissement D51-1)"
-    detail: "Les alertes-catalogue D56 ne sont plus acceptables pour des actions faisables. Repasse progressive sur l'existant."
-    statut: ACTÉ (jugement utilisateur 20/08)
-  - id: P3
-    titre: "Routeur de navigation inter-apps"
-    detail: "Appeler dans Banque -> Téléphone clavier pré-rempli ; Site web dans Plans -> page Safari ; etc. Refactor global (état routeur partagé), requis par le futur moteur."
-    statut: ACTÉ — à construire
-  - id: P4
-    titre: "Safari : tout lien affiché mène à une page rendue"
-    detail: "Les sites servant l'histoire sont consultables ; aucun lien mort affiché."
-    statut: ACTÉ
-  - id: P5
-    titre: "Adéquation stricte aux références (vidéos/screenshots font foi)"
-    statut: RAPPEL PERMANENT
+  P1:
+    titre: "Barre home fictive + geste de sortie fiable (conflit Centre de contrôle iPhone SE)"
+    statut: CORRIGE
+    solution: "Composant partagé BarreHome (LPProto) : indicateur dessiné (capsule 140x5) + tap OU balayage vers le haut, zone au-dessus du bord système. Déployé dans les 17 vues d'apps."
+  P2:
+    titre: "Tous les boutons affichés réellement utilisables"
+    statut: PARTIEL
+    note: "Appeler/Site web/Contacter câblés via le routeur (P3). Historique Safari cliquable. Le reste reste couvert par le catalogue D56 — upgrades au fil des cercles."
+  P3:
+    titre: "Liens inter-apps (routeur)"
+    statut: CORRIGE
+    solution: "Routeur.partage (LPProto) : Ma Banque > Appeler 09 69 36 30 30 -> clavier Téléphone pré-rempli ; Plans > Appeler (tél par lieu) ; Plans > Site web -> Safari page rendue ; Localiser > Contacter -> Téléphone. AccueilView ferme l'app courante puis ouvre la cible."
+  P4:
+    titre: "Safari : sites réellement consultables (ceux qui servent l'histoire)"
+    statut: CORRIGE
+    solution: "Historique cliquable -> pages rendues (vessel, résultats Google, service-public, OKAFOR). Gabarit SiteGeneriqueVue pour les sites de lieux (Plans). Hors-histoire -> état réseau diégétique (D56)."
+  P5:
+    titre: "Adéquation fine avec les apps réelles"
+    statut: OUVERT
+    note: "Passe d'écart par app au jugement de chaque cercle."
 
-locaux_cercle_1:
-  - { app: Mail, fix: "Corps des mails en bleu et centré -> style normal (blanc/gauche)" }
-  - { app: Messages, fix: "Ouverture d'une conversation -> scroll sur le dernier message" }
-  - { app: Localiser, fix: "Memoji pour Personnes, icônes objets fidèles, couleur de police bleue incorrecte" }
-  - { app: Réglages, fix: "Barre de recherche du bas se confond avec le menu" }
-  - { app: Notes, fix: "Couleur d'accent : jaune/ambre Notes, pas bleu" }
+cercle1_locaux:
+  mail_corps_bleu_centre:
+    statut: CORRIGE
+    solution: "Corps aligné à gauche, largeur pleine, teinte neutre ; rangées de liste en buttonStyle(.plain)."
+  messages_scroll_dernier:
+    statut: CORRIGE
+    solution: "ScrollViewReader : scrollTo(fin) à l'apparition de la conversation."
+  localiser_avatars_icones_bleu:
+    statut: CORRIGE
+    solution: "Avatars émoji style Memoji (Chloé, Maman, silhouette Marc), badge objet blanc + émoji clé fidèle, bleu 0x007AFF partout."
+  reglages_barre_recherche:
+    statut: CORRIGE
+    solution: "Pilule Recherche : fond 0x2C2C2E + liseré + ombre portée — ne se confond plus avec le menu."
+  notes_accent:
+    statut: CORRIGE
+    solution: "tint ambre 0xE8A33D sur les deux piles de navigation."

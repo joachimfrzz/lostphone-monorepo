@@ -126,11 +126,7 @@ struct CalendrierVue: View {
                 }
                 .padding(.horizontal, 14).padding(.bottom, 6)
 
-                Color.clear.frame(height: 8)
-                    .contentShape(Rectangle())
-                    .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                        if v.translation.height < -35 { dismiss() }
-                    })
+            BarreHome { dismiss() }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

@@ -116,11 +116,7 @@ struct MaBanqueVue: View {
                 .preferredColorScheme(.light)
             }
 
-            Color.clear.frame(height: 8)
-                .contentShape(Rectangle())
-                .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                    if v.translation.height < -35 { dismiss() }
-                })
+            BarreHome(action: { dismiss() }, sombre: true)
         }
     }
 }
@@ -425,7 +421,7 @@ struct CartesVue: View {
             }
             .alert("Faire opposition", isPresented: $oppositionAlerte) {
                 Button("Annuler", role: .cancel) {}
-                Button("Appeler le 09 69 36 30 30") {}
+                Button("Appeler le 09 69 36 30 30") { Routeur.partage.allerTelephone("09 69 36 30 30") }
             } message: {
                 Text("En cas de perte ou de vol, l'opposition est immédiate et définitive.")
             }

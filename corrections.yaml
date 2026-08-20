@@ -1,0 +1,32 @@
+# Registre des correctifs — Lost Phone (créé le 20/08/2026, jugement du cercle 1)
+# File 1 = PATRONS (transversaux, corrigés en priorité — contaminent les apps futures)
+# File 2 = LOCAUX (par lots aux jalons de cercle)
+format_version: 1
+
+patrons:
+  - id: P1
+    titre: "Geste home : conflit avec le Centre de contrôle des iPhone à bouton (SE)"
+    proposition: "Barre home FICTIVE dessinée (le jeu simule un iPhone moderne sur tout appareil) + sortie par swipe/tap sur zone au-dessus du bord système. Amende partiellement D50 (barre d'état reste la vraie)."
+    statut: EN ATTENTE D'ARBITRAGE
+  - id: P2
+    titre: "Tout bouton affiché doit être réellement utilisable (durcissement D51-1)"
+    detail: "Les alertes-catalogue D56 ne sont plus acceptables pour des actions faisables. Repasse progressive sur l'existant."
+    statut: ACTÉ (jugement utilisateur 20/08)
+  - id: P3
+    titre: "Routeur de navigation inter-apps"
+    detail: "Appeler dans Banque -> Téléphone clavier pré-rempli ; Site web dans Plans -> page Safari ; etc. Refactor global (état routeur partagé), requis par le futur moteur."
+    statut: ACTÉ — à construire
+  - id: P4
+    titre: "Safari : tout lien affiché mène à une page rendue"
+    detail: "Les sites servant l'histoire sont consultables ; aucun lien mort affiché."
+    statut: ACTÉ
+  - id: P5
+    titre: "Adéquation stricte aux références (vidéos/screenshots font foi)"
+    statut: RAPPEL PERMANENT
+
+locaux_cercle_1:
+  - { app: Mail, fix: "Corps des mails en bleu et centré -> style normal (blanc/gauche)" }
+  - { app: Messages, fix: "Ouverture d'une conversation -> scroll sur le dernier message" }
+  - { app: Localiser, fix: "Memoji pour Personnes, icônes objets fidèles, couleur de police bleue incorrecte" }
+  - { app: Réglages, fix: "Barre de recherche du bas se confond avec le menu" }
+  - { app: Notes, fix: "Couleur d'accent : jaune/ambre Notes, pas bleu" }

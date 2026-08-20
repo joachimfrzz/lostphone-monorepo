@@ -130,12 +130,7 @@ struct MeteoVue: View {
                     .ignoresSafeArea()
             )
 
-            // Geste home
-            Color.clear.frame(height: 8)
-                .contentShape(Rectangle())
-                .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                    if v.translation.height < -35 { dismiss() }
-                })
+            BarreHome { dismiss() }
         }
         .background(FondMeteo())
         .preferredColorScheme(.dark)

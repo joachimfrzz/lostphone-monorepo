@@ -165,11 +165,7 @@ struct NotesVue: View {
                 }
                 .padding(.horizontal, 16).padding(.bottom, 8)
 
-                Color.clear.frame(height: 8)
-                    .contentShape(Rectangle())
-                    .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                        if v.translation.height < -35 { dismiss() }
-                    })
+            BarreHome { dismiss() }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -200,6 +196,7 @@ struct NotesVue: View {
                 Text("Saisissez le code de l'iPhone pour afficher cette note.")
             }
         }
+        .tint(Color(hex: 0xE8A33D))
         .preferredColorScheme(.dark)
     }
 }
@@ -273,6 +270,7 @@ struct NoteEditionVue: View {
         } message: {
             Text(messageOutil)
         }
+        .tint(Color(hex: 0xE8A33D))
         .preferredColorScheme(.dark)
     }
 

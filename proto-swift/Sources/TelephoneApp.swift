@@ -65,7 +65,7 @@ enum DonneesTel {
 // ============================================================ APP TÉLÉPHONE (5 onglets)
 struct TelephoneVue: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var onglet = 1 // 0 Favoris, 1 Récents, 2 Contacts, 3 Clavier, 4 Messagerie
+    @State private var onglet = Routeur.partage.numeroAppel != nil ? 3 : 1 // 0 Favoris, 1 Récents, 2 Contacts, 3 Clavier, 4 Messagerie
 
     var body: some View {
         NavigationStack {
@@ -92,12 +92,7 @@ struct TelephoneVue: View {
                 .background(Color(hex: 0x1D1D1D), in: Capsule())
                 .padding(.horizontal, 14).padding(.bottom, 6)
 
-                // Geste home : quitter l'app
-                Color.clear.frame(height: 10)
-                    .contentShape(Rectangle())
-                    .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                        if v.translation.height < -35 { dismiss() }
-                    })
+            BarreHome { dismiss() }
             }
             .toolbar(.hidden, for: .navigationBar)
         }
@@ -481,7 +476,8 @@ struct TelContactsVue: View {
 
 // ============================================================ CLAVIER (fonctionnel, suggestions)
 struct TelClavierVue: View {
-    @State private var numero = ""
+    // P3 : si une autre app a demandé un appel (Ma Banque, Plans, Localiser), le numéro arrive pré-rempli
+    @State private var numero = Routeur.partage.consommerNumero() ?? ""
     @State private var appelVisible = false
 
     private var suggestion: (String, String)? {

@@ -251,17 +251,14 @@ struct ReglagesVue: View {
                     Image(systemName: "mic.fill").font(.system(size: 15)).foregroundStyle(regTexte2)
                 }
                 .padding(.horizontal, 14).padding(.vertical, 12)
-                .background(Color(hex: 0x1F1F21), in: Capsule())
+                .background(Color(hex: 0x2C2C2E), in: Capsule())
+                .overlay(Capsule().stroke(Color.white.opacity(0.10), lineWidth: 0.8))
+                .shadow(color: .black.opacity(0.5), radius: 10, y: 3)
                 .padding(.horizontal, 16).padding(.bottom, 8)
                 .contentShape(Capsule())
                 .onTapGesture { Haptique.leger(); rechercheVisible = true }
 
-                // Geste home : quitter l'app
-                Color.clear.frame(height: 10)
-                    .contentShape(Rectangle())
-                    .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                        if v.translation.height < -35 { dismiss() }
-                    })
+            BarreHome { dismiss() }
             }
             .toolbar(.hidden, for: .navigationBar)
             .fullScreenCover(isPresented: $rechercheVisible) { RechercheReglagesVue() }

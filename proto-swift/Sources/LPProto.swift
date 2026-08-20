@@ -152,6 +152,7 @@ struct AccueilView: View {
     @State private var banqueOuverte = false
     @State private var calendrierOuvert = false
     @State private var localiserOuvert = false
+    @State private var mailOuvert = false
 
     private let apps: [(String, Color, String, Color)] = [
         ("Horloge", Color(hex: 0x1C1C1E), "clock", .white),
@@ -248,7 +249,9 @@ struct AccueilView: View {
                         messagesOuvert = true
                     }
                     Spacer()
-                    AppIcone(nom: "", fond: Color(hex: 0x0A84FF), symbole: "envelope.fill", teinte: .white)
+                    AppIcone(nom: "", fond: Color(hex: 0x0A84FF), symbole: "envelope.fill", teinte: .white) {
+                        mailOuvert = true
+                    }
                     Spacer()
                     AppIcone(nom: "", fond: Color(hex: 0xF2F2F7), symbole: "safari.fill", teinte: Color(hex: 0x0A84FF))
                     Spacer()
@@ -272,6 +275,7 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $banqueOuverte) { MaBanqueVue() }
         .fullScreenCover(isPresented: $calendrierOuvert) { CalendrierVue() }
         .fullScreenCover(isPresented: $localiserOuvert) { LocaliserVue() }
+        .fullScreenCover(isPresented: $mailOuvert) { MailVue() }
     }
 }
 

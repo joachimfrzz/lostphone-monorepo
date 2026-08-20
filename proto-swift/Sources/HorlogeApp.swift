@@ -40,12 +40,7 @@ struct HorlogeVue: View {
                 MinuteursVue().tabItem { Label("Minuteurs", systemImage: "timer") }.tag(3)
             }
             .tint(.orange)
-            // Geste home réel : balayer vers le haut depuis le bord inférieur quitte l'app
-            Color.clear.frame(height: 10)
-                .contentShape(Rectangle())
-                .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                    if v.translation.height < -35 { dismiss() }
-                })
+            BarreHome { dismiss() }
         }
         .preferredColorScheme(.dark)
     }

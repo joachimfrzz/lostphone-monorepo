@@ -164,11 +164,7 @@ struct MailVue: View {
                 }
                 .padding(.horizontal, 18).padding(.bottom, 10)
 
-                Color.clear.frame(height: 8)
-                    .contentShape(Rectangle())
-                    .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                        if v.translation.height < -35 { dismiss() }
-                    })
+            BarreHome { dismiss() }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -264,6 +260,7 @@ struct ListeMailVue: View {
                         }
                         .padding(.vertical, 8)
                     }
+                    .buttonStyle(.plain)
                     Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 55)
                 }
                 Spacer(minLength: 60)
@@ -307,6 +304,9 @@ struct LectureMailVue: View {
                 Divider().overlay(Color(hex: 0x2C2C2E))
                 Text(courriel.corps).font(.system(size: 16)).foregroundStyle(.white.opacity(0.92))
                     .lineSpacing(3)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .tint(.white.opacity(0.92))
                 Spacer(minLength: 80)
             }
             .padding(16)

@@ -299,6 +299,7 @@ struct MessagesVue: View {
             .onTapGesture { menuFiltres = false; menuModifier = false }
             .sheet(isPresented: $nouveauMessage) { NouveauMessageVue() }
             .sheet(isPresented: $filtrageVisible) { GererFiltrageVue() }
+            .overlay(alignment: .bottom) { BarreHome { dismiss() } }
         }
     }
 
@@ -496,6 +497,7 @@ struct MsgConvVue: View {
                         .padding(.top, 6)
                     }
                     .scrollIndicators(.hidden)
+                    .onAppear { lecteur.scrollTo("fin", anchor: .bottom) }
                     .onChange(of: envois.parConv[conv.nom]?.count ?? 0) {
                         withAnimation { lecteur.scrollTo("fin", anchor: .bottom) }
                     }

@@ -320,7 +320,7 @@ struct AppareilsPanneau: View {
                 Button { detail = a } label: {
                     HStack(spacing: 12) {
                         Circle().fill(Color(hex: 0x2C2C2E)).frame(width: 42, height: 42)
-                            .overlay(Image(systemName: a.symbole).font(.system(size: 17)).foregroundStyle(a.sansPosition ? .secondary : .white))
+                            .overlay(Image(systemName: a.symbole).font(.system(size: 17)).foregroundStyle(a.sansPosition ? Color.secondary : Color.white))
                         VStack(alignment: .leading, spacing: 2) {
                             Text(a.nom).font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
                             Text(a.etat).font(.system(size: 12.5)).foregroundStyle(.secondary)

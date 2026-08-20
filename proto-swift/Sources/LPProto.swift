@@ -153,6 +153,7 @@ struct AccueilView: View {
     @State private var calendrierOuvert = false
     @State private var localiserOuvert = false
     @State private var mailOuvert = false
+    @State private var plansOuverts = false
 
     private let apps: [(String, Color, String, Color)] = [
         ("Horloge", Color(hex: 0x1C1C1E), "clock", .white),
@@ -186,6 +187,7 @@ struct AccueilView: View {
         case "Ma Banque": return { banqueOuverte = true }
         case "Calendrier": return { calendrierOuvert = true }
         case "Localiser": return { localiserOuvert = true }
+        case "Plans": return { plansOuverts = true }
         default: return nil
         }
     }
@@ -276,6 +278,7 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $calendrierOuvert) { CalendrierVue() }
         .fullScreenCover(isPresented: $localiserOuvert) { LocaliserVue() }
         .fullScreenCover(isPresented: $mailOuvert) { MailVue() }
+        .fullScreenCover(isPresented: $plansOuverts) { PlansVue() }
     }
 }
 

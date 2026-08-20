@@ -13,6 +13,7 @@ struct LieuPlan: Identifiable {
     var categorie: String      // symbole SF
     var note: Double = 4.0
     var horaires: String = "Ouvert"
+    var tel: String = "04 72 10 24 36"
     var distance: String = ""
     var lat: Double
     var lon: Double
@@ -21,23 +22,23 @@ struct LieuPlan: Identifiable {
 enum DonneesPlans {
     static let recents: [LieuPlan] = [
         LieuPlan(nom: "LCL Agence Bellecour", sousTitre: "Depuis ma position", categorie: "building.columns.fill",
-                 horaires: "Ouvert · ferme à 17:30", distance: "400 m", lat: 45.7578, lon: 4.8320),
+                 horaires: "Ouvert · ferme à 17:30", tel: "04 78 42 63 21", distance: "400 m", lat: 45.7578, lon: 4.8320),
         LieuPlan(nom: "Gare de Lyon Part-Dieu", sousTitre: "Il y a 7 jours", categorie: "tram.fill",
-                 horaires: "Ouvert", distance: "2,8 km", lat: 45.7605, lon: 4.8590),
+                 horaires: "Ouvert", tel: "3635", distance: "2,8 km", lat: 45.7605, lon: 4.8590),
         LieuPlan(nom: "Western Union — Part-Dieu", sousTitre: "13 juin", categorie: "banknote.fill",
-                 horaires: "Ouvert · ferme à 19:00", distance: "2,7 km", lat: 45.7610, lon: 4.8570),
+                 horaires: "Ouvert · ferme à 19:00", tel: "04 72 60 51 33", distance: "2,7 km", lat: 45.7610, lon: 4.8570),
         LieuPlan(nom: "12 rue des Fantasques", sousTitre: "Cabinet kiné · jeudi", categorie: "cross.case.fill",
                  horaires: "Sur rendez-vous", distance: "850 m", lat: 45.7720, lon: 4.8390),
     ]
     static let proximite: [LieuPlan] = [
         LieuPlan(nom: "Boulangerie du Griffon", sousTitre: "Boulangerie", categorie: "fork.knife",
-                 note: 4.6, horaires: "Ouvert · ferme à 20:00", distance: "160 m", lat: 45.7690, lon: 4.8350),
+                 note: 4.6, horaires: "Ouvert · ferme à 20:00", tel: "04 78 27 61 45", distance: "160 m", lat: 45.7690, lon: 4.8350),
         LieuPlan(nom: "Café Mokxa", sousTitre: "Café", categorie: "cup.and.saucer.fill",
-                 note: 4.5, horaires: "Fermé · ouvre à 08:00", distance: "300 m", lat: 45.7700, lon: 4.8330),
+                 note: 4.5, horaires: "Fermé · ouvre à 08:00", tel: "04 78 27 84 25", distance: "300 m", lat: 45.7700, lon: 4.8330),
         LieuPlan(nom: "Pharmacie du Parc", sousTitre: "Pharmacie", categorie: "cross.fill",
-                 note: 4.1, horaires: "Ouvert · ferme à 20:00", distance: "450 m", lat: 45.7660, lon: 4.8370),
+                 note: 4.1, horaires: "Ouvert · ferme à 20:00", tel: "04 78 28 66 09", distance: "450 m", lat: 45.7660, lon: 4.8370),
         LieuPlan(nom: "Carrefour City Lyon 1er", sousTitre: "Supermarché", categorie: "cart.fill",
-                 note: 3.8, horaires: "Ouvert · ferme à 23:00", distance: "220 m", lat: 45.7680, lon: 4.8310),
+                 note: 3.8, horaires: "Ouvert · ferme à 23:00", tel: "04 72 98 33 40", distance: "220 m", lat: 45.7680, lon: 4.8310),
     ]
 }
 
@@ -165,11 +166,7 @@ struct PlansVue: View {
             .frame(maxHeight: recherche.isEmpty ? 330 : 380, alignment: .top)
             .background(.ultraThinMaterial, in: UnevenRoundedRectangle(topLeadingRadius: 20, topTrailingRadius: 20))
 
-            Color.clear.frame(height: 8)
-                .contentShape(Rectangle())
-                .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                    if v.translation.height < -35 { dismiss() }
-                })
+            BarreHome { dismiss() }
         }
         .preferredColorScheme(.dark)
         .sheet(item: $lieuOuvert) { l in
@@ -230,8 +227,14 @@ struct FicheLieuVue: View {
                             .frame(maxWidth: .infinity).padding(.vertical, 11)
                             .background(Color(hex: 0x0A84FF), in: RoundedRectangle(cornerRadius: 12))
                         }
-                        BoutonFiche(symbole: "phone.fill", nom: "Appeler") { alerte = "appel" }
-                        BoutonFiche(symbole: "safari.fill", nom: "Site web") { alerte = "web" }
+                        BoutonFiche(symbole: "phone.fill", nom: "Appeler") { Routeur.partage.allerTelephone(lieu.tel) }
+                        BoutonFiche(symbole: "safari.fill", nom: "Site web") {
+                            // P3/P4 : ouvre Safari sur une page locale rendue pour ce lieu
+                            let slug = lieu.nom.folding(options: .diacriticInsensitive, locale: .current)
+                                .lowercased().replacingOccurrences(of: " ", with: "")
+                                .filter { $0.isLetter || $0.isNumber }
+                            Routeur.partage.allerSafari(page: "site:" + lieu.nom, url: slug + ".fr")
+                        }
                     }
                     VStack(spacing: 0) {
                         HStack {

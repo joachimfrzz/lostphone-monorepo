@@ -13,6 +13,8 @@ struct PersonneLoc: Identifiable {
     var etat: String          // "Croix-Rousse, Lyon · Maintenant", "En attente…"
     var partage: Bool         // partage mutuel actif
     var invitation: Bool = false
+    var emoji: String = "\u{1F464}"
+    var tel: String = ""
     var lat: Double = 45.7640
     var lon: Double = 4.8357
 }
@@ -38,8 +40,8 @@ struct ObjetLoc: Identifiable {
 
 enum DonneesLocaliser {
     static let personnes = [
-        PersonneLoc(nom: "Chloé", etat: "Croix-Rousse, Lyon · Maintenant", partage: true, lat: 45.7747, lon: 4.8320),
-        PersonneLoc(nom: "Maman", etat: "Theizé · il y a 40 min", partage: true, lat: 45.9394, lon: 4.6120),
+        PersonneLoc(nom: "Chloé", etat: "Croix-Rousse, Lyon · Maintenant", partage: true, emoji: "\u{1F471}\u{1F3FB}\u{200D}\u{2640}\u{FE0F}", tel: "06 24 81 05 77", lat: 45.7747, lon: 4.8320),
+        PersonneLoc(nom: "Maman", etat: "Theizé · il y a 40 min", partage: true, emoji: "\u{1F469}\u{1F3FB}\u{200D}\u{1F9B3}", tel: "06 81 35 42 19", lat: 45.9394, lon: 4.6120),
         PersonneLoc(nom: "Marc ❤️", etat: "Invitation envoyée le 12 mai · En attente", partage: false, invitation: true),
     ]
     static let appareils = [
@@ -67,7 +69,7 @@ struct LocaliserVue: View {
                 if onglet == 0 {
                     ForEach(DonneesLocaliser.personnes.filter { $0.partage }) { p in
                         Annotation(p.nom, coordinate: CLLocationCoordinate2D(latitude: p.lat, longitude: p.lon)) {
-                            PastilleCarte(texte: String(p.nom.prefix(1)))
+                            PastilleCarte(texte: p.emoji)
                         }
                     }
                 } else if onglet == 1 {
@@ -79,7 +81,7 @@ struct LocaliserVue: View {
                 } else if onglet == 2 {
                     ForEach(DonneesLocaliser.objets) { o in
                         Annotation(o.nom, coordinate: CLLocationCoordinate2D(latitude: o.lat, longitude: o.lon)) {
-                            PastilleCarte(symbole: "key.fill")
+                            PastilleCarte(texte: "\u{1F511}")
                         }
                     }
                 }
@@ -110,11 +112,7 @@ struct LocaliserVue: View {
                 .background(.ultraThinMaterial)
             }
 
-            Color.clear.frame(height: 8)
-                .contentShape(Rectangle())
-                .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                    if v.translation.height < -35 { dismiss() }
-                })
+            BarreHome { dismiss() }
         }
         .preferredColorScheme(.dark)
     }
@@ -147,7 +145,7 @@ struct OngletLocaliser: View {
             Image(systemName: symbole).font(.system(size: 20))
             Text(nom).font(.system(size: 10))
         }
-        .foregroundStyle(actif ? Color(hex: 0x0A84FF) : .secondary)
+        .foregroundStyle(actif ? Color(hex: 0x007AFF) : .secondary)
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
         .onTapGesture(perform: action)
@@ -168,10 +166,12 @@ struct PersonnesPanneau: View {
             ForEach(DonneesLocaliser.personnes) { p in
                 Button { detail = p } label: {
                     HStack(spacing: 12) {
-                        Circle().fill(Color(hex: p.invitation ? 0x8E8E93 : 0x5B7CFA))
+                        Circle()
+                            .fill(LinearGradient(colors: p.invitation ? [Color(hex: 0x48484A), Color(hex: 0x2C2C2E)] : [Color(hex: 0xBFD9F2), Color(hex: 0x8FB8E0)],
+                                                 startPoint: .top, endPoint: .bottom))
                             .frame(width: 42, height: 42)
-                            .overlay(Text(String(p.nom.prefix(1))).font(.system(size: 18, weight: .semibold)).foregroundStyle(.white))
-                            .opacity(p.invitation ? 0.5 : 1)
+                            .overlay(Text(p.emoji).font(.system(size: 24)))
+                            .opacity(p.invitation ? 0.55 : 1)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(p.nom).font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
                             Text(p.etat).font(.system(size: 12.5))
@@ -213,7 +213,7 @@ struct PersonneDetailVue: View {
                                 .font(.system(size: 13.5)).foregroundStyle(.secondary)
                                 .multilineTextAlignment(.center)
                             Button { alerte = "invitation" } label: {
-                                Text("Renvoyer l'invitation").font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x0A84FF))
+                                Text("Renvoyer l'invitation").font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x007AFF))
                                     .padding(.horizontal, 20).padding(.vertical, 10)
                                     .background(Color(hex: 0x1C1C1E), in: Capsule())
                             }
@@ -221,7 +221,9 @@ struct PersonneDetailVue: View {
                         .padding(.top, 20)
                     } else {
                         HStack(spacing: 12) {
-                            BoutonLocaliser(symbole: "phone.fill", nom: "Contacter") { alerte = "contact" }
+                            BoutonLocaliser(symbole: "phone.fill", nom: "Contacter") {
+                                if personne.tel.isEmpty { alerte = "contact" } else { Routeur.partage.allerTelephone(personne.tel) }
+                            }
                             BoutonLocaliser(symbole: "car.fill", nom: "Itinéraire") { alerte = "plans" }
                             BoutonLocaliser(symbole: "bell.fill", nom: "Notifications") { notifier.toggle() }
                         }
@@ -298,7 +300,7 @@ struct BoutonLocaliser: View {
                 Image(systemName: symbole).font(.system(size: 17))
                 Text(nom).font(.system(size: 11.5))
             }
-            .foregroundStyle(Color(hex: 0x0A84FF))
+            .foregroundStyle(Color(hex: 0x007AFF))
             .frame(maxWidth: .infinity).padding(.vertical, 12)
             .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 12))
         }
@@ -453,8 +455,8 @@ struct ObjetsPanneau: View {
             ForEach(DonneesLocaliser.objets) { o in
                 Button { detail = o } label: {
                     HStack(spacing: 12) {
-                        Circle().fill(Color(hex: 0x2C2C2E)).frame(width: 42, height: 42)
-                            .overlay(Image(systemName: "key.fill").font(.system(size: 16)).foregroundStyle(Color(hex: 0xE8C33D)))
+                        Circle().fill(.white).frame(width: 42, height: 42)
+                            .overlay(Text("\u{1F511}").font(.system(size: 20)))
                         VStack(alignment: .leading, spacing: 2) {
                             Text(o.nom).font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
                             Text(o.etat).font(.system(size: 12.5)).foregroundStyle(.secondary)
@@ -566,7 +568,7 @@ struct MoiPanneau: View {
             }
             VStack(spacing: 0) {
                 HStack(spacing: 10) {
-                    Image(systemName: "location.circle.fill").font(.system(size: 20)).foregroundStyle(Color(hex: 0x0A84FF))
+                    Image(systemName: "location.circle.fill").font(.system(size: 20)).foregroundStyle(Color(hex: 0x007AFF))
                     Text("Ma position").foregroundStyle(.white)
                     Spacer()
                 }

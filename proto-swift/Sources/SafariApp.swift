@@ -136,11 +136,11 @@ struct SafariVue: View {
             .padding(.top, 8)
             .background(.ultraThinMaterial)
 
-            Color.clear.frame(height: 8)
-                .contentShape(Rectangle())
-                .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                    if v.translation.height < -35 { dismiss() }
-                })
+            BarreHome { dismiss() }
+        }
+        .onAppear {
+            // P3 : si une autre app (Plans, Mail…) a demandé une page, on l'ouvre
+            if let (p, u) = Routeur.partage.consommerPage() { pageActive = p; urlActive = u }
         }
         .preferredColorScheme(.dark)
         .sheet(isPresented: $ongletsVisibles) {
@@ -150,7 +150,12 @@ struct SafariVue: View {
                 ongletsVisibles = false
             }
         }
-        .sheet(isPresented: $historiqueVisible) { HistoriqueSafariVue() }
+        .sheet(isPresented: $historiqueVisible) {
+            HistoriqueSafariVue { e in
+                naviguer(e.titre)
+                historiqueVisible = false
+            }
+        }
         .alert("Partager", isPresented: $partageAlerte) {
             Button("OK", role: .cancel) {}
         } message: { Text(ErreurLambda.reponse("partage")) }
@@ -173,8 +178,10 @@ struct SafariVue: View {
             pageActive = "vessel"; urlActive = "vesselfinder.com"
         } else if r.contains("fonfon") || r.contains("marseille") {
             pageActive = "fonfon"; urlActive = "chez-fonfon.com"
-        } else if r.contains("escroquerie") || r.contains("service-public") {
+        } else if r.contains("escroquerie") || r.contains("service-public") || r.contains("victimes") {
             pageActive = "servicepublic"; urlActive = "service-public.fr"
+        } else if r.contains("okafor") || r.contains("compagnie") {
+            pageActive = "resultats"; urlActive = "google.com"
         } else {
             // Anneau 3 : le réseau du téléphone retrouvé est instable — état d'erreur Safari réel
             pageActive = "erreur"; urlActive = requete
@@ -192,7 +199,57 @@ struct PageRendueVue: View {
         case "vessel": VesselVue()
         case "fonfon": FonfonVue()
         case "erreur": ErreurSafariVue()
+        case let p where p.hasPrefix("site:"): SiteGeneriqueVue(nom: String(p.dropFirst(5)))
         default: ServicePublicVue()
+        }
+    }
+}
+
+// Gabarit de site local (P4) : la page « Site web » de n'importe quel lieu de Plans.
+// Données remplaçables (D59) — le rendu est générique, le nom vient du lieu.
+struct SiteGeneriqueVue: View {
+    let nom: String
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ZStack {
+                LinearGradient(colors: [Color(hex: 0x2C3E50), Color(hex: 0x1A252F)], startPoint: .top, endPoint: .bottom)
+                VStack(spacing: 8) {
+                    Image(systemName: "storefront.fill").font(.system(size: 34)).foregroundStyle(.white.opacity(0.9))
+                    Text(nom).font(.system(size: 24, weight: .bold)).foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                    Text("Lyon 1er — depuis 1987").font(.system(size: 13)).foregroundStyle(.white.opacity(0.7))
+                }
+                .padding(.horizontal, 24)
+            }
+            .frame(height: 190)
+
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Bienvenue").font(.system(size: 19, weight: .bold)).foregroundStyle(.white)
+                Text("Retrouvez-nous en plein cœur de Lyon. Notre équipe vous accueille toute la semaine et vous conseille avec plaisir.")
+                    .font(.system(size: 15)).foregroundStyle(.white.opacity(0.85)).lineSpacing(3)
+
+                VStack(spacing: 0) {
+                    HStack {
+                        Image(systemName: "clock.fill").foregroundStyle(.secondary).frame(width: 26)
+                        Text("Lun – Sam · 8h00 – 19h30").font(.system(size: 14.5)).foregroundStyle(.white)
+                        Spacer()
+                    }
+                    .padding(12)
+                    Divider().overlay(Color(hex: 0x3A3A3C))
+                    HStack {
+                        Image(systemName: "mappin.circle.fill").foregroundStyle(.secondary).frame(width: 26)
+                        Text("Quartier des Capucins, 69001 Lyon").font(.system(size: 14.5)).foregroundStyle(.white)
+                        Spacer()
+                    }
+                    .padding(12)
+                }
+                .background(Color(hex: 0x2C2C2E), in: RoundedRectangle(cornerRadius: 12))
+
+                Text("© \(nom) — mentions légales · plan du site")
+                    .font(.system(size: 11.5)).foregroundStyle(.secondary)
+                    .padding(.top, 6)
+            }
+            .padding(16)
         }
     }
 }
@@ -410,6 +467,7 @@ struct OngletsVue: View {
 // ============================================================ HISTORIQUE (le composant d'enquête)
 struct HistoriqueSafariVue: View {
     @Environment(\.dismiss) private var dismiss
+    var ouvrir: (EntreeHistorique) -> Void = { _ in }
     @State private var recherche = ""
 
     private func entrees(_ section: String) -> [EntreeHistorique] {
@@ -432,6 +490,9 @@ struct HistoriqueSafariVue: View {
                                     Text(e.titre).font(.system(size: 15)).foregroundStyle(.white).lineLimit(2)
                                     Text("\(e.url) · \(e.heure)").font(.system(size: 12.5)).foregroundStyle(.secondary)
                                 }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                                .onTapGesture { ouvrir(e) }
                                 .listRowBackground(Color(hex: 0x2C2C2E))
                             }
                         } header: {

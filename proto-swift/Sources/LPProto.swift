@@ -13,6 +13,56 @@ struct LPProtoApp: App {
     }
 }
 
+
+// ============================================================ BARRE HOME FICTIVE (correctif P1, 20/08)
+// Le jeu simule un iPhone moderne sur TOUT appareil (D47) : la barre home est LA NÔTRE.
+// Zone de geste au-dessus du bord système -> aucun conflit avec le Centre de contrôle des iPhone à bouton.
+struct BarreHome: View {
+    let action: () -> Void
+    var sombre: Bool = false
+    var body: some View {
+        VStack(spacing: 0) {
+            Capsule()
+                .fill(sombre ? Color.black.opacity(0.75) : Color.white.opacity(0.92))
+                .frame(width: 140, height: 5)
+        }
+        .padding(.top, 16)
+        .padding(.bottom, 10)
+        .frame(maxWidth: .infinity)
+        .contentShape(Rectangle())
+        .onTapGesture { action() }
+        .gesture(DragGesture(minimumDistance: 8).onEnded { v in
+            if v.translation.height < -15 { action() }
+        })
+    }
+}
+
+// ============================================================ ROUTEUR INTER-APPS (correctif P3, 20/08)
+// « Appeler » dans Ma Banque ouvre le clavier du Téléphone pré-rempli ; « Site web » dans Plans ouvre Safari.
+enum CibleRouteur { case telephone, safari }
+
+final class Routeur: ObservableObject {
+    static let partage = Routeur()
+    @Published var demande: Int = 0
+    var cible: CibleRouteur? = nil
+    var numeroAppel: String? = nil
+    var pageSafari: String? = nil
+    var urlSafari: String? = nil
+
+    func allerTelephone(_ numero: String) {
+        numeroAppel = numero; cible = .telephone; demande += 1
+    }
+    func allerSafari(page: String, url: String) {
+        pageSafari = page; urlSafari = url; cible = .safari; demande += 1
+    }
+    func consommerNumero() -> String? { let n = numeroAppel; numeroAppel = nil; return n }
+    func consommerPage() -> (String, String)? {
+        guard let p = pageSafari, let u = urlSafari else { return nil }
+        pageSafari = nil; urlSafari = nil
+        return (p, u)
+    }
+}
+
 // ============================================================ VERROUILLAGE
 struct VerrouillageView: View {
     @State private var deverrouille = false
@@ -155,6 +205,7 @@ struct AccueilView: View {
     @State private var mailOuvert = false
     @State private var plansOuverts = false
     @State private var safariOuvert = false
+    @ObservedObject private var routeur = Routeur.partage
 
     private let apps: [(String, Color, String, Color)] = [
         ("Horloge", Color(hex: 0x1C1C1E), "clock", .white),
@@ -174,6 +225,15 @@ struct AccueilView: View {
         ("Fichiers", .white, "folder.fill", Color(hex: 0x0A84FF)),
         ("Dictaphone", Color(hex: 0x1C1C1E), "waveform", Color(hex: 0xFF3B30)),
     ]
+
+    private func fermerToutesLesApps() {
+        whatsappOuvert = false; telephoneOuvert = false; messagesOuvert = false
+        reglagesOuvert = false; photosOuvert = false; horlogeOuverte = false
+        calculatriceOuverte = false; meteoOuverte = false; notesOuvertes = false
+        rappelsOuverts = false; dictaphoneOuvert = false; banqueOuverte = false
+        calendrierOuvert = false; localiserOuvert = false; mailOuvert = false
+        plansOuverts = false; safariOuvert = false
+    }
 
     private func actionPour(_ nom: String) -> (() -> Void)? {
         switch nom {
@@ -283,6 +343,18 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $mailOuvert) { MailVue() }
         .fullScreenCover(isPresented: $plansOuverts) { PlansVue() }
         .fullScreenCover(isPresented: $safariOuvert) { SafariVue() }
+        .onChange(of: routeur.demande) { _, _ in
+            // Navigation inter-apps : fermer l'app courante puis ouvrir la cible (P3)
+            fermerToutesLesApps()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) {
+                switch routeur.cible {
+                case .telephone: telephoneOuvert = true
+                case .safari: safariOuvert = true
+                case nil: break
+                }
+                routeur.cible = nil
+            }
+        }
     }
 }
 
@@ -433,12 +505,7 @@ struct WhatsAppListeView: View {
                 }
                 .padding(.horizontal, 14).padding(.bottom, 6)
 
-                // Geste home réel : balayer vers le haut depuis le bord inférieur quitte l'app
-                Color.clear.frame(height: 10)
-                    .contentShape(Rectangle())
-                    .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                        if v.translation.height < -35 { dismiss() }
-                    })
+            BarreHome { dismiss() }
             }
             .toolbar(.hidden, for: .navigationBar)
         }

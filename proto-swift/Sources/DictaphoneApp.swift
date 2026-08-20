@@ -127,11 +127,7 @@ struct DictaphoneVue: View {
                 }
                 .padding(.bottom, 22)
 
-                Color.clear.frame(height: 8)
-                    .contentShape(Rectangle())
-                    .gesture(DragGesture(minimumDistance: 20).onEnded { v in
-                        if v.translation.height < -35 { dismiss() }
-                    })
+            BarreHome { dismiss() }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

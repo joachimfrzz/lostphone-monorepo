@@ -8,11 +8,56 @@ import SwiftUI
 struct LPProtoApp: App {
     var body: some Scene {
         WindowGroup {
-            VerrouillageView().preferredColorScheme(.dark)
+            // D63 (pipeline Miroir) : lancée avec ECRAN=<clé>, l'app s'ouvre directement
+            // sur l'écran demandé — utilisé par le workflow Codemagic « miroir-captures ».
+            if let ecran = ProcessInfo.processInfo.environment["ECRAN"] {
+                EcranCapture(cle: ecran).preferredColorScheme(.dark)
+            } else {
+                VerrouillageView().preferredColorScheme(.dark)
+            }
         }
     }
 }
 
+
+// ============================================================ MODE CAPTURE (D63 — pipeline Miroir)
+// Registre des écrans capturables. Clés = lignes de outils/ecrans.txt.
+struct EcranCapture: View {
+    let cle: String
+    var body: some View {
+        switch cle {
+        case "verrouillage": VerrouillageView()
+        case "accueil": AccueilView()
+        case "whatsapp": WhatsAppListeView()
+        case "telephone": TelephoneVue()
+        case "messages": MessagesVue()
+        case "messages.conversation": NavigationStack { MsgConvVue(conv: DonneesMsg.convs[0]) }
+        case "reglages": ReglagesVue()
+        case "photos": PhotosVue()
+        case "horloge": HorlogeVue()
+        case "calculatrice": CalculatriceVue()
+        case "meteo": MeteoVue()
+        case "notes": NotesVue()
+        case "rappels": RappelsVue()
+        case "dictaphone": DictaphoneVue()
+        case "banque": MaBanqueVue()
+        case "calendrier": CalendrierVue()
+        case "localiser": LocaliserVue()
+        case "localiser.personne": PersonneDetailVue(personne: DonneesLocaliser.personnes[0])
+        case "localiser.appareil": AppareilDetailVue(appareil: DonneesLocaliser.appareils[0])
+        case "localiser.objet": ObjetDetailVue(objet: DonneesLocaliser.objets[0])
+        case "mail": MailVue()
+        case "mail.lecture": NavigationStack { LectureMailVue(courriel: MagasinMail.partage.courriels[0]) }
+        case "mail.composer": ComposerMailVue()
+        case "plans": PlansVue()
+        case "plans.fiche": FicheLieuVue(lieu: DonneesPlans.proximite[0], itineraire: {})
+        case "safari": SafariVue()
+        case "safari.historique": HistoriqueSafariVue()
+        case "partage": FeuillePartage(element: "Capture")
+        default: VerrouillageView()
+        }
+    }
+}
 
 // ============================================================ BARRE HOME FICTIVE (correctif P1, 20/08)
 // Le jeu simule un iPhone moderne sur TOUT appareil (D47) : la barre home est LA NÔTRE.

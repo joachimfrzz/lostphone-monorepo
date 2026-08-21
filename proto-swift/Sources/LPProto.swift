@@ -11,7 +11,8 @@ struct LPProtoApp: App {
             // D63 (pipeline Miroir) : lancée avec ECRAN=<clé>, l'app s'ouvre directement
             // sur l'écran demandé — utilisé par le workflow Codemagic « miroir-captures ».
             if let ecran = ProcessInfo.processInfo.environment["ECRAN"] {
-                EcranCapture(cle: ecran).preferredColorScheme(.dark)
+                // Chaque vue porte son propre schéma (Ma Banque est claire) — ne pas forcer ici
+                EcranCapture(cle: ecran)
             } else {
                 VerrouillageView().preferredColorScheme(.dark)
             }
@@ -71,8 +72,8 @@ struct BarreHome: View {
                 .fill(sombre ? Color.black.opacity(0.75) : Color.white.opacity(0.92))
                 .frame(width: 140, height: 5)
         }
-        .padding(.top, 16)
-        .padding(.bottom, 10)
+        .padding(.top, 9)
+        .padding(.bottom, 5)
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
         .onTapGesture { action() }

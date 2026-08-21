@@ -679,13 +679,7 @@ struct MsgFicheVue: View {
                             .padding(10).background(msgChamp, in: Circle())
                             .onTapGesture { dismiss() }
                         Spacer()
-                        Text("Modifier").font(.system(size: 16)).foregroundStyle(msgTexte)
-                            .padding(.horizontal, 14).padding(.vertical, 8)
-                            .background(msgChamp, in: Capsule())
-                            .onTapGesture {
-                                erreurTexte = ErreurLambda.reponse("modif.contact")
-                                erreurVisible = true
-                            }
+                        BoutonModifierContact(nom: conv.nom, numero: conv.numero)
                     }
                     .padding(.horizontal, 14).padding(.top, 10)
 
@@ -696,10 +690,7 @@ struct MsgFicheVue: View {
                     HStack(spacing: 22) {
                         RondFicheMsg(symbole: "phone.fill") { appelAudio = true }
                         RondFicheMsg(symbole: "video.fill") { appelAudio = true }
-                        RondFicheMsg(symbole: "envelope.fill") {
-                            erreurTexte = ErreurLambda.reponse("mail")
-                            erreurVisible = true
-                        }
+                        RondFicheMsg(symbole: "envelope.fill") { Routeur.partage.allerMail() }
                     }
                     .padding(.top, 14)
 
@@ -1112,4 +1103,58 @@ struct NouveauMessageVue: View {
 extension ConvMsg: Hashable {
     static func == (a: ConvMsg, b: ConvMsg) -> Bool { a.nom == b.nom }
     func hash(into hasher: inout Hasher) { hasher.combine(nom) }
+}
+
+
+// Modification de contact (réelle, session) — anti-friction 21/08
+struct BoutonModifierContact: View {
+    let nom: String
+    let numero: String
+    @State private var visible = false
+    @State private var champNom = ""
+    @State private var champTel = ""
+    var body: some View {
+        Text("Modifier").font(.system(size: 16)).foregroundStyle(msgTexte)
+            .padding(.horizontal, 14).padding(.vertical, 8)
+            .background(msgChamp, in: Capsule())
+            .onTapGesture {
+                champNom = nom; champTel = numero
+                visible = true
+            }
+            .sheet(isPresented: $visible) {
+                NavigationStack {
+                    VStack(spacing: 0) {
+                        VStack(spacing: 0) {
+                            HStack {
+                                Text("Nom").font(.system(size: 14)).foregroundStyle(.secondary).frame(width: 70, alignment: .leading)
+                                TextField("", text: $champNom).foregroundStyle(.white)
+                            }
+                            .padding(14)
+                            Divider().overlay(Color(hex: 0x3A3A3C))
+                            HStack {
+                                Text("Numéro").font(.system(size: 14)).foregroundStyle(.secondary).frame(width: 70, alignment: .leading)
+                                TextField("", text: $champTel).foregroundStyle(.white).keyboardType(.phonePad)
+                            }
+                            .padding(14)
+                        }
+                        .background(Color(hex: 0x2C2C2E), in: RoundedRectangle(cornerRadius: 12))
+                        .padding(16)
+                        Spacer()
+                    }
+                    .background(Color(hex: 0x1C1C1E))
+                    .navigationTitle("Modifier le contact")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button("Annuler") { visible = false }.foregroundStyle(msgBleu)
+                        }
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("OK") { Haptique.leger(); visible = false }.foregroundStyle(msgBleu)
+                        }
+                    }
+                }
+                .preferredColorScheme(.dark)
+                .presentationDetents([.medium])
+            }
+    }
 }

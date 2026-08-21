@@ -288,7 +288,7 @@ struct VilleMeteoVue: View {
                             .font(.system(size: 13)).foregroundStyle(.white.opacity(0.7))
                             .multilineTextAlignment(.center)
                     }
-                    Button { plans = true } label: {
+                    Button { Routeur.partage.allerPlans() } label: {
                         Text("Afficher dans Plans").font(.system(size: 14)).foregroundStyle(.white)
                     }
                     Text("En savoir plus sur les données météo et les données de plans")
@@ -299,9 +299,7 @@ struct VilleMeteoVue: View {
             .padding(.horizontal, 16)
         }
         .sheet(isPresented: $conditionsVisibles) { ConditionsMeteoVue(ville: ville) }
-        .alert("Signalement impossible", isPresented: $signaler) { Button("OK", role: .cancel) {} } message: {
-            Text("Impossible d\u{2019}envoyer votre signalement pour le moment. Réessayez lorsque vous serez de nouveau en ligne.")
-        }
+        .sheet(isPresented: $signaler) { SignalerMeteoVue() }
         .alert("Plans", isPresented: $plans) { Button("OK", role: .cancel) {} } message: {
             Text(ErreurLambda.reponse("app.attente"))
         }
@@ -740,5 +738,57 @@ struct CarteMeteoVue: View {
             .padding(.horizontal, 16).padding(.top, 8)
         }
         .preferredColorScheme(.dark)
+    }
+}
+
+
+// Signalement météo (réel, session) — anti-friction 21/08
+struct SignalerMeteoVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var envoye = false
+    var body: some View {
+        VStack(spacing: 18) {
+            Text(envoye ? "Merci !" : "Quel temps fait-il chez vous ?")
+                .font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+            if envoye {
+                Image(systemName: "checkmark.circle.fill").font(.system(size: 40)).foregroundStyle(Color(hex: 0x32D74B))
+                Text("Votre signalement aide à améliorer les prévisions.")
+                    .font(.system(size: 13)).foregroundStyle(.white.opacity(0.6))
+            } else {
+                HStack(spacing: 14) {
+                    OptionSignalement(symbole: "sun.max.fill", nom: "Ensoleillé") { valider() }
+                    OptionSignalement(symbole: "cloud.fill", nom: "Nuageux") { valider() }
+                    OptionSignalement(symbole: "cloud.rain.fill", nom: "Pluie") { valider() }
+                }
+                .padding(.horizontal, 18)
+            }
+            Spacer()
+        }
+        .padding(.top, 26)
+        .frame(maxWidth: .infinity)
+        .background(Color(hex: 0x1C2333))
+        .presentationDetents([.height(210)])
+        .preferredColorScheme(.dark)
+    }
+
+    private func valider() {
+        Haptique.leger()
+        envoye = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { dismiss() }
+    }
+}
+
+struct OptionSignalement: View {
+    let symbole: String
+    let nom: String
+    let action: () -> Void
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: symbole).font(.system(size: 26)).foregroundStyle(.white)
+            Text(nom).font(.system(size: 12.5)).foregroundStyle(.white.opacity(0.85))
+        }
+        .frame(maxWidth: .infinity).padding(.vertical, 16)
+        .background(Color.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 14))
+        .onTapGesture(perform: action)
     }
 }

@@ -39,7 +39,7 @@ struct BarreHome: View {
 
 // ============================================================ ROUTEUR INTER-APPS (correctif P3, 20/08)
 // « Appeler » dans Ma Banque ouvre le clavier du Téléphone pré-rempli ; « Site web » dans Plans ouvre Safari.
-enum CibleRouteur { case telephone, safari }
+enum CibleRouteur { case telephone, safari, plans, mail, messages }
 
 final class Routeur: ObservableObject {
     static let partage = Routeur()
@@ -55,11 +55,93 @@ final class Routeur: ObservableObject {
     func allerSafari(page: String, url: String) {
         pageSafari = page; urlSafari = url; cible = .safari; demande += 1
     }
+    func allerPlans() { cible = .plans; demande += 1 }
+    func allerMail() { cible = .mail; demande += 1 }
+    func allerMessages() { cible = .messages; demande += 1 }
     func consommerNumero() -> String? { let n = numeroAppel; numeroAppel = nil; return n }
     func consommerPage() -> (String, String)? {
         guard let p = pageSafari, let u = urlSafari else { return nil }
         pageSafari = nil; urlSafari = nil
         return (p, u)
+    }
+}
+
+// ============================================================ FEUILLE DE PARTAGE MAISON (anti-friction, 21/08)
+// Remplace les popups « partage impossible » : une vraie feuille de partage, locale.
+struct FeuillePartage: View {
+    @Environment(\.dismiss) private var dismiss
+    var element: String = "1 élément"
+    @State private var copie = false
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                RoundedRectangle(cornerRadius: 10).fill(Color(hex: 0x2C2C2E))
+                    .frame(width: 40, height: 40)
+                    .overlay(Image(systemName: "doc.fill").font(.system(size: 17)).foregroundStyle(.secondary))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(element).font(.system(size: 15, weight: .semibold)).foregroundStyle(.white).lineLimit(1)
+                    Text("Options ›").font(.system(size: 12.5)).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark").font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
+                        .frame(width: 28, height: 28).background(Color(hex: 0x2C2C2E), in: Circle())
+                }
+            }
+            .padding(16)
+            Divider().overlay(Color(hex: 0x2C2C2E))
+
+            HStack(spacing: 22) {
+                DestinatairePartage(nom: "AirDrop", symbole: "wifi", fond: 0x1C7CF5)
+                DestinatairePartage(nom: "Chloé", symbole: "message.fill", fond: 0x32D74B)
+                DestinatairePartage(nom: "Mail", symbole: "envelope.fill", fond: 0x0A84FF)
+                DestinatairePartage(nom: "WhatsApp", symbole: "phone.fill", fond: 0x25D366)
+            }
+            .padding(.vertical, 18)
+            Divider().overlay(Color(hex: 0x2C2C2E))
+
+            VStack(spacing: 0) {
+                HStack {
+                    Text(copie ? "Copié" : "Copier").foregroundStyle(copie ? .secondary : .white)
+                    Spacer()
+                    Image(systemName: copie ? "checkmark" : "doc.on.doc").foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 18).padding(.vertical, 13)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    copie = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { dismiss() }
+                }
+                Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 18)
+                HStack {
+                    Text("Enregistrer dans Fichiers").foregroundStyle(.white)
+                    Spacer()
+                    Image(systemName: "folder").foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 18).padding(.vertical, 13)
+                .contentShape(Rectangle())
+                .onTapGesture { dismiss() }
+            }
+            Spacer()
+        }
+        .background(Color(hex: 0x1C1C1E))
+        .presentationDetents([.height(320)])
+        .preferredColorScheme(.dark)
+    }
+}
+
+struct DestinatairePartage: View {
+    @Environment(\.dismiss) private var dismiss
+    let nom: String
+    let symbole: String
+    let fond: UInt
+    var body: some View {
+        VStack(spacing: 6) {
+            Circle().fill(Color(hex: fond)).frame(width: 54, height: 54)
+                .overlay(Image(systemName: symbole).font(.system(size: 21)).foregroundStyle(.white))
+            Text(nom).font(.system(size: 11)).foregroundStyle(.white.opacity(0.85))
+        }
+        .onTapGesture { dismiss() }
     }
 }
 
@@ -350,6 +432,9 @@ struct AccueilView: View {
                 switch routeur.cible {
                 case .telephone: telephoneOuvert = true
                 case .safari: safariOuvert = true
+                case .plans: plansOuverts = true
+                case .mail: mailOuvert = true
+                case .messages: messagesOuvert = true
                 case nil: break
                 }
                 routeur.cible = nil

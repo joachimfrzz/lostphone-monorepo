@@ -262,7 +262,7 @@ struct TelFicheVue: View {
                         RondFiche(symbole: "message.fill") { messagesVisible = true }
                         RondFiche(symbole: "phone.fill") { appelVisible = true }
                         RondFiche(symbole: "video.fill") { appelVisible = true }
-                        RondFiche(symbole: "envelope.fill")
+                        RondFiche(symbole: "envelope.fill") { Routeur.partage.allerMail() }
                     }
                     .padding(.top, 16)
 
@@ -372,18 +372,36 @@ struct LigneFiche: View {
     let texte: String
     var rouge: Bool = false
     @State private var alerteVisible = false
+    @State private var partageVisible = false
+    @State private var bascule = false
     var body: some View {
         HStack {
-            Text(texte).font(.system(size: 16)).foregroundStyle(rouge ? telRouge : telTexte)
+            Text(texteAffiche).font(.system(size: 16)).foregroundStyle(bascule ? telTexte2 : (rouge ? telRouge : telTexte))
             Spacer()
+            if bascule { Image(systemName: "checkmark").font(.system(size: 13)).foregroundStyle(telTexte2) }
         }
         .padding(.horizontal, 14).padding(.vertical, 12)
         .contentShape(Rectangle())
-        .onTapGesture { alerteVisible = true }
+        .onTapGesture {
+            if texte.hasPrefix("Partager") { partageVisible = true }
+            else if texte.contains("favoris") || texte.contains("liste") || texte.contains("urgence") || texte.hasPrefix("Bloquer") {
+                Haptique.leger(); bascule.toggle()
+            } else { alerteVisible = true }
+        }
+        .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Fiche de contact") }
         // D56 : réponse déterministe propre à chaque ligne
         .alert(ErreurLambda.reponse(cleBanale), isPresented: $alerteVisible) {
             Button("OK", role: .cancel) {}
         }
+    }
+
+    private var texteAffiche: String {
+        guard bascule else { return texte }
+        if texte.contains("favoris") { return "Retirer des favoris" }
+        if texte.contains("liste") { return "Ajouté à Mes listes" }
+        if texte.contains("urgence") { return "Contact d'urgence" }
+        if texte.hasPrefix("Bloquer") { return "Débloquer le contact" }
+        return texte
     }
 
     private var cleBanale: String {

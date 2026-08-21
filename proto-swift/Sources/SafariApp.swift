@@ -506,7 +506,7 @@ struct HistoriqueSafariVue: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Text("Effacer").foregroundStyle(Color(hex: 0xFF453A))
+                    Text("Effacer").foregroundStyle(Color(hex: 0xFF453A)).fixedSize()
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("OK") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF))

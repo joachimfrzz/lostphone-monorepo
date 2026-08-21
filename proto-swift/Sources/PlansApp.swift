@@ -212,6 +212,7 @@ struct FicheLieuVue: View {
     let lieu: LieuPlan
     let itineraire: () -> Void
     @State private var alerte: String? = nil
+    @State private var noterVisible = false
 
     var body: some View {
         NavigationStack {
@@ -263,7 +264,7 @@ struct FicheLieuVue: View {
                         .padding(14)
                     }
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
-                    Button { alerte = "noter" } label: {
+                    Button { noterVisible = true } label: {
                         HStack {
                             Text("Noter ce lieu").foregroundStyle(.white)
                             Spacer()
@@ -296,6 +297,7 @@ struct FicheLieuVue: View {
         .alert(titreAlerte, isPresented: Binding(get: { alerte != nil }, set: { if !$0 { alerte = nil } })) {
             Button("OK", role: .cancel) {}
         } message: { Text(messageAlerte) }
+        .sheet(isPresented: $noterVisible) { NoterLieuVue(nom: lieu.nom) }
     }
 
     private var titreAlerte: String {
@@ -515,5 +517,39 @@ struct NavigationGuideeVue: View {
                 .padding(.horizontal, 10).padding(.bottom, 10)
             }
         }
+    }
+}
+
+
+// Notation d'un lieu (réelle, session) — anti-friction 21/08
+struct NoterLieuVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let nom: String
+    @State private var note = 0
+    var body: some View {
+        VStack(spacing: 22) {
+            Text("Noter « \(nom) »").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                .padding(.top, 26).lineLimit(1)
+            HStack(spacing: 10) {
+                ForEach(1...5, id: \.self) { i in
+                    Image(systemName: i <= note ? "star.fill" : "star")
+                        .font(.system(size: 30))
+                        .foregroundStyle(i <= note ? Color(hex: 0xE8C33D) : .secondary)
+                        .onTapGesture { Haptique.leger(); note = i }
+                }
+            }
+            Button { Haptique.leger(); dismiss() } label: {
+                Text("Envoyer").font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
+                    .frame(maxWidth: .infinity).padding(.vertical, 13)
+                    .background(note == 0 ? Color(hex: 0x3A3A3C) : Color(hex: 0x0A84FF), in: RoundedRectangle(cornerRadius: 12))
+            }
+            .disabled(note == 0)
+            .padding(.horizontal, 20)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
+        .background(Color(hex: 0x1C1C1E))
+        .presentationDetents([.height(230)])
+        .preferredColorScheme(.dark)
     }
 }

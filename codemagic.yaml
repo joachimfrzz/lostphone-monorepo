@@ -173,17 +173,25 @@ workflows:
           APP=$(find build_sim/Build/Products -name "LPProtoSwift.app" -type d | head -1)
           echo "App : $APP"
           xcrun simctl install "$UDID" "$APP"
-          mkdir -p captures
+          DOSSIER="$PWD/captures"
+          mkdir -p "$DOSSIER"
           while IFS= read -r ecran; do
             [ -z "$ecran" ] && continue
             echo "— Capture : $ecran"
-            SIMCTL_CHILD_ECRAN="$ecran" xcrun simctl launch "$UDID" com.lostphone.game || continue
+            SIMCTL_CHILD_ECRAN="$ecran" xcrun simctl launch "$UDID" com.lostphone.game
             sleep 5
-            xcrun simctl io "$UDID" screenshot "captures/${ecran}.png" || true
+            xcrun simctl io "$UDID" screenshot "$DOSSIER/${ecran}.png"
             xcrun simctl terminate "$UDID" com.lostphone.game || true
             sleep 1
           done < outils/ecrans.txt
-          ls -la captures/
+          ls -la "$DOSSIER"
+          ATTENDU=$(grep -c . outils/ecrans.txt)
+          OBTENU=$(ls "$DOSSIER" | wc -l | tr -d ' ')
+          echo "Captures : $OBTENU / $ATTENDU"
+          if [ "$OBTENU" -lt "$ATTENDU" ]; then
+            echo "ÉCHEC : captures manquantes — le build doit être rouge, pas un zip vide."
+            exit 1
+          fi
           zip -r captures.zip captures
 
     artifacts:

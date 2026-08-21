@@ -123,3 +123,68 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
+
+  # ——————————————————————————— Pipeline Miroir (D63) ———————————————————————————
+  # Lancement MANUEL. Ne publie RIEN sur TestFlight : construit l'app pour le
+  # simulateur iPhone, la lance écran par écran (variable ECRAN, registre
+  # outils/ecrans.txt) et photographie chaque écran. Artefact : captures.zip —
+  # à transmettre dans le fil pour la comparaison pixel avec les références.
+  miroir-captures:
+    name: Miroir D63 — captures simulateur
+    max_build_duration: 45
+    instance_type: mac_mini_m2
+
+    environment:
+      xcode: latest
+
+    scripts:
+      - name: Restaurer les fichiers binaires (photos, mémos, icônes)
+        script: |
+          bash outils/decode-binaires.sh
+
+      - name: Icône de l'app Swift (réutilise la 1024 du proto Flutter)
+        script: |
+          cp moteur/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png \
+             proto-swift/Assets.xcassets/AppIcon.appiconset/icon-1024.png
+
+      - name: Installer XcodeGen + générer le projet
+        script: |
+          brew install xcodegen || (brew update && brew install xcodegen)
+          cd proto-swift
+          xcodegen generate
+
+      - name: Build simulateur (non signé)
+        script: |
+          xcodebuild -project proto-swift/LPProtoSwift.xcodeproj \
+            -scheme LPProtoSwift -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build_sim \
+            CODE_SIGNING_ALLOWED=NO build
+
+      - name: Captures écran par écran
+        script: |
+          UDID=$(xcrun simctl list devices available | grep -E "iPhone (16|17)" | head -1 | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
+          if [ -z "$UDID" ]; then
+            UDID=$(xcrun simctl list devices available | grep "iPhone" | head -1 | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
+          fi
+          echo "Simulateur : $UDID"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          APP=$(find build_sim/Build/Products -name "LPProtoSwift.app" -type d | head -1)
+          echo "App : $APP"
+          xcrun simctl install "$UDID" "$APP"
+          mkdir -p captures
+          while IFS= read -r ecran; do
+            [ -z "$ecran" ] && continue
+            echo "— Capture : $ecran"
+            SIMCTL_CHILD_ECRAN="$ecran" xcrun simctl launch "$UDID" com.lostphone.game || continue
+            sleep 5
+            xcrun simctl io "$UDID" screenshot "captures/${ecran}.png" || true
+            xcrun simctl terminate "$UDID" com.lostphone.game || true
+            sleep 1
+          done < outils/ecrans.txt
+          ls -la captures/
+          zip -r captures.zip captures
+
+    artifacts:
+      - captures.zip

@@ -156,9 +156,7 @@ struct SafariVue: View {
                 historiqueVisible = false
             }
         }
-        .alert("Partager", isPresented: $partageAlerte) {
-            Button("OK", role: .cancel) {}
-        } message: { Text(ErreurLambda.reponse("partage")) }
+        .sheet(isPresented: $partageAlerte) { FeuillePartage(element: urlActive) }
     }
 
     private var suggestions: [String] {

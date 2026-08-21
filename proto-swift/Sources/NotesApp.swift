@@ -214,6 +214,7 @@ struct NoteEditionVue: View {
     let noteId: UUID
     @State private var texte = ""
     @State private var alerteOutil: String? = nil
+    @State private var partageVisible = false
 
     private var index: Int? { magasin.notes.firstIndex { $0.id == noteId } }
 
@@ -259,7 +260,7 @@ struct NoteEditionVue: View {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 18) {
                     Image(systemName: "square.and.arrow.up").foregroundStyle(Color(hex: 0xE8A33D))
-                        .onTapGesture { alerteOutil = "partage" }
+                        .onTapGesture { partageVisible = true }
                     Image(systemName: "ellipsis.circle").foregroundStyle(Color(hex: 0xE8A33D))
                         .onTapGesture { alerteOutil = "menu" }
                 }
@@ -270,6 +271,7 @@ struct NoteEditionVue: View {
         } message: {
             Text(messageOutil)
         }
+        .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Note") }
         .tint(Color(hex: 0xE8A33D))
         .preferredColorScheme(.dark)
     }

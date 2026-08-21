@@ -159,7 +159,7 @@ struct ComptesVue: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 3) {
                             Text("Livret A").font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x1A1A2E))
-                            Text("•••• 3310").font(.system(size: 12)).foregroundStyle(.secondary)
+                            Text("•••• 3310").font(.system(size: 12)).foregroundStyle(Color(hex: 0x6E7480))
                         }
                         Spacer()
                         Text(euros(magasin.soldeLivretA)).font(.system(size: 22, weight: .bold)).foregroundStyle(Color(hex: 0x1A1A2E))
@@ -183,13 +183,13 @@ struct ComptesVue: View {
                                                 .background(Color(hex: 0xD93025), in: Capsule())
                                         }
                                     }
-                                    Text(op.sousLibelle).font(.system(size: 12.5)).foregroundStyle(.secondary)
-                                    Text(op.date).font(.system(size: 11.5)).foregroundStyle(.secondary.opacity(0.8))
+                                    Text(op.sousLibelle).font(.system(size: 12.5)).foregroundStyle(Color(hex: 0x6E7480))
+                                    Text(op.date).font(.system(size: 11.5)).foregroundStyle(Color(hex: 0x8A909C))
                                 }
                                 Spacer()
                                 Text((op.montant > 0 ? "+" : "") + euros(op.montant))
                                     .font(.system(size: 15, weight: .semibold)).monospacedDigit()
-                                    .foregroundStyle(op.refusee ? .secondary : (op.montant > 0 ? Color(hex: 0x1E9E46) : Color(hex: 0x1A1A2E)))
+                                    .foregroundStyle(op.refusee ? Color(hex: 0x9AA0AC) : (op.montant > 0 ? Color(hex: 0x1E9E46) : Color(hex: 0x1A1A2E)))
                                     .strikethrough(op.refusee)
                             }
                             .padding(.vertical, 9)
@@ -221,7 +221,7 @@ struct RIBVue: View {
                     HStack {
                         Text("LCL").font(.system(size: 30, weight: .heavy)).foregroundStyle(lclBleu)
                         Spacer()
-                        Text("Relevé d'Identité Bancaire").font(.system(size: 13)).foregroundStyle(.secondary)
+                        Text("Relevé d'Identité Bancaire").font(.system(size: 13)).foregroundStyle(Color(hex: 0x6E7480))
                     }
                     Groupe(titre: "TITULAIRE", valeur: "MME SARAH LEVASSEUR",
                            sous: "14 rue des Capucins, 69001 LYON")
@@ -258,9 +258,9 @@ struct RIBVue: View {
         var sous: String? = nil
         var body: some View {
             VStack(alignment: .leading, spacing: 4) {
-                Text(titre).font(.system(size: 11, weight: .semibold)).foregroundStyle(.secondary).kerning(0.5)
+                Text(titre).font(.system(size: 11, weight: .semibold)).foregroundStyle(Color(hex: 0x6E7480)).kerning(0.5)
                 Text(valeur).font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0x1A1A2E))
-                if let sous { Text(sous).font(.system(size: 13)).foregroundStyle(.secondary) }
+                if let sous { Text(sous).font(.system(size: 13)).foregroundStyle(Color(hex: 0x6E7480)) }
             }
         }
     }
@@ -280,7 +280,7 @@ struct VirementsVue: View {
                     Text("Effectuer un virement").font(.system(size: 19, weight: .bold)).foregroundStyle(Color(hex: 0x1A1A2E))
 
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("BÉNÉFICIAIRE").font(.system(size: 11, weight: .semibold)).foregroundStyle(.secondary)
+                        Text("BÉNÉFICIAIRE").font(.system(size: 11, weight: .semibold)).foregroundStyle(Color(hex: 0x6E7480))
                         Menu {
                             ForEach(magasin.beneficiaires, id: \.0) { b in
                                 Button(b.0) { beneficiaire = b.0 }
@@ -290,10 +290,10 @@ struct VirementsVue: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(beneficiaire).font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x1A1A2E))
                                     Text(magasin.beneficiaires.first { $0.0 == beneficiaire }?.1 ?? "")
-                                        .font(.system(size: 12)).foregroundStyle(.secondary)
+                                        .font(.system(size: 12)).foregroundStyle(Color(hex: 0x6E7480))
                                 }
                                 Spacer()
-                                Image(systemName: "chevron.up.chevron.down").font(.system(size: 12)).foregroundStyle(.secondary)
+                                Image(systemName: "chevron.up.chevron.down").font(.system(size: 12)).foregroundStyle(Color(hex: 0x6E7480))
                             }
                             .padding(14)
                             .background(Color(hex: 0xF2F4F8), in: RoundedRectangle(cornerRadius: 12))
@@ -301,20 +301,20 @@ struct VirementsVue: View {
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("MONTANT").font(.system(size: 11, weight: .semibold)).foregroundStyle(.secondary)
+                        Text("MONTANT").font(.system(size: 11, weight: .semibold)).foregroundStyle(Color(hex: 0x6E7480))
                         HStack {
                             TextField("0,00", text: $montantTexte)
                                 .keyboardType(.decimalPad)
                                 .font(.system(size: 26, weight: .bold))
                                 .foregroundStyle(Color(hex: 0x1A1A2E))
-                            Text("€").font(.system(size: 22, weight: .semibold)).foregroundStyle(.secondary)
+                            Text("€").font(.system(size: 22, weight: .semibold)).foregroundStyle(Color(hex: 0x6E7480))
                         }
                         .padding(14)
                         .background(Color(hex: 0xF2F4F8), in: RoundedRectangle(cornerRadius: 12))
                     }
 
                     Text("Plafond de virement : 3 000 € sur 7 jours glissants.")
-                        .font(.system(size: 12.5)).foregroundStyle(.secondary)
+                        .font(.system(size: 12.5)).foregroundStyle(Color(hex: 0x6E7480))
 
                     Button {
                         let m = Double(montantTexte.replacingOccurrences(of: ",", with: ".")
@@ -345,7 +345,7 @@ struct VirementsVue: View {
                                     .padding(12)
                                     .background(Color(hex: 0xFFF8E8), in: RoundedRectangle(cornerRadius: 12))
                                 Text("Agence LYON BELLECOUR · à 400 m")
-                                    .font(.system(size: 13)).foregroundStyle(.secondary)
+                                    .font(.system(size: 13)).foregroundStyle(Color(hex: 0x6E7480))
                             }
                         }
                         .frame(maxWidth: .infinity)
@@ -440,8 +440,8 @@ struct LigneBanque: View {
                 Text(titre).font(.system(size: 15))
                     .foregroundStyle(destructif ? Color(hex: 0xD93025) : Color(hex: 0x1A1A2E))
                 Spacer()
-                Text(valeur).font(.system(size: 14)).foregroundStyle(.secondary)
-                Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(.secondary)
+                Text(valeur).font(.system(size: 14)).foregroundStyle(Color(hex: 0x6E7480))
+                Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(Color(hex: 0x6E7480))
             }
             .padding(14)
         }
@@ -488,13 +488,13 @@ struct MessageBanque: View {
                 if nonLu { Circle().fill(lclBleu).frame(width: 8, height: 8) }
                 Text(objet).font(.system(size: 15, weight: nonLu ? .bold : .semibold)).foregroundStyle(Color(hex: 0x1A1A2E))
                 Spacer()
-                Text(date).font(.system(size: 12)).foregroundStyle(.secondary)
+                Text(date).font(.system(size: 12)).foregroundStyle(Color(hex: 0x6E7480))
             }
             if ouvert {
                 Text(corps).font(.system(size: 14)).foregroundStyle(Color(hex: 0x3C3C48))
                     .fixedSize(horizontal: false, vertical: true)
             } else {
-                Text(corps).font(.system(size: 13)).foregroundStyle(.secondary).lineLimit(2)
+                Text(corps).font(.system(size: 13)).foregroundStyle(Color(hex: 0x6E7480)).lineLimit(2)
             }
         }
         .padding(14)

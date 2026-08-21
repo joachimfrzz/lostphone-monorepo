@@ -8,9 +8,9 @@ patrons:
     statut: CORRIGE
     solution: "Composant partagé BarreHome (LPProto) : indicateur dessiné (capsule 140x5) + tap OU balayage vers le haut, zone au-dessus du bord système. Déployé dans les 17 vues d'apps."
   P2:
-    titre: "Tous les boutons affichés réellement utilisables"
-    statut: PARTIEL
-    note: "Appeler/Site web/Contacter câblés via le routeur (P3). Historique Safari cliquable. Le reste reste couvert par le catalogue D56 — upgrades au fil des cercles."
+    titre: "Tous les boutons affichés réellement utilisables (D62 : réaliste sans friction)"
+    statut: CORRIGE
+    solution: "Passe anti-friction 21/08 : Localiser 100% réel (invitation inline, cesser/reprendre partage, son émis, mode perdu bascule, effacer en attente, supprimer/retirer avec confirmation + retrait de liste, localisation précise) ; Mail corbeille/déplacer/répondre/nouveau réels + boîte Corbeille ; feuille de partage maison (Safari, Photos, Notes, fiche contact Téléphone) ; fiche contact Téléphone à bascules réelles ; Messages enveloppe->Mail + modification contact réelle ; Plans notation étoiles réelle ; Météo signalement réel + bouton Plans routé. Popups conservées : apps non construites (placeholder), code requis Réglages, menu + de Messages (héritage — à traiter cercle 2)."
   P3:
     titre: "Liens inter-apps (routeur)"
     statut: CORRIGE

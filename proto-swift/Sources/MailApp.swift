@@ -144,8 +144,6 @@ struct MailVue: View {
                             LigneBoite(symbole: "xmark.bin.fill", couleur: 0x8E8E93, nom: "Indésirables",
                                        compte: magasin.boite("Indésirables").count,
                                        destination: ListeMailVue(titre: "Indésirables", boite: "Indésirables"))
-                            LigneBoite(symbole: "trash.fill", couleur: 0x8E8E93, nom: "Corbeille", compte: nil,
-                                       destination: ListeMailVue(titre: "Corbeille", boite: "Corbeille"))
                             LigneBoite(symbole: "tray.2.fill", couleur: 0x8E8E93, nom: "Tous les e-mails",
                                        compte: magasin.courriels.count,
                                        destination: ListeMailVue(titre: "Tous les e-mails", boite: "*"))
@@ -216,7 +214,7 @@ struct ListeMailVue: View {
         switch boite {
         case "*": l = magasin.courriels
         case "VIP": l = magasin.courriels.filter { $0.vip }
-        case "Envoi", "Corbeille": l = []
+        case "Envoi": l = []
         default: l = magasin.boite(boite)
         }
         if !recherche.isEmpty {

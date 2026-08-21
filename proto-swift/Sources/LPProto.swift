@@ -102,7 +102,7 @@ struct FeuillePartage: View {
 
             VStack(spacing: 0) {
                 HStack {
-                    Text(copie ? "Copié" : "Copier").foregroundStyle(copie ? .secondary : .white)
+                    Text(copie ? "Copié" : "Copier").foregroundStyle(copie ? Color.secondary : Color.white)
                     Spacer()
                     Image(systemName: copie ? "checkmark" : "doc.on.doc").foregroundStyle(.secondary)
                 }

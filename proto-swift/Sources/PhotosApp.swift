@@ -623,9 +623,7 @@ struct PhotoDetailVue: View {
         } message: {
             Text("Cette photo sera conservée 30 jours dans Suppr. récemment.")
         }
-        .alert("Partager", isPresented: $partageErreur) {
-            Button("OK", role: .cancel) {}
-        } message: { Text(ErreurLambda.reponse("partage")) }
+        .sheet(isPresented: $partageErreur) { FeuillePartage(element: "1 photo") }
     }
 }
 

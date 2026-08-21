@@ -135,6 +135,9 @@ struct MailVue: View {
                             LigneBoite(symbole: "doc.fill", couleur: 0x8E8E93, nom: "Brouillons",
                                        compte: magasin.boite("Brouillons").count,
                                        destination: ListeMailVue(titre: "Brouillons", boite: "Brouillons"))
+                            LigneBoite(symbole: "trash.fill", couleur: 0x8E8E93, nom: "Corbeille",
+                                       compte: magasin.boite("Corbeille").count,
+                                       destination: ListeMailVue(titre: "Corbeille", boite: "Corbeille"))
                             LigneBoite(symbole: "paperplane.fill", couleur: 0x0A84FF, nom: "Envoyés",
                                        compte: magasin.boite("Envoyés").count,
                                        destination: ListeMailVue(titre: "Envoyés", boite: "Envoyés"))
@@ -283,8 +286,13 @@ struct ListeMailVue: View {
 
 // ============================================================ LECTURE
 struct LectureMailVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var magasin = MagasinMail.partage
     let courriel: Courriel
     @State private var alerte: String? = nil
+    @State private var dossierDialog = false
+    @State private var repondreVisible = false
+    @State private var nouveauVisible = false
 
     var body: some View {
         ScrollView {
@@ -314,18 +322,35 @@ struct LectureMailVue: View {
         .background(Color.black)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
-                Image(systemName: "trash").onTapGesture { alerte = "corbeille" }
+                Image(systemName: "trash").onTapGesture { deplacer(vers: "Corbeille"); dismiss() }
                 Spacer()
-                Image(systemName: "folder").onTapGesture { alerte = "dossier" }
+                Image(systemName: "folder").onTapGesture { dossierDialog = true }
                 Spacer()
-                Image(systemName: "arrowshape.turn.up.left").onTapGesture { alerte = "repondre" }
+                Image(systemName: "arrowshape.turn.up.left").onTapGesture { repondreVisible = true }
                 Spacer()
-                Image(systemName: "square.and.pencil").onTapGesture { alerte = "repondre" }
+                Image(systemName: "square.and.pencil").onTapGesture { nouveauVisible = true }
             }
         }
         .alert(titreAlerte, isPresented: Binding(get: { alerte != nil }, set: { if !$0 { alerte = nil } })) {
             Button("OK", role: .cancel) {}
         } message: { Text(messageAlerte) }
+        .sheet(isPresented: $repondreVisible) {
+            ComposerMailVue(destinataire: courriel.adresse, objet: "Re : " + courriel.objet)
+        }
+        .sheet(isPresented: $nouveauVisible) { ComposerMailVue() }
+        .confirmationDialog("Déplacer vers…", isPresented: $dossierDialog, titleVisibility: .visible) {
+            Button("Réception") { deplacer(vers: "Réception"); dismiss() }
+            Button("Indésirables") { deplacer(vers: "Indésirables"); dismiss() }
+            Button("Corbeille", role: .destructive) { deplacer(vers: "Corbeille"); dismiss() }
+            Button("Annuler", role: .cancel) {}
+        }
+    }
+
+    private func deplacer(vers boite: String) {
+        Haptique.leger()
+        if let i = magasin.courriels.firstIndex(where: { $0.id == courriel.id }) {
+            magasin.courriels[i].boite = boite
+        }
     }
 
     private var titreAlerte: String {
@@ -348,8 +373,13 @@ struct LectureMailVue: View {
 struct ComposerMailVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinMail.partage
-    @State private var destinataire = ""
-    @State private var objet = ""
+    @State private var destinataire: String
+    @State private var objet: String
+
+    init(destinataire: String = "", objet: String = "") {
+        _destinataire = State(initialValue: destinataire)
+        _objet = State(initialValue: objet)
+    }
     @State private var corps = "\n\nEnvoyé de mon iPhone"
     @State private var brouillonAlerte = false
 

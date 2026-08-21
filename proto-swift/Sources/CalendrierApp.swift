@@ -93,7 +93,9 @@ struct CalendrierVue: View {
                 } else {
                     ScrollViewReader { defileur in
                         ScrollView {
+                            // Miroir run 1 : réserve sous les pilules de la toolbar (Août + L M M J V S D étaient masqués)
                             LazyVStack(alignment: .leading, spacing: 26) {
+                                Color.clear.frame(height: 44)
                                 ForEach(0..<moisListe.count, id: \.self) { i in
                                     let a = moisListe[i].0
                                     let m = moisListe[i].1

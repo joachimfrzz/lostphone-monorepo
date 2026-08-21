@@ -54,6 +54,14 @@ enum DonneesLocaliser {
     ]
 }
 
+// ============================================================ ÉTAT DE SESSION (boutons réels — anti-friction 21/08)
+final class MagasinLoc: ObservableObject {
+    static let partage = MagasinLoc()
+    @Published var partageCesse: Set<String> = []
+    @Published var modePerdu: Set<String> = []
+    @Published var supprimes: Set<String> = []
+}
+
 // ============================================================ APP
 struct LocaliserVue: View {
     @Environment(\.dismiss) private var dismiss
@@ -197,7 +205,10 @@ extension PersonneLoc: Hashable {
 struct PersonneDetailVue: View {
     @Environment(\.dismiss) private var dismiss
     let personne: PersonneLoc
+    @ObservedObject private var magasin = MagasinLoc.partage
     @State private var alerte: String? = nil
+    @State private var invitationEnvoyee = false
+    @State private var cesserConfirm = false
     @State private var notifier = false
 
     var body: some View {
@@ -212,19 +223,25 @@ struct PersonneDetailVue: View {
                             Text("Vous avez proposé à \(personne.nom) de partager sa position le 12 mai 2026. Cette personne n'a pas encore accepté.")
                                 .font(.system(size: 13.5)).foregroundStyle(.secondary)
                                 .multilineTextAlignment(.center)
-                            Button { alerte = "invitation" } label: {
-                                Text("Renvoyer l'invitation").font(.system(size: 15, weight: .semibold)).foregroundStyle(Color(hex: 0x007AFF))
+                            Button {
+                                Haptique.leger()
+                                invitationEnvoyee = true
+                            } label: {
+                                Text(invitationEnvoyee ? "Invitation envoyée" : "Renvoyer l'invitation")
+                                    .font(.system(size: 15, weight: .semibold))
+                                    .foregroundStyle(invitationEnvoyee ? .secondary : Color(hex: 0x007AFF))
                                     .padding(.horizontal, 20).padding(.vertical, 10)
                                     .background(Color(hex: 0x1C1C1E), in: Capsule())
                             }
+                            .disabled(invitationEnvoyee)
                         }
                         .padding(.top, 20)
                     } else {
                         HStack(spacing: 12) {
                             BoutonLocaliser(symbole: "phone.fill", nom: "Contacter") {
-                                if personne.tel.isEmpty { alerte = "contact" } else { Routeur.partage.allerTelephone(personne.tel) }
+                                Routeur.partage.allerTelephone(personne.tel)
                             }
-                            BoutonLocaliser(symbole: "car.fill", nom: "Itinéraire") { alerte = "plans" }
+                            BoutonLocaliser(symbole: "car.fill", nom: "Itinéraire") { Routeur.partage.allerPlans() }
                             BoutonLocaliser(symbole: "bell.fill", nom: "Notifications") { notifier.toggle() }
                         }
                         VStack(spacing: 0) {
@@ -243,11 +260,20 @@ struct PersonneDetailVue: View {
                             .padding(14)
                         }
                         .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
-                        Button { alerte = "cesser" } label: {
-                            Text("Cesser de partager ma position")
-                                .font(.system(size: 15)).foregroundStyle(Color(hex: 0xFF453A))
+                        Button { cesserConfirm = true } label: {
+                            Text(magasin.partageCesse.contains(personne.nom) ? "Recommencer à partager ma position" : "Cesser de partager ma position")
+                                .font(.system(size: 15))
+                                .foregroundStyle(magasin.partageCesse.contains(personne.nom) ? Color(hex: 0x007AFF) : Color(hex: 0xFF453A))
                                 .frame(maxWidth: .infinity).padding(.vertical, 13)
                                 .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
+                        }
+                        .confirmationDialog("", isPresented: $cesserConfirm, titleVisibility: .hidden) {
+                            if magasin.partageCesse.contains(personne.nom) {
+                                Button("Partager ma position") { Haptique.leger(); magasin.partageCesse.remove(personne.nom) }
+                            } else {
+                                Button("Cesser de partager ma position", role: .destructive) { Haptique.leger(); magasin.partageCesse.insert(personne.nom) }
+                            }
+                            Button("Annuler", role: .cancel) {}
                         }
                     }
                 }
@@ -309,6 +335,7 @@ struct BoutonLocaliser: View {
 
 // ============================================================ APPAREILS (fiche complète)
 struct AppareilsPanneau: View {
+    @ObservedObject private var magasin = MagasinLoc.partage
     @State private var detail: AppareilLoc? = nil
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -318,7 +345,7 @@ struct AppareilsPanneau: View {
                 Image(systemName: "plus").font(.system(size: 17)).foregroundStyle(.white)
                     .frame(width: 32, height: 32).background(Color.white.opacity(0.12), in: Circle())
             }
-            ForEach(DonneesLocaliser.appareils) { a in
+            ForEach(DonneesLocaliser.appareils.filter { !magasin.supprimes.contains($0.nom) }) { a in
                 Button { detail = a } label: {
                     HStack(spacing: 12) {
                         Circle().fill(Color(hex: 0x2C2C2E)).frame(width: 42, height: 42)
@@ -350,7 +377,12 @@ extension AppareilLoc: Hashable {
 struct AppareilDetailVue: View {
     @Environment(\.dismiss) private var dismiss
     let appareil: AppareilLoc
+    @ObservedObject private var magasin = MagasinLoc.partage
     @State private var alerte: String? = nil
+    @State private var sonEmis = false
+    @State private var effacerConfirm = false
+    @State private var supprimerConfirm = false
+    @State private var effacementDemande = false
     @State private var prevenir = false
 
     var body: some View {
@@ -360,8 +392,8 @@ struct AppareilDetailVue: View {
                     Text("14 rue des Capucins · 69001 Lyon")
                         .font(.system(size: 13)).foregroundStyle(.secondary)
                     HStack(spacing: 12) {
-                        BoutonLocaliser(symbole: "speaker.wave.2.fill", nom: "Émettre un son") { alerte = "son" }
-                        BoutonLocaliser(symbole: "car.fill", nom: "Itinéraire") { alerte = "plans" }
+                        BoutonLocaliser(symbole: sonEmis ? "speaker.wave.3.fill" : "speaker.wave.2.fill", nom: sonEmis ? "Son émis" : "Émettre un son") { Haptique.leger(); sonEmis = true }
+                        BoutonLocaliser(symbole: "car.fill", nom: "Itinéraire") { Routeur.partage.allerPlans() }
                     }
                     VStack(spacing: 0) {
                         HStack {
@@ -371,12 +403,16 @@ struct AppareilDetailVue: View {
                                     .font(.system(size: 12)).foregroundStyle(.secondary)
                             }
                             Spacer()
-                            Text("Non").font(.system(size: 14)).foregroundStyle(.secondary)
+                            Text(magasin.modePerdu.contains(appareil.nom) ? "Activé" : "Non").font(.system(size: 14)).foregroundStyle(magasin.modePerdu.contains(appareil.nom) ? Color(hex: 0xE8873D) : .secondary)
                             Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(.secondary)
                         }
                         .padding(14)
                         .contentShape(Rectangle())
-                        .onTapGesture { alerte = "perdu" }
+                        .onTapGesture {
+                            Haptique.leger()
+                            if magasin.modePerdu.contains(appareil.nom) { magasin.modePerdu.remove(appareil.nom) }
+                            else { magasin.modePerdu.insert(appareil.nom) }
+                        }
                         Divider().overlay(Color(hex: 0x2C2C2E))
                         HStack {
                             Text("Me prévenir quand il sera localisé").foregroundStyle(.white)
@@ -387,14 +423,26 @@ struct AppareilDetailVue: View {
                     }
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
                     VStack(spacing: 0) {
-                        Button { alerte = "effacer" } label: {
-                            HStack { Text("Effacer cet appareil").foregroundStyle(Color(hex: 0xFF453A)); Spacer() }
-                                .padding(14)
+                        Button { if !effacementDemande { effacerConfirm = true } } label: {
+                            HStack {
+                                Text(effacementDemande ? "Effacement en attente de connexion…" : "Effacer cet appareil")
+                                    .foregroundStyle(effacementDemande ? .secondary : Color(hex: 0xFF453A))
+                                Spacer()
+                            }
+                            .padding(14)
                         }
+                        .confirmationDialog("Effacer « \(appareil.nom) » ?", isPresented: $effacerConfirm, titleVisibility: .visible) {
+                            Button("Effacer", role: .destructive) { Haptique.leger(); effacementDemande = true }
+                            Button("Annuler", role: .cancel) {}
+                        } message: { Text("Tout le contenu et les réglages seront effacés à la prochaine connexion de l'appareil.") }
                         Divider().overlay(Color(hex: 0x2C2C2E))
-                        Button { alerte = "supprimer" } label: {
+                        Button { supprimerConfirm = true } label: {
                             HStack { Text("Supprimer").foregroundStyle(Color(hex: 0xFF453A)); Spacer() }
                                 .padding(14)
+                        }
+                        .confirmationDialog("Supprimer « \(appareil.nom) » du compte ?", isPresented: $supprimerConfirm, titleVisibility: .visible) {
+                            Button("Supprimer", role: .destructive) { Haptique.leger(); magasin.supprimes.insert(appareil.nom); dismiss() }
+                            Button("Annuler", role: .cancel) {}
                         }
                     }
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
@@ -443,6 +491,7 @@ struct AppareilDetailVue: View {
 
 // ============================================================ OBJETS (composant AirTag entier)
 struct ObjetsPanneau: View {
+    @ObservedObject private var magasin = MagasinLoc.partage
     @State private var detail: ObjetLoc? = nil
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -452,7 +501,7 @@ struct ObjetsPanneau: View {
                 Image(systemName: "plus").font(.system(size: 17)).foregroundStyle(.white)
                     .frame(width: 32, height: 32).background(Color.white.opacity(0.12), in: Circle())
             }
-            ForEach(DonneesLocaliser.objets) { o in
+            ForEach(DonneesLocaliser.objets.filter { !magasin.supprimes.contains($0.nom) }) { o in
                 Button { detail = o } label: {
                     HStack(spacing: 12) {
                         Circle().fill(.white).frame(width: 42, height: 42)
@@ -481,7 +530,11 @@ extension ObjetLoc: Hashable {
 struct ObjetDetailVue: View {
     @Environment(\.dismiss) private var dismiss
     let objet: ObjetLoc
+    @ObservedObject private var magasin = MagasinLoc.partage
     @State private var alerte: String? = nil
+    @State private var sonEmis = false
+    @State private var aProximite = false
+    @State private var retirerConfirm = false
 
     var body: some View {
         NavigationStack {
@@ -489,8 +542,8 @@ struct ObjetDetailVue: View {
                 VStack(spacing: 12) {
                     Text("AirTag · " + objet.etat).font(.system(size: 13)).foregroundStyle(.secondary)
                     HStack(spacing: 12) {
-                        BoutonLocaliser(symbole: "speaker.wave.2.fill", nom: "Émettre un son") { alerte = "son" }
-                        BoutonLocaliser(symbole: "location.viewfinder", nom: "Localiser") { alerte = "precision" }
+                        BoutonLocaliser(symbole: sonEmis ? "speaker.wave.3.fill" : "speaker.wave.2.fill", nom: sonEmis ? "Son émis" : "Émettre un son") { Haptique.leger(); sonEmis = true }
+                        BoutonLocaliser(symbole: aProximite ? "location.fill.viewfinder" : "location.viewfinder", nom: aProximite ? "À proximité" : "Localiser") { Haptique.leger(); aProximite = true }
                     }
                     VStack(spacing: 0) {
                         HStack {
@@ -500,16 +553,24 @@ struct ObjetDetailVue: View {
                                     .font(.system(size: 12)).foregroundStyle(.secondary)
                             }
                             Spacer()
-                            Text("Non").font(.system(size: 14)).foregroundStyle(.secondary)
+                            Text(magasin.modePerdu.contains(objet.nom) ? "Activé" : "Non").font(.system(size: 14)).foregroundStyle(magasin.modePerdu.contains(objet.nom) ? Color(hex: 0xE8873D) : .secondary)
                             Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(.secondary)
                         }
                         .padding(14)
                         .contentShape(Rectangle())
-                        .onTapGesture { alerte = "perdu" }
+                        .onTapGesture {
+                            Haptique.leger()
+                            if magasin.modePerdu.contains(objet.nom) { magasin.modePerdu.remove(objet.nom) }
+                            else { magasin.modePerdu.insert(objet.nom) }
+                        }
                         Divider().overlay(Color(hex: 0x2C2C2E))
-                        Button { alerte = "retirer" } label: {
+                        Button { retirerConfirm = true } label: {
                             HStack { Text("Retirer l'objet").foregroundStyle(Color(hex: 0xFF453A)); Spacer() }
                                 .padding(14)
+                        }
+                        .confirmationDialog("Retirer « \(objet.nom) » ?", isPresented: $retirerConfirm, titleVisibility: .visible) {
+                            Button("Retirer", role: .destructive) { Haptique.leger(); magasin.supprimes.insert(objet.nom); dismiss() }
+                            Button("Annuler", role: .cancel) {}
                         }
                     }
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))

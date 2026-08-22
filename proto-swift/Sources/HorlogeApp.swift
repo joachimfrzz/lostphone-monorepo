@@ -29,7 +29,7 @@ final class MagasinHorloge: ObservableObject {
 // ============================================================ APP
 struct HorlogeVue: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var onglet = 1 // ouvre sur Alarmes (le plus parlant)
+    @State private var onglet = Int(ProcessInfo.processInfo.environment["ONGLET"] ?? "") ?? 1 // ouvre sur Alarmes (le plus parlant)
 
     var body: some View {
         ZStack(alignment: .bottom) {

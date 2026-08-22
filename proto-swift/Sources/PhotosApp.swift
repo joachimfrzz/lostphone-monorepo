@@ -289,7 +289,7 @@ final class MagasinPhotos: ObservableObject {
 // ============================================================ RACINE
 struct PhotosVue: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var onglet = 0
+    @State private var onglet = Int(ProcessInfo.processInfo.environment["ONGLET"] ?? "") ?? 0
     @State private var rechercheVisible = false
 
     var body: some View {

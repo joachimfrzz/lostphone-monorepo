@@ -65,7 +65,7 @@ final class MagasinLoc: ObservableObject {
 // ============================================================ APP
 struct LocaliserVue: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var onglet = 1
+    @State private var onglet = Int(ProcessInfo.processInfo.environment["ONGLET"] ?? "") ?? 1
     @State private var position = MapCameraPosition.region(
         MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 45.7699, longitude: 4.8290),
                            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)))

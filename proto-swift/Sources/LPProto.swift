@@ -22,42 +22,258 @@ struct LPProtoApp: App {
 
 
 // ============================================================ MODE CAPTURE (D63 — pipeline Miroir)
-// Registre des écrans capturables. Clés = lignes de outils/ecrans.txt.
+// Registre EXHAUSTIF des écrans capturables (v2, 21/08). Clés = lignes de outils/ecrans.txt.
+// Un suffixe #n sur la clé passe par la variable ONGLET (lue par les racines à onglets).
+// Découpé par famille pour ménager le vérificateur de types.
 struct EcranCapture: View {
     let cle: String
+    private var famille: String { String(cle.split(separator: ".")[0].split(separator: "#")[0]) }
     var body: some View {
+        switch famille {
+        case "accueil": ecransAccueil()
+        case "banque": ecransBanque()
+        case "calculatrice": ecransCalculatrice()
+        case "calendrier": ecransCalendrier()
+        case "dictaphone": ecransDictaphone()
+        case "horloge": ecransHorloge()
+        case "localiser": ecransLocaliser()
+        case "mail": ecransMail()
+        case "messages": ecransMessages()
+        case "meteo": ecransMeteo()
+        case "notes": ecransNotes()
+        case "partage": ecransPartage()
+        case "photos": ecransPhotos()
+        case "plans": ecransPlans()
+        case "rappels": ecransRappels()
+        case "reglages": ecransReglages()
+        case "safari": ecransSafari()
+        case "telephone": ecransTelephone()
+        case "whatsapp": ecransWhatsapp()
+        default: VerrouillageView()
+        }
+    }
+
+    @ViewBuilder
+    private func ecransAccueil() -> some View {
         switch cle {
-        case "verrouillage": VerrouillageView()
         case "accueil": AccueilView()
-        case "whatsapp": WhatsAppListeView()
-        case "telephone": TelephoneVue()
-        case "messages": MessagesVue()
-        case "messages.conversation": NavigationStack { MsgConvVue(conv: DonneesMsg.convs[0]) }
-        case "reglages": ReglagesVue()
-        case "photos": PhotosVue()
-        case "horloge": HorlogeVue()
-        case "calculatrice": CalculatriceVue()
-        case "meteo": MeteoVue()
-        case "notes": NotesVue()
-        case "rappels": RappelsVue()
-        case "dictaphone": DictaphoneVue()
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransBanque() -> some View {
+        switch cle {
         case "banque": MaBanqueVue()
+        case "banque.rib": RIBVue()
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransCalculatrice() -> some View {
+        switch cle {
+        case "calculatrice": CalculatriceVue()
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransCalendrier() -> some View {
+        switch cle {
         case "calendrier": CalendrierVue()
+        case "calendrier.annee": NavigationStack { AnneeVue(vueAnnee: .constant(true)) }
+        case "calendrier.jour": JourVue(annee: 2026, mois: 8, jour: 17)
+        case "calendrier.nouveau": NouvelEvenementVue()
+        case "calendrier.recherche": RechercheCalendrierVue()
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransDictaphone() -> some View {
+        switch cle {
+        case "dictaphone": DictaphoneVue()
+        case "dictaphone.liste": ListeMemosVue(titre: "Tous les enregistrements", filtre: { _ in true })
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransHorloge() -> some View {
+        switch cle {
+        case "horloge": HorlogeVue()
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransLocaliser() -> some View {
+        switch cle {
         case "localiser": LocaliserVue()
         case "localiser.personne": PersonneDetailVue(personne: DonneesLocaliser.personnes[0])
         case "localiser.appareil": AppareilDetailVue(appareil: DonneesLocaliser.appareils[0])
         case "localiser.objet": ObjetDetailVue(objet: DonneesLocaliser.objets[0])
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransMail() -> some View {
+        switch cle {
         case "mail": MailVue()
+        case "mail.reception": NavigationStack { ListeMailVue(titre: "Réception", boite: "Réception") }
+        case "mail.corbeille": NavigationStack { ListeMailVue(titre: "Corbeille", boite: "Corbeille") }
         case "mail.lecture": NavigationStack { LectureMailVue(courriel: MagasinMail.partage.courriels[0]) }
         case "mail.composer": ComposerMailVue()
-        case "plans": PlansVue()
-        case "plans.fiche": FicheLieuVue(lieu: DonneesPlans.proximite[0], itineraire: {})
-        case "safari": SafariVue()
-        case "safari.historique": HistoriqueSafariVue()
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransMessages() -> some View {
+        switch cle {
+        case "messages": MessagesVue()
+        case "messages.conversation": NavigationStack { MsgConvVue(conv: DonneesMsg.convs[0]) }
+        case "messages.marc": NavigationStack { MsgConvVue(conv: DonneesMsg.convs[min(7, DonneesMsg.convs.count - 1)]) }
+        case "messages.fiche": NavigationStack { MsgFicheVue(conv: DonneesMsg.convs[0]) }
+        case "messages.indesirables": NavigationStack { MsgIndesirablesVue() }
+        case "messages.suppressions": NavigationStack { MsgSuppressionsVue() }
+        case "messages.filtrage": GererFiltrageVue()
+        case "messages.nouveau": NouveauMessageVue()
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransMeteo() -> some View {
+        switch cle {
+        case "meteo": MeteoVue()
+        case "meteo.villes": ListeVillesVue(page: .constant(0))
+        case "meteo.conditions": ConditionsMeteoVue(ville: DonneesMeteo.villes[0])
+        case "meteo.carte": NavigationStack { CarteMeteoVue() }
+        case "meteo.signaler": NavigationStack { SignalerMeteoVue() }
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransNotes() -> some View {
+        switch cle {
+        case "notes": NotesVue()
+        case "notes.note": NavigationStack { NoteEditionVue(noteId: MagasinNotes.partage.notes[0].id) }
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransPartage() -> some View {
+        switch cle {
         case "partage": FeuillePartage(element: "Capture")
         default: VerrouillageView()
         }
     }
+    @ViewBuilder
+    private func ecransPhotos() -> some View {
+        switch cle {
+        case "photos": PhotosVue()
+        case "photos.detail": NavigationStack { PhotoDetailVue(depart: DonneesPhotos.toutes[0]) }
+        case "photos.recherche": NavigationStack { RecherchePhotosVue() }
+        case "photos.album": NavigationStack { AlbumVue(titre: "Festival", items: Array(DonneesPhotos.toutes.prefix(9))) }
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransPlans() -> some View {
+        switch cle {
+        case "plans": PlansVue()
+        case "plans.fiche": FicheLieuVue(lieu: DonneesPlans.proximite[0], itineraire: {})
+        case "plans.itineraire": ItinerairePlanVue(lieu: DonneesPlans.proximite[0], demarrer: {})
+        case "plans.navigation": NavigationStack { NavigationGuideeVue(lieu: DonneesPlans.recents[0]) }
+        case "plans.noter": NavigationStack { NoterLieuVue(nom: "Boulangerie du Griffon") }
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransRappels() -> some View {
+        switch cle {
+        case "rappels": RappelsVue()
+        case "rappels.tous": NavigationStack { FiltreVue(titre: "Tous", teinte: Color(hex: 0x8E8E93), filtre: { _ in true }) }
+        case "rappels.termines": NavigationStack { TerminesVue() }
+        case "rappels.detail": DetailRappelVue(rappelId: MagasinRappels.partage.rappels[0].id)
+        case "rappels.nouveau": NouveauRappelVue()
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransReglages() -> some View {
+        switch cle {
+        case "reglages": ReglagesVue()
+        case "reglages.compte": NavigationStack { CompteAppleVue() }
+        case "reglages.infosperso": NavigationStack { InfosPersoVue() }
+        case "reglages.securite": NavigationStack { ConnexionSecuVue() }
+        case "reglages.paiement": NavigationStack { PaiementVue() }
+        case "reglages.abonnements": NavigationStack { AbonnementsVue() }
+        case "reglages.icloud": NavigationStack { ICloudVue() }
+        case "reglages.maj": NavigationStack { MiseAJourVue() }
+        case "reglages.wifi": NavigationStack { WiFiVue() }
+        case "reglages.bluetooth": NavigationStack { BluetoothVue() }
+        case "reglages.cellulaire": NavigationStack { DonneesCellVue() }
+        case "reglages.batterie": NavigationStack { BatterieVue() }
+        case "reglages.batterie.utilisation": NavigationStack { UtilisationBatterieVue() }
+        case "reglages.batterie.sante": NavigationStack { EtatSanteVue() }
+        case "reglages.general": NavigationStack { GeneralVue() }
+        case "reglages.infos": NavigationStack { InformationsVue() }
+        case "reglages.stockage": NavigationStack { StockageVue() }
+        case "reglages.tempsecran": NavigationStack { TempsEcranVue() }
+        case "reglages.luminosite": NavigationStack { LuminositeVue() }
+        case "reglages.fond": NavigationStack { FondEcranVue() }
+        case "reglages.controle": NavigationStack { CentreControleVue() }
+        case "reglages.ecranaccueil": NavigationStack { EcranAccueilVue() }
+        case "reglages.notifications": NavigationStack { NotificationsVue() }
+        case "reglages.sons": NavigationStack { SonsVue() }
+        case "reglages.faceid": NavigationStack { FaceIDVue() }
+        case "reglages.confidentialite": NavigationStack { ConfidentialiteVue() }
+        case "reglages.cartes": NavigationStack { CartesPayVue() }
+        case "reglages.recherche": RechercheReglagesVue()
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransSafari() -> some View {
+        switch cle {
+        case "safari": SafariVue()
+        case "safari.resultats": CaptureSafari(page: "resultats", url: "google.com")
+        case "safari.vessel": CaptureSafari(page: "vessel", url: "vesselfinder.com")
+        case "safari.fonfon": CaptureSafari(page: "fonfon", url: "chez-fonfon.com")
+        case "safari.erreur": CaptureSafari(page: "erreur", url: "exemple.fr")
+        case "safari.site": CaptureSafari(page: "site:Boulangerie du Griffon", url: "boulangeriedugriffon.fr")
+        case "safari.onglets": OngletsVue { _ in }
+        case "safari.historique": HistoriqueSafariVue()
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransTelephone() -> some View {
+        switch cle {
+        case "telephone": TelephoneVue()
+        case "telephone.fiche": NavigationStack { TelFicheVue(nom: "Chloé") }
+        case "telephone.appel": NavigationStack { AppelTelVue(destinataire: "Chloé", numero: "06 24 81 05 77") }
+        default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransWhatsapp() -> some View {
+        switch cle {
+        case "whatsapp": WhatsAppListeView()
+        case "whatsapp.marc": NavigationStack { ConversationVue(nomContact: "Marc \u{2764}\u{FE0F}") }
+        case "whatsapp.chloe": NavigationStack { ConversationVue(nomContact: "Chloé") }
+        case "whatsapp.filles": NavigationStack { ConversationVue(nomContact: "Les filles \u{1F483}") }
+        case "whatsapp.thomas": NavigationStack { ConversationVue(nomContact: "Thomas") }
+        case "whatsapp.maman": NavigationStack { ConversationVue(nomContact: "Maman") }
+        case "whatsapp.fiche": NavigationStack { InfosContactVue(nom: "Marc \u{2764}\u{FE0F}", numero: "+33 7 49 12 53 08") }
+        case "whatsapp.appel": AppelVue(nom: "Chloé")
+        default: VerrouillageView()
+        }
+    }
+}
+
+// Safari pré-chargé sur une page donnée (capture des pages rendues)
+struct CaptureSafari: View {
+    init(page: String, url: String) {
+        Routeur.partage.pageSafari = page
+        Routeur.partage.urlSafari = url
+    }
+    var body: some View { SafariVue() }
 }
 
 // ============================================================ BARRE HOME FICTIVE (correctif P1, 20/08)
@@ -559,7 +775,7 @@ let cocheBleue = Color(hex: 0x53BDEB)
 
 struct WhatsAppListeView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var onglet = 3
+    @State private var onglet = Int(ProcessInfo.processInfo.environment["ONGLET"] ?? "") ?? 3
     @State private var filtre = 0          // 0 Toutes, 1 Non lues, 2 Favoris, 3 Groupes
     @State private var recherche = ""
     @State private var menuPlus = false

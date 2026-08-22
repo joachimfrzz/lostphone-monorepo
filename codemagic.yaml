@@ -178,8 +178,11 @@ workflows:
           while IFS= read -r ecran; do
             [ -z "$ecran" ] && continue
             echo "— Capture : $ecran"
-            SIMCTL_CHILD_ECRAN="$ecran" xcrun simctl launch "$UDID" com.lostphone.game
-            sleep 5
+            ECR="${ecran%%#*}"
+            ONG=""
+            case "$ecran" in *#*) ONG="${ecran#*#}";; esac
+            SIMCTL_CHILD_ECRAN="$ECR" SIMCTL_CHILD_ONGLET="$ONG" xcrun simctl launch "$UDID" com.lostphone.game
+            sleep 4
             xcrun simctl io "$UDID" screenshot "$DOSSIER/${ecran}.png"
             xcrun simctl terminate "$UDID" com.lostphone.game || true
             sleep 1

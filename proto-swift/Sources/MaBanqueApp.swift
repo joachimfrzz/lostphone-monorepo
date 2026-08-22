@@ -78,6 +78,7 @@ func euros(_ v: Double) -> String {
 
 // ============================================================ APP
 struct MaBanqueVue: View {
+    @State private var onglet = Int(ProcessInfo.processInfo.environment["ONGLET"] ?? "") ?? 0
     @Environment(\.dismiss) private var dismiss
     @State private var chargement = true
 
@@ -106,11 +107,11 @@ struct MaBanqueVue: View {
                     }
                 }
             } else {
-                TabView {
-                    ComptesVue().tabItem { Label("Comptes", systemImage: "creditcard.fill") }
-                    VirementsVue().tabItem { Label("Virements", systemImage: "arrow.left.arrow.right") }
-                    CartesVue().tabItem { Label("Cartes", systemImage: "creditcard") }
-                    MessagerieBanqueVue().tabItem { Label("Messagerie", systemImage: "envelope.fill") }
+                TabView(selection: $onglet) {
+                    ComptesVue().tabItem { Label("Comptes", systemImage: "creditcard.fill") }.tag(0)
+                    VirementsVue().tabItem { Label("Virements", systemImage: "arrow.left.arrow.right") }.tag(1)
+                    CartesVue().tabItem { Label("Cartes", systemImage: "creditcard") }.tag(2)
+                    MessagerieBanqueVue().tabItem { Label("Messagerie", systemImage: "envelope.fill") }.tag(3)
                 }
                 .tint(lclBleu)
                 .preferredColorScheme(.light)

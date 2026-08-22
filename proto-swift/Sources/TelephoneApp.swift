@@ -65,7 +65,7 @@ enum DonneesTel {
 // ============================================================ APP TÉLÉPHONE (5 onglets)
 struct TelephoneVue: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var onglet = Routeur.partage.numeroAppel != nil ? 3 : 1 // 0 Favoris, 1 Récents, 2 Contacts, 3 Clavier, 4 Messagerie
+    @State private var onglet = Int(ProcessInfo.processInfo.environment["ONGLET"] ?? "") ?? (Routeur.partage.numeroAppel != nil ? 3 : 1) // 0 Favoris, 1 Récents, 2 Contacts, 3 Clavier, 4 Messagerie
 
     var body: some View {
         NavigationStack {

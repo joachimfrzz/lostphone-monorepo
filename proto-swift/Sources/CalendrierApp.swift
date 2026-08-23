@@ -105,7 +105,13 @@ struct CalendrierVue: View {
                             .padding(.horizontal, 12)
                         }
                         .contentMargins(.top, 48, for: .scrollContent)
-                        .onAppear { defileur.scrollTo("2026-8", anchor: .top) }
+                        // Double visée : la 2e corrige la dérive d'estimation du LazyVStack
+                        .onAppear {
+                            defileur.scrollTo("2026-8", anchor: .top)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                                defileur.scrollTo("2026-8", anchor: .top)
+                            }
+                        }
                     }
                 }
 

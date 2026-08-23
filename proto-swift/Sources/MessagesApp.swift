@@ -1214,12 +1214,13 @@ struct BulleImageEnvoyee: View {
 // Phase C (D62) — sélecteur de photos (pellicule réelle, comme le vrai tiroir Photos de Messages)
 struct SelecteurPhotosMsg: View {
     let choisir: (String) -> Void
+    private var photosRecentes: [PhotoItem] { DonneesPhotos.toutes.suffix(24).reversed() }
     private let colonnes = [GridItem(.flexible(), spacing: 2), GridItem(.flexible(), spacing: 2),
                             GridItem(.flexible(), spacing: 2), GridItem(.flexible(), spacing: 2)]
     var body: some View {
         ScrollView {
             LazyVGrid(columns: colonnes, spacing: 2) {
-                ForEach(Array(DonneesPhotos.toutes.suffix(24).reversed())) { p in
+                ForEach(photosRecentes) { p in
                     if let img = ChargeurPhoto.image(p.fichier) {
                         Image(uiImage: img).resizable().scaledToFill()
                             .frame(height: 96).clipped()

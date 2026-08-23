@@ -276,6 +276,7 @@ extension Rappel: Hashable {
 // ============================================================ TERMINÉS
 struct TerminesVue: View {
     @ObservedObject private var magasin = MagasinRappels.partage
+    @State private var effacerConfirm = false
     private var termines: [Rappel] { magasin.rappels.filter { $0.termine } }
     var body: some View {
         ScrollView {
@@ -285,6 +286,8 @@ struct TerminesVue: View {
                     Text("\(termines.count) terminés").font(.system(size: 14)).foregroundStyle(.secondary)
                     Text("·").foregroundStyle(.secondary)
                     Text("Effacer").font(.system(size: 14)).foregroundStyle(Color(hex: 0x0A84FF))
+                        .contentShape(Rectangle())
+                        .onTapGesture { effacerConfirm = true }
                 }
                 .padding(.bottom, 14)
                 ForEach(termines) { r in
@@ -305,6 +308,13 @@ struct TerminesVue: View {
             .padding(.horizontal, 18)
         }
         .background(Color.black)
+        .confirmationDialog("Effacer \(termines.count) rappels terminés ?", isPresented: $effacerConfirm, titleVisibility: .visible) {
+            Button("Effacer les rappels terminés", role: .destructive) {
+                Haptique.leger()
+                magasin.rappels.removeAll { $0.termine }
+            }
+            Button("Annuler", role: .cancel) {}
+        }
     }
 }
 

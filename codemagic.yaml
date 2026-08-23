@@ -199,3 +199,56 @@ workflows:
 
     artifacts:
       - captures.zip
+
+  # ——————————————————————————— Références simulateur (D64 niveau 1) ———————————————————————————
+  # Lancement MANUEL (ou via API). Photographie les VRAIES apps Apple du simulateur
+  # (écrans racine) pour servir de références au cercle 2. Imprime aussi la liste
+  # exacte des apps installées. Artefact : references-sim.zip.
+  references-sim:
+    name: Références D64 — vraies apps du simulateur
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+
+    environment:
+      xcode: latest
+
+    scripts:
+      - name: Captures des vraies apps
+        script: |
+          UDID=$(xcrun simctl list devices available | grep -E "iPhone (16|17)" | head -1 | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
+          if [ -z "$UDID" ]; then
+            UDID=$(xcrun simctl list devices available | grep "iPhone" | head -1 | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
+          fi
+          echo "Simulateur : $UDID"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          echo "================ APPS INSTALLÉES ================"
+          xcrun simctl listapps "$UDID" | grep -E "CFBundleIdentifier|CFBundleDisplayName" || true
+          echo "================================================="
+          DOSSIER="$PWD/references-sim"
+          mkdir -p "$DOSSIER"
+          OBTENU=0
+          for ID in com.apple.Health com.apple.DocumentsApp com.apple.Passbook \
+                    com.apple.weather com.apple.mobilecal com.apple.reminders \
+                    com.apple.mobilenotes com.apple.Maps com.apple.MobileSMS \
+                    com.apple.Preferences com.apple.mobileslideshow com.apple.MobileAddressBook \
+                    com.apple.Home com.apple.shortcuts com.apple.findmy; do
+            echo "— $ID"
+            if xcrun simctl launch "$UDID" "$ID"; then
+              sleep 5
+              xcrun simctl io "$UDID" screenshot "$DOSSIER/${ID}.png" && OBTENU=$((OBTENU+1))
+              xcrun simctl terminate "$UDID" "$ID" || true
+              sleep 1
+            else
+              echo "   absent du simulateur"
+            fi
+          done
+          echo "Captures obtenues : $OBTENU"
+          if [ "$OBTENU" -lt 5 ]; then
+            echo "ÉCHEC : trop peu d'apps capturées."
+            exit 1
+          fi
+          zip -r references-sim.zip references-sim
+
+    artifacts:
+      - references-sim.zip

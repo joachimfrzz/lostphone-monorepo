@@ -1219,7 +1219,7 @@ struct SelecteurPhotosMsg: View {
     var body: some View {
         ScrollView {
             LazyVGrid(columns: colonnes, spacing: 2) {
-                ForEach(DonneesPhotos.toutes.suffix(24).reversed()) { p in
+                ForEach(Array(DonneesPhotos.toutes.suffix(24).reversed())) { p in
                     if let img = ChargeurPhoto.image(p.fichier) {
                         Image(uiImage: img).resizable().scaledToFill()
                             .frame(height: 96).clipped()

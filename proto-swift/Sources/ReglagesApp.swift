@@ -432,7 +432,16 @@ struct CompteAppleVue: View {
             regFond.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 16) {
-                    AvatarMsg(nom: "Sarah Levasseur", taille: 88).padding(.top, 8)
+                    // Phase E : photo de profil (portrait pellicule), comme la racine
+                    Group {
+                        if let portrait = ChargeurPhoto.image("p04") {
+                            Image(uiImage: portrait).resizable().scaledToFill()
+                                .frame(width: 88, height: 88).clipShape(Circle())
+                        } else {
+                            AvatarMsg(nom: "Sarah Levasseur", taille: 88)
+                        }
+                    }
+                    .padding(.top, 8)
                     VStack(spacing: 2) {
                         Text("Sarah Levasseur").font(.system(size: 24, weight: .semibold)).foregroundStyle(regTexte)
                         Text("sarah.levasseur@gmail.com").font(.system(size: 14)).foregroundStyle(regTexte2)

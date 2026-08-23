@@ -39,7 +39,7 @@ struct HorlogeVue: View {
                 ChronometreVue().tabItem { Label("Chronomètre", systemImage: "stopwatch.fill") }.tag(2)
                 MinuteursVue().tabItem { Label("Minuteurs", systemImage: "timer") }.tag(3)
             }
-            .tint(.white) // Miroir lot 1 : la référence n'a AUCUN orange dans la barre d'onglets
+            .tint(.orange) // Miroir lot 1bis : la référence montre l'onglet sélectionné en ORANGE (globe orange, f001)
             BarreHome { dismiss() }
         }
         .preferredColorScheme(.dark)

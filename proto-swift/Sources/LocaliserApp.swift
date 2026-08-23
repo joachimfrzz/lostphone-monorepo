@@ -121,6 +121,24 @@ struct LocaliserVue: View {
             }
 
             BarreHome { dismiss() }
+
+            // Miroir lot 3 : pile de boutons carte flottants (référence v8)
+            VStack(spacing: 0) {
+                HStack {
+                    Spacer()
+                    VStack(spacing: 0) {
+                        Image(systemName: "map.fill").font(.system(size: 16)).foregroundStyle(.white.opacity(0.9))
+                            .frame(width: 42, height: 42)
+                        Divider().frame(width: 42).overlay(Color.white.opacity(0.15))
+                        Image(systemName: "location").font(.system(size: 16)).foregroundStyle(.white.opacity(0.9))
+                            .frame(width: 42, height: 42)
+                    }
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.trailing, 10)
+                }
+                .padding(.top, 62)
+                Spacer()
+            }
         }
         .preferredColorScheme(.dark)
     }

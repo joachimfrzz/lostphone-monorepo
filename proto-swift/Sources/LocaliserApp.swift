@@ -161,6 +161,38 @@ struct PastilleCarte: View {
     }
 }
 
+// Miroir lot 5 : vignettes produit dessinées (la réf montre les rendus des appareils, pas des pictos plats)
+struct VignetteAppareil: View {
+    let symbole: String
+    var estompee: Bool = false
+    var body: some View {
+        Circle().fill(Color(hex: 0x2C2C2E)).frame(width: 42, height: 42)
+            .overlay(rendu.opacity(estompee ? 0.45 : 1))
+    }
+    @ViewBuilder private var rendu: some View {
+        switch symbole {
+        case "iphone":
+            RoundedRectangle(cornerRadius: 4)
+                .fill(LinearGradient(colors: [Color(hex: 0x3C6FB0), Color(hex: 0x18324F)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                .frame(width: 14, height: 24)
+                .overlay(RoundedRectangle(cornerRadius: 4).stroke(Color(hex: 0x0E1B2C), lineWidth: 1.6))
+                .overlay(Capsule().fill(.black).frame(width: 5, height: 2).offset(y: -9))
+        case "airpods.gen3":
+            Image(systemName: "airpods.gen3").font(.system(size: 16)).foregroundStyle(.white)
+        case "laptopcomputer":
+            VStack(spacing: 0) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(LinearGradient(colors: [Color(hex: 0x8E9196), Color(hex: 0x5A5D62)], startPoint: .top, endPoint: .bottom))
+                    .frame(width: 22, height: 13)
+                    .overlay(RoundedRectangle(cornerRadius: 2).inset(by: 1.6).fill(Color(hex: 0x1A2A3E)))
+                RoundedRectangle(cornerRadius: 1).fill(Color(hex: 0xB8BBC0)).frame(width: 26, height: 2)
+            }
+        default:
+            Image(systemName: symbole).font(.system(size: 16)).foregroundStyle(.white)
+        }
+    }
+}
+
 struct OngletLocaliser: View {
     let nom: String
     let symbole: String
@@ -366,8 +398,7 @@ struct AppareilsPanneau: View {
             ForEach(DonneesLocaliser.appareils.filter { !magasin.supprimes.contains($0.nom) }) { a in
                 Button { detail = a } label: {
                     HStack(spacing: 12) {
-                        Circle().fill(Color(hex: 0x2C2C2E)).frame(width: 42, height: 42)
-                            .overlay(Image(systemName: a.symbole).font(.system(size: 17)).foregroundStyle(a.sansPosition ? Color.secondary : Color.white))
+                        VignetteAppareil(symbole: a.symbole, estompee: a.sansPosition)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(a.nom).font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
                             Text(a.etat).font(.system(size: 12.5)).foregroundStyle(.secondary)

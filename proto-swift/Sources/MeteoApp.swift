@@ -35,9 +35,9 @@ struct VilleMeteo: Identifiable {
 enum DonneesMeteo {
     static let villes: [VilleMeteo] = [
         VilleMeteo(id: "lyon", nom: "Lyon", etiquette: "DOMICILE", maPosition: true,
-                   temp: 24, condition: "Nuit dégagée", max: 29, min: 18,
-                   resume: "Ciel dégagé pour le reste de la soirée. Rafales de vent allant jusqu'à 19 km/h.",
-                   heures: [("Maint.", "moon.stars.fill", 24), ("21 h", "moon.stars.fill", 23), ("22 h", "moon.fill", 22),
+                   temp: 24, condition: "Ensoleillé", max: 29, min: 18,
+                   resume: "Ensoleillé jusqu'au coucher du soleil (20:52). Rafales de vent allant jusqu'à 19 km/h.",
+                   heures: [("Maint.", "sun.max.fill", 24), ("21 h", "sun.horizon.fill", 23), ("22 h", "moon.fill", 22),
                             ("23 h", "moon.fill", 21), ("00 h", "moon.fill", 20), ("01 h", "moon.fill", 20),
                             ("02 h", "moon.fill", 19), ("03 h", "moon.fill", 19), ("04 h", "moon.fill", 18),
                             ("05 h", "moon.fill", 18), ("06 h", "sun.horizon.fill", 18), ("07 h", "sun.max.fill", 19)],
@@ -50,9 +50,9 @@ enum DonneesMeteo {
                    coucher: "20:52", lever: "06:38", visibilite: 30, humidite: 58, rosee: 15, pression: 1016,
                    lat: 45.7640, lon: 4.8357),
         VilleMeteo(id: "theize", nom: "Theizé", etiquette: nil, maPosition: false,
-                   temp: 22, condition: "Nuit dégagée", max: 28, min: 16,
+                   temp: 22, condition: "Ensoleillé", max: 28, min: 16,
                    resume: "Nuit claire sur les pierres dorées. Vent faible.",
-                   heures: [("Maint.", "moon.stars.fill", 22), ("21 h", "moon.stars.fill", 21), ("22 h", "moon.fill", 20),
+                   heures: [("Maint.", "sun.max.fill", 22), ("21 h", "sun.horizon.fill", 21), ("22 h", "moon.fill", 20),
                             ("23 h", "moon.fill", 19), ("00 h", "moon.fill", 18), ("01 h", "moon.fill", 18),
                             ("02 h", "moon.fill", 17), ("03 h", "moon.fill", 17), ("04 h", "moon.fill", 16),
                             ("05 h", "moon.fill", 16), ("06 h", "sun.horizon.fill", 17), ("07 h", "sun.max.fill", 18)],
@@ -65,9 +65,9 @@ enum DonneesMeteo {
                    coucher: "20:54", lever: "06:40", visibilite: 32, humidite: 62, rosee: 14, pression: 1017,
                    lat: 45.9394, lon: 4.6120),
         VilleMeteo(id: "marseille", nom: "Marseille", etiquette: nil, maPosition: false,
-                   temp: 26, condition: "Nuit dégagée", max: 31, min: 22,
+                   temp: 26, condition: "Ensoleillé", max: 31, min: 22,
                    resume: "Mistral faiblissant dans la nuit. Mer peu agitée au large.",
-                   heures: [("Maint.", "moon.stars.fill", 26), ("21 h", "moon.stars.fill", 25), ("22 h", "moon.fill", 25),
+                   heures: [("Maint.", "sun.max.fill", 26), ("21 h", "sun.horizon.fill", 25), ("22 h", "moon.fill", 25),
                             ("23 h", "moon.fill", 24), ("00 h", "moon.fill", 24), ("01 h", "moon.fill", 23),
                             ("02 h", "moon.fill", 23), ("03 h", "moon.fill", 23), ("04 h", "moon.fill", 22),
                             ("05 h", "moon.fill", 22), ("06 h", "sun.horizon.fill", 23), ("07 h", "sun.max.fill", 24)],
@@ -142,7 +142,8 @@ struct MeteoVue: View {
 // Fond dégradé nuit d'été (proche de la référence en soirée)
 struct FondMeteo: View {
     var body: some View {
-        LinearGradient(colors: [Color(hex: 0x2E4A6B), Color(hex: 0x1B2A44), Color(hex: 0x101828)],
+        // Miroir lot 2 : fin de journée d'été (19h47) — dégradé mesuré sur la référence (v3 f001)
+        LinearGradient(colors: [Color(hex: 0x87AEDC), Color(hex: 0x4777B2), Color(hex: 0x2F5487)],
                        startPoint: .top, endPoint: .bottom)
             .ignoresSafeArea()
     }
@@ -356,8 +357,8 @@ struct CarteMeteoBloc<Contenu: View>: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 18))
-        .background(.ultraThinMaterial.opacity(0.4), in: RoundedRectangle(cornerRadius: 18))
+        .background(Color(hex: 0x2465B5).opacity(0.72), in: RoundedRectangle(cornerRadius: 18))
+        .background(.ultraThinMaterial.opacity(0.35), in: RoundedRectangle(cornerRadius: 18))
     }
 }
 

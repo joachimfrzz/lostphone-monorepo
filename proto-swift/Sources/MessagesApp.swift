@@ -1221,11 +1221,11 @@ struct SelecteurPhotosMsg: View {
         ScrollView {
             LazyVGrid(columns: colonnes, spacing: 2) {
                 ForEach(photosRecentes) { p in
-                    if let img = ChargeurPhoto.image(p.fichier) {
+                    if let img = ChargeurPhoto.image(p.id) {
                         Image(uiImage: img).resizable().scaledToFill()
                             .frame(height: 96).clipped()
                             .contentShape(Rectangle())
-                            .onTapGesture { Haptique.leger(); choisir(p.fichier) }
+                            .onTapGesture { Haptique.leger(); choisir(p.id) }
                     }
                 }
             }

@@ -78,6 +78,32 @@ struct PlansVue: View {
             .mapStyle(.standard(elevation: .flat))
             .ignoresSafeArea()
 
+            // Miroir lot 3 : pastille météo (haut gauche) + pile de boutons (droite), référence v11
+            VStack {
+                HStack(alignment: .top) {
+                    VStack(spacing: 1) {
+                        HStack(spacing: 3) {
+                            Image(systemName: "sun.max.fill").font(.system(size: 11)).foregroundStyle(Color(hex: 0xFFD60A))
+                            Text("24°").font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
+                        }
+                        Text("Air : 42").font(.system(size: 9)).foregroundStyle(.white.opacity(0.7))
+                    }
+                    .padding(.horizontal, 9).padding(.vertical, 7)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 11))
+                    Spacer()
+                    VStack(spacing: 0) {
+                        Image(systemName: "car.fill").font(.system(size: 15)).foregroundStyle(.white.opacity(0.9))
+                            .frame(width: 42, height: 42)
+                        Divider().frame(width: 42).overlay(Color.white.opacity(0.15))
+                        Image(systemName: "location").font(.system(size: 15)).foregroundStyle(.white.opacity(0.9))
+                            .frame(width: 42, height: 42)
+                    }
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                }
+                .padding(.horizontal, 10).padding(.top, 4)
+                Spacer()
+            }
+
             // Feuille basse (recherche + lieux + récents)
             VStack(spacing: 12) {
                 Capsule().fill(Color(hex: 0x5A5A5E)).frame(width: 36, height: 5).padding(.top, 8)
@@ -124,7 +150,7 @@ struct PlansVue: View {
                             Spacer()
                         }
                         HStack(spacing: 20) {
-                            LieuRapide(symbole: "house.fill", couleur: 0xE8873D, nom: "Domicile", sous: "Proche") {
+                            LieuRapide(symbole: "house.fill", couleur: 0x5AA3DC, nom: "Domicile", sous: "Proche") {
                                 lieuOuvert = LieuPlan(nom: "Domicile", sousTitre: "14 rue des Capucins, Lyon",
                                                       categorie: "house.fill", horaires: "—", distance: "0 m",
                                                       lat: 45.7699, lon: 4.8290)

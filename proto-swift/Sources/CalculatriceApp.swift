@@ -144,32 +144,33 @@ struct CalculatriceVue: View {
             .padding(.horizontal, 30).padding(.bottom, 12)
 
             // Clavier 5 rangées comme la référence (⌫ C % ÷ / 789× / 456− / 123+ / +/- 0 , =)
-            VStack(spacing: 12) {
-                HStack(spacing: 12) {
+            // Miroir lot 1 : géométrie mesurée sur la référence — boutons larges, espacement 10
+            VStack(spacing: 10) {
+                HStack(spacing: 10) {
                     ToucheCalc(t: "⌫", fond: grisFonce) { retour() }
                     ToucheCalc(t: texteC, fond: grisFonce) { efface() }
                     ToucheCalc(t: "%", fond: grisFonce) { pourcent() }
                     ToucheCalc(t: "÷", fond: orange, actif: operation == "÷" && !enSaisie) { opere("÷") }
                 }
-                HStack(spacing: 12) {
+                HStack(spacing: 10) {
                     ToucheCalc(t: "7", fond: grisClair) { chiffre("7") }
                     ToucheCalc(t: "8", fond: grisClair) { chiffre("8") }
                     ToucheCalc(t: "9", fond: grisClair) { chiffre("9") }
                     ToucheCalc(t: "×", fond: orange, actif: operation == "×" && !enSaisie) { opere("×") }
                 }
-                HStack(spacing: 12) {
+                HStack(spacing: 10) {
                     ToucheCalc(t: "4", fond: grisClair) { chiffre("4") }
                     ToucheCalc(t: "5", fond: grisClair) { chiffre("5") }
                     ToucheCalc(t: "6", fond: grisClair) { chiffre("6") }
                     ToucheCalc(t: "−", fond: orange, actif: operation == "−" && !enSaisie) { opere("−") }
                 }
-                HStack(spacing: 12) {
+                HStack(spacing: 10) {
                     ToucheCalc(t: "1", fond: grisClair) { chiffre("1") }
                     ToucheCalc(t: "2", fond: grisClair) { chiffre("2") }
                     ToucheCalc(t: "3", fond: grisClair) { chiffre("3") }
                     ToucheCalc(t: "+", fond: orange, actif: operation == "+" && !enSaisie) { opere("+") }
                 }
-                HStack(spacing: 12) {
+                HStack(spacing: 10) {
                     ToucheCalc(t: "+/-", fond: grisClair) {
                         if affichage.hasPrefix("-") { affichage.removeFirst() }
                         else if affichage != "0" { affichage = "-" + affichage }
@@ -179,7 +180,7 @@ struct CalculatriceVue: View {
                     ToucheCalc(t: "=", fond: orange) { egal() }
                 }
             }
-            .padding(.horizontal, 14).padding(.bottom, 10)
+            .padding(.horizontal, 10).padding(.bottom, 8)
 
             BarreHome { dismiss() }
         }
@@ -232,10 +233,10 @@ struct ToucheCalc: View {
     var body: some View {
         Button(action: action) {
             Text(t)
-                .font(.system(size: t == "+/-" ? 26 : 34, weight: .medium))
+                .font(.system(size: t == "+/-" ? 30 : 38, weight: .medium))
                 .foregroundStyle(actif ? Color(hex: 0xFF9F0A) : .white)
                 .frame(maxWidth: .infinity)
-                .frame(height: 78)
+                .frame(height: (UIScreen.main.bounds.width - 50) / 4)
                 .background(actif ? Color.white : fond, in: Circle())
         }
         .buttonStyle(.plain)

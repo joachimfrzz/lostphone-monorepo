@@ -1214,7 +1214,7 @@ struct BulleImageEnvoyee: View {
 // Phase C (D62) — sélecteur de photos (pellicule réelle, comme le vrai tiroir Photos de Messages)
 struct SelecteurPhotosMsg: View {
     let choisir: (String) -> Void
-    private var photosRecentes: [PhotoItem] { DonneesPhotos.toutes.suffix(24).reversed() }
+    private var photosRecentes: [PhotoItem] { Array(DonneesPhotos.toutes.suffix(24).reversed()) }
     private let colonnes = [GridItem(.flexible(), spacing: 2), GridItem(.flexible(), spacing: 2),
                             GridItem(.flexible(), spacing: 2), GridItem(.flexible(), spacing: 2)]
     var body: some View {

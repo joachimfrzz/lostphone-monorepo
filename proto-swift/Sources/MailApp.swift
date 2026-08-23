@@ -245,8 +245,8 @@ struct ListeMailVue: View {
                             } else {
                                 Color.clear.frame(width: 9, height: 9)
                             }
-                            RoundedRectangle(cornerRadius: 8).fill(Color(hex: c.couleur))
-                                .frame(width: 36, height: 36)
+                            Circle().fill(Color(hex: c.couleur))
+                                .frame(width: 38, height: 38)
                                 .overlay(Text(String(c.expediteur.prefix(1))).font(.system(size: 16, weight: .bold)).foregroundStyle(.white))
                             VStack(alignment: .leading, spacing: 2) {
                                 HStack {
@@ -269,7 +269,27 @@ struct ListeMailVue: View {
             .padding(.horizontal, 16)
         }
         .background(Color.black)
-        .searchable(text: $recherche, placement: .navigationBarDrawer(displayMode: .automatic), prompt: "Recherche")
+        .overlay(alignment: .bottom) {
+            // Miroir lot 3 : la recherche vit EN BAS dans la vraie app (pilule + filtre + composition)
+            HStack(spacing: 10) {
+                Image(systemName: "line.3.horizontal.decrease").font(.system(size: 16))
+                    .foregroundStyle(.white)
+                    .frame(width: 42, height: 42)
+                    .background(Color(hex: 0x1F1F21), in: Circle())
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                    TextField("Recherche", text: $recherche).foregroundStyle(.white)
+                    Image(systemName: "mic.fill").foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 13).frame(height: 42)
+                .background(Color(hex: 0x1F1F21), in: Capsule())
+                Image(systemName: "square.and.pencil").font(.system(size: 17))
+                    .foregroundStyle(.white)
+                    .frame(width: 42, height: 42)
+                    .background(Color(hex: 0x1F1F21), in: Circle())
+            }
+            .padding(.horizontal, 14).padding(.bottom, 12)
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 14) {
@@ -296,7 +316,7 @@ struct LectureMailVue: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 10) {
-                    RoundedRectangle(cornerRadius: 8).fill(Color(hex: courriel.couleur))
+                    Circle().fill(Color(hex: courriel.couleur))
                         .frame(width: 40, height: 40)
                         .overlay(Text(String(courriel.expediteur.prefix(1))).font(.system(size: 17, weight: .bold)).foregroundStyle(.white))
                     VStack(alignment: .leading, spacing: 2) {

@@ -62,22 +62,22 @@ struct RappelsVue: View {
                     VStack(spacing: 16) {
                         // Grille de compteurs (2 colonnes, comme la référence)
                         LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())], spacing: 12) {
-                            TuileRappel(nom: "Aujourd'hui", symbole: "calendar.badge.clock", fond: Color(hex: 0x0A84FF),
+                            TuileRappel(nom: "Aujourd'hui", symbole: "calendar.badge.clock", fond: Color(hex: 0x56A2E1),
                                         compte: magasin.compter { $0.aujourdhui && !$0.termine },
                                         destination: FiltreVue(titre: "Aujourd'hui", teinte: Color(hex: 0x0A84FF)) { $0.aujourdhui && !$0.termine })
-                            TuileRappel(nom: "Programmés", symbole: "calendar", fond: Color(hex: 0xFF3B30),
+                            TuileRappel(nom: "Programmés", symbole: "calendar", fond: Color(hex: 0xE68081),
                                         compte: magasin.compter { $0.programme && !$0.termine },
                                         destination: FiltreVue(titre: "Programmés", teinte: Color(hex: 0xFF3B30)) { $0.programme && !$0.termine })
-                            TuileRappel(nom: "Tous", symbole: "tray.fill", fond: Color(hex: 0x3A3A3C),
+                            TuileRappel(nom: "Tous", symbole: "tray.fill", fond: Color(hex: 0x474747),
                                         compte: magasin.compter { !$0.termine },
                                         destination: FiltreVue(titre: "Tous", teinte: .white) { !$0.termine })
-                            TuileRappel(nom: "Avec drapeau", symbole: "flag.fill", fond: Color(hex: 0xE8873D),
+                            TuileRappel(nom: "Avec drapeau", symbole: "flag.fill", fond: Color(hex: 0xEDB47D),
                                         compte: magasin.compter { $0.drapeau && !$0.termine },
                                         destination: FiltreVue(titre: "Avec drapeau", teinte: Color(hex: 0xE8873D)) { $0.drapeau && !$0.termine })
-                            TuileRappel(nom: "Urgent", symbole: "exclamationmark.circle.fill", fond: Color(hex: 0xE84D6B),
+                            TuileRappel(nom: "Urgent", symbole: "exclamationmark.circle.fill", fond: Color(hex: 0xDE6E96),
                                         compte: magasin.compter { $0.urgent && !$0.termine },
                                         destination: FiltreVue(titre: "Urgent", teinte: Color(hex: 0xE84D6B)) { $0.urgent && !$0.termine })
-                            TuileRappel(nom: "Terminés", symbole: "checkmark", fond: Color(hex: 0x636366),
+                            TuileRappel(nom: "Terminés", symbole: "checkmark", fond: Color(hex: 0x8E9196),
                                         compte: magasin.compter { $0.termine },
                                         destination: TerminesVue())
                         }
@@ -102,20 +102,16 @@ struct RappelsVue: View {
                     .padding(.horizontal, 16).padding(.top, 8)
                 }
 
+                // Miroir lot 2 : la référence n'a qu'un bouton + flottant en bas à droite
                 HStack {
-                    Button { nouveauVisible = true } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "plus.circle.fill").font(.system(size: 22))
-                            Text("Nouveau rappel").font(.system(size: 17, weight: .semibold))
-                        }
-                        .foregroundStyle(Color(hex: 0x0A84FF))
-                    }
                     Spacer()
                     Button { nouveauVisible = true } label: {
-                        Text("Ajouter une liste").font(.system(size: 16)).foregroundStyle(Color(hex: 0x0A84FF))
+                        Circle().fill(Color(hex: 0x0A84FF)).frame(width: 52, height: 52)
+                            .overlay(Image(systemName: "plus").font(.system(size: 23, weight: .semibold)).foregroundStyle(.white))
+                            .shadow(color: .black.opacity(0.4), radius: 8, y: 3)
                     }
                 }
-                .padding(.horizontal, 20).padding(.bottom, 10)
+                .padding(.horizontal, 20).padding(.bottom, 14)
 
             BarreHome { dismiss() }
             }
@@ -123,6 +119,7 @@ struct RappelsVue: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 16) {
                         Image(systemName: "magnifyingglass").foregroundStyle(Color(hex: 0x0A84FF))
+                        Image(systemName: "text.badge.plus").foregroundStyle(Color(hex: 0x0A84FF))
                         Image(systemName: "ellipsis.circle").foregroundStyle(Color(hex: 0x0A84FF))
                     }
                 }
@@ -141,18 +138,21 @@ struct TuileRappel<D: View>: View {
     let destination: D
     var body: some View {
         NavigationLink(destination: destination) {
+            // Miroir lot 2 : tuiles PLEINES colorées comme la référence (v5 f001, couleurs échantillonnées)
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Circle().fill(fond == Color(hex: 0x3A3A3C) ? Color(hex: 0x8E8E93) : fond)
+                    Circle().fill(.white.opacity(0.28))
                         .frame(width: 32, height: 32)
                         .overlay(Image(systemName: symbole).font(.system(size: 15, weight: .semibold)).foregroundStyle(.white))
                     Spacer()
-                    Text("\(compte)").font(.system(size: 26, weight: .bold)).foregroundStyle(.white)
+                    Text("\(compte)").font(.system(size: 27, weight: .bold)).foregroundStyle(.white)
                 }
-                Text(nom).font(.system(size: 15, weight: .semibold)).foregroundStyle(.secondary)
+                Text(nom).font(.system(size: 15, weight: .semibold)).foregroundStyle(.white.opacity(0.95))
             }
             .padding(12)
-            .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
+            .background(
+                LinearGradient(colors: [fond, fond.opacity(0.82)], startPoint: .top, endPoint: .bottom),
+                in: RoundedRectangle(cornerRadius: 16))
         }
     }
 }

@@ -181,6 +181,7 @@ struct ListeMemosVue: View {
     @State private var nouveauNom = ""
     @State private var transcriptionVisible: MemoVocal? = nil
     @State private var partageVisible = false
+    @State private var enregAlerteListe = false
     @State private var remplacerAlerte = false
 
     init(titre: String, filtre: @escaping (MemoVocal) -> Bool) {
@@ -327,6 +328,19 @@ struct ListeMemosVue: View {
                     .padding(.horizontal, 12).padding(.vertical, 6)
                     .background(Color(hex: 0x1C1C1E), in: Capsule())
             }
+        }
+        .overlay(alignment: .bottom) {
+            // Miroir lot 1bis : le bouton d'enregistrement vit AUSSI sur la liste (référence f001)
+            Button { enregAlerteListe = true } label: {
+                Circle().fill(Color(hex: 0xFF3B30)).frame(width: 54, height: 54)
+                    .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 3).frame(width: 66, height: 66))
+            }
+            .padding(.bottom, 26)
+        }
+        .alert("Enregistrement impossible", isPresented: $enregAlerteListe) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Le micro est utilisé par une autre app.")
         }
         .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Mémo vocal") }
         .alert("Renommer", isPresented: Binding(get: { renommageId != nil }, set: { if !$0 { renommageId = nil } })) {

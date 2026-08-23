@@ -92,6 +92,7 @@ struct NotesVue: View {
                                 VStack(alignment: .leading, spacing: 8) {
                                     HStack(spacing: 4) {
                                         Text(section).font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
+                                        Spacer()
                                         if section == "Épinglées" {
                                             Image(systemName: "chevron.down").font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
                                         }

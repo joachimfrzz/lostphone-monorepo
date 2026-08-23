@@ -417,8 +417,52 @@ struct ErreurSafariVue: View {
 struct OngletsVue: View {
     @Environment(\.dismiss) private var dismiss
     let ouvrir: (OngletSafari) -> Void
+    @State private var modePrive = false
+    @State private var priveDeverrouille = false
     var body: some View {
         NavigationStack {
+            if modePrive {
+                // Miroir lot 3 : navigation privée (référence v12) — verrouillée puis vide
+                VStack(spacing: 14) {
+                    Spacer()
+                    if priveDeverrouille {
+                        Image(systemName: "square.on.square").font(.system(size: 40)).foregroundStyle(.secondary)
+                        Text("Aucun onglet privé").font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
+                    } else {
+                        Image(systemName: "lock.fill").font(.system(size: 40)).foregroundStyle(.secondary)
+                        Text("La navigation privée est verrouillée")
+                            .font(.system(size: 16)).foregroundStyle(.white.opacity(0.9))
+                        Button { Haptique.leger(); priveDeverrouille = true } label: {
+                            Text("Déverrouiller").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                                .padding(.horizontal, 18).padding(.vertical, 9)
+                                .background(Color(hex: 0x0A84FF), in: Capsule())
+                        }
+                    }
+                    Spacer()
+                    HStack(spacing: 12) {
+                        Image(systemName: "plus").font(.system(size: 18)).foregroundStyle(.white)
+                            .frame(width: 44, height: 44).background(Color(hex: 0x38385C), in: Circle())
+                        Spacer()
+                        HStack(spacing: 6) {
+                            Text("Privée").font(.system(size: 14, weight: .semibold)).foregroundStyle(.white)
+                                .padding(.horizontal, 14).padding(.vertical, 8)
+                                .background(Color(hex: 0x4A4A70), in: Capsule())
+                            Text("3 onglets").font(.system(size: 14)).foregroundStyle(.white.opacity(0.7))
+                                .padding(.horizontal, 12).padding(.vertical, 8)
+                                .contentShape(Capsule())
+                                .onTapGesture { modePrive = false }
+                        }
+                        Spacer()
+                        Button { dismiss() } label: {
+                            Image(systemName: "checkmark").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                                .frame(width: 44, height: 44).background(Color(hex: 0x38385C), in: Circle())
+                        }
+                    }
+                    .padding(.horizontal, 18).padding(.bottom, 14)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(LinearGradient(colors: [Color(hex: 0x2A2438), Color(hex: 0x161320)], startPoint: .top, endPoint: .bottom))
+            } else {
             ScrollView {
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible())], spacing: 14) {
                     ForEach(DonneesSafari.onglets) { o in
@@ -447,6 +491,18 @@ struct OngletsVue: View {
                 .padding(16)
             }
             .background(Color(hex: 0x1C1C1E))
+            .overlay(alignment: .bottom) {
+                HStack {
+                    Spacer()
+                    Text("Privée").font(.system(size: 14)).foregroundStyle(.white.opacity(0.7))
+                        .padding(.horizontal, 14).padding(.vertical, 8)
+                        .background(Color(hex: 0x2C2C2E), in: Capsule())
+                        .contentShape(Capsule())
+                        .onTapGesture { modePrive = true }
+                    Spacer()
+                }
+                .padding(.bottom, 10)
+            }
             .navigationTitle("3 onglets")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -456,6 +512,7 @@ struct OngletsVue: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("OK") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF))
                 }
+            }
             }
         }
         .preferredColorScheme(.dark)
@@ -467,6 +524,18 @@ struct HistoriqueSafariVue: View {
     @Environment(\.dismiss) private var dismiss
     var ouvrir: (EntreeHistorique) -> Void = { _ in }
     @State private var recherche = ""
+
+    private func couleurDomaine(_ url: String) -> UInt {
+        switch true {
+        case url.contains("google"): return 0x4285F4
+        case url.contains("vessel"): return 0x0E7490
+        case url.contains("service-public"): return 0x000091
+        case url.contains("victimes"): return 0x8B2635
+        case url.contains("fonfon"): return 0x1E5B8A
+        case url.contains("sncf"): return 0x6E1E78
+        default: return 0x5A5A5E
+        }
+    }
 
     private func entrees(_ section: String) -> [EntreeHistorique] {
         var l = DonneesSafari.historique.filter { $0.section == section }
@@ -484,9 +553,16 @@ struct HistoriqueSafariVue: View {
                     if !items.isEmpty {
                         Section {
                             ForEach(items) { e in
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(e.titre).font(.system(size: 15)).foregroundStyle(.white).lineLimit(2)
-                                    Text("\(e.url) · \(e.heure)").font(.system(size: 12.5)).foregroundStyle(.secondary)
+                                HStack(spacing: 10) {
+                                    // Miroir lot 3 : favicon coloré par domaine (référence v12)
+                                    Circle().fill(Color(hex: couleurDomaine(e.url)))
+                                        .frame(width: 26, height: 26)
+                                        .overlay(Text(String(e.url.prefix(1)).uppercased())
+                                            .font(.system(size: 12, weight: .bold)).foregroundStyle(.white))
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(e.titre).font(.system(size: 15)).foregroundStyle(.white).lineLimit(2)
+                                        Text("\(e.url) · \(e.heure)").font(.system(size: 12.5)).foregroundStyle(.secondary)
+                                    }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .contentShape(Rectangle())

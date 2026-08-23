@@ -629,7 +629,7 @@ struct AccueilView: View {
                                  action: actionPour(a.0))
                     }
                     AppIcone(nom: "WhatsApp", fond: Color(hex: 0x25D366),
-                             symbole: "message.fill", teinte: .white, badge: "1") {
+                             symbole: "message.fill", teinte: .white, badge: "3") {
                         whatsappOuvert = true
                     }
                 }

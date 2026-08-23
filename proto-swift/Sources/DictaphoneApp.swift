@@ -86,9 +86,11 @@ struct DictaphoneVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinMemos.partage
     @State private var enregAlerte = false
+    // Miroir lot 1 : la vraie app s'ouvre sur la liste, les dossiers sont l'écran de retour
+    @State private var chemin: [String] = ["tous"]
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $chemin) {
             ZStack(alignment: .bottom) {
                 Color.black.ignoresSafeArea()
                 ScrollView {
@@ -128,6 +130,9 @@ struct DictaphoneVue: View {
                 .padding(.bottom, 22)
 
             BarreHome { dismiss() }
+            }
+            .navigationDestination(for: String.self) { _ in
+                ListeMemosVue(titre: "Tous les enregistrements") { _ in true }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -175,6 +180,7 @@ struct ListeMemosVue: View {
     @State private var renommageId: UUID? = nil
     @State private var nouveauNom = ""
     @State private var transcriptionVisible: MemoVocal? = nil
+    @State private var partageVisible = false
     @State private var remplacerAlerte = false
 
     init(titre: String, filtre: @escaping (MemoVocal) -> Bool) {
@@ -244,6 +250,28 @@ struct ListeMemosVue: View {
                                 else { ouvert = m.id; lecteur.charge(m.fichier) }
                             }
                         }
+                        .contextMenu {
+                            Button { partageVisible = true } label: { Label("Partager", systemImage: "square.and.arrow.up") }
+                            Button { renommageId = m.id; nouveauNom = m.titre } label: { Label("Renommer", systemImage: "pencil") }
+                            Button { transcriptionVisible = m } label: { Label("Afficher la transcription", systemImage: "quote.bubble") }
+                            Button {
+                                if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) {
+                                    magasin.memos[i].favori.toggle()
+                                }
+                            } label: { Label(m.favori ? "Retirer des favoris" : "Ajouter aux favoris", systemImage: "heart") }
+                            Button {
+                                if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) {
+                                    let copie = magasin.memos[i]
+                                    let nouvelle = MemoVocal(titre: copie.titre + " copie", dateTexte: copie.dateTexte,
+                                                             duree: copie.duree, fichier: copie.fichier,
+                                                             transcription: copie.transcription, favori: false, dossier: copie.dossier)
+                                    magasin.memos.insert(nouvelle, at: i + 1)
+                                }
+                            } label: { Label("Dupliquer", systemImage: "plus.square.on.square") }
+                            Button(role: .destructive) {
+                                magasin.memos.removeAll { $0.id == m.id }
+                            } label: { Label("Supprimer", systemImage: "trash") }
+                        }
 
                         if ouvert == m.id {
                             VStack(spacing: 12) {
@@ -300,6 +328,7 @@ struct ListeMemosVue: View {
                     .background(Color(hex: 0x1C1C1E), in: Capsule())
             }
         }
+        .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Mémo vocal") }
         .alert("Renommer", isPresented: Binding(get: { renommageId != nil }, set: { if !$0 { renommageId = nil } })) {
             TextField("Nom", text: $nouveauNom)
             Button("Annuler", role: .cancel) {}

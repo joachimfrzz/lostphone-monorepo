@@ -81,9 +81,31 @@ struct LocaliserVue: View {
                         }
                     }
                 } else if onglet == 1 {
-                    ForEach(DonneesLocaliser.appareils.filter { !$0.sansPosition }) { a in
-                        Annotation(a.nom, coordinate: CLLocationCoordinate2D(latitude: a.lat, longitude: a.lon)) {
-                            PastilleCarte(symbole: a.symbole)
+                    // Miroir phase C : grappe quand plusieurs appareils partagent la même position (réf v8)
+                    let visibles = DonneesLocaliser.appareils.filter { !$0.sansPosition }
+                    let groupes = Dictionary(grouping: visibles) { "\(Int($0.lat * 1000))-\(Int($0.lon * 1000))" }
+                    ForEach(Array(groupes.keys.sorted()), id: \.self) { cle in
+                        if let groupe = groupes[cle], let premier = groupe.first {
+                            Annotation(groupe.count > 1 ? "" : premier.nom,
+                                       coordinate: CLLocationCoordinate2D(latitude: premier.lat, longitude: premier.lon)) {
+                                if groupe.count > 1 {
+                                    HStack(spacing: 5) {
+                                        ForEach(groupe.prefix(2)) { a in
+                                            Image(systemName: a.symbole).font(.system(size: 13))
+                                                .foregroundStyle(Color(hex: 0x2E4A6B))
+                                        }
+                                        if groupe.count > 2 {
+                                            Text("+\(groupe.count - 2)").font(.system(size: 12, weight: .semibold))
+                                                .foregroundStyle(Color(hex: 0x2E4A6B))
+                                        }
+                                    }
+                                    .padding(.horizontal, 10).padding(.vertical, 8)
+                                    .background(.white, in: Capsule())
+                                    .shadow(radius: 4)
+                                } else {
+                                    PastilleCarte(symbole: premier.symbole)
+                                }
+                            }
                         }
                     }
                 } else if onglet == 2 {

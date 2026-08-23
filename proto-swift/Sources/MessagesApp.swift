@@ -162,6 +162,13 @@ final class EnvoisMsg: ObservableObject {
     func envoyer(_ texte: String, a nom: String) {
         parConv[nom, default: []].append(texte)
     }
+    // Phase C (D62) : photos et autocollants réellement envoyables — marqueurs internes
+    func envoyerImage(_ nomFichier: String, a nom: String) {
+        parConv[nom, default: []].append("\u{1}img:" + nomFichier)
+    }
+    func envoyerAutocollant(_ emoji: String, a nom: String) {
+        parConv[nom, default: []].append("\u{1}stk:" + emoji)
+    }
 }
 
 final class MagasinMsg: ObservableObject {
@@ -436,6 +443,8 @@ struct MsgConvVue: View {
     @State private var saisie = ""
     @State private var ficheVisible = false
     @State private var menuPlus = false
+    @State private var photosPickerVisible = false
+    @State private var autocollantsVisibles = false
     @State private var erreurVisible = false
     @State private var erreurTexte = ""
     @State private var confirmationSignaler = false
@@ -479,7 +488,17 @@ struct MsgConvVue: View {
                             }
                             // Messages du joueur (D54 : persistants, sans mention de distribution)
                             ForEach(Array((envois.parConv[conv.nom] ?? []).enumerated()), id: \.offset) { _, texte in
-                                BulleMsgTexte(texte: texte, recu: false, couleur: couleurEnvoi, tag: nil)
+                                if texte.hasPrefix("\u{1}img:") {
+                                    BulleImageEnvoyee(nomFichier: String(texte.dropFirst(5)))
+                                } else if texte.hasPrefix("\u{1}stk:") {
+                                    HStack {
+                                        Spacer()
+                                        Text(String(texte.dropFirst(5))).font(.system(size: 58))
+                                    }
+                                    .padding(.horizontal, 14).padding(.vertical, 2)
+                                } else {
+                                    BulleMsgTexte(texte: texte, recu: false, couleur: couleurEnvoi, tag: nil)
+                                }
                             }
                             if conv.inconnu && !magasin.signalees.contains(conv.nom) {
                                 VStack(spacing: 8) {
@@ -552,13 +571,17 @@ struct MsgConvVue: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                             menuPlus = false
-                            // D56 : réponse déterministe du même type que l'action
-                            let cles = ["Appareil photo": "camera", "Photos": "photos.vide",
-                                        "Autocollants": "autocollants", "Sondages": "sondage",
-                                        "Envoyer plus tard": "programmation", "Genmoji": "intelligence",
-                                        "Image Playground": "playground"]
-                            erreurTexte = ErreurLambda.reponse(cles[String(parts[0])] ?? "generique")
-                            erreurVisible = true
+                            // Phase C (D62) : Photos et Autocollants sont RÉELS ; le reste garde la réponse D56
+                            switch String(parts[0]) {
+                            case "Photos": photosPickerVisible = true
+                            case "Autocollants": autocollantsVisibles = true
+                            default:
+                                let cles = ["Appareil photo": "camera", "Sondages": "sondage",
+                                            "Envoyer plus tard": "programmation", "Genmoji": "intelligence",
+                                            "Image Playground": "playground"]
+                                erreurTexte = ErreurLambda.reponse(cles[String(parts[0])] ?? "generique")
+                                erreurVisible = true
+                            }
                         }
                     }
                 }
@@ -572,6 +595,18 @@ struct MsgConvVue: View {
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $ficheVisible) {
             NavigationStack { MsgFicheVue(conv: conv) }.preferredColorScheme(.dark)
+        }
+        .sheet(isPresented: $photosPickerVisible) {
+            SelecteurPhotosMsg { nomFichier in
+                envois.envoyerImage(nomFichier, a: conv.nom)
+                photosPickerVisible = false
+            }
+        }
+        .sheet(isPresented: $autocollantsVisibles) {
+            SelecteurAutocollants { emoji in
+                envois.envoyerAutocollant(emoji, a: conv.nom)
+                autocollantsVisibles = false
+            }
         }
         .fullScreenCover(isPresented: $appelVideo) {
             AppelTelVue(destinataire: conv.nom, numero: conv.numero)
@@ -1156,5 +1191,71 @@ struct BoutonModifierContact: View {
                 .preferredColorScheme(.dark)
                 .presentationDetents([.medium])
             }
+    }
+}
+
+
+// Phase C (D62) — bulle image envoyée par le joueur (photos réelles de la pellicule)
+struct BulleImageEnvoyee: View {
+    let nomFichier: String
+    var body: some View {
+        HStack {
+            Spacer()
+            if let img = ChargeurPhoto.image(nomFichier) {
+                Image(uiImage: img).resizable().scaledToFill()
+                    .frame(width: 210, height: 260)
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
+            }
+        }
+        .padding(.horizontal, 14).padding(.vertical, 2)
+    }
+}
+
+// Phase C (D62) — sélecteur de photos (pellicule réelle, comme le vrai tiroir Photos de Messages)
+struct SelecteurPhotosMsg: View {
+    let choisir: (String) -> Void
+    private let colonnes = [GridItem(.flexible(), spacing: 2), GridItem(.flexible(), spacing: 2),
+                            GridItem(.flexible(), spacing: 2), GridItem(.flexible(), spacing: 2)]
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: colonnes, spacing: 2) {
+                ForEach(DonneesPhotos.toutes.suffix(24).reversed()) { p in
+                    if let img = ChargeurPhoto.image(p.fichier) {
+                        Image(uiImage: img).resizable().scaledToFill()
+                            .frame(height: 96).clipped()
+                            .contentShape(Rectangle())
+                            .onTapGesture { Haptique.leger(); choisir(p.fichier) }
+                    }
+                }
+            }
+            .padding(.top, 12)
+        }
+        .background(Color(hex: 0x1C1C1E))
+        .presentationDetents([.medium, .large])
+        .preferredColorScheme(.dark)
+    }
+}
+
+// Phase C (D62) — autocollants (grille d'émojis, envoi réel)
+struct SelecteurAutocollants: View {
+    let choisir: (String) -> Void
+    private let emojis = ["😀", "😂", "🥹", "😍", "😘", "🤗", "😎", "🥳",
+                          "😅", "🙃", "😴", "🤯", "❤️", "💔", "👍", "👎",
+                          "🙏", "💪", "🎉", "🔥", "⭐️", "🌈", "🍀", "⚓️"]
+    private let colonnes = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()),
+                            GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: colonnes, spacing: 16) {
+                ForEach(emojis, id: \.self) { e in
+                    Text(e).font(.system(size: 40))
+                        .onTapGesture { Haptique.leger(); choisir(e) }
+                }
+            }
+            .padding(18)
+        }
+        .background(Color(hex: 0x1C1C1E))
+        .presentationDetents([.height(300)])
+        .preferredColorScheme(.dark)
     }
 }

@@ -142,10 +142,18 @@ struct MeteoVue: View {
 // Fond dégradé nuit d'été (proche de la référence en soirée)
 struct FondMeteo: View {
     var body: some View {
-        // Miroir lot 2 : fin de journée d'été (19h47) — dégradé mesuré sur la référence (v3 f001)
-        LinearGradient(colors: [Color(hex: 0x87AEDC), Color(hex: 0x4777B2), Color(hex: 0x2F5487)],
-                       startPoint: .top, endPoint: .bottom)
-            .ignoresSafeArea()
+        // Miroir lots 2+4 : ciel de fin de journée — dégradé mesuré + voiles nuageux doux (la réf est photographique)
+        ZStack {
+            LinearGradient(colors: [Color(hex: 0x87AEDC), Color(hex: 0x4777B2), Color(hex: 0x2F5487)],
+                           startPoint: .top, endPoint: .bottom)
+            Ellipse().fill(.white.opacity(0.16)).frame(width: 480, height: 150)
+                .blur(radius: 42).offset(x: -70, y: -300)
+            Ellipse().fill(.white.opacity(0.11)).frame(width: 560, height: 130)
+                .blur(radius: 48).offset(x: 110, y: -150)
+            Ellipse().fill(.white.opacity(0.08)).frame(width: 520, height: 120)
+                .blur(radius: 55) .offset(x: -40, y: 60)
+        }
+        .ignoresSafeArea()
     }
 }
 

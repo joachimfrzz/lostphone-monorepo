@@ -135,7 +135,13 @@ struct ReglagesVue: View {
                         RegGroupe {
                             NavigationLink { CompteAppleVue() } label: {
                                 HStack(spacing: 12) {
-                                    AvatarMsg(nom: "Sarah Levasseur", taille: 46)
+                                    // Miroir phase B : la réf montre une PHOTO de profil — portrait pellicule
+                                    if let portrait = ChargeurPhoto.image("p04") {
+                                        Image(uiImage: portrait).resizable().scaledToFill()
+                                            .frame(width: 46, height: 46).clipShape(Circle())
+                                    } else {
+                                        AvatarMsg(nom: "Sarah Levasseur", taille: 46)
+                                    }
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text("Sarah Levasseur").font(.system(size: 18)).foregroundStyle(regTexte)
                                         Text("Compte Apple, iCloud+ et autres")

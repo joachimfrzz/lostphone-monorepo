@@ -95,7 +95,6 @@ struct CalendrierVue: View {
                         ScrollView {
                             // Miroir run 1 : réserve sous les pilules de la toolbar (Août + L M M J V S D étaient masqués)
                             LazyVStack(alignment: .leading, spacing: 26) {
-                                Color.clear.frame(height: 44)
                                 ForEach(0..<moisListe.count, id: \.self) { i in
                                     let a = moisListe[i].0
                                     let m = moisListe[i].1
@@ -105,6 +104,7 @@ struct CalendrierVue: View {
                             }
                             .padding(.horizontal, 12)
                         }
+                        .contentMargins(.top, 48, for: .scrollContent)
                         .onAppear { defileur.scrollTo("2026-8", anchor: .top) }
                     }
                 }
@@ -196,8 +196,9 @@ struct MoisVue: View {
                 .font(.system(size: 26, weight: .bold))
                 .foregroundStyle(annee == jeuAnnee && mois == jeuMois ? Color(hex: 0xFF453A) : .white)
             HStack {
-                ForEach(["L", "M", "M", "J", "V", "S", "D"], id: \.self) { j in
+                ForEach(Array(["L", "M", "M", "J", "V", "S", "D"].enumerated()), id: \.offset) { idx, j in
                     Text(j).font(.system(size: 11)).foregroundStyle(.secondary)
+                        .opacity(idx >= 5 ? 0.45 : 1)
                         .frame(maxWidth: .infinity)
                 }
             }

@@ -142,16 +142,19 @@ struct MeteoVue: View {
 // Fond dégradé nuit d'été (proche de la référence en soirée)
 struct FondMeteo: View {
     var body: some View {
-        // Miroir lots 2+4 : ciel de fin de journée — dégradé mesuré + voiles nuageux doux (la réf est photographique)
+        // Miroir lot 5 : VRAI ciel photographique (asset ciel-jour.jpg), repli dégradé + voiles si absent
         ZStack {
-            LinearGradient(colors: [Color(hex: 0x87AEDC), Color(hex: 0x4777B2), Color(hex: 0x2F5487)],
-                           startPoint: .top, endPoint: .bottom)
-            Ellipse().fill(.white.opacity(0.16)).frame(width: 480, height: 150)
-                .blur(radius: 42).offset(x: -70, y: -300)
-            Ellipse().fill(.white.opacity(0.11)).frame(width: 560, height: 130)
-                .blur(radius: 48).offset(x: 110, y: -150)
-            Ellipse().fill(.white.opacity(0.08)).frame(width: 520, height: 120)
-                .blur(radius: 55) .offset(x: -40, y: 60)
+            if let ciel = ChargeurPhoto.image("ciel-jour") {
+                Image(uiImage: ciel).resizable().scaledToFill()
+                    .overlay(Color(hex: 0x2F5487).opacity(0.18)) // voile léger pour la lisibilité du texte blanc
+            } else {
+                LinearGradient(colors: [Color(hex: 0x87AEDC), Color(hex: 0x4777B2), Color(hex: 0x2F5487)],
+                               startPoint: .top, endPoint: .bottom)
+                Ellipse().fill(.white.opacity(0.16)).frame(width: 480, height: 150)
+                    .blur(radius: 42).offset(x: -70, y: -300)
+                Ellipse().fill(.white.opacity(0.11)).frame(width: 560, height: 130)
+                    .blur(radius: 48).offset(x: 110, y: -150)
+            }
         }
         .ignoresSafeArea()
     }

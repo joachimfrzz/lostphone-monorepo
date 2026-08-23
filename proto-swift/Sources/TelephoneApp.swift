@@ -182,7 +182,14 @@ struct TelRecentsVue: View {
                 ForEach(0..<appels.count, id: \.self) { i in
                     let a = appels[i]
                     HStack(spacing: 12) {
-                        AvatarSilhouette(taille: 42, image: a.nom == "Marc ❤️" ? "AvatarMarc" : nil)
+                        // Miroir phase B : la réf montre des INITIALES rondes, pas des silhouettes
+                        if a.nom == "Marc ❤️" {
+                            AvatarSilhouette(taille: 42, image: "AvatarMarc")
+                        } else {
+                            Circle().fill(Color(hex: 0x3A3A3C)).frame(width: 42, height: 42)
+                                .overlay(Text(a.nom.split(separator: " ").prefix(2).compactMap { $0.first.map(String.init) }.joined().uppercased())
+                                    .font(.system(size: 16, weight: .semibold)).foregroundStyle(.white))
+                        }
                         VStack(alignment: .leading, spacing: 2) {
                             Text(a.compte > 1 ? "\(a.nom)  (\(a.compte))" : a.nom)
                                 .font(.system(size: 17))
@@ -265,6 +272,40 @@ struct TelFicheVue: View {
                         RondFiche(symbole: "envelope.fill") { Routeur.partage.allerMail() }
                     }
                     .padding(.top, 16)
+
+                    // Miroir phase B (réf 03-fiche-contact) : segments + carte numéro + Notes
+                    HStack(spacing: 0) {
+                        Text("Détails").font(.system(size: 14, weight: .semibold)).foregroundStyle(telTexte)
+                            .padding(.vertical, 7).frame(maxWidth: .infinity)
+                            .background(.ultraThinMaterial, in: Capsule())
+                        Text("Messages vocaux").font(.system(size: 14)).foregroundStyle(telTexte2)
+                            .padding(.vertical, 7).frame(maxWidth: .infinity)
+                    }
+                    .padding(3)
+                    .background(Color.white.opacity(0.06), in: Capsule())
+                    .padding(.horizontal, 16).padding(.top, 18)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("portable").font(.system(size: 13)).foregroundStyle(telTexte2)
+                        HStack {
+                            Text(numero).font(.system(size: 17)).foregroundStyle(Color(hex: 0x64B5F7))
+                            Spacer()
+                            Image(systemName: "phone.fill").font(.system(size: 15)).foregroundStyle(telTexte2)
+                        }
+                    }
+                    .padding(14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+                    .padding(.horizontal, 16).padding(.top, 10)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Notes").font(.system(size: 13)).foregroundStyle(telTexte2)
+                        Color.clear.frame(height: 26)
+                    }
+                    .padding(14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+                    .padding(.horizontal, 16).padding(.top, 10)
 
                     // Historique — DÉRIVÉ du même journal que l'onglet Récents (cohérence R3)
                     VStack(alignment: .leading, spacing: 0) {
@@ -513,13 +554,20 @@ struct TelClavierVue: View {
                 .padding(.horizontal, 30)
 
             if let s = suggestion {
-                HStack(spacing: 8) {
-                    Image(systemName: "person.crop.circle").font(.system(size: 14)).foregroundStyle(telTexte2)
-                    Text(s.0).font(.system(size: 14, weight: .semibold)).foregroundStyle(telTexte)
-                    Text(s.1).font(.system(size: 14)).foregroundStyle(telBleu)
+                // Miroir phase B (réf 05-clavier-suggestion) : carte contact + « autres résultats »
+                VStack(alignment: .leading, spacing: 7) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "person.crop.circle").font(.system(size: 15)).foregroundStyle(telTexte2)
+                        Text(s.0).font(.system(size: 14, weight: .semibold)).foregroundStyle(telTexte).lineLimit(1)
+                        Text(s.1).font(.system(size: 14)).foregroundStyle(telBleu)
+                    }
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass").font(.system(size: 13)).foregroundStyle(telTexte2)
+                        Text("3 autres résultats").font(.system(size: 13.5)).foregroundStyle(telTexte2)
+                    }
                 }
-                .padding(.horizontal, 14).padding(.vertical, 8)
-                .background(telChamp, in: RoundedRectangle(cornerRadius: 10))
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                .background(telChamp, in: RoundedRectangle(cornerRadius: 12))
                 .padding(.top, 8)
             }
 

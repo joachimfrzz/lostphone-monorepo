@@ -15,9 +15,9 @@ struct CalculatriceVue: View {
     @State private var historiqueVisible = false
     @State private var copie = false
 
-    private let orange = Color(hex: 0xFF9F0A)
-    private let grisFonce = Color(hex: 0x2A2A2C)
-    private let grisClair = Color(hex: 0x5C5C5F)
+    private let orange = Color(hex: 0xFC8400)      // mesuré sur la référence (f001)
+    private let grisFonce = Color(hex: 0x545456)   // rangée haute ⌫ C % — CLAIRE sur la référence
+    private let grisClair = Color(hex: 0x2D2D30)   // chiffres — SOMBRES sur la référence
 
     // ————— Moteur —————
     private var valeurCourante: Double {

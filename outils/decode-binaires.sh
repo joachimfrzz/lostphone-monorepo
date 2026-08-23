@@ -28,3 +28,8 @@ if [ -f outils/memos.tar.b64 ]; then
   tar xf /tmp/memos.tar
   echo "Mémos vocaux restaurés ($(tar tf /tmp/memos.tar | wc -l | tr -d ' ') fichiers)."
 fi
+if [ -f outils/ciel.tar.b64 ]; then
+  python3 -c "import base64; open('/tmp/ciel.tar','wb').write(base64.b64decode(open('outils/ciel.tar.b64').read()))"
+  tar xf /tmp/ciel.tar
+  echo "Ciel Météo restauré ($(tar tf /tmp/ciel.tar | wc -l | tr -d ' ') image)."
+fi

@@ -613,7 +613,7 @@ struct AccueilView: View {
                         Text("24°").font(.system(size: 36, weight: .light)).foregroundStyle(.white)
                     }
                     Spacer()
-                    Text("Nuit dégagée\nMax. 29°  Min. 18°")
+                    Text("Ensoleillé\nMax. 29°  Min. 18°")
                         .font(.system(size: 12.5)).foregroundStyle(.white.opacity(0.85))
                         .multilineTextAlignment(.trailing)
                 }

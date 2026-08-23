@@ -324,9 +324,15 @@ struct ListeMemosVue: View {
         .background(Color.black)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Text("Sélectionner").font(.system(size: 15)).foregroundStyle(Color(hex: 0x0A84FF))
-                    .padding(.horizontal, 12).padding(.vertical, 6)
-                    .background(Color(hex: 0x1C1C1E), in: Capsule())
+                HStack(spacing: 10) {
+                    Image(systemName: "magnifyingglass").font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 32, height: 32)
+                        .background(Color(hex: 0x1C1C1E), in: Circle())
+                    Text("Sélectionner").font(.system(size: 15)).foregroundStyle(Color(hex: 0x0A84FF))
+                        .padding(.horizontal, 12).padding(.vertical, 6)
+                        .background(Color(hex: 0x1C1C1E), in: Capsule())
+                }
             }
         }
         .overlay(alignment: .bottom) {

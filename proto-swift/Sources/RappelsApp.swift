@@ -278,6 +278,19 @@ struct TerminesVue: View {
     @ObservedObject private var magasin = MagasinRappels.partage
     @State private var effacerConfirm = false
     private var termines: [Rappel] { magasin.rappels.filter { $0.termine } }
+
+    // Miroir phase C : regroupement par jour comme la référence (« Sam. 16 août »)
+    private var parJour: [(String, [Rappel])] {
+        let brut = Dictionary(grouping: termines) { r -> String in
+            String((r.termineTexte ?? "").dropFirst(10).prefix(10))   // « 16/08/2026 »
+        }
+        let entree = DateFormatter(); entree.dateFormat = "dd/MM/yyyy"
+        let sortie = DateFormatter(); sortie.locale = Locale(identifier: "fr_FR"); sortie.dateFormat = "EEE d MMMM"
+        return brut.keys.sorted(by: >).map { cle in
+            let libelle = entree.date(from: cle).map { sortie.string(from: $0).capitalized } ?? cle
+            return (libelle, brut[cle] ?? [])
+        }
+    }
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -290,7 +303,10 @@ struct TerminesVue: View {
                         .onTapGesture { effacerConfirm = true }
                 }
                 .padding(.bottom, 14)
-                ForEach(termines) { r in
+                ForEach(parJour, id: \.0) { jour, rappels in
+                    Text(jour).font(.system(size: 16, weight: .bold)).foregroundStyle(.white)
+                        .padding(.top, 12).padding(.bottom, 4)
+                    ForEach(rappels) { r in
                     HStack(alignment: .top, spacing: 12) {
                         Circle().fill(Color(hex: 0x8E8E93)).frame(width: 22, height: 22)
                             .overlay(Image(systemName: "checkmark").font(.system(size: 11, weight: .bold)).foregroundStyle(.black))
@@ -302,6 +318,7 @@ struct TerminesVue: View {
                     }
                     .padding(.vertical, 9)
                     Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 34)
+                    }
                 }
                 Spacer(minLength: 60)
             }

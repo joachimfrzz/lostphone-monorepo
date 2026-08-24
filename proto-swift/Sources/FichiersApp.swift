@@ -73,14 +73,15 @@ struct FichiersVue: View {
                 }
             }
 
-            // Barre d'onglets (Récents / Partagé / Explorer — référence f001)
-            HStack {
+            // Barre d'onglets en PILULE FLOTTANTE (diff cercle 2 : la référence détache la capsule du bord)
+            HStack(spacing: 4) {
                 OngletFichiers(symbole: "clock.fill", nom: "Récents", actif: onglet == 0) { onglet = 0 }
                 OngletFichiers(symbole: "folder.fill.badge.person.crop", nom: "Partagé", actif: onglet == 1) { onglet = 1 }
                 OngletFichiers(symbole: "folder.fill", nom: "Explorer", actif: onglet == 2) { onglet = 2 }
             }
-            .padding(.vertical, 9)
-            .background(.ultraThinMaterial)
+            .padding(6)
+            .background(.ultraThinMaterial, in: Capsule())
+            .padding(.horizontal, 40).padding(.bottom, 34)
 
             BarreHome { dismiss() }
         }
@@ -94,13 +95,14 @@ struct OngletFichiers: View {
     let actif: Bool
     let action: () -> Void
     var body: some View {
-        VStack(spacing: 3) {
-            Image(systemName: symbole).font(.system(size: 20))
+        VStack(spacing: 2) {
+            Image(systemName: symbole).font(.system(size: 17))
             Text(nom).font(.system(size: 10))
         }
         .foregroundStyle(actif ? Color(hex: 0x0A84FF) : .secondary)
-        .frame(maxWidth: .infinity)
-        .contentShape(Rectangle())
+        .padding(.vertical, 7).frame(maxWidth: .infinity)
+        .background(actif ? Color(hex: 0x3A3A3C).opacity(0.85) : .clear, in: Capsule())
+        .contentShape(Capsule())
         .onTapGesture(perform: action)
     }
 }
@@ -324,7 +326,12 @@ struct ExplorerFichiersVue: View {
                     .padding(.horizontal, 12).frame(height: 38)
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 11))
 
-                    Text("Favoris").font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary).padding(.top, 4)
+                    HStack {
+                        Text("Favoris").font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary)
+                        Spacer()
+                        Image(systemName: "chevron.down").font(.system(size: 11, weight: .semibold)).foregroundStyle(Color(hex: 0x0A84FF))
+                    }
+                    .padding(.top, 4)
                     VStack(spacing: 0) {
                         ForEach(magasin.visibles.filter { $0.genre == "dossier" }) { d in
                             HStack(spacing: 10) {
@@ -343,7 +350,12 @@ struct ExplorerFichiersVue: View {
                     }
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 12))
 
-                    Text("Emplacements").font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary).padding(.top, 4)
+                    HStack {
+                        Text("Emplacements").font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary)
+                        Spacer()
+                        Image(systemName: "chevron.down").font(.system(size: 11, weight: .semibold)).foregroundStyle(Color(hex: 0x0A84FF))
+                    }
+                    .padding(.top, 4)
                     VStack(spacing: 0) {
                         LigneEmplacement(symbole: "iphone", nom: "Sur mon iPhone")
                         Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 40)
@@ -628,6 +640,10 @@ struct InfosFichierVue: View {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(magasin.nom(fichier)).font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
                             Text("\(fichier.genre.uppercased()) · \(fichier.taille)").font(.system(size: 13)).foregroundStyle(.secondary)
+                            Text("Ouvrir").font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
+                                .padding(.horizontal, 14).padding(.vertical, 5)
+                                .background(Color(hex: 0x0A84FF), in: Capsule())
+                                .padding(.top, 3)
                         }
                         Spacer()
                     }

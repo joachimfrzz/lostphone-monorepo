@@ -50,8 +50,20 @@ struct EcranCapture: View {
         case "telephone": ecransTelephone()
         case "whatsapp": ecransWhatsapp()
         case "fichiers": ecransFichiers()
+        case "sante": ecransSante()
         case "cartes": ecransCartes()
         default: VerrouillageView()
+        }
+    }
+
+    @ViewBuilder
+    private func ecransSante() -> some View {
+        switch cle {
+        case "sante.pas": FicheSanteVue(genre: "pas")
+        case "sante.sommeil": FicheSanteVue(genre: "sommeil")
+        case "sante.coeur": FicheSanteVue(genre: "coeur")
+        case "sante.profil": ProfilSanteVue()
+        default: SanteVue()
         }
     }
 
@@ -575,6 +587,7 @@ struct AccueilView: View {
     @State private var safariOuvert = false
     @State private var fichiersOuverts = false
     @State private var cartesOuvertes = false
+    @State private var santeOuverte = false
     @ObservedObject private var routeur = Routeur.partage
 
     private let apps: [(String, Color, String, Color)] = [
@@ -604,7 +617,7 @@ struct AccueilView: View {
         rappelsOuverts = false; dictaphoneOuvert = false; banqueOuverte = false
         calendrierOuvert = false; localiserOuvert = false; mailOuvert = false
         plansOuverts = false; safariOuvert = false
-        fichiersOuverts = false; cartesOuvertes = false
+        fichiersOuverts = false; cartesOuvertes = false; santeOuverte = false
     }
 
     private func actionPour(_ nom: String) -> (() -> Void)? {
@@ -623,6 +636,7 @@ struct AccueilView: View {
         case "Plans": return { plansOuverts = true }
         case "Fichiers": return { fichiersOuverts = true }
         case "Cartes": return { cartesOuvertes = true }
+        case "Santé": return { santeOuverte = true }
         default: return nil
         }
     }
@@ -719,6 +733,7 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $safariOuvert) { SafariVue() }
         .fullScreenCover(isPresented: $fichiersOuverts) { FichiersVue() }
         .fullScreenCover(isPresented: $cartesOuvertes) { CartesVueWallet() }
+        .fullScreenCover(isPresented: $santeOuverte) { SanteVue() }
         .onChange(of: routeur.demande) { _, _ in
             // Navigation inter-apps : fermer l'app courante puis ouvrir la cible (P3)
             fermerToutesLesApps()

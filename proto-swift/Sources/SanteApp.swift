@@ -58,26 +58,35 @@ struct SanteVue: View {
                 if onglet == 0 { ResumeSanteVue() } else { ParcourirSanteVue() }
             }
 
-            HStack {
-                VStack(spacing: 3) {
-                    Image(systemName: "heart.fill").font(.system(size: 20))
-                    Text("Résumé").font(.system(size: 10))
+            // Pilule flottante + loupe séparée (référence robot)
+            HStack(spacing: 10) {
+                HStack(spacing: 4) {
+                    VStack(spacing: 2) {
+                        Image(systemName: "heart.fill").font(.system(size: 17))
+                        Text("Résumé").font(.system(size: 10))
+                    }
+                    .foregroundStyle(onglet == 0 ? Color(hex: 0xFA5252) : .secondary)
+                    .padding(.vertical, 7).padding(.horizontal, 20)
+                    .background(onglet == 0 ? Color(hex: 0x3A3A3C).opacity(0.85) : .clear, in: Capsule())
+                    .contentShape(Capsule())
+                    .onTapGesture { onglet = 0 }
+                    VStack(spacing: 2) {
+                        Image(systemName: "square.grid.2x2.fill").font(.system(size: 17))
+                        Text("Parcourir").font(.system(size: 10))
+                    }
+                    .foregroundStyle(onglet == 1 ? Color(hex: 0xFA5252) : .secondary)
+                    .padding(.vertical, 7).padding(.horizontal, 20)
+                    .background(onglet == 1 ? Color(hex: 0x3A3A3C).opacity(0.85) : .clear, in: Capsule())
+                    .contentShape(Capsule())
+                    .onTapGesture { onglet = 1 }
                 }
-                .foregroundStyle(onglet == 0 ? Color(hex: 0xFA5252) : .secondary)
-                .frame(maxWidth: .infinity)
-                .contentShape(Rectangle())
-                .onTapGesture { onglet = 0 }
-                VStack(spacing: 3) {
-                    Image(systemName: "square.grid.2x2.fill").font(.system(size: 20))
-                    Text("Parcourir").font(.system(size: 10))
-                }
-                .foregroundStyle(onglet == 1 ? Color(hex: 0xFA5252) : .secondary)
-                .frame(maxWidth: .infinity)
-                .contentShape(Rectangle())
-                .onTapGesture { onglet = 1 }
+                .padding(6)
+                .background(.ultraThinMaterial, in: Capsule())
+                Image(systemName: "magnifyingglass").font(.system(size: 17)).foregroundStyle(.white)
+                    .frame(width: 46, height: 46)
+                    .background(.ultraThinMaterial, in: Circle())
             }
-            .padding(.vertical, 9)
-            .background(.ultraThinMaterial)
+            .padding(.bottom, 34)
 
             BarreHome { dismiss() }
         }

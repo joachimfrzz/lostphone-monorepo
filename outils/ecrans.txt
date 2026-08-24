@@ -128,3 +128,9 @@ cartes.transaction
 cartes.billet
 cartes.ajout
 cartes.reglages
+sante#0
+sante#1
+sante.pas
+sante.sommeil
+sante.coeur
+sante.profil

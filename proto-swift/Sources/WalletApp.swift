@@ -57,17 +57,18 @@ struct CartesVueWallet: View {
                     .padding(.horizontal, 16).padding(.top, 6).padding(.bottom, 14)
 
                     // Pile de cartes (référence w001 : cartes empilées qui se chevauchent)
+                    // Diff cercle 2 : chevauchement DENSE comme la référence (bande ~64 pt par carte)
                     ZStack(alignment: .top) {
                         CarteLCLVue()
                             .onTapGesture { carteOuverte = true }
                         CarteFideliteVue()
-                            .offset(y: 96)
+                            .offset(y: 64)
                         BilletSNCFVue(compact: true)
-                            .offset(y: 192)
+                            .offset(y: 128)
                             .onTapGesture { billetOuvert = true }
                     }
                     .padding(.horizontal, 16)
-                    .frame(height: 320)
+                    .frame(height: 330)
                     Spacer(minLength: 120)
                 }
             }
@@ -163,7 +164,7 @@ struct CarteOuverteVue: View {
                     }
                     .padding(.horizontal, 16).padding(.top, 8)
 
-                    CarteLCLVue().padding(.horizontal, 40)
+                    CarteLCLVue().padding(.horizontal, 16)
 
                     VStack(alignment: .leading, spacing: 0) {
                         Text("Dernières transactions").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
@@ -206,11 +207,12 @@ struct TransactionVue: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(transaction.montant).font(.system(size: 34, weight: .bold)).foregroundStyle(.white)
+                    VStack(spacing: 4) {
+                        Text(transaction.montant).font(.system(size: 38, weight: .bold)).foregroundStyle(.white)
                         Text("\(transaction.marchand), \(transaction.ville)").font(.system(size: 13)).foregroundStyle(.secondary)
                         Text(transaction.date).font(.system(size: 13)).foregroundStyle(.secondary)
                     }
+                    .frame(maxWidth: .infinity)
                     VStack(spacing: 0) {
                         HStack {
                             Text("État : accepté").font(.system(size: 14)).foregroundStyle(.white)

@@ -49,7 +49,31 @@ struct EcranCapture: View {
         case "safari": ecransSafari()
         case "telephone": ecransTelephone()
         case "whatsapp": ecransWhatsapp()
+        case "fichiers": ecransFichiers()
+        case "cartes": ecransCartes()
         default: VerrouillageView()
+        }
+    }
+
+    @ViewBuilder
+    private func ecransFichiers() -> some View {
+        switch cle {
+        case "fichiers.apercu": ApercuFichierVue(fichier: DonneesFichiers.tout[3])
+        case "fichiers.infos": InfosFichierVue(fichier: DonneesFichiers.tout[7])
+        case "fichiers.dossier": DossierFichiersVue(dossier: DonneesFichiers.tout[0])
+        default: FichiersVue()
+        }
+    }
+
+    @ViewBuilder
+    private func ecransCartes() -> some View {
+        switch cle {
+        case "cartes.carte": CarteOuverteVue()
+        case "cartes.transaction": TransactionVue(transaction: DonneesCartes.transactions[0])
+        case "cartes.billet": BilletOuvertVue()
+        case "cartes.ajout": AjoutCarteVue()
+        case "cartes.reglages": ReglagesCartesVue()
+        default: CartesVueWallet()
         }
     }
 
@@ -549,6 +573,8 @@ struct AccueilView: View {
     @State private var mailOuvert = false
     @State private var plansOuverts = false
     @State private var safariOuvert = false
+    @State private var fichiersOuverts = false
+    @State private var cartesOuvertes = false
     @ObservedObject private var routeur = Routeur.partage
 
     private let apps: [(String, Color, String, Color)] = [
@@ -564,6 +590,7 @@ struct AccueilView: View {
         ("Localiser", Color(hex: 0x32D74B), "dot.radiowaves.left.and.right", .white),
         ("Santé", .white, "heart.fill", Color(hex: 0xFA5252)),
         ("Ma Banque", Color(hex: 0x123E6B), "building.columns.fill", .white),
+        ("Cartes", .black, "wallet.pass.fill", .white),
         ("Musique", .white, "music.note", Color(hex: 0xFA2D48)),
         ("App Store", Color(hex: 0x0A84FF), "square.stack.3d.up.fill", .white),
         ("Fichiers", .white, "folder.fill", Color(hex: 0x0A84FF)),
@@ -577,6 +604,7 @@ struct AccueilView: View {
         rappelsOuverts = false; dictaphoneOuvert = false; banqueOuverte = false
         calendrierOuvert = false; localiserOuvert = false; mailOuvert = false
         plansOuverts = false; safariOuvert = false
+        fichiersOuverts = false; cartesOuvertes = false
     }
 
     private func actionPour(_ nom: String) -> (() -> Void)? {
@@ -593,6 +621,8 @@ struct AccueilView: View {
         case "Calendrier": return { calendrierOuvert = true }
         case "Localiser": return { localiserOuvert = true }
         case "Plans": return { plansOuverts = true }
+        case "Fichiers": return { fichiersOuverts = true }
+        case "Cartes": return { cartesOuvertes = true }
         default: return nil
         }
     }
@@ -687,6 +717,8 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $mailOuvert) { MailVue() }
         .fullScreenCover(isPresented: $plansOuverts) { PlansVue() }
         .fullScreenCover(isPresented: $safariOuvert) { SafariVue() }
+        .fullScreenCover(isPresented: $fichiersOuverts) { FichiersVue() }
+        .fullScreenCover(isPresented: $cartesOuvertes) { CartesVueWallet() }
         .onChange(of: routeur.demande) { _, _ in
             // Navigation inter-apps : fermer l'app courante puis ouvrir la cible (P3)
             fermerToutesLesApps()

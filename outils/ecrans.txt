@@ -116,3 +116,15 @@ safari.erreur
 safari.site
 safari.onglets
 safari.historique
+fichiers#0
+fichiers#1
+fichiers#2
+fichiers.apercu
+fichiers.infos
+fichiers.dossier
+cartes
+cartes.carte
+cartes.transaction
+cartes.billet
+cartes.ajout
+cartes.reglages

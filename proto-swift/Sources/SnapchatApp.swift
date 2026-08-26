@@ -53,7 +53,7 @@ struct SnapchatVue: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            (onglet == 1 || onglet == 3 ? Color.white : Color.black).ignoresSafeArea()
+            (onglet == 0 || onglet == 1 || onglet == 3 ? Color.white : Color.black).ignoresSafeArea()
             Group {
                 switch onglet {
                 case 0: SnapCarteVue()
@@ -73,7 +73,7 @@ struct SnapchatVue: View {
                     ZStack(alignment: .topTrailing) {
                         Image(systemName: o.0).font(.system(size: 22))
                             .foregroundStyle(onglet == o.1
-                                             ? (onglet == 1 || onglet == 3 ? Color.black : Color.white)
+                                             ? (onglet == 0 || onglet == 1 || onglet == 3 ? Color.black : Color.white)
                                              : Color.gray.opacity(0.75))
                         if o.1 == 4 {
                             Text("3").font(.system(size: 9, weight: .bold)).foregroundStyle(.white)
@@ -88,11 +88,11 @@ struct SnapchatVue: View {
                 }
             }
             .padding(.top, 10).padding(.bottom, 26)
-            .background((onglet == 1 || onglet == 3 ? Color.white : Color.black).opacity(0.98))
+            .background((onglet == 0 || onglet == 1 || onglet == 3 ? Color.white : Color.black).opacity(0.98))
 
-            BarreHome(action: { dismiss() }, sombre: onglet == 1 || onglet == 3)
+            BarreHome(action: { dismiss() }, sombre: onglet == 0 || onglet == 1 || onglet == 3)
         }
-        .preferredColorScheme(onglet == 1 || onglet == 3 ? .light : .dark)
+        .preferredColorScheme(onglet == 0 || onglet == 1 || onglet == 3 ? .light : .dark)
     }
 }
 

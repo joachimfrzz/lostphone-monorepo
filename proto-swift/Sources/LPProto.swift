@@ -60,9 +60,23 @@ struct EcranCapture: View {
     private func ecransSante() -> some View {
         switch cle {
         case "sante.pas": FicheSanteVue(genre: "pas")
-        case "sante.sommeil": FicheSanteVue(genre: "sommeil")
+        case "sante.sommeil": FicheSommeilVue()
         case "sante.coeur": FicheSanteVue(genre: "coeur")
+        case "sante.distance": FicheSanteVue(genre: "distance")
+        case "sante.energie": FicheSanteVue(genre: "energie")
+        case "sante.fcmarche": FicheSanteVue(genre: "fcmarche")
+        case "sante.audition": FicheSanteVue(genre: "audition")
+        case "sante.poids": FicheSanteVue(genre: "poids")
+        case "sante.activite": CategorieSanteVue(nom: "Activité")
+        case "sante.categorie.coeur": CategorieSanteVue(nom: "Cœur")
+        case "sante.mesures": CategorieSanteVue(nom: "Mesures corporelles")
+        case "sante.vide": CategorieVideSanteVue(nom: "Cycle menstruel")
+        case "sante.tendances": TendancesSanteVue()
+        case "sante.recherche": RechercheSanteVue()
         case "sante.profil": ProfilSanteVue()
+        case "sante.medicale": FicheMedicaleVue()
+        case "sante.urgence": ContactUrgenceSanteVue()
+        case "sante.historique": HistoriqueSanteVue()
         default: SanteVue()
         }
     }

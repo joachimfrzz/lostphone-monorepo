@@ -294,14 +294,14 @@ struct TelFicheVue: View {
                             .font(.system(size: 14, weight: ongletVocaux ? .regular : .semibold))
                             .foregroundStyle(ongletVocaux ? telTexte2 : telTexte)
                             .padding(.vertical, 7).frame(maxWidth: .infinity)
-                            .background(ongletVocaux ? .clear : .ultraThinMaterial, in: Capsule())
+                            .background(ongletVocaux ? AnyShapeStyle(.clear) : AnyShapeStyle(.ultraThinMaterial), in: Capsule())
                             .contentShape(Rectangle())
                             .onTapGesture { withAnimation(.easeInOut(duration: 0.18)) { ongletVocaux = false } }
                         Text("Messages vocaux")
                             .font(.system(size: 14, weight: ongletVocaux ? .semibold : .regular))
                             .foregroundStyle(ongletVocaux ? telTexte : telTexte2)
                             .padding(.vertical, 7).frame(maxWidth: .infinity)
-                            .background(ongletVocaux ? .ultraThinMaterial : .clear, in: Capsule())
+                            .background(ongletVocaux ? AnyShapeStyle(.ultraThinMaterial) : AnyShapeStyle(.clear), in: Capsule())
                             .contentShape(Rectangle())
                             .onTapGesture { withAnimation(.easeInOut(duration: 0.18)) { ongletVocaux = true } }
                     }

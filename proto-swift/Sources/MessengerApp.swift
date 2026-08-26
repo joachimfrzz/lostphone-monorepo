@@ -259,7 +259,7 @@ struct MsgrDiscussionsVue: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(c.nom).font(.system(size: 15.5, weight: c.nonLu ? .semibold : .regular)).foregroundStyle(.white)
                                 Text(c.apercu).font(.system(size: 13.5))
-                                    .foregroundStyle(c.nonLu ? .white : .secondary).lineLimit(1)
+                                    .foregroundStyle(c.nonLu ? Color.white : Color.secondary).lineLimit(1)
                             }
                             Spacer()
                             if c.nonLu { Circle().fill(Color(hex: msgrBleu)).frame(width: 9, height: 9) }
@@ -606,13 +606,13 @@ struct MsgrMembresVue: View {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(spacing: 0) {
                         Text("Tous").font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(ongletAdmins ? .secondary : .white)
+                            .foregroundStyle(ongletAdmins ? Color.secondary : Color.white)
                             .frame(maxWidth: .infinity).padding(.vertical, 8)
                             .overlay(Rectangle().fill(ongletAdmins ? .clear : Color(hex: msgrBleu)).frame(height: 2), alignment: .bottom)
                             .contentShape(Rectangle())
                             .onTapGesture { ongletAdmins = false }
                         Text("Admins").font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(ongletAdmins ? .white : .secondary)
+                            .foregroundStyle(ongletAdmins ? Color.white : Color.secondary)
                             .frame(maxWidth: .infinity).padding(.vertical, 8)
                             .overlay(Rectangle().fill(ongletAdmins ? Color(hex: msgrBleu) : .clear).frame(height: 2), alignment: .bottom)
                             .contentShape(Rectangle())
@@ -913,13 +913,13 @@ struct MsgrInvitationsVue: View {
             VStack(spacing: 14) {
                 HStack(spacing: 0) {
                     Text("VOUS CONNAISSEZ PEUT-ÊTRE").font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(ongletSpam ? .secondary : .white)
+                        .foregroundStyle(ongletSpam ? Color.secondary : Color.white)
                         .frame(maxWidth: .infinity).padding(.vertical, 8)
                         .overlay(Rectangle().fill(ongletSpam ? .clear : Color(hex: msgrBleu)).frame(height: 2), alignment: .bottom)
                         .contentShape(Rectangle())
                         .onTapGesture { ongletSpam = false }
                     Text("SPAM").font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(ongletSpam ? .white : .secondary)
+                        .foregroundStyle(ongletSpam ? Color.white : Color.secondary)
                         .frame(maxWidth: .infinity).padding(.vertical, 8)
                         .overlay(Rectangle().fill(ongletSpam ? Color(hex: msgrBleu) : .clear).frame(height: 2), alignment: .bottom)
                         .contentShape(Rectangle())

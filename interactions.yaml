@@ -1,0 +1,4312 @@
+# interactions.yaml — Registre du chantier interactions (D69, 2026-08-26)
+# Audit exhaustif des éléments à AFFORDANCE laissés inertes, 30 apps, 538 éléments.
+# reco : A = vraie action à construire | B = interaction légère crédible (jamais un faux-semblant)
+#        C = garder inerte (promesse faible, réalisme) | D = supprimer (rare)
+# litige : true = soumis à l'arbitrage de Joachim avant implémentation.
+# STATUT : EN ATTENTE D'ARBITRAGE — ne rien implémenter avant le GO.
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: icône « + » barre de saisie (pièces jointes)
+  promesse: forte
+  reco: B
+  action: ouvre un menu contextuel listant les types de médias (Photo, Document…) avec réponse ErreurLambda pour chacun, comme dans MessagesApp
+  cout: moyen
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: icône appareil photo (barre de saisie, état champ vide)
+  promesse: forte
+  reco: B
+  action: affiche une alerte ErreurLambda("camera") — cohérent avec la doctrine D56
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: icône micro (barre de saisie, état champ vide)
+  promesse: forte
+  reco: B
+  action: affiche une alerte ErreurLambda("reseau") ou ouvre BulleVocale simulée — le vrai WA enregistre en maintenant
+  cout: moyen
+  litige: true
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: icône theatermask.and.paintbrush (à l'intérieur du champ TextField)
+  promesse: moyenne
+  reco: B
+  action: affiche une alerte ErreurLambda("intelligence") — Genmoji indisponible, cohérent
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: bouton contextMenu « Répondre » (sur les bulles)
+  promesse: forte
+  reco: A
+  action: pré-remplit le champ de saisie avec une citation de la bulle sélectionnée et rend BulleRiche lors de l'envoi
+  cout: eleve
+  litige: true
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: bouton contextMenu « Copier » (sur les bulles)
+  promesse: forte
+  reco: B
+  action: copie le texte dans le presse-papier (UIPasteboard.general.string = texte)
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: bouton contextMenu « Transférer » (sur les bulles)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille de sélection de contact parmi DonneesWA.fiches et envoie le message transféré via EnvoisJoueur
+  cout: moyen
+  litige: true
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: bouton contextMenu « Épingler » (sur les bulles)
+  promesse: moyenne
+  reco: C
+  action: garder inerte — frustration improbable, fonctionnalité non centrale au récit
+  cout: moyen
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: bouton contextMenu « Supprimer » (sur les bulles)
+  promesse: forte
+  reco: B
+  action: retire le message du fil (EnvoisJoueur) ou affiche BulleSupprimee pour les messages d'histoire
+  cout: moyen
+  litige: true
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleAlbum (vignette album multi-photos, tapable visuellement)
+  promesse: forte
+  reco: B
+  action: ouvre un visualiseur plein-écran des photos de l'album (composant déjà construit dans Photos/Instagram)
+  cout: moyen
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleImage (bulle image unique)
+  promesse: forte
+  reco: B
+  action: ouvre la photo en plein écran (visualiseur existant)
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleVideo (vignette vidéo avec durée)
+  promesse: forte
+  reco: B
+  action: lecture inline ou plein écran — affiche ErreurLambda("reseau") si non disponible
+  cout: moyen
+  litige: true
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleGIF (GIF animé)
+  promesse: moyenne
+  reco: C
+  action: garder inerte (image fixe suffisante, frustration faible)
+  cout: moyen
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleVocale (vocal sans audio réel — BulleVocale simple, pas BulleVocaleAudio)
+  promesse: forte
+  reco: B
+  action: remplacer par BulleVocaleAudio si un fichier existe, sinon afficher ErreurLambda("reseau") au tap play
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: chip vitesse « 1x » dans BulleVocale / BulleVocaleAudio
+  promesse: moyenne
+  reco: C
+  action: garder inerte — le changement de vitesse est un détail de confort non central
+  cout: moyen
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleDocument (carte document avec icône, nom, poids)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille de partage ou un visualiseur PDF factice avec ErreurLambda si introuvable
+  cout: moyen
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleMusique (carte titre musical)
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("reseau") — Apple Music/Spotify non disponible, cohérent
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleLien (carte lien avec titre et URL)
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("reseau") — navigation web non disponible, cohérent D56
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleLocalisation (carte carte géographique)
+  promesse: forte
+  reco: B
+  action: routage vers l'app Plans via Routeur.partage ou ErreurLambda("reseau")
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleContactPartage (carte contact partagé)
+  promesse: forte
+  reco: B
+  action: ouvre InfosContactVue du contact partagé si présent dans DonneesWA.fiches, sinon alerte
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleTransferee (message transféré, visuel distinct)
+  promesse: faible
+  reco: C
+  action: garder inerte — la bulle transférée est purement informative
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ConversationVue (fil)
+  element: BulleSticker (emoji géant, visuellement sélectionnable)
+  promesse: faible
+  reco: C
+  action: garder inerte — un sticker n'appelle pas d'interaction secondaire
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ActusVue
+  element: bouton ellipsis (RondAction) en en-tête
+  promesse: moyenne
+  reco: B
+  action: affiche une confirmationDialog avec options factices (Paramètres des actus…) et réponse ErreurLambda
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ActusVue
+  element: bouton appareil photo (RondAction) en en-tête
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("camera") — cohérent D56
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ActusVue
+  element: bouton « + » vert (RondAction) en en-tête (créer un statut)
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("camera") ou une feuille "Créer un statut" vide
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ActusVue
+  element: zone "Votre statut" + "Ajoutez une mise à jour" (tapable visuellement)
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("camera") — même réponse que le bouton +
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ActusVue
+  element: ligne statut Chloé (anneau coloré + nom) — ouvre le statut
+  promesse: forte
+  reco: B
+  action: ouvre un visualiseur de statut plein écran (fond sombre, 5 s, barre de progression) avec une photo ou texte neutre
+  cout: moyen
+  litige: true
+- app: WhatsApp
+  ecran: CommunautesVue
+  element: bouton ellipsis (RondAction) en en-tête
+  promesse: moyenne
+  reco: C
+  action: garder inerte — l'écran Communautés est un état vide, le menu n'a pas de contenu plausible
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: CommunautesVue
+  element: bouton « + » vert (RondAction) en en-tête
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("creation.indisponible")
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: CommunautesVue
+  element: bouton « Nouvelle communauté » (capsule verte)
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("creation.indisponible")
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: AppelsVue
+  element: bouton ellipsis (RondAction) en en-tête
+  promesse: moyenne
+  reco: B
+  action: affiche une confirmationDialog « Effacer les appels récents » (destructive) sans effet réel
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: AppelsVue
+  element: bouton « + » vert (RondAction) en en-tête
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("wa.appeler")
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: AppelsVue
+  element: ActionRonde « Appeler » (tuile ronde)
+  promesse: forte
+  reco: B
+  action: déclenche une alerte ErreurLambda("wa.appeler") — déjà implémenté via alerteVisible
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: AppelsVue
+  element: ActionRonde « Planifier »
+  promesse: moyenne
+  reco: B
+  action: déclenche alerte ErreurLambda("planifier") — déjà implémenté
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: AppelsVue
+  element: ActionRonde « Clavier »
+  promesse: forte
+  reco: B
+  action: déclenche alerte ErreurLambda("clavier.wa") — déjà implémenté
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: AppelsVue
+  element: ActionRonde « Favoris »
+  promesse: moyenne
+  reco: B
+  action: déclenche alerte ErreurLambda("wa.favoris") — déjà implémenté
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: AppelsVue
+  element: icône info.circle sur chaque ligne d'appel récent (à droite)
+  promesse: forte
+  reco: B
+  action: NavigationLink vers InfosContactVue — déjà implémenté (le NavigationLink est présent mais l'icône elle-même n'a pas de handler séparé ; vérifié que le tap sur la ligne entière suit le NavigationLink,
+    pas l'icône seule)
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: VousVue (profil)
+  element: bouton loupe (RondAction) en en-tête
+  promesse: moyenne
+  reco: B
+  action: affiche ErreurLambda("recherche.conv")
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: VousVue (profil)
+  element: icône qrcode (capsule en-tête)
+  promesse: moyenne
+  reco: B
+  action: affiche une feuille avec un QR code factice (Image système "qrcode") et le numéro de Sarah
+  cout: faible
+  litige: true
+- app: WhatsApp
+  ecran: VousVue (profil)
+  element: icône pencil (capsule en-tête)
+  promesse: forte
+  reco: B
+  action: affiche une feuille d'édition du profil (nom, photo) — déjà en place dans Messages, pattern identique
+  cout: moyen
+  litige: false
+- app: WhatsApp
+  ecran: VousVue (profil)
+  element: grand avatar de Sarah (zone cliquable implicite)
+  promesse: moyenne
+  reco: C
+  action: garder inerte — modifier la photo n'est pas utile au récit
+  cout: moyen
+  litige: false
+- app: WhatsApp
+  ecran: VousVue (profil)
+  element: icône plus.circle à côté du nom "Sarah" (ajouter statut ?)
+  promesse: moyenne
+  reco: B
+  action: affiche ErreurLambda("creation.indisponible") ou redirige vers ActusVue
+  cout: faible
+  litige: true
+- app: WhatsApp
+  ecran: VousVue (profil)
+  element: ligne « Abonnements » (indicateur point + flèche, NavigationLink SousReglageVue)
+  promesse: forte
+  reco: B
+  action: SousReglageVue affiche ProgressView qui ne charge pas (comportement déjà prévu pour les écrans sans contenu)
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: VousVue (profil)
+  element: lignes réglages sans contenu dans ContenuReglages ni EcranVide (Inviter un proche, Listes, Messages de diffusion, Important, Appareils connectés)
+  promesse: forte
+  reco: B
+  action: SousReglageVue affiche EcranVide ou ProgressView selon la clé — déjà géré partiellement, compléter les clés manquantes
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: ArchiveesVue
+  element: bouton « Modifier » (en-tête)
+  promesse: forte
+  reco: B
+  action: passe en mode sélection avec cases à cocher sur chaque conversation archivée
+  cout: moyen
+  litige: false
+- app: WhatsApp
+  ecran: ArchiveesVue
+  element: lignes de conversations archivées (Yoga du mardi, Copro Bât. B, +33 7 55…) sans NavigationLink
+  promesse: forte
+  reco: B
+  action: NavigationLink vers ConversationVue avec une conversation vide générique (données minimes)
+  cout: moyen
+  litige: true
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: bouton « Modifier » (en-tête)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille d'édition du contact (même pattern que BoutonModifierContact dans Messages)
+  cout: moyen
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: grand avatar (110pt, tapable implicitement)
+  promesse: moyenne
+  reco: C
+  action: garder inerte — agrandir la photo n'est pas narrativement utile
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: BoutonInfo « Rechercher » (loupe dans la fiche)
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("recherche.conv") — déjà implémenté dans BoutonInfo
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: ligne « Médias, liens et documents » (NavigationLink SousReglageVue)
+  promesse: forte
+  reco: B
+  action: SousReglageVue affiche ProgressView — cohérent avec la doctrine des écrans sans contenu
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: ligne « Gérer le stockage » (NavigationLink SousReglageVue)
+  promesse: forte
+  reco: B
+  action: SousReglageVue avec ContenuReglages existant ou ProgressView
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: ligne « Important » (NavigationLink SousReglageVue)
+  promesse: forte
+  reco: B
+  action: SousReglageVue affiche EcranVide["Important"] — déjà prévu
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: ligne « Notifications » (NavigationLink SousReglageVue)
+  promesse: forte
+  reco: B
+  action: SousReglageVue avec ContenuReglages["Notifications"] — déjà prévu
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: ligne « Thème de la discussion » (NavigationLink SousReglageVue)
+  promesse: forte
+  reco: B
+  action: SousReglageVue avec ContenuReglages["Thème de la discussion"] — déjà prévu
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: ligne « Enregistrer (Photos) » (NavigationLink SousReglageVue)
+  promesse: forte
+  reco: B
+  action: SousReglageVue affiche ProgressView (écran inconnu)
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: ligne « Messages éphémères » (NavigationLink SousReglageVue)
+  promesse: forte
+  reco: B
+  action: SousReglageVue avec ContenuReglages["Messages éphémères"] — déjà prévu
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: ligne « Verrouiller la discussion » (NavigationLink SousReglageVue)
+  promesse: forte
+  reco: B
+  action: SousReglageVue affiche ProgressView
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: ligne « Confidentialité avancée » (NavigationLink SousReglageVue)
+  promesse: forte
+  reco: B
+  action: SousReglageVue avec ContenuReglages["Confidentialité"] — déjà prévu
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: lien « Créer un groupe avec [nom] »
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("creation.indisponible")
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: LigneAction « Bloquer [nom] »
+  promesse: forte
+  reco: B
+  action: affiche confirmationDialog de blocage (pattern identique à MsgFicheVue.confirmationBloquer)
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: InfosContactVue
+  element: LigneAction « Signaler [nom] »
+  promesse: forte
+  reco: B
+  action: affiche confirmationDialog de signalement (pattern identique à MsgConvVue.confirmationSignaler)
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: AppelVue
+  element: RondAppel « Haut-parleur » (speaker.wave.2.fill, actif = true mais inerte)
+  promesse: forte
+  reco: C
+  action: garder inerte — bascule de route audio irréalisable en simulation, frustration faible dans ce contexte
+  cout: eleve
+  litige: false
+- app: WhatsApp
+  ecran: AppelVue
+  element: RondAppel « Couper le son » (mic.slash.fill)
+  promesse: forte
+  reco: B
+  action: bascule l'état visuel du bouton (actif/inactif) sans effet réel — toggle esthétique
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: SousReglageVue (réglages profil)
+  element: lignes .valeur avec chevron.right (Son, Téléchargement auto, Gérer le stockage, etc.)
+  promesse: forte
+  reco: B
+  action: NavigationLink récursif vers SousReglageVue(titre:) — le ProgressView final arrête la récursion
+  cout: faible
+  litige: false
+- app: WhatsApp
+  ecran: SousReglageVue (réglages profil)
+  element: ligne .destructif « Supprimer le compte »
+  promesse: forte
+  reco: B
+  action: affiche confirmationDialog destructif avec texte dissuasif — aucun effet réel
+  cout: faible
+  litige: true
+- app: WhatsApp
+  ecran: SousReglageVue (réglages profil)
+  element: bouton « Associer un appareil » (écran Appareils connectés)
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("reseau")
+  cout: faible
+  litige: false
+- app: Téléphone
+  ecran: TelRecentsVue
+  element: bouton « Modifier » (capsule en-tête)
+  promesse: forte
+  reco: B
+  action: passe en mode édition (cases à cocher + balayage pour supprimer) — pattern identique à la vraie app
+  cout: moyen
+  litige: false
+- app: Téléphone
+  ecran: TelRecentsVue
+  element: champ de recherche (loupe + « Recherche » + mic)
+  promesse: forte
+  reco: B
+  action: filtrage en temps réel des résultats dans la liste (TextField fonctionnel, filtre sur a.nom)
+  cout: moyen
+  litige: false
+- app: Téléphone
+  ecran: TelRecentsVue
+  element: icône mic.fill dans le champ de recherche
+  promesse: moyenne
+  reco: C
+  action: garder inerte — dictée vocale non simulable, faible frustration
+  cout: eleve
+  litige: false
+- app: Téléphone
+  ecran: TelRecentsVue
+  element: lignes de la liste — tap sur la ligne entière (pas le NavigationLink info.circle)
+  promesse: forte
+  reco: B
+  action: lance AppelTelVue vers le contact (sonnerie sans réponse D52) — le NavigationLink est sur info.circle uniquement
+  cout: moyen
+  litige: true
+- app: Téléphone
+  ecran: TelFavorisVue
+  element: bouton « Choisir un contact » dans confirmationDialog du +
+  promesse: forte
+  reco: B
+  action: ouvre TelContactsVue en sheet pour sélectionner un contact (navigation déjà construite)
+  cout: moyen
+  litige: false
+- app: Téléphone
+  ecran: TelContactsVue
+  element: bouton « + » (ajouter contact) en en-tête
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("creation.indisponible") ou feuille de création de contact minimaliste
+  cout: faible
+  litige: false
+- app: Téléphone
+  ecran: TelContactsVue
+  element: champ de recherche (loupe + « Recherche » + mic)
+  promesse: forte
+  reco: B
+  action: filtrage en temps réel des contacts — pattern identique à TelRecentsVue
+  cout: moyen
+  litige: false
+- app: Téléphone
+  ecran: TelContactsVue
+  element: icône mic.fill dans le champ de recherche
+  promesse: moyenne
+  reco: C
+  action: garder inerte
+  cout: eleve
+  litige: false
+- app: Téléphone
+  ecran: TelContactsVue
+  element: ligne « Sarah Levasseur » (Fiche de contact) sans NavigationLink
+  promesse: forte
+  reco: B
+  action: 'NavigationLink vers TelFicheVue(nom: "Sarah Levasseur") — cohérent avec les autres lignes'
+  cout: faible
+  litige: false
+- app: Téléphone
+  ecran: TelFicheVue
+  element: bouton « Modifier » (capsule en-tête)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille d'édition du contact (pattern BoutonModifierContact de MessagesApp)
+  cout: moyen
+  litige: false
+- app: Téléphone
+  ecran: TelFicheVue
+  element: segment « Messages vocaux » (barre de segments Détails / Messages vocaux)
+  promesse: forte
+  reco: B
+  action: bascule l'affichage vers les messages vocaux du contact (depuis DonneesTel.messagerie filtrés par nom)
+  cout: moyen
+  litige: true
+- app: Téléphone
+  ecran: TelFicheVue
+  element: icône phone.fill dans la carte numéro (à droite du numéro, section Détails)
+  promesse: forte
+  reco: B
+  action: lance AppelTelVue — la carte entière a déjà un onTapGesture { appelVisible = true }, l'icône seule est redondante mais cohérente
+  cout: faible
+  litige: false
+- app: Téléphone
+  ecran: TelFicheVue
+  element: champ Notes (zone vide éditable visuellement)
+  promesse: forte
+  reco: B
+  action: ouvre un TextField inline ou une feuille d'édition des notes
+  cout: moyen
+  litige: true
+- app: Téléphone
+  ecran: TelFicheVue
+  element: lien « Historique des appels » + chevron.right
+  promesse: forte
+  reco: B
+  action: affiche la liste complète des appels du contact (DonneesTel.recents filtrés) — un écran dédié ou une sheet
+  cout: moyen
+  litige: false
+- app: Téléphone
+  ecran: TelFicheVue
+  element: icône phone.fill dans la carte numéro en section inférieure (carte RÉCENT)
+  promesse: forte
+  reco: C
+  action: garder inerte — la carte entière est déjà tapable (onTapGesture { appelVisible = true })
+  cout: faible
+  litige: false
+- app: Téléphone
+  ecran: AppelTelVue
+  element: BoutonAppelTel « Haut-parleur »
+  promesse: forte
+  reco: C
+  action: garder inerte — bascule audio irréalisable en simulation
+  cout: eleve
+  litige: false
+- app: Téléphone
+  ecran: AppelTelVue
+  element: BoutonAppelTel « FaceTime »
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("reseau") — FaceTime non disponible
+  cout: faible
+  litige: false
+- app: Téléphone
+  ecran: AppelTelVue
+  element: BoutonAppelTel « Couper le son »
+  promesse: forte
+  reco: B
+  action: bascule l'état visuel du bouton (icône mic vs mic.slash) — toggle esthétique suffisant
+  cout: faible
+  litige: false
+- app: Téléphone
+  ecran: AppelTelVue
+  element: BoutonAppelTel « Plus » (ellipsis)
+  promesse: moyenne
+  reco: B
+  action: affiche une confirmationDialog avec options (Contacts, Clavier, Bluetooth) et alerte ErreurLambda
+  cout: faible
+  litige: false
+- app: Téléphone
+  ecran: AppelTelVue
+  element: BoutonAppelTel « Clavier »
+  promesse: forte
+  reco: B
+  action: affiche le clavier numérique DTMF overlay (pattern TelClavierVue simplifié)
+  cout: moyen
+  litige: false
+- app: Téléphone
+  ecran: TelMessagerieVue
+  element: bouton « Modifier » (en-tête)
+  promesse: forte
+  reco: B
+  action: passe en mode sélection/suppression des messages vocaux
+  cout: moyen
+  litige: false
+- app: Téléphone
+  ecran: TelMessagerieVue
+  element: bouton « Annonce » (en-tête)
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("reseau") — enregistrement d'annonce non simulable
+  cout: faible
+  litige: false
+- app: Téléphone
+  ecran: TelMessagerieVue
+  element: icône square.and.arrow.up (partager message vocal) dans le lecteur déplié
+  promesse: forte
+  reco: B
+  action: 'affiche FeuillePartage(element: "Message vocal de \(m.nom)")'
+  cout: faible
+  litige: false
+- app: Téléphone
+  ecran: TelMessagerieVue
+  element: icône speaker.wave.2.fill (changer la sortie audio) dans le lecteur déplié
+  promesse: forte
+  reco: C
+  action: garder inerte — bascule de route audio irréalisable
+  cout: eleve
+  litige: false
+- app: Téléphone
+  ecran: TelMessagerieVue
+  element: icône trash (supprimer message vocal) dans le lecteur déplié
+  promesse: forte
+  reco: B
+  action: retire le message du tableau avec animation — simple suppression de la liste locale
+  cout: faible
+  litige: false
+- app: Téléphone
+  ecran: TelMessagerieVue
+  element: barre scrubber (GeometryReader, glisser pour chercher)
+  promesse: forte
+  reco: C
+  action: garder inerte — scrubbing audio nécessite AVAudioPlayer.currentTime = valeur, risqué sans test
+  cout: moyen
+  litige: true
+- app: Messages
+  ecran: MessagesVue (liste)
+  element: icône mic.fill dans le champ de recherche
+  promesse: moyenne
+  reco: C
+  action: garder inerte — dictée vocale non simulable
+  cout: eleve
+  litige: false
+- app: Messages
+  ecran: MsgConvVue
+  element: icône mic dans la barre de saisie (état champ vide)
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("reseau") — enregistrement vocal non disponible
+  cout: faible
+  litige: false
+- app: Messages
+  ecran: MsgConvVue
+  element: bulles de message reçu — tap sans handler (aucun contextMenu)
+  promesse: forte
+  reco: B
+  action: ajouter contextMenu avec « Copier », « Répondre », « Supprimer » (pattern WA menuMessage)
+  cout: moyen
+  litige: false
+- app: Messages
+  ecran: MsgConvVue
+  element: carte document reçu (BulleDocument) sans tap handler
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("reseau") au tap — document non téléchargeable
+  cout: faible
+  litige: false
+- app: Messages
+  ecran: MsgConvVue
+  element: items menu + « Appareil photo » (camera)
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda("camera") — déjà en place via le switch/default
+  cout: faible
+  litige: false
+- app: Messages
+  ecran: MsgConvVue
+  element: items menu + « Sondages », « Envoyer plus tard », « Genmoji », « Image Playground »
+  promesse: forte
+  reco: B
+  action: affiche ErreurLambda appropriée pour chaque — déjà en place
+  cout: faible
+  litige: false
+- app: Messages
+  ecran: MsgFicheVue
+  element: onglet « Photos » (OngletFiche, affiche « Aucune photo »)
+  promesse: forte
+  reco: C
+  action: garder l'état vide — cohérent et informatif
+  cout: faible
+  litige: false
+- app: Messages
+  ecran: MsgFicheVue
+  element: onglet « Documents » (OngletFiche, affiche « Aucun document »)
+  promesse: forte
+  reco: C
+  action: garder l'état vide — cohérent et informatif
+  cout: faible
+  litige: false
+- app: Messages
+  ecran: MsgFicheVue
+  element: icône phone à droite du numéro dans la carte Infos
+  promesse: forte
+  reco: C
+  action: garder inerte — la carte entière est tapable via onTapGesture { appelAudio = true }
+  cout: faible
+  litige: false
+- app: Messages
+  ecran: MsgSuppressionsVue
+  element: lignes de conversations supprimées — tap sur la ligne (aucun NavigationLink)
+  promesse: forte
+  reco: B
+  action: 'NavigationLink vers MsgConvVue(conv: s.conv) — permet de lire les messages supprimés (or narratif)'
+  cout: faible
+  litige: true
+- app: Messages
+  ecran: NouveauMessageVue
+  element: icône plus.circle à droite du champ destinataire
+  promesse: forte
+  reco: B
+  action: affiche la liste de contacts TelContactsVue en sheet pour sélectionner un destinataire
+  cout: moyen
+  litige: false
+- app: AudioEtAppels
+  ecran: AppelVue (mode histoire)
+  element: RondAppel « Haut-parleur » (actif = true, visuellement allumé, sans action)
+  promesse: forte
+  reco: C
+  action: garder inerte — bascule de route audio non simulable
+  cout: eleve
+  litige: false
+- app: AudioEtAppels
+  ecran: AppelVue (mode histoire)
+  element: RondAppel « Couper le son »
+  promesse: forte
+  reco: B
+  action: bascule l'état visuel du bouton (toggle esthétique)
+  cout: faible
+  litige: false
+- app: AudioEtAppels
+  ecran: AppelVue (mode histoire)
+  element: RondAppel « Transcription » (text.bubble.fill) — toggle déjà implémenté
+  promesse: forte
+  reco: B
+  action: déjà fonctionnel (transcriptionVisible.toggle()) — aucune action requise
+  cout: faible
+  litige: false
+- app: AudioEtAppels
+  ecran: SousReglageVue (ligne .valeur)
+  element: lignes .valeur affichant chevron.right sans NavigationLink ni onTapGesture
+  promesse: forte
+  reco: B
+  action: ajouter onTapGesture { alerteVisible = true } avec ErreurLambda("generique") ou NavigationLink récursif
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Racine (ReglagesVue)
+  element: icône micro dans la pilule de recherche flottante
+  promesse: forte
+  reco: B
+  action: ouvre RechercheReglagesVue avec focus clavier (même résultat que le tap sur la pilule — le mic est un leurre de fidélité iOS)
+  cout: faible
+  litige: true
+- app: Réglages
+  ecran: Racine (ReglagesVue)
+  element: ligne "Partage de connexion" (RegLigne → RegContenuVue)
+  promesse: faible
+  reco: C
+  action: déjà connecté à RegContenuVue avec contenu statique réel — FONCTIONNEL, non listé par erreur ; confirmer
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Infos personnelles (InfosPersoVue)
+  element: ligne "Nom" avec chevron (HStack + chevron, sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre une alerte ou un écran générique "Modification du nom non disponible"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Infos personnelles (InfosPersoVue)
+  element: ligne "Préférences de communication" avec chevron (sans NavigationLink ni onTapGesture)
+  promesse: forte
+  reco: B
+  action: ouvre RegContenuVue ou RegGeneriqueVue "Préférences de communication"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Connexion et sécurité (ConnexionSecuVue)
+  element: lien texte bleu "Ajouter un e-mail ou un numéro" (Text foregroundStyle bleu, sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre alerte "Cette action nécessite le mot de passe Apple"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Connexion et sécurité (ConnexionSecuVue)
+  element: lien texte bleu "Modifier le mot de passe" (sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre FaceIDVue ou alerte "Saisissez d'abord le code de l'iPhone"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Connexion et sécurité (ConnexionSecuVue)
+  element: ligne "Identification à deux facteurs — Activée" (affiche valeur, chevron absent mais ligne cliquable en iOS réel)
+  promesse: moyenne
+  reco: C
+  action: le contenu est purement informatif ; la valeur "Activée" suffit
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Connexion et sécurité (ConnexionSecuVue)
+  element: ligne "Contacts de récupération — Configurer" (HStack sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegGeneriqueVue "Contacts de récupération"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Connexion et sécurité (ConnexionSecuVue)
+  element: ligne "Clé de secours — Configurer" (HStack sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegGeneriqueVue "Clé de secours"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Paiement et livraison (PaiementVue)
+  element: ligne "Apple Pay" avec chevron (HStack + chevron, sans NavigationLink ni handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegGeneriqueVue "Apple Pay"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Paiement et livraison (PaiementVue)
+  element: ligne "Carte LCL Visa •••• 8207 (Apple Pay)" avec chevron (sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre CarteDetailVue (déjà construite) ou RegContenuVue
+  cout: faible
+  litige: true
+- app: Réglages
+  ecran: Paiement et livraison (PaiementVue)
+  element: lien texte bleu "Ajouter un mode de paiement" (sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre alerte "Face ID requis pour ajouter une carte"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Paiement et livraison (PaiementVue)
+  element: lien texte bleu "Ajouter de l'argent au compte Apple" (sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegGeneriqueVue "Compte Apple Cash"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Abonnements (AbonnementsVue)
+  element: 'chaque ligne d''abonnement actif avec chevron (HStack + chevron, sans NavigationLink ni handler — 3 lignes : Meetic, iCloud+, Deezer)'
+  promesse: forte
+  reco: B
+  action: ouvre RegGeneriqueVue pour chaque abonnement (nom dynamique)
+  cout: faible
+  litige: true
+- app: Réglages
+  ecran: iCloud (ICloudVue)
+  element: ligne "Sauvegarde iCloud — Il y a 26 jours" avec avertissement (HStack, sans NavigationLink ni handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegGeneriqueVue "Sauvegarde iCloud" ou alerte "Espace insuffisant"
+  cout: faible
+  litige: true
+- app: Réglages
+  ecran: Batterie / BatterieVue
+  element: icône "info.circle" en haut du pourcentage (sans onTapGesture)
+  promesse: moyenne
+  reco: C
+  action: libellé purement décoratif dans iOS réel à ce niveau ; frustration improbable
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Batterie / BatterieVue
+  element: lignes "En charge" et "Mode d'alimentation" avec chevron (HStack + chevron, sans NavigationLink ni handler)
+  promesse: forte
+  reco: B
+  action: '"En charge" → alerte "Branchez l''iPhone pour accéder à ce réglage" ; "Mode d''alimentation" → RegContenuVue avec valeur Adaptatif/Standard/Économie'
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Batterie / UtilisationBatterieVue
+  element: lien texte bleu "En afficher plus" dans la liste par app (Text bleu, sans handler)
+  promesse: forte
+  reco: B
+  action: étend la liste en affichant 3 apps supplémentaires (état local, pas de navigation)
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Batterie / UtilisationBatterieVue
+  element: chaque ligne LigneAppBatterie a un chevron visuel mais aucun handler — 6 lignes
+  promesse: forte
+  reco: B
+  action: ouvre un écran de détail par app (RegContenuVue générique avec durée écran/fond)
+  cout: moyen
+  litige: true
+- app: Réglages
+  ecran: Général / StockageVue
+  element: bouton texte bleu "Activer" (décharger les apps inutilisées) — Text bleu, sans handler
+  promesse: forte
+  reco: B
+  action: bascule d'état locale (toggle activer/désactiver) avec confirmation
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Général / StockageVue
+  element: chaque ligne d'app avec chevron (7 lignes) — sans NavigationLink ni handler
+  promesse: forte
+  reco: B
+  action: ouvre RegGeneriqueVue par app (nom dynamique) avec taille et option "Décharger l'app"
+  cout: moyen
+  litige: true
+- app: Réglages
+  ecran: Temps d'écran (TempsEcranVue)
+  element: ligne "Limites" avec chevron (HStack + chevron, sans NavigationLink ni handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegGeneriqueVue "Limites de durée d'utilisation"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Temps d'écran (TempsEcranVue)
+  element: chaque ligne LigneActivite (5 apps) — texte + valeur, sans handler ni chevron
+  promesse: faible
+  reco: C
+  action: libellé statistique sans affordance de tap — ne pas équiper
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Luminosité et affichage (LuminositeVue)
+  element: vignettes "Claire" / "Sombre" avec pastille de sélection (contenu tapable implicite, sans handler)
+  promesse: forte
+  reco: B
+  action: bascule d'état locale (sombre sélectionné → clair) via @State
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Luminosité et affichage (LuminositeVue)
+  element: ligne "Taille du texte" avec chevron (sans NavigationLink ni handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegContenuVue "Taille du texte" avec un Slider décoratif
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Luminosité et affichage (LuminositeVue)
+  element: ligne "Night Shift — Non" avec chevron (sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegContenuVue "Night Shift" avec bascule et plage horaire
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Luminosité et affichage (LuminositeVue)
+  element: ligne "Verrouillage automatique — Jamais" avec chevron (sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegContenuVue "Verrouillage automatique" avec options 30 s / 1 min / 2 min / Jamais
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Centre de contrôle (CentreControleVue)
+  element: lien texte bleu "Réinitialiser le centre de contrôle" (Text bleu, sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre confirmationDialog "Réinitialiser le centre de contrôle ?"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Sons et vibrations (SonsVue)
+  element: ligne "Retour clavier — Aucun" avec chevron (sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegContenuVue "Retour clavier" avec choix Aucun/Clic/Haptique
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Sons et vibrations (SonsVue)
+  element: ligne "Limite du volume" avec chevron (sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegContenuVue "Limite du volume" avec Slider
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Sons et vibrations (SonsVue)
+  element: ligne "Sécurité des écouteurs" avec chevron (sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegContenuVue "Sécurité des écouteurs"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Sons et vibrations (SonsVue)
+  element: ligne "Audio spatial personnalisé" avec chevron (sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegContenuVue "Audio spatial personnalisé"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Cartes et Apple Pay (CartesPayVue)
+  element: ligne "Réglages par défaut d'Apple Pay" avec chevron (HStack + chevron, sans NavigationLink ni handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegGeneriqueVue "Réglages par défaut d'Apple Pay"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Cartes et Apple Pay (CartesPayVue)
+  element: lignes "VISA PREPAGO •••• 5246 — Suspendue" et "Carte Virtuelle Nirio •••• 8476 — Suspendue" avec chevron (LigneCarte, sans NavigationLink ni handler)
+  promesse: forte
+  reco: B
+  action: ouvre alerte "Cette carte a été suspendue par son émetteur. Contactez votre banque."
+  cout: faible
+  litige: true
+- app: Réglages
+  ecran: Cartes et Apple Pay (CartesPayVue)
+  element: ligne "Cartes à remplissage automatique — 3" avec chevron (sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre RegGeneriqueVue "Cartes à remplissage automatique"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Cartes et Apple Pay (CartesPayVue)
+  element: ligne "Carte de transport express — Aucune" (HStack, sans chevron ni handler)
+  promesse: moyenne
+  reco: C
+  action: libellé informatif sans affordance visuelle de tap ; frustration improbable
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Détail carte LCL (CarteDetailVue) — onglet Infos
+  element: ligne "Informations de la carte" avec chevron (HStack + chevron, sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre alerte ou RegGeneriqueVue "Informations de la carte"
+  cout: faible
+  litige: false
+- app: Réglages
+  ecran: Recherche réglages (RechercheReglagesVue)
+  element: chips de suggestions (SuggestionRecherche) — onTapGesture ouvre une alerte, ne navigue pas
+  promesse: forte
+  reco: B
+  action: déjà équipé d'une alerte d'orientation (comportement D53) — FONCTIONNEL, satisfaisant
+  cout: faible
+  litige: false
+- app: Photos
+  ecran: Photothèque (PhototequeVue) — en-tête
+  element: bandeau "Synchronisation suspendue ›" (icloud.slash + chevron, sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre une alerte ou navigue vers Réglages > iCloud (message "Espace insuffisant, 173 Go sur 200 Go utilisés")
+  cout: faible
+  litige: true
+- app: Photos
+  ecran: Photothèque (PhototequeVue) — en-tête
+  element: bouton icône "line.3.horizontal.decrease" (filtre/tri) — padding + background Circle mais aucun handler
+  promesse: forte
+  reco: B
+  action: ouvre une feuille de tri (Récentes / Favorites / Captures d'écran) — état local
+  cout: moyen
+  litige: true
+- app: Photos
+  ecran: Photothèque (PhototequeVue) — en-tête
+  element: bouton-capsule "Sélect." — Text + background Capsule, aucun handler
+  promesse: forte
+  reco: A
+  action: active un mode de sélection multiple (cases à cocher sur les tuiles) — fonctionnalité centrale d'une photothèque
+  cout: eleve
+  litige: true
+- app: Photos
+  ecran: Photothèque / Vue années (vueAnnees)
+  element: vignette d'année (ZStack avec image et texte) — aucun handler onTapGesture
+  promesse: forte
+  reco: B
+  action: onTapGesture bascule portee = 1 (vue Mois) filtré sur l'année tapée
+  cout: moyen
+  litige: false
+- app: Photos
+  ecran: Photothèque / Vue mois (vueMois)
+  element: en-tête de mois (Text) — aucun handler
+  promesse: moyenne
+  reco: C
+  action: libellé de section, pas d'affordance visuelle de tap ; garder inerte
+  cout: faible
+  litige: false
+- app: Photos
+  ecran: Détail photo (PhotoDetailVue) — barre d'actions
+  element: icône "slider.horizontal.3" (ajustements) — foregroundStyle(phTexte2) et padding, aucun handler
+  promesse: forte
+  reco: A
+  action: ouvre un écran d'édition photo (luminosité, contraste…) — promesse très forte sur une photo
+  cout: eleve
+  litige: true
+- app: Photos
+  ecran: Fiche photo (FichePhotoVue)
+  element: lien texte bleu "Ajuster" à côté de la date (Text bleu, sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre alerte "L'ajustement de la date n'est pas disponible"
+  cout: faible
+  litige: false
+- app: Photos
+  ecran: Fiche photo (FichePhotoVue)
+  element: bloc lieu (HStack mappin + texte lieu) — sans handler ; pour les photos avec lieu réel
+  promesse: forte
+  reco: B
+  action: ouvre PlanPhotosVue centré sur ce lieu (Map déjà construite)
+  cout: faible
+  litige: true
+- app: Photos
+  ecran: Fiche photo (FichePhotoVue)
+  element: lien texte bleu "Ajouter un lieu…" (photos sans lieu — capture:true) — Text bleu, sans handler
+  promesse: forte
+  reco: B
+  action: ouvre alerte "Ajout de lieu non disponible"
+  cout: faible
+  litige: false
+- app: Photos
+  ecran: Fiche photo (FichePhotoVue)
+  element: zone légende "Ajouter une légende" (Text statique, sans TextField ni handler)
+  promesse: forte
+  reco: B
+  action: ouvre un TextField inline ou une alerte de saisie de légende (state local)
+  cout: moyen
+  litige: true
+- app: Photos
+  ecran: Collections (CollectionsPhotosVue) — en-tête
+  element: bandeau "Synchronisation suspendue ›" (icloud.slash + chevron, sans handler) — même que Photothèque
+  promesse: forte
+  reco: B
+  action: même action que dans Photothèque (alerte iCloud espace)
+  cout: faible
+  litige: false
+- app: Photos
+  ecran: Collections (CollectionsPhotosVue) — en-tête
+  element: avatar Sarah (AvatarMsg 34 pt) — sans handler
+  promesse: moyenne
+  reco: C
+  action: avatar décoratif de fidélité iOS ; promesse faible, garder inerte
+  cout: faible
+  litige: false
+- app: Photos
+  ecran: Collections (CollectionsPhotosVue) — titres de sections
+  element: SectionTitrePhotos — chevron décoratif après chaque titre de section (Souvenirs, Épinglées, Albums, Personnes, Types de média, Autres) — sans handler sur le titre ou le chevron
+  promesse: moyenne
+  reco: C
+  action: les sous-éléments sont déjà navigables ; le titre avec chevron est décor iOS standard
+  cout: faible
+  litige: false
+- app: Photos
+  ecran: Collections / Épinglées
+  element: lien texte bleu "Modifier" à côté de "Épinglées" (SectionTitrePhotos accessoire, sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre une alerte "Modification des collections épinglées non disponible"
+  cout: faible
+  litige: false
+- app: Photos
+  ecran: Collections / Personnes (PersonnePhotos)
+  element: avatar circulaire de chaque personne (Sarah, Chloé, Maman, Papa, non nommé) — sans handler
+  promesse: forte
+  reco: B
+  action: ouvre AlbumVue filtré sur les motsCles liés à la personne (albums Famille/selfie déjà construits)
+  cout: faible
+  litige: true
+- app: Photos
+  ecran: Collections / Personnes (PersonnePhotos)
+  element: texte bleu "Nommer" sous l'avatar non identifié (Marc) — sans handler
+  promesse: forte
+  reco: B
+  action: 'ouvre alerte de saisie de nom (state local) — or narratif : le joueur peut découvrir que c''est Marc'
+  cout: faible
+  litige: true
+- app: Photos
+  ecran: Collections / Types de média
+  element: ligne "Vidéos — 0" avec chevron (LigneTypeMedia sans NavigationLink — wrappée dans un VStack sans bouton)
+  promesse: forte
+  reco: C
+  action: compte = 0 donc contenu vide ; AlbumVue affiche déjà "Aucune photo" — garder inerte ou équiper avec AlbumVue vide
+  cout: faible
+  litige: false
+- app: Photos
+  ecran: Collections / Types de média
+  element: ligne "Captures d'écran — 0" avec chevron (LigneTypeMedia sans NavigationLink)
+  promesse: forte
+  reco: B
+  action: 'ouvre AlbumVue(titre:"Captures d''écran", items: magasin.visibles.filter { $0.capture }) — les captures existent dans la pellicule'
+  cout: faible
+  litige: true
+- app: Photos
+  ecran: Collections / Autres
+  element: ligne "Doublons — 0" avec chevron (LigneTypeMedia sans NavigationLink)
+  promesse: forte
+  reco: C
+  action: compte = 0, AlbumVue vide ; garder inerte — la frustration est nulle face à un zéro
+  cout: faible
+  litige: false
+- app: Photos
+  ecran: Plan (PlanPhotosVue)
+  element: annotations photo sur la carte MapKit — sans onTapGesture sur les Annotation
+  promesse: forte
+  reco: B
+  action: onTapGesture sur l'annotation ouvre AlbumVue filtré sur le lieu correspondant
+  cout: moyen
+  litige: true
+- app: Photos
+  ecran: Souvenir (SouvenirVue)
+  element: diaporama automatique sans contrôle de pause/lecture ni navigation manuelle entre images
+  promesse: moyenne
+  reco: C
+  action: le défilement automatique 2,6 s est suffisant pour un souvenir minimaliste ; ajouter un bouton pause serait B mais non prioritaire
+  cout: moyen
+  litige: false
+- app: Photos
+  ecran: Suppr. récemment (SupprRecemmentVue)
+  element: texte statique "29 jours" sur chaque tuile — libellé sans handler
+  promesse: faible
+  reco: C
+  action: libellé informatif, personne ne tente de cliquer dessus
+  cout: faible
+  litige: false
+- app: Photos
+  ecran: Récupération photo (RecupPhotoVue)
+  element: bouton "Supprimer" (Text rouge, sans handler ni confirmation)
+  promesse: forte
+  reco: A
+  action: doit déclencher suppression définitive avec confirmationDialog (symétrique au bouton Récupérer déjà fonctionnel)
+  cout: faible
+  litige: true
+- app: Horloge
+  ecran: Horloges (monde)
+  element: bouton "Modifier" barre haute (toolbar topBarLeading)
+  promesse: forte
+  reco: B
+  action: active un mode édition permettant de réordonner ou supprimer les villes existantes (swipeActions ou drag déjà cohérents avec le reste de l'app)
+  cout: moyen
+  litige: false
+- app: Horloge
+  ecran: Horloges (monde) — VilleRechercheVue
+  element: ligne de ville dans la liste de résultats (Text, aucun onTapGesture ni Button)
+  promesse: forte
+  reco: A
+  action: taper une ville l'ajoute à la liste des horloges monde et ferme la feuille
+  cout: moyen
+  litige: false
+- app: Horloge
+  ecran: Alarmes — AlarmesVue
+  element: bouton "CONFIGURER" (capsule orange) dans la section Sommeil|Réveil
+  promesse: forte
+  reco: A
+  action: ouvre une feuille de configuration du Sommeil/Réveil (horaire de coucher, objectif de sommeil) — fonctionnalité centrale visible dans l'app iOS native
+  cout: eleve
+  litige: true
+- app: Horloge
+  ecran: Alarmes — AlarmesVue
+  element: bouton "Modifier" barre haute (toolbar topBarLeading) — edition toggle sans effet visuel
+  promesse: forte
+  reco: B
+  action: basculer edition=true affiche les poignées de suppression/réordonnancement (onDelete/onMove sur le ForEach) — état edition déjà déclaré mais jamais utilisé dans la List
+  cout: moyen
+  litige: false
+- app: Horloge
+  ecran: Minuteurs — MinuteursVue
+  element: bouton "Modifier" barre haute (toolbar topBarLeading) — action vide {}
+  promesse: forte
+  reco: B
+  action: permet de réordonner ou supprimer les minuteurs récents (liste magasin.minuteursRecents)
+  cout: moyen
+  litige: false
+- app: Horloge
+  ecran: Minuteurs — MinuteursVue
+  element: bouton "+" barre haute (toolbar topBarTrailing) — action vide {}
+  promesse: forte
+  reco: B
+  action: ouvre une feuille de création de minuteur nommé (réutilise les pickers h/mn/s déjà présents dans la vue principale)
+  cout: moyen
+  litige: true
+- app: Horloge
+  ecran: Minuteurs — MinuteursVue
+  element: bouton "Annuler" (cercle gris, état repos) — pur Text sans Button ni onTapGesture
+  promesse: forte
+  reco: B
+  action: remet les pickers à 0 h 0 min 0 s
+  cout: faible
+  litige: false
+- app: Calculatrice
+  ecran: Calculatrice principale
+  element: icône "list.number" (mode scientifique ?) en haut à droite — Image sans Button ni onTapGesture
+  promesse: forte
+  reco: B
+  action: bascule vers un mode scientifique (ou ouvre une alerte "Mode scientifique non disponible") — l'icône list.number est visible et encadrée comme le bouton historique voisin qui, lui, fonctionne
+  cout: moyen
+  litige: true
+- app: Météo
+  ecran: Page ville — VilleMeteoVue
+  element: tuile "RESSENTI" (TuileMeteo) — pas de handler tap
+  promesse: faible
+  reco: C
+  action: iOS affiche parfois un détail au tap ; ici la note explicative est déjà dans la tuile — garder inerte
+  cout: faible
+  litige: false
+- app: Météo
+  ecran: Page ville — VilleMeteoVue
+  element: tuile "INDICE UV" (TuileMeteo) — pas de handler tap
+  promesse: faible
+  reco: C
+  action: garder inerte, info suffisante dans la tuile
+  cout: faible
+  litige: false
+- app: Météo
+  ecran: Page ville — VilleMeteoVue
+  element: tuile "VENT" (TuileVent) — pas de handler tap
+  promesse: faible
+  reco: C
+  action: garder inerte
+  cout: faible
+  litige: false
+- app: Météo
+  ecran: Page ville — VilleMeteoVue
+  element: tuile "COUCHER DE SOLEIL" (TuileMeteo) — pas de handler tap
+  promesse: faible
+  reco: C
+  action: garder inerte
+  cout: faible
+  litige: false
+- app: Météo
+  ecran: Page ville — VilleMeteoVue
+  element: tuile "PRÉCIPITATIONS" (TuileMeteo) — pas de handler tap
+  promesse: faible
+  reco: C
+  action: garder inerte
+  cout: faible
+  litige: false
+- app: Météo
+  ecran: Page ville — VilleMeteoVue
+  element: tuile "VISIBILITÉ" (TuileMeteo) — pas de handler tap
+  promesse: faible
+  reco: C
+  action: garder inerte
+  cout: faible
+  litige: false
+- app: Météo
+  ecran: Page ville — VilleMeteoVue
+  element: tuile "HUMIDITÉ" (TuileMeteo) — pas de handler tap
+  promesse: faible
+  reco: C
+  action: garder inerte
+  cout: faible
+  litige: false
+- app: Météo
+  ecran: Page ville — VilleMeteoVue
+  element: tuile "PRESSION" (TuileMeteo) — pas de handler tap
+  promesse: faible
+  reco: C
+  action: garder inerte
+  cout: faible
+  litige: false
+- app: Météo
+  ecran: Page ville — VilleMeteoVue
+  element: lien texte "Afficher dans Plans" — appelle Routeur.partage.allerPlans() mais affiche alert générique (ErreurLambda.reponse("app.attente"))
+  promesse: forte
+  reco: B
+  action: utiliser le Routeur inter-apps réel (déjà câblé dans d'autres apps du jeu) pour ouvrir Plans sur la position de la ville — évite l'alerte générique qui casse l'immersion
+  cout: faible
+  litige: true
+- app: Météo
+  ecran: Page ville — VilleMeteoVue
+  element: lien texte "En savoir plus sur les données météo et les données de plans" — Text sans handler
+  promesse: faible
+  reco: C
+  action: garder inerte (libellé légal/décoratif, personne ne s'attend à une action)
+  cout: faible
+  litige: false
+- app: Météo
+  ecran: Carte météo — CarteMeteoVue
+  element: icône "square.3.layers.3d" (calques carte) — Image sans Button ni onTapGesture
+  promesse: forte
+  reco: B
+  action: ouvre une action sheet permettant de basculer entre les styles de carte (standard / satellite / radar) — MapStyle déjà utilisé dans la vue, permutation simple
+  cout: moyen
+  litige: true
+- app: Météo
+  ecran: Carte météo — CarteMeteoVue
+  element: icône "location" (recentrer) — Image sans Button ni onTapGesture
+  promesse: forte
+  reco: B
+  action: recentre la carte sur la position de la ville principale (Lyon) en animant MapCameraPosition
+  cout: faible
+  litige: false
+- app: Météo
+  ecran: Liste des villes — ListeVillesVue
+  element: menu ellipsis — boutons "Modifier la liste", "Unités", "Signaler un problème" tous avec action vide {}
+  promesse: forte
+  reco: B
+  action: '"Modifier la liste" active l''édition de la liste (suppression de villes) ; "Unités" ouvre une feuille de sélection °C/°F ; "Signaler un problème" réutilise SignalerMeteoVue déjà construite'
+  cout: moyen
+  litige: true
+- app: Météo
+  ecran: Conditions météo — ConditionsMeteoVue
+  element: lignes "Température" et "Précipitations" dans la section Options (chevron.up.chevron.down visible, aucun handler)
+  promesse: forte
+  reco: B
+  action: chaque ligne ouvre un Menu (ou Picker inline) permettant de choisir l'unité (°C/°F pour la temp, mm/cm/in pour les précip)
+  cout: moyen
+  litige: true
+- app: Notes
+  ecran: Liste des notes — NotesVue
+  element: chevron "chevron.down" à droite du titre de section "Épinglées" — Image sans handler
+  promesse: moyenne
+  reco: B
+  action: replie/déplie la section Épinglées (toggle état local, animation hauteur) — comportement attendu dans iOS Notes
+  cout: faible
+  litige: false
+- app: Notes
+  ecran: Liste des notes — NotesVue
+  element: icône micro "mic.fill" dans la barre de recherche basse (else du xmark) — Image sans handler
+  promesse: forte
+  reco: B
+  action: ouvre une alerte "Dictée non disponible" (cohérent avec le traitement micro du Dictaphone) ou déclenche la saisie dictée système
+  cout: faible
+  litige: false
+- app: Notes
+  ecran: Liste des notes — NotesVue (menu ellipsis toolbar)
+  element: bouton "Afficher les pièces jointes" — action vide {}
+  promesse: forte
+  reco: B
+  action: ouvre une feuille listant les notes contenant des pièces jointes (ou message "Aucune pièce jointe" si vide)
+  cout: moyen
+  litige: false
+- app: Notes
+  ecran: Liste des notes — NotesVue (menu ellipsis toolbar)
+  element: bouton "Sélectionner des notes" — action vide {}
+  promesse: forte
+  reco: B
+  action: active un mode sélection multiple avec cases à cocher permettant de supprimer/déplacer des notes en lot
+  cout: eleve
+  litige: true
+- app: Notes
+  ecran: Liste des notes — NotesVue (menu ellipsis toolbar)
+  element: bouton "Afficher en galerie" — action vide {}
+  promesse: forte
+  reco: B
+  action: bascule la liste vers une grille 2 colonnes (LazyVGrid) montrant l'aperçu des notes — toggle d'état local, réutilise les données existantes
+  cout: moyen
+  litige: false
+- app: Notes
+  ecran: Édition de note — NoteEditionVue
+  element: icône ellipsis.circle (menu options) — onTapGesture déclenche une alerte générique ("menu")
+  promesse: forte
+  reco: B
+  action: ouvre un Menu réel avec des options pertinentes (Épingler, Verrouiller, Déplacer, Supprimer) plutôt qu'une alerte générique
+  cout: moyen
+  litige: true
+- app: Notes
+  ecran: Édition de note — NoteEditionVue (barre d'outils basse)
+  element: icône "textformat" — onTapGesture → alerte générique "Mise en forme"
+  promesse: forte
+  reco: B
+  action: ouvre une feuille de mise en forme basique (gras, italique, taille de police) ou conserve l'alerte "arrive avec iCloud" — alerte actuelle est acceptable mais limite l'immersion
+  cout: eleve
+  litige: true
+- app: Notes
+  ecran: Édition de note — NoteEditionVue (barre d'outils basse)
+  element: icône "checklist" — onTapGesture → alerte générique
+  promesse: forte
+  reco: B
+  action: insère une ligne de liste de pointage (préfixe "☐ ") dans le TextEditor à la position courante
+  cout: moyen
+  litige: false
+- app: Notes
+  ecran: Édition de note — NoteEditionVue (barre d'outils basse)
+  element: icône "tablecells" — onTapGesture → alerte générique
+  promesse: forte
+  reco: C
+  action: garder l'alerte existante — un tableau dans un TextEditor brut est injustifiable ; la promesse est forte mais le coût et la faisabilité rendent D ou C préférables
+  cout: eleve
+  litige: false
+- app: Notes
+  ecran: Édition de note — NoteEditionVue (barre d'outils basse)
+  element: icône "paperclip" — onTapGesture → alerte générique
+  promesse: forte
+  reco: B
+  action: ouvre PhotosPicker (ou alerte crédible "Pièces jointes disponibles avec iCloud") — PhotosPicker est natif SwiftUI, coût faible
+  cout: faible
+  litige: false
+- app: Notes
+  ecran: Édition de note — NoteEditionVue (barre d'outils basse)
+  element: icône "pencil.tip.crop.circle" — onTapGesture → alerte générique
+  promesse: forte
+  reco: C
+  action: garder l'alerte — Apple Pencil / dessin dans un TextEditor est hors de portée du jeu ; promesse forte mais D injustifiable, C acceptable
+  cout: eleve
+  litige: false
+- app: Rappels
+  ecran: Accueil — RappelsVue (toolbar topBarTrailing)
+  element: icône "magnifyingglass" — Image sans Button ni onTapGesture
+  promesse: forte
+  reco: B
+  action: active un champ de recherche en haut de la liste filtrant les rappels non terminés par titre
+  cout: moyen
+  litige: false
+- app: Rappels
+  ecran: Accueil — RappelsVue (toolbar topBarTrailing)
+  element: icône "text.badge.plus" (ajouter une liste) — Image sans handler
+  promesse: forte
+  reco: B
+  action: ouvre une feuille de création de nouvelle liste (nom + couleur + icône) — fonctionnalité visible dans la référence iOS
+  cout: eleve
+  litige: true
+- app: Rappels
+  ecran: Accueil — RappelsVue (toolbar topBarTrailing)
+  element: icône "ellipsis.circle" — Image sans handler
+  promesse: forte
+  reco: B
+  action: ouvre un Menu avec "Modifier les listes" et "Modèles" (ou version réduite cohérente avec la référence)
+  cout: moyen
+  litige: false
+- app: Rappels
+  ecran: Liste filtrée — FiltreVue (toolbar topBarTrailing)
+  element: icône "square.and.arrow.up" — Image sans handler
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage (déjà construite dans d'autres apps) pour partager la liste de rappels
+  cout: faible
+  litige: false
+- app: Rappels
+  ecran: Liste filtrée — FiltreVue (toolbar topBarTrailing)
+  element: icône "ellipsis.circle" — Image sans handler
+  promesse: forte
+  reco: B
+  action: ouvre un Menu contextuel ("Trier par", "Masquer les terminés", "Modifier la liste")
+  cout: moyen
+  litige: false
+- app: Rappels
+  ecran: Détail rappel — DetailRappelVue
+  element: ligne "Liste" avec chevron.right — aucun handler tap sur la ligne (pas de NavigationLink ni Button)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille de sélection de liste (Rappels / Courses) — identique au Menu déjà présent dans NouveauRappelVue
+  cout: faible
+  litige: false
+- app: Dictaphone
+  ecran: Accueil dossiers — DictaphoneVue (toolbar topBarTrailing)
+  element: texte "Modifier" — Text sans Button ni onTapGesture (pas d'action)
+  promesse: forte
+  reco: B
+  action: active un mode édition permettant de renommer, supprimer ou réordonner les dossiers
+  cout: moyen
+  litige: false
+- app: Dictaphone
+  ecran: Liste des mémos — ListeMemosVue (toolbar topBarTrailing)
+  element: icône "magnifyingglass" encadrée — Image dans un HStack, sans Button ni onTapGesture
+  promesse: forte
+  reco: B
+  action: affiche un champ de recherche en haut de la liste filtrant les mémos par titre ou transcription
+  cout: moyen
+  litige: false
+- app: Dictaphone
+  ecran: Liste des mémos — ListeMemosVue (toolbar topBarTrailing)
+  element: chip "Sélectionner" — Text dans un HStack, sans Button ni onTapGesture
+  promesse: forte
+  reco: B
+  action: active un mode sélection multiple (cases à cocher sur chaque mémo) permettant de supprimer, déplacer ou partager en lot
+  cout: eleve
+  litige: true
+- app: Fichiers
+  ecran: Récents
+  element: champ Rechercher — icône mic.fill (micro voix)
+  promesse: faible
+  reco: C
+  action: resterait inerte (saisie vocale hors périmètre du jeu)
+  cout: faible
+  litige: false
+- app: Fichiers
+  ecran: Récents — menu ellipsis
+  element: bouton "Sélectionner" (handler vide {})
+  promesse: forte
+  reco: B
+  action: bascule un mode sélection multiple avec cases à cocher sur les tuiles/lignes (pattern iOS standard)
+  cout: moyen
+  litige: true
+- app: Fichiers
+  ecran: Récents — menu ellipsis
+  element: bouton "Scanner des documents" (handler vide {})
+  promesse: forte
+  reco: C
+  action: simuler un scan est hors portée ; alerte "Appareil photo requis" serait crédible mais peu utile au jeu
+  cout: faible
+  litige: true
+- app: Fichiers
+  ecran: Récents — menu ellipsis
+  element: bouton "Se connecter au serveur" (handler vide {})
+  promesse: moyenne
+  reco: C
+  action: affordance réaliste mais jamais utilisée dans le scénario ; garder inerte
+  cout: faible
+  litige: false
+- app: Fichiers
+  ecran: Récents — menu contextuel fichier
+  element: bouton "Compresser" (handler vide {})
+  promesse: moyenne
+  reco: B
+  action: alerte de confirmation "Fichier compressé en .zip" (feedback immédiat sans modifier l'état réel)
+  cout: faible
+  litige: false
+- app: Fichiers
+  ecran: Récents — menu contextuel fichier
+  element: bouton "Dupliquer" (handler vide {})
+  promesse: forte
+  reco: B
+  action: ajoute une copie du FichierItem dans MagasinFichiers avec suffixe " copie" (état partagé déjà existant)
+  cout: moyen
+  litige: false
+- app: Fichiers
+  ecran: Partagé
+  element: champ Rechercher (Text inerte, pas de TextField)
+  promesse: forte
+  reco: C
+  action: l'onglet Partagé est vide par conception ; une barre fonctionnelle serait superflue
+  cout: faible
+  litige: false
+- app: Fichiers
+  ecran: Partagé
+  element: icône mic.fill dans barre de recherche
+  promesse: faible
+  reco: C
+  action: resterait inerte (identique à Récents)
+  cout: faible
+  litige: false
+- app: Fichiers
+  ecran: Explorer
+  element: champ Rechercher (Text inerte, onTapGesture absent)
+  promesse: forte
+  reco: B
+  action: ouvre la même RechercheFichiersVue que l'onglet Récents (composant à créer ou à réutiliser si disponible)
+  cout: moyen
+  litige: false
+- app: Fichiers
+  ecran: Explorer
+  element: icône mic.fill dans barre de recherche
+  promesse: faible
+  reco: C
+  action: resterait inerte
+  cout: faible
+  litige: false
+- app: Fichiers
+  ecran: Explorer
+  element: chevron "chevron.down" sur en-tête "Favoris"
+  promesse: moyenne
+  reco: C
+  action: dans la vraie app, réduit/développe la section ; interaction décorative acceptable ici
+  cout: moyen
+  litige: true
+- app: Fichiers
+  ecran: Explorer
+  element: chevron "chevron.down" sur en-tête "Emplacements"
+  promesse: moyenne
+  reco: C
+  action: identique Favoris ; garder inerte
+  cout: moyen
+  litige: false
+- app: Fichiers
+  ecran: Explorer — LigneEmplacement
+  element: ligne "Sur mon iPhone" avec chevron (contentShape mais pas de onTapGesture)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille listant tous les fichiers dont emplacement == "Sur mon iPhone" (vue filtrée sur MagasinFichiers existant)
+  cout: moyen
+  litige: false
+- app: Fichiers
+  ecran: Explorer — LigneEmplacement
+  element: ligne "iCloud Drive" avec chevron (même structure, sans handler)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille listant les fichiers dont emplacement == "iCloud Drive"
+  cout: moyen
+  litige: false
+- app: Fichiers
+  ecran: Infos (InfosFichierVue)
+  element: bouton "Ouvrir" (capsule bleue, pas de handler)
+  promesse: forte
+  reco: B
+  action: ferme la fiche Infos et déclenche ApercuFichierVue sur le même fichier (composant déjà existant)
+  cout: faible
+  litige: false
+- app: Fichiers
+  ecran: Infos (InfosFichierVue)
+  element: 'valeur "Où" en bleu (valeurBleue: true) — semble tapable, aucun handler'
+  promesse: moyenne
+  reco: C
+  action: dans la vraie app ouvre l'emplacement dans iCloud/Finder ; non pertinent pour le jeu
+  cout: faible
+  litige: false
+- app: Cartes
+  ecran: Accueil (CartesVueWallet)
+  element: icône magnifyingglass en en-tête (pas de handler)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille de recherche listant les cartes et passes (vue simple, une seule entrée par item)
+  cout: moyen
+  litige: true
+- app: Cartes
+  ecran: Accueil — pile de cartes
+  element: CarteFideliteVue (carte Phox Photo) — pas de onTapGesture
+  promesse: forte
+  reco: B
+  action: ouvre un écran "Carte fidélité ouverte" analogue à CarteOuverteVue mais simplifié (code QR ou code-barres de fidélité)
+  cout: moyen
+  litige: true
+- app: Cartes
+  ecran: Carte ouverte (CarteOuverteVue)
+  element: icône ellipsis en en-tête (cercle gris, pas de handler)
+  promesse: forte
+  reco: B
+  action: ouvre un Menu avec options "Informations sur la carte", "Supprimer la carte" (pattern natif iOS Wallet)
+  cout: faible
+  litige: false
+- app: Cartes
+  ecran: Détail transaction (TransactionVue)
+  element: texte "Signaler des informations incorrectes" (bleu, contentShape, pas de handler)
+  promesse: forte
+  reco: B
+  action: affiche une alerte de confirmation "Signalement envoyé à LCL" (feedback crédible, pas d'état persistant)
+  cout: faible
+  litige: false
+- app: Cartes
+  ecran: Détail transaction (TransactionVue)
+  element: 'mini-carte Plans (allowsHitTesting: false) — visuellement interactive'
+  promesse: moyenne
+  reco: C
+  action: dans la vraie app, tap ouvre Plans sur le lieu ; allowsHitTesting false est un choix délibéré raisonnable
+  cout: moyen
+  litige: true
+- app: Santé
+  ecran: Résumé (ResumeSanteVue)
+  element: lien texte "Modifier" (section Épinglés) — pas de handler
+  promesse: forte
+  reco: B
+  action: ouvre une feuille permettant de réordonner/masquer les métriques épinglées (liste réordonnée avec EditButton natif)
+  cout: eleve
+  litige: true
+- app: Santé
+  ecran: Résumé — section Tendances
+  element: contenu de la carte tendance (icône + texte) — seul "Afficher les tendances" est tappable ; la carte elle-même n'a pas de handler global
+  promesse: faible
+  reco: C
+  action: le bouton "Afficher les tendances" est présent et fonctionne ; la carte n'a pas besoin d'un handler additionnel
+  cout: faible
+  litige: false
+- app: Santé
+  ecran: Profil (ProfilSanteVue)
+  element: portrait/avatar en haut (Group/Circle/Image sans handler)
+  promesse: moyenne
+  reco: C
+  action: dans la vraie app, tap propose de modifier la photo ; édition du profil hors périmètre du jeu
+  cout: faible
+  litige: false
+- app: Santé
+  ecran: Profil — tableau biométrique
+  element: lignes "Date de naissance", "Sexe", "Groupe sanguin", "Taille", "Poids" (LigneInfoFichier, pas de chevron ni tap)
+  promesse: faible
+  reco: C
+  action: pure lecture dans ce contexte ; aucune affordance visuelle forte (pas de chevron), frustration improbable
+  cout: faible
+  litige: false
+- app: Santé
+  ecran: Contact d'urgence (ContactUrgenceSanteVue)
+  element: ligne "Téléphone 06 51 28 74 93" (LigneInfoFichier, valeur non bleue, sans handler)
+  promesse: moyenne
+  reco: B
+  action: ajouter onTapGesture { Routeur.partage.allerTelephone("06 51 28 74 93") } comme le bouton "Appeler" juste en-dessous — cohérence avec le routeur déjà branché
+  cout: faible
+  litige: false
+- app: Santé
+  ecran: Fiche médicale (FicheMedicaleVue)
+  element: lignes du tableau (conditions, allergies, médicaments…) — statiques, sans possibilité de modifier
+  promesse: faible
+  reco: C
+  action: pure lecture ; pas d'affordance visuelle (pas de chevron, pas de bleu) ; frustration improbable
+  cout: faible
+  litige: false
+- app: Santé
+  ecran: Fiche générique (FicheSanteVue) — section "À propos"
+  element: carte "À propos" (VStack cliquable par accident car contentShape Rectangle() n'est pas appliqué)
+  promesse: faible
+  reco: C
+  action: aucune affordance visuelle ; pas de chevron ni couleur bleue ; garder inerte
+  cout: faible
+  litige: false
+- app: Santé
+  ecran: Historique de santé (HistoriqueSanteVue)
+  element: lignes vaccinations et antécédents (LigneInfoFichier, statiques)
+  promesse: faible
+  reco: C
+  action: pure lecture ; pas d'affordance ; garder inerte
+  cout: faible
+  litige: false
+- app: Santé
+  ecran: Parcourir (ParcourirSanteVue)
+  element: catégories sans données (Alimentation, Cycle, Pleine conscience, Respiratoire) — ouvrent CategorieVideSanteVue, handler présent MAIS icône identique aux catégories actives, aucun signal visuel
+    de l'état vide
+  promesse: moyenne
+  reco: C
+  action: l'état vide est géré et crédible ; la signalisation visuelle est un choix de design, pas un élément inerte
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Discussions
+  element: avatar/initiale Sarah + bulle «Partagez une note…» (note perso en-tête rangée)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de saisie de note (TextField + bouton Publier) qui met à jour la bulle — composant minimal
+  cout: moyen
+  litige: true
+- app: Messenger
+  ecran: Discussions
+  element: cercle bleu logo «f» avec badge «8» (icône Messenger en-tête)
+  promesse: faible
+  reco: C
+  action: aucune — logo décoratif ; un vrai tap ouvrirait les paramètres de compte, non justifié ici
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Discussions
+  element: icône square.and.pencil (nouvelle discussion)
+  promesse: forte
+  reco: A
+  action: 'ouvre MsgrNouvelleDiscussionVue — déjà câblé : nouveau = true → sheet MsgrNouvelleDiscussionVue ✓ (FAUX POSITIF à ignorer)'
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Discussions
+  element: cercle dégradé Meta AI dans le champ de recherche (amorce «Demandez à Meta AI»)
+  promesse: moyenne
+  reco: C
+  action: le champ TextField est déjà actif ; le cercle est décoratif — frustration improbable
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Conversation
+  element: icône plus.circle.fill (menu pièces jointes, composeur)
+  promesse: forte
+  reco: B
+  action: 'ouvre une ActionSheet/sheet avec options : photo, appareil photo, localisation, GIF — réutiliser FeuillePartage ou sheet générique'
+  cout: moyen
+  litige: true
+- app: Messenger
+  ecran: Conversation
+  element: icône camera.fill (composeur)
+  promesse: forte
+  reco: B
+  action: ouvre MsgrAppelVue en mode vidéo ou un écran appareil photo fictif — réutiliser appelVisible
+  cout: faible
+  litige: true
+- app: Messenger
+  ecran: Conversation
+  element: icône photo (galerie, composeur)
+  promesse: forte
+  reco: B
+  action: ouvre le sélecteur de photos existant (MsgrMediasVue ou galerie système fictive)
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Conversation
+  element: icône mic.fill (message vocal, composeur)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet d'enregistrement vocal fictif (barre d'onde animée + bouton Stop/Envoyer)
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Conversation
+  element: icône hand.thumbsup.fill (pouce bleu, affiché si saisie vide)
+  promesse: forte
+  reco: B
+  action: envoie un message «👍» — ajouter onTapGesture { envoyes.append("👍") } analogue au paperplane
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Conversation
+  element: bulle appel manqué — lien «Rappeler» (affiché en bleu dans MsgrBulle)
+  promesse: forte
+  reco: B
+  action: déclenche MsgrAppelVue — ajouter onTapGesture { appelVisible = true } sur le Text «Rappeler»
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Conversation
+  element: avatar miniature «vu» sous la dernière bulle (MsgrAvatar taille 14)
+  promesse: faible
+  reco: C
+  action: décoration de confirmation de lecture — personne n'attend d'interaction
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Conversation
+  element: réaction emoji sur bulle (badge petit emoji)
+  promesse: moyenne
+  reco: C
+  action: dans la vraie app, tap ouvre le détail des réactions — peu justifié pour un jeu, laisser décoratif
+  cout: moyen
+  litige: true
+- app: Messenger
+  ecran: Fiche discussion
+  element: bouton rond «Ajouter» (person.badge.plus, MsgrActionRonde)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet «Ajouter des personnes» avec liste de suggestions — réutiliser MsgrNouvelleDiscussionVue
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Fiche discussion
+  element: bouton rond «Pseudos» (textformat, MsgrActionRonde)
+  promesse: moyenne
+  reco: C
+  action: fonctionnalité de surnom — trop spécifique, frustration improbable dans le contexte du jeu
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Fiche discussion
+  element: bouton rond «Rechercher» (magnifyingglass, MsgrActionRonde)
+  promesse: forte
+  reco: B
+  action: ouvre un champ de recherche dans les messages de la conversation — sheet simple avec TextField filtrant MsgrMessage
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Fiche discussion
+  element: bouton rond «Personnaliser» (paintpalette, MsgrActionRonde)
+  promesse: moyenne
+  reco: C
+  action: thèmes de couleur — fonctionnalité cosmétique non essentielle au jeu
+  cout: eleve
+  litige: false
+- app: Messenger
+  ecran: Fiche discussion
+  element: texte «Modifier le nom ou l'image» (lien bleu sous le nom)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de renommage (TextField + bouton Enregistrer) — interaction légère crédible
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Fiche discussion
+  element: ligne «Sons et notifications» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de réglages de sons (liste de bascules) — réutiliser le pattern MsgrSection/Toggle
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Fiche discussion
+  element: ligne «Créer une nouvelle discussion de groupe» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre MsgrNouvelleDiscussionVue ou une variante groupe — réutilisation directe
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Fiche discussion
+  element: ligne «Restreindre» (chevron, action vide {})
+  promesse: moyenne
+  reco: C
+  action: fonctionnalité de modération — promesse moyenne, contexte jeu ne l'exige pas
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Fiche discussion
+  element: ligne «Signaler» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une alerte de confirmation native «Signaler ce contenu ?» avec boutons Signaler / Annuler
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Fiche discussion
+  element: ligne «Quitter la discussion» (groupe uniquement, chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une alerte de confirmation «Quitter le groupe ?» avec bouton destructif — dismiss + retour liste
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Membres
+  element: icône ellipsis par ligne de membre
+  promesse: forte
+  reco: B
+  action: 'ouvre une ActionSheet avec options : Voir le profil, Retirer du groupe, Rendre admin — sheet générique crédible'
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Contenus multimédias
+  element: vignettes photos de la grille (pas de handler tap)
+  promesse: forte
+  reco: B
+  action: ouvre un visualiseur plein écran de la photo — réutiliser le visualiseur story d'Instagram (InstaStoryVue / plein écran image)
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Stories (onglet)
+  element: carte story Sarah (image + bouton + cercle bleu «Ajouter»)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet d'ajout story fictif (galerie photo ou caméra simulée) — la vraie app ouvre la caméra
+  cout: moyen
+  litige: true
+- app: Messenger
+  ecran: Notifications
+  element: icône questionmark.circle (info «Vous connaissez peut-être»)
+  promesse: faible
+  reco: C
+  action: info-bulle cosmétique — personne n'attend d'interaction sur un point d'interrogation d'aide
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Notifications
+  element: icône ellipsis en-tête section suggestions
+  promesse: moyenne
+  reco: C
+  action: dans la vraie app, ouvre un menu de préférences pour la section — non critique pour le jeu
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Notifications
+  element: bouton «Ajouter comme ami(e)» par suggestion
+  promesse: forte
+  reco: B
+  action: bascule l'état en «Ajouté·e» (badge vert checkmark) sans navigation — onTapGesture + @State local
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Menu
+  element: icône square.grid.2x2 en-tête Menu
+  promesse: moyenne
+  reco: C
+  action: icône de personnalisation du menu dans la vraie app — fonctionnalité non justifiée dans le jeu
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Menu
+  element: avatar + «Changer de profil» (bloc profil, pas de handler)
+  promesse: forte
+  reco: B
+  action: ouvre MsgrParametresVue (déjà construit) ou une sheet de sélection de compte — réutilisation directe
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Menu
+  element: ligne «Communautés» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une sheet «Communautés» avec liste vide et message d'état neutre — crédible et rapide
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Menu
+  element: ligne «Facebook Reels» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une sheet ou une alerte «Ouvrir dans Facebook ?» — renvoie vers une app externe fictive
+  cout: faible
+  litige: true
+- app: Messenger
+  ecran: Menu
+  element: ligne «Événements Facebook» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: même traitement que Facebook Reels — alerte «Ouvrir dans Facebook ?»
+  cout: faible
+  litige: true
+- app: Messenger
+  ecran: Menu
+  element: ligne «Facebook Rencontres» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: même traitement — alerte «Ouvrir dans Facebook ?»
+  cout: faible
+  litige: true
+- app: Messenger
+  ecran: Paramètres
+  element: avatar Sarah (photo cliquable dans vraie app, aucun handler ici)
+  promesse: moyenne
+  reco: C
+  action: dans la vraie app ouvre l'éditeur de profil — non critique, paramètres déjà limités
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Paramètres
+  element: ligne «Espace Comptes» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de gestion de compte minimaliste (avatar + nom + bouton Se déconnecter)
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Paramètres
+  element: ligne Mode sombre (chevron «Système», pas de handler)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de sélection Clair / Sombre / Système avec bascule — actionSheet ou sheet rapide
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Paramètres
+  element: ligne «Accessibilité» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une sheet crédible avec bascules fictives (taille de texte, contrastes)
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Paramètres
+  element: ligne «Confidentialité et sécurité» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de confidentialité avec bascules fictives — essentiel pour la crédibilité
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Paramètres
+  element: ligne «Notifications et sons» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une sheet avec bascules de notifications — réutiliser le pattern Section/Toggle
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Paramètres
+  element: ligne «Photos et contenu multimédia» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une sheet avec options de qualité photo / autorisations simulées
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Paramètres
+  element: ligne «Signaler un problème» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une alerte «Merci pour votre retour» ou sheet de formulaire fictif
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Paramètres
+  element: ligne «Aide» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une sheet d'aide fictive avec FAQ de base
+  cout: moyen
+  litige: false
+- app: Messenger
+  ecran: Paramètres
+  element: ligne «Mentions légales et politiques» (chevron, action vide {})
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de texte de politiques fictif (texte statique) — rapide
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Archive
+  element: ligne «Idée cadeau papa» (affichée mais pas de handler de tap)
+  promesse: forte
+  reco: B
+  action: ouvre MsgrConversationVue avec la conversation archivée — réutilisation directe du composant
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Appel vocal
+  element: bouton RondVerre micro (mic.slash.fill)
+  promesse: forte
+  reco: B
+  action: bascule l'état sourdine (icône mic.fill ↔ mic.slash.fill) — @State + onTapGesture
+  cout: faible
+  litige: false
+- app: Messenger
+  ecran: Appel vocal
+  element: bouton RondVerre haut-parleur (speaker.wave.2.fill)
+  promesse: forte
+  reco: B
+  action: bascule l'état haut-parleur (icône varie) — @State + onTapGesture
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Feed
+  element: «Instagram» + chevron.down (sélecteur de compte/feed en-tête)
+  promesse: moyenne
+  reco: C
+  action: dans la vraie app bascule entre comptes — non justifié dans le jeu à un seul compte
+  cout: moyen
+  litige: false
+- app: Instagram
+  ecran: Feed
+  element: avatar «Votre story» + cercle bleu plus (ajout story)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet d'ajout story fictive (choix photo ou texte) — cohérent avec le bouton + de Messenger
+  cout: moyen
+  litige: true
+- app: Instagram
+  ecran: Feed
+  element: icône bubble.right (commentaires) avec compteur sur chaque post
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de commentaires avec 2-3 commentaires fictifs et un champ de saisie
+  cout: moyen
+  litige: false
+- app: Instagram
+  ecran: Feed
+  element: icône paperplane (partage) sur chaque post
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage ou une sheet de partage native — réutiliser le composant existant
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Feed
+  element: icône bookmark (enregistrer) sur chaque post
+  promesse: forte
+  reco: B
+  action: bascule l'état enregistré (bookmark ↔ bookmark.fill) — @State + onTapGesture, animation légère
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Feed
+  element: icône ellipsis en en-tête de chaque post
+  promesse: forte
+  reco: B
+  action: 'ouvre une ActionSheet : Ne plus suivre / Signaler / Masquer — alerte confirmation native'
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Feed
+  element: avatar du compte + pseudo en en-tête de post (tap ouvre profil)
+  promesse: forte
+  reco: B
+  action: ouvre InstaProfilTiersVue pour le compte concerné — réutilisation directe
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Feed
+  element: texte «Aimé par ines.djl et d'autres personnes» (lien implicite)
+  promesse: moyenne
+  reco: C
+  action: dans la vraie app ouvre la liste des likes — non justifié pour le jeu
+  cout: moyen
+  litige: false
+- app: Instagram
+  ecran: Story (InstaStoryVue)
+  element: icône ellipsis en-tête story
+  promesse: forte
+  reco: B
+  action: 'ouvre une ActionSheet : Signaler / Moins de stories comme celle-ci / Masquer'
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Story (InstaStoryVue)
+  element: icône heart (like story)
+  promesse: forte
+  reco: B
+  action: bascule heart ↔ heart.fill avec animation — @State + onTapGesture, analogue au Reels
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Story (InstaStoryVue)
+  element: icône paperplane (partager story)
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage ou sheet partage — réutilisation
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Recherche
+  element: lien texte «Voir tout» (section Récent)
+  promesse: forte
+  reco: B
+  action: affiche la liste complète des recherches récentes — sheet ou navigation vers un écran liste
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Recherche
+  element: icône xmark par résultat de recherche (supprimer du récent)
+  promesse: forte
+  reco: B
+  action: supprime l'entrée de la liste locale (@State) — onTapGesture + remove from array
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Recherche
+  element: vignettes de la mosaïque (pas de handler)
+  promesse: forte
+  reco: B
+  action: ouvre InstaProfilTiersVue ou un visualiseur photo plein écran — réutilisation directe
+  cout: faible
+  litige: true
+- app: Instagram
+  ecran: Reels
+  element: icône camera (en-tête Reels, aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre un écran caméra fictif ou une alerte «Créer un reel» — cohérent avec les autres apps
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Reels
+  element: bouton «Suivre» sur le profil en cours
+  promesse: forte
+  reco: B
+  action: bascule «Suivre» ↔ «Suivi(e)» — @State + onTapGesture, même pattern que InstaProfilTiersVue
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Reels
+  element: icône bubble.right (commentaires Reels)
+  promesse: forte
+  reco: B
+  action: ouvre sheet commentaires — réutiliser le même composant que pour les posts du feed
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Reels
+  element: icône paperplane (partager Reels)
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage — réutilisation
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Reels
+  element: icône ellipsis (menu options Reels)
+  promesse: forte
+  reco: B
+  action: 'ouvre une ActionSheet : Signaler / Ne pas voir ce contenu / Télécharger'
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Reels
+  element: avatar du compte en bas du Reel (tap profil)
+  promesse: forte
+  reco: B
+  action: ouvre InstaProfilTiersVue pour lyon.maville — réutilisation directe
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Reels
+  element: icône music.note + texte audio (lien audio d'origine)
+  promesse: moyenne
+  reco: C
+  action: dans la vraie app ouvre la page de l'audio — non justifié pour le jeu
+  cout: moyen
+  litige: false
+- app: Instagram
+  ecran: Profil Sarah
+  element: pseudo + chevron.down en-tête profil (sélecteur compte)
+  promesse: moyenne
+  reco: C
+  action: même cas que le Feed — non justifié mono-compte
+  cout: moyen
+  litige: false
+- app: Instagram
+  ecran: Profil Sarah
+  element: icône plus.app en-tête profil (créer publication)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de création de post fictive (sélecteur photo + légende) — cohérent avec «Votre story»
+  cout: moyen
+  litige: true
+- app: Instagram
+  ecran: Profil Sarah
+  element: icône line.3.horizontal en-tête profil (menu hamburger)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de menu latéral (Archivé / Sauvegardé / Paramètres) — sheet simple
+  cout: moyen
+  litige: false
+- app: Instagram
+  ecran: Profil Sarah
+  element: compteurs «12 publications», «143 followers», «187 suivi(e)s» (tap ouvre liste)
+  promesse: forte
+  reco: B
+  action: tap sur followers/suivi(e)s ouvre une sheet liste de comptes — sheet simple ForEach DonneesInsta.comptes
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Profil Sarah
+  element: bouton «Modifier» (profil)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet d'édition de profil (nom, bio, site) — champs TextField non persistants
+  cout: moyen
+  litige: false
+- app: Instagram
+  ecran: Profil Sarah
+  element: bouton «Partager le profil»
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage avec le lien de profil fictif — réutilisation directe
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Profil Sarah
+  element: bouton person.badge.plus (découvrir des contacts)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de suggestions de comptes à suivre — liste DonneesInsta.comptes avec bouton Suivre
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Profil Sarah
+  element: vignettes de la grille photo (onglet 0, pas de handler)
+  promesse: forte
+  reco: B
+  action: ouvre un visualiseur plein écran de la photo — InstaStoryVue peut être réutilisée ou un composant dédié
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Profil tiers
+  element: icône ellipsis en-tête profil tiers
+  promesse: forte
+  reco: B
+  action: 'ouvre une ActionSheet : Signaler / Bloquer / Copier le lien'
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: Profil tiers
+  element: vignettes de la grille (profil non privé, pas de handler)
+  promesse: forte
+  reco: B
+  action: ouvre un visualiseur plein écran — réutiliser InstaStoryVue ou un composant image
+  cout: faible
+  litige: false
+- app: Instagram
+  ecran: DM (InstaDMVue)
+  element: icône camera par ligne de conversation DM
+  promesse: forte
+  reco: B
+  action: ouvre un écran appareil photo fictif ou une sheet — cohérent avec la vraie app
+  cout: moyen
+  litige: true
+- app: Instagram
+  ecran: DM (InstaDMVue)
+  element: lignes de conversation DM (tap devrait ouvrir la conv)
+  promesse: forte
+  reco: B
+  action: ouvre une conversation DM — réutiliser un composant de conversation (Messenger ou dédié)
+  cout: moyen
+  litige: true
+- app: Instagram
+  ecran: Activité (InstaActiviteVue)
+  element: lignes d'activité avec avatar (tap devrait ouvrir le profil)
+  promesse: forte
+  reco: B
+  action: tap sur une ligne ouvre InstaProfilTiersVue pour le compte concerné — réutilisation directe
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Chat (liste)
+  element: avatar Sarah (cercle emoji 👩🏻 en-tête — profil Sarah)
+  promesse: forte
+  reco: B
+  action: ouvre le profil Sarah (mon profil) — sheet avec Bitmoji, score Snap, amis
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Chat (liste)
+  element: bouton loupe en-tête (cercle F0F0F0, magnifyingglass)
+  promesse: forte
+  reco: B
+  action: ouvre un champ de recherche filtrant la liste des amis — TextField + filtre @State sur DonneesSnap.amis
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Chat (liste)
+  element: bouton cloche en-tête (notifications)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet Notifications vide crédible (liste vide + message d'état)
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Chat (liste)
+  element: bouton C+ jaune avec badge 47 (ajouter des amis)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet «Ajouter des amis» avec liste de suggestions — pattern analogue à Messenger Notifications
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Chat (liste)
+  element: bouton ellipsis en-tête (options Chat)
+  promesse: forte
+  reco: B
+  action: 'ouvre une ActionSheet : Nouvelle conversation / Gérer les amis / Paramètres'
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Chat (liste)
+  element: chip «🤖 My AI» (filtre de la liste)
+  promesse: forte
+  reco: B
+  action: filtre la liste pour n'afficher que Team Snapchat (My AI) — onTapGesture + @State filtre
+  cout: faible
+  litige: true
+- app: Snapchat
+  ecran: Chat (liste)
+  element: chip «Groupes» (filtre de la liste)
+  promesse: forte
+  reco: B
+  action: filtre la liste pour n'afficher que les conversations de groupe (ex. Soirée 30 juin) — même mécanisme
+  cout: faible
+  litige: true
+- app: Snapchat
+  ecran: Chat (liste)
+  element: chip «Près de moi» (filtre de la liste)
+  promesse: forte
+  reco: B
+  action: filtre pour n'afficher que Chloé (statut «À proximité · maintenant») — même mécanisme
+  cout: faible
+  litige: true
+- app: Snapchat
+  ecran: Chat (liste)
+  element: chip «Meilleurs·es amis·es» (filtre de la liste)
+  promesse: forte
+  reco: B
+  action: filtre les amis avec relation meilleur·e ami·e (Chloé, Inès) — même mécanisme
+  cout: faible
+  litige: true
+- app: Snapchat
+  ecran: Chat (liste)
+  element: icône caméra par ligne d'ami (cercle F0F0F0 à droite)
+  promesse: forte
+  reco: B
+  action: ouvre SnapCameraVue (onglet Caméra) prêt à envoyer un Snap à cet ami — navigation vers onglet 2
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Conversation Snap
+  element: icônes phone.fill + video.fill en-tête conversation (inertes)
+  promesse: forte
+  reco: B
+  action: ouvre un écran d'appel fictif — réutiliser MsgrAppelVue ou un équivalent Snap
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Conversation Snap
+  element: bouton caméra (cercle F0F0F0, composeur) — aucun handler
+  promesse: forte
+  reco: B
+  action: ouvre SnapCameraVue — navigation vers onglet Caméra ou sheet caméra
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Conversation Snap
+  element: bouton micro (cercle F0F0F0, composeur) — aucun handler
+  promesse: forte
+  reco: B
+  action: ouvre une sheet d'enregistrement vocal fictif — analogue à Messenger mic
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Conversation Snap
+  element: bouton emoji 🙂 (composeur) — aucun handler
+  promesse: forte
+  reco: B
+  action: ouvre un sélecteur d'emoji ou une rangée d'emojis rapides — sheet simple
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Carte (Snap Map)
+  element: avatar Sarah en-tête carte (mon profil)
+  promesse: forte
+  reco: B
+  action: ouvre les paramètres de confidentialité de la Snap Map (qui peut me voir) — sheet simple
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Carte (Snap Map)
+  element: pilule «Lyon» (localisation en en-tête)
+  promesse: forte
+  reco: B
+  action: ouvre un champ de recherche de lieu sur la carte — TextField + centrage de la région
+  cout: moyen
+  litige: true
+- app: Snapchat
+  ecran: Carte (Snap Map)
+  element: bouton engrenage en-tête carte (paramètres Map)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de paramètres Snap Map (mode fantôme, qui voit ma position)
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Carte (Snap Map)
+  element: chips Souvenirs / Tendance / Footsteps / Visité
+  promesse: forte
+  reco: B
+  action: bascule le filtre de la carte (affiche des épingles différentes) — @State filtre + animation légère
+  cout: moyen
+  litige: true
+- app: Snapchat
+  ecran: Carte (Snap Map)
+  element: pilule «2,4 % exploré(s)» (Footsteps)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet Footsteps avec carte de progression fictive
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Carte (Snap Map)
+  element: avatars amis dans la rangée en bas de carte (aucun handler)
+  promesse: forte
+  reco: B
+  action: tap ouvre SnapConversationVue pour l'ami concerné — réutilisation directe
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Caméra (SnapCameraVue)
+  element: avatar Sarah en-tête caméra (mon profil)
+  promesse: forte
+  reco: B
+  action: ouvre le profil Sarah — même action que Chat en-tête
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Caméra (SnapCameraVue)
+  element: bouton loupe en-tête caméra (lentilles/filtres)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de sélection de lentilles — grille d'emojis/icônes sans effet réel
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Caméra (SnapCameraVue)
+  element: icône arrow.triangle.2.circlepath.camera (retourner caméra)
+  promesse: forte
+  reco: B
+  action: bascule façade/arrière — @State + animation de rotation (effet visuel sans caméra réelle)
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Caméra (SnapCameraVue)
+  element: icône bolt.slash.fill (flash)
+  promesse: forte
+  reco: B
+  action: bascule flash on/off — @State + changement d'icône
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Caméra (SnapCameraVue)
+  element: icône moon.fill (mode nuit)
+  promesse: forte
+  reco: B
+  action: bascule mode nuit — @State + changement d'icône
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Caméra (SnapCameraVue)
+  element: icône music.note (son/musique)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de sélection musicale fictive
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Caméra (SnapCameraVue)
+  element: bouton galerie photo.on.rectangle (en bas à gauche)
+  promesse: forte
+  reco: B
+  action: ouvre un sélecteur de photos fictif — sheet grille photos Pellicule
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Caméra (SnapCameraVue)
+  element: cercle déclencheur (stroke blanc, aucun handler)
+  promesse: forte
+  reco: B
+  action: 'simule une capture : flash bref + transition vers une photo fictive ou sheet d''envoi'
+  cout: moyen
+  litige: true
+- app: Snapchat
+  ecran: Caméra (SnapCameraVue)
+  element: bouton face.smiling (lentilles visage, en bas à droite)
+  promesse: forte
+  reco: B
+  action: ouvre une rangée de lentilles sélectionnables — même sheet que bouton loupe
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Stories (SnapStoriesVue)
+  element: avatar Sarah en-tête Stories (mon profil)
+  promesse: forte
+  reco: B
+  action: ouvre le profil Sarah — même action que Chat
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Stories (SnapStoriesVue)
+  element: bouton loupe en-tête Stories
+  promesse: forte
+  reco: B
+  action: ouvre un champ de recherche de stories — TextField filtrant les stories/créateurs
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Stories (SnapStoriesVue)
+  element: bouton cloche en-tête Stories
+  promesse: forte
+  reco: B
+  action: ouvre une sheet Notifications stories vide — même composant que Chat
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Stories (SnapStoriesVue)
+  element: bouton ellipsis en-tête Stories
+  promesse: forte
+  reco: B
+  action: 'ouvre une ActionSheet : Gérer les abonnements / Paramètres stories'
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Stories (SnapStoriesVue)
+  element: stories Amis·es — rangée horizontale (5 avatars, aucun onTapGesture)
+  promesse: forte
+  reco: A
+  action: ouvre un visualiseur de story plein écran (analogue à InstaStoryVue) avec barre de progression, fermeture par tap/swipe
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Stories (SnapStoriesVue)
+  element: cartes Découvrir — grille 2×2 (4 cartes, aucun handler)
+  promesse: forte
+  reco: A
+  action: tap ouvre un visualiseur de contenu Découvrir plein écran (image + titre + bouton Suivre le créateur)
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Spotlight (SnapSpotlightVue)
+  element: avatar Sarah en-tête Spotlight
+  promesse: forte
+  reco: B
+  action: ouvre le profil Sarah — même action cohérente
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Spotlight (SnapSpotlightVue)
+  element: bouton loupe en-tête Spotlight
+  promesse: forte
+  reco: B
+  action: ouvre un champ de recherche Spotlight
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Spotlight (SnapSpotlightVue)
+  element: bouton person.badge.plus en-tête Spotlight (suivre le créateur)
+  promesse: forte
+  reco: B
+  action: bascule «Suivre» ↔ «Suivi(e)» pour lyonnaise.dycoeur — @State + onTapGesture
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Spotlight (SnapSpotlightVue)
+  element: bouton square.and.arrow.up en-tête Spotlight (partager)
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage — réutilisation directe
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Spotlight (SnapSpotlightVue)
+  element: icône bubble.left (commentaires Spotlight)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de commentaires — même composant que Reels/posts Instagram
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Spotlight (SnapSpotlightVue)
+  element: icône arrow.2.squarepath (remix Spotlight)
+  promesse: forte
+  reco: B
+  action: ouvre SnapCameraVue — navigation vers la caméra pour créer une réponse
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Spotlight (SnapSpotlightVue)
+  element: icône arrowshape.turn.up.right.fill (partager Spotlight)
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage ou sheet de transfert à un ami — réutilisation
+  cout: faible
+  litige: false
+- app: Snapchat
+  ecran: Spotlight (SnapSpotlightVue)
+  element: pseudo «lyonnaise.dycoeur» (lien profil)
+  promesse: forte
+  reco: B
+  action: ouvre InstaProfilTiersVue ou un profil Snapchat fictif pour ce créateur
+  cout: moyen
+  litige: false
+- app: Snapchat
+  ecran: Spotlight (SnapSpotlightVue)
+  element: icône music.note + «Son original · lyonnaise.dycoeur» (lien audio)
+  promesse: moyenne
+  reco: C
+  action: dans la vraie app ouvre la page de l'audio — non justifié dans le jeu
+  cout: moyen
+  litige: false
+- app: MaBanque
+  ecran: Comptes
+  element: carte Livret A (bloc entier — montant + nom de compte)
+  promesse: forte
+  reco: B
+  action: ouvre une fiche Livret A avec solde, historique filtré et bouton Virement depuis Livret A (réutilise le même patron que ComptesVue)
+  cout: moyen
+  litige: true
+- app: MaBanque
+  ecran: Comptes
+  element: lignes d'opérations de l'historique (tapable, aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre une fiche détail opération (sheet) avec libellé complet, date, montant, statut refusé si applicable
+  cout: faible
+  litige: false
+- app: MaBanque
+  ecran: Comptes — NavigationBar
+  element: titre "Mes comptes" / navigationBar — aucun bouton filtre ni export
+  promesse: faible
+  reco: C
+  action: garder inerte, l'en-tête de navigation n'est pas interactif sur iOS banque
+  cout: faible
+  litige: false
+- app: MaBanque
+  ecran: RIBVue
+  element: bouton "Partager" (texte tapable, aucun handler — pas de FeuillePartage appelée)
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage(element:"FR76 3000 2005 5000 0015 7845 Z02") identique au bouton Copier l'IBAN
+  cout: faible
+  litige: false
+- app: MaBanque
+  ecran: Cartes
+  element: ligne "Paiement sans contact" — valeur "Activé" avec chevron, handler vide {}
+  promesse: forte
+  reco: B
+  action: ouvre une alert ou sheet indiquant que l'option est activée, avec bouton pour appeler l'agence si désactivation souhaitée
+  cout: faible
+  litige: true
+- app: MaBanque
+  ecran: Cartes
+  element: ligne "Paiements en ligne" — valeur "Activés" avec chevron, handler vide {}
+  promesse: forte
+  reco: B
+  action: même logique que "Paiement sans contact" — alert de confirmation d'état avec numéro agence
+  cout: faible
+  litige: true
+- app: MaBanque
+  ecran: Messagerie
+  element: messages de la boîte bancaire (MessageBanque) — s'ouvrent/ferment en toggle mais sans action secondaire (répondre, archiver, signaler)
+  promesse: moyenne
+  reco: C
+  action: garder inerte, le toggle ouvert/fermé est suffisant pour un jeu ; les actions secondaires complexifient inutilement
+  cout: moyen
+  litige: false
+- app: MaBanque
+  ecran: Virements
+  element: texte "Agence LYON BELLECOUR · à 400 m" (affiché après refus — non tapable)
+  promesse: moyenne
+  reco: B
+  action: onTapGesture { Routeur.partage.allerPlans() } — ouvre Plans sur LCL Bellecour
+  cout: faible
+  litige: false
+- app: Calendrier
+  ecran: Vue principale — capsule basse
+  element: icône "exclamationmark.circle" dans la capsule basse (aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet listant les conflits d'horaires ou rappels du jour (sheet générique vide crédible)
+  cout: faible
+  litige: true
+- app: Calendrier
+  ecran: Vue principale — capsule basse
+  element: icône "tray" dans la capsule basse (aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet "Invitations" vide ou avec un item fictif (réalisme iOS Calendrier)
+  cout: faible
+  litige: true
+- app: Calendrier
+  ecran: Vue principale — toolbar droite
+  element: icône "square.stack" dans la capsule toolbar (aucun handler, juste foregroundStyle)
+  promesse: moyenne
+  reco: C
+  action: garder inerte — l'icône de vue multi-calendriers est décorative sans données multi-comptes dans le jeu
+  cout: moyen
+  litige: false
+- app: Calendrier
+  ecran: Vue Année — AnneeVue
+  element: tap sur un mini-mois ferme la vue année (vueAnnee = false) mais ne navigue pas vers le mois tapé
+  promesse: forte
+  reco: B
+  action: stocker le mois sélectionné et scroller la vue mois sur ce mois après fermeture de la vue année
+  cout: moyen
+  litige: false
+- app: Calendrier
+  ecran: Vue Jour — JourVue
+  element: blocs d'événements dans la timeline (aucun tap — affichage seul, pas de fiche)
+  promesse: forte
+  reco: B
+  action: onTapGesture ouvre une sheet détail événement (titre, heure, lieu, bouton Itinéraire via Routeur si lieu présent)
+  cout: moyen
+  litige: false
+- app: Calendrier
+  ecran: Vue Jour — JourVue toolbar
+  element: bouton "OK" ferme la fiche mais il n'y a pas de bouton "+" pour ajouter un événement au jour affiché
+  promesse: faible
+  reco: C
+  action: garder inerte, le "+" global de la vue principale suffit
+  cout: faible
+  litige: false
+- app: Calendrier
+  ecran: Recherche — RechercheCalendrierVue
+  element: lignes de résultats de recherche (affichage seul, aucun onTapGesture)
+  promesse: forte
+  reco: B
+  action: tap ouvre JourVue sur la date de l'événement (réutilise le composant existant)
+  cout: faible
+  litige: false
+- app: Calendrier
+  ecran: Création — NouvelEvenementVue
+  element: champ "Lieu ou visio" — TextField fonctionnel mais sans suggestion ni lien Plans
+  promesse: faible
+  reco: C
+  action: garder inerte, saisie libre suffisante pour le jeu
+  cout: moyen
+  litige: false
+- app: Localiser
+  ecran: Carte principale — boutons flottants droite
+  element: icône "map.fill" (changement de style de carte — aucun handler)
+  promesse: forte
+  reco: B
+  action: bascule entre .standard et .satellite via @State mapStyle (composant Map)
+  cout: faible
+  litige: false
+- app: Localiser
+  ecran: Carte principale — boutons flottants droite
+  element: icône "location" (recentrer sur ma position — aucun handler)
+  promesse: forte
+  reco: B
+  action: onTapGesture { position = .region(...centré sur 45.7660, 4.8350) } — recentre la carte
+  cout: faible
+  litige: false
+- app: Localiser
+  ecran: Personnes — PersonnesPanneau
+  element: icône "plus" en en-tête du panneau (aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet "Partager ma position" avec champ nom/téléphone (sheet générique crédible iOS)
+  cout: moyen
+  litige: false
+- app: Localiser
+  ecran: Appareils — AppareilsPanneau
+  element: icône "plus" en en-tête du panneau (aucun handler)
+  promesse: forte
+  reco: C
+  action: garder inerte — ajouter un appareil nécessite Apple ID hors portée du jeu ; promesse forte mais action injustifiable
+  cout: eleve
+  litige: true
+- app: Localiser
+  ecran: Objets — ObjetsPanneau
+  element: icône "plus" en en-tête du panneau (aucun handler)
+  promesse: forte
+  reco: C
+  action: garder inerte — même raison que "+" Appareils (nécessite AirTag physique)
+  cout: eleve
+  litige: true
+- app: Localiser
+  ecran: Fiche Personne — PersonneDetailVue (personne avec partage actif)
+  element: bouton "Itinéraire" (BoutonLocaliser) — handler appelle Routeur.partage.allerPlans() SANS coordonnées
+  promesse: forte
+  reco: B
+  action: déjà partiellement câblé — vérifier que allerPlans transmet les coordonnées de la personne ; si non, passer lat/lon à la méthode
+  cout: faible
+  litige: false
+- app: Localiser
+  ecran: Fiche Personne — PersonneDetailVue (personne avec partage actif)
+  element: bouton "Notifications" — toggle $notifier sans effet persisté ni feedback visible dans le panneau liste
+  promesse: moyenne
+  reco: C
+  action: garder inerte, le toggle local est suffisant pour le réalisme ; persistance complexe sans gain narratif
+  cout: moyen
+  litige: false
+- app: Localiser
+  ecran: Fiche Appareil — AppareilDetailVue
+  element: ligne "Me prévenir quand il sera localisé" — Toggle $prevenir sans effet hors de la fiche
+  promesse: moyenne
+  reco: C
+  action: garder inerte — même raisonnement que notifications personne
+  cout: moyen
+  litige: false
+- app: Localiser
+  ecran: Panneau Moi — MoiPanneau
+  element: ligne "Partage à partir de — Cet iPhone" (HStack sans handler, pas de chevron dans le code mais visuellement dense)
+  promesse: faible
+  reco: C
+  action: garder inerte, libellé informatif sans action dans iOS Localiser
+  cout: faible
+  litige: false
+- app: Localiser
+  ecran: Panneau Moi — MoiPanneau
+  element: ligne "Étiquette de localisation — Aucune" avec chevron (aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet avec liste d'étiquettes fictives (Domicile, Travail, Autre) — bascule d'état simple
+  cout: faible
+  litige: false
+- app: Mail
+  ecran: Boîtes — MailVue toolbar
+  element: texte "Modifier" en toolbar (Text simple, pas un Button — aucun handler)
+  promesse: forte
+  reco: B
+  action: transformer en Button qui bascule un mode sélection sur les boîtes (réorganiser / supprimer une boîte fictive)
+  cout: moyen
+  litige: true
+- app: Mail
+  ecran: Boîtes — MailVue
+  element: en-tête "iCloud" avec chevron.down (aucun handler — devrait plier/déplier la section iCloud)
+  promesse: forte
+  reco: B
+  action: onTapGesture bascule un @State iCloudDeplie qui masque/affiche le bloc VStack iCloud
+  cout: faible
+  litige: false
+- app: Mail
+  ecran: Liste — ListeMailVue toolbar
+  element: texte "Sélectionner" en toolbar (Text simple — aucun handler)
+  promesse: forte
+  reco: B
+  action: transformer en Button qui active un mode multi-sélection avec barre d'actions basse (Supprimer / Déplacer)
+  cout: moyen
+  litige: true
+- app: Mail
+  ecran: Liste — ListeMailVue toolbar
+  element: icône "ellipsis.circle" en toolbar (aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre un Menu avec options "Filtrer les non lus", "Trier par expéditeur" (états locaux sans effet réel mais crédibles)
+  cout: faible
+  litige: false
+- app: Mail
+  ecran: Liste — ListeMailVue barre basse
+  element: icône "line.3.horizontal.decrease" filtre (aucun handler — Image seule)
+  promesse: forte
+  reco: B
+  action: ouvre un Menu ou sheet avec filtres "Non lus", "VIP", "Avec pièces jointes" (filtre le tableau items localement)
+  cout: moyen
+  litige: false
+- app: Mail
+  ecran: Liste — ListeMailVue barre basse
+  element: icône "mic.fill" dans le champ de recherche (aucun handler)
+  promesse: moyenne
+  reco: C
+  action: garder inerte — la dictée vocale est hors portée du simulateur jeu
+  cout: eleve
+  litige: false
+- app: Mail
+  ecran: Liste — ListeMailVue barre basse
+  element: icône "square.and.pencil" (composition depuis la liste — Image sans handler)
+  promesse: forte
+  reco: B
+  action: onTapGesture { composer = true } — ouvre ComposerMailVue (déjà disponible dans MailVue, à dupliquer ici)
+  cout: faible
+  litige: false
+- app: Mail
+  ecran: Lecture — LectureMailVue
+  element: avatar circulaire de l'expéditeur en haut (Circle + Text initial — aucun handler)
+  promesse: moyenne
+  reco: C
+  action: garder inerte — taper sur l'avatar n'est pas un pattern fort dans iOS Mail
+  cout: moyen
+  litige: false
+- app: Mail
+  ecran: Lecture — LectureMailVue
+  element: '"À : Sarah Levasseur" (Text — pourrait ouvrir les détails d''envoi)'
+  promesse: faible
+  reco: C
+  action: garder inerte, les détails d'envoi intéressent peu dans un jeu
+  cout: faible
+  litige: false
+- app: Mail
+  ecran: Composition — ComposerMailVue
+  element: 'ligne "Cc/Cci, De : sarah.levasseur@icloud.com" (HStack sans handler — devrait ouvrir champs Cc/Cci)'
+  promesse: forte
+  reco: B
+  action: 'onTapGesture bascule un @State afficheCcCci qui révèle deux TextField Cc: et Cci: supplémentaires'
+  cout: faible
+  litige: false
+- app: Mail
+  ecran: Composition — ComposerMailVue
+  element: icône "plus.circle" à droite du champ "À :" (aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet contact list fictive (Chloé, Maman, LCL) qui pré-remplit le destinataire
+  cout: moyen
+  litige: false
+- app: Plans
+  ecran: Carte principale — pastille météo haut gauche
+  element: 'pastille "24° / Air : 42" (VStack décoratif, aucun handler)'
+  promesse: moyenne
+  reco: C
+  action: garder inerte — chip météo informatif, la promesse d'interaction est faible
+  cout: moyen
+  litige: false
+- app: Plans
+  ecran: Carte principale — boutons flottants droite
+  element: icône "car.fill" dans la pile de boutons (aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet de recherche d'itinéraire rapide (destination libre — réutilise ItinerairePlanVue)
+  cout: moyen
+  litige: true
+- app: Plans
+  ecran: Carte principale — boutons flottants droite
+  element: icône "location" dans la pile de boutons (aucun handler)
+  promesse: forte
+  reco: B
+  action: recentre la camera Map sur la position de l'utilisateur (45.7660, 4.8350)
+  cout: faible
+  litige: false
+- app: Plans
+  ecran: Feuille basse — liste Récents
+  element: icône "ellipsis" à droite de chaque lieu récent (aucun handler — Image seule)
+  promesse: forte
+  reco: B
+  action: 'ouvre un menu contextuel : "Obtenir l''itinéraire", "Partager", "Supprimer des récents"'
+  cout: moyen
+  litige: false
+- app: Plans
+  ecran: Feuille basse — section Lieux
+  element: '"Lieux" + chevron.right (aucun handler — HStack non tapable)'
+  promesse: forte
+  reco: B
+  action: ouvre une sheet "Mes lieux" avec Domicile et Kiné listés (NavigationLink vers FicheLieuVue)
+  cout: moyen
+  litige: false
+- app: Plans
+  ecran: Feuille basse — section Récents
+  element: '"Récents" + chevron.right (aucun handler — HStack non tapable)'
+  promesse: forte
+  reco: B
+  action: ouvre une sheet listant tous les recents (même contenu que la liste scrollable mais en plein écran)
+  cout: faible
+  litige: false
+- app: Plans
+  ecran: Feuille basse — bouton Ajouter (LieuRapide "plus")
+  element: bouton "Ajouter" dans la rangée de lieux rapides — action vide {}
+  promesse: moyenne
+  reco: B
+  action: ouvre une sheet "Ajouter un lieu favori" avec champ adresse (TextField + bouton Enregistrer factice)
+  cout: faible
+  litige: false
+- app: Plans
+  ecran: Itinéraire — ItinerairePlanVue
+  element: icône "line.3.horizontal" (poignée de réorganisation) à droite de "Ma position" (aucun handler)
+  promesse: moyenne
+  reco: C
+  action: garder inerte — le glisser-réordonner est complexe à implémenter et peu utile avec deux points fixes
+  cout: eleve
+  litige: false
+- app: Plans
+  ecran: Itinéraire — ItinerairePlanVue
+  element: '"Ajouter un arrêt" (HStack tapable visuellement mais aucun handler)'
+  promesse: forte
+  reco: B
+  action: ouvre un TextField ou une sheet de recherche qui ajoute un waypoint intermédiaire à l'itinéraire
+  cout: moyen
+  litige: true
+- app: Plans
+  ecran: Fiche Lieu — FicheLieuVue
+  element: lignes "Horaires", "Distance", "Note" dans le VStack info (aucun handler — affichage pur)
+  promesse: faible
+  reco: C
+  action: garder inerte — lignes informatives sans affordance forte dans iOS Plans
+  cout: faible
+  litige: false
+- app: Plans
+  ecran: Navigation guidée — NavigationGuideeVue
+  element: bandeau haut "Rejoignez l'itinéraire / Vers…" (aucun handler — décoration)
+  promesse: faible
+  reco: C
+  action: garder inerte — l'instruction de navigation est un libellé dans ce contexte simulé
+  cout: faible
+  litige: false
+- app: Safari
+  ecran: Navigateur principal — barre basse
+  element: icône "textformat.size" (taille de police / lecteur — aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre un Menu ou popover avec options "Plus petit / Normal / Plus grand" (modifie un @State fontSize appliqué au ScrollView)
+  cout: moyen
+  litige: false
+- app: Safari
+  ecran: Navigateur principal — barre basse
+  element: icône "arrow.clockwise" (recharger — aucun handler)
+  promesse: forte
+  reco: B
+  action: onTapGesture déclenche une animation de rechargement (ProgressView 0.5 s puis réaffiche la page active)
+  cout: faible
+  litige: false
+- app: Safari
+  ecran: Navigateur principal — barre basse
+  element: icône "chevron.left" (précédent — aucun handler, pas de stack d'historique)
+  promesse: forte
+  reco: B
+  action: 'maintenir un @State historiquePile: [String] ; chevron.left pop la pile pour revenir à la page précédente'
+  cout: moyen
+  litige: false
+- app: Safari
+  ecran: Navigateur principal — barre basse
+  element: icône "chevron.right" (suivant — aucun handler, opacité 0.35 donc grisée)
+  promesse: faible
+  reco: C
+  action: garder inerte — grisée intentionnellement, pas de page suivante ; promesse faible
+  cout: faible
+  litige: false
+- app: Safari
+  ecran: Navigateur principal — barre basse
+  element: icône "book" (signets/historique) — déclenche historiqueVisible = true (FONCTIONNEL)
+  promesse: forte
+  reco: C
+  action: déjà fonctionnel — exclure de l'audit
+  cout: faible
+  litige: false
+- app: Safari
+  ecran: Onglets — OngletsVue toolbar gauche
+  element: icône "plus" en toolbar (aucun handler — Image seule)
+  promesse: forte
+  reco: B
+  action: ajoute un onglet vide "Nouvelle page" dans DonneesSafari.onglets (ou @State local) et l'ouvre
+  cout: moyen
+  litige: false
+- app: Safari
+  ecran: Onglets — OngletsVue, vignette d'onglet
+  element: icône "xmark" sur chaque vignette d'onglet (aucun handler — Image seule)
+  promesse: forte
+  reco: B
+  action: retire l'onglet de la liste locale (@State ongletsFiltres) avec animation
+  cout: faible
+  litige: false
+- app: Safari
+  ecran: Historique — HistoriqueSafariVue toolbar
+  element: texte "Effacer" (Text seul — aucun handler, pas un Button)
+  promesse: forte
+  reco: B
+  action: transformer en Button qui ouvre un confirmationDialog "Effacer tout l'historique ?" (vide la liste locale)
+  cout: faible
+  litige: false
+- app: Safari
+  ecran: Pages rendues — ResultatsGoogleVue
+  element: liens de résultats Google (ResultatGoogle — VStack sans handler, le titre bleu semble cliquable)
+  promesse: forte
+  reco: B
+  action: onTapGesture { naviguer(e.site) } — ouvre la page correspondante (service-public, france-victimes…)
+  cout: faible
+  litige: false
+- app: Safari
+  ecran: Pages rendues — FonfonVue
+  element: bouton "Réserver une table" (Text stylisé comme bouton — aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre une sheet fictive de réservation (date, heure, nb de couverts — formulaire décoratif crédible)
+  cout: moyen
+  litige: true
+- app: Safari
+  ecran: Pages rendues — SiteGeneriqueVue
+  element: liens "mentions légales · plan du site" en pied de page (Text — aucun handler)
+  promesse: faible
+  reco: C
+  action: garder inerte — pied de page légal, promesse très faible
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Fil
+  element: icône « plus.circle.fill » en-tête (nouvelle publication ?)
+  promesse: forte
+  reco: B
+  action: ouvre le composeur de post (feuille simple avec champ texte + bouton Publier)
+  cout: moyen
+  litige: true
+- app: Facebook
+  ecran: Fil
+  element: icône « magnifyingglass.circle.fill » en-tête (recherche)
+  promesse: forte
+  reco: B
+  action: ouvre un champ de recherche superposé (même pattern que X/Explore)
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Fil
+  element: icône « message.circle.fill » avec badge 8 (Messenger)
+  promesse: forte
+  reco: B
+  action: ouvre MessengerVue() via Routeur inter-apps (déjà construit)
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Fil
+  element: avatar Sarah dans la zone compositeur (« Quoi de neuf ? »)
+  promesse: moyenne
+  reco: C
+  action: pourrait ouvrir le composeur — mais le champ texte adjacent suffit
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Fil
+  element: icône « photo.on.rectangle » dans la zone compositeur (ajouter photo)
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage ou un sélecteur photo factice (composant existant)
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Fil — Stories
+  element: carte « Créer une story » (bouton +)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille « Créer une story » factice (champ texte + fermeture)
+  cout: moyen
+  litige: true
+- app: Facebook
+  ecran: Fil — Stories
+  element: vignettes stories des amies (Chloé, Inès, Léa) — aucun handler
+  promesse: forte
+  reco: B
+  action: ouvre le visualiseur story d'Instagram (InstaStoryVue) réutilisé ou équivalent maison
+  cout: moyen
+  litige: true
+- app: Facebook
+  ecran: Fil — Post
+  element: ellipsis post (menu contextuel)
+  promesse: forte
+  reco: B
+  action: confirmationDialog avec options « Masquer », « Signaler », « Copier le lien »
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Fil — Post
+  element: icône « xmark » fermeture post
+  promesse: forte
+  reco: B
+  action: masque le post de la liste (état local)
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Fil — Post
+  element: bouton « Partager » sous chaque post
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage (composant existant)
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Fil — Post
+  element: compteur réactions (« 👍❤️ 597 » etc.) — zone texte cliquable en réalité
+  promesse: moyenne
+  reco: C
+  action: pourrait afficher la liste des réacteurs — promesse réelle mais faible en contexte jeu
+  cout: eleve
+  litige: false
+- app: Facebook
+  ecran: Fil — Post
+  element: compteur commentaires / partages (ligne stats)
+  promesse: moyenne
+  reco: C
+  action: ouvrirait la même sheet commentaires — mais tap sur « Commenter » suffit
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Reels
+  element: icône caméra en-tête (créer un Reel)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille « Créer un Reel » factice
+  cout: moyen
+  litige: true
+- app: Facebook
+  ecran: Reels
+  element: bulle commentaires Reel avec compteur « 66 »
+  promesse: forte
+  reco: B
+  action: ouvre FbCommentairesVue (déjà construit)
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Reels
+  element: icône partage Reel
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage (composant existant)
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Reels
+  element: ellipsis Reel (menu options)
+  promesse: forte
+  reco: B
+  action: confirmationDialog avec options « Signaler », « Ne pas voir »
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Reels
+  element: bouton « Suivre » l'auteur du Reel
+  promesse: forte
+  reco: B
+  action: bascule d'état (Suivre / Suivi) avec Haptique.leger()
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Ami(e)s
+  element: icône loupe en-tête
+  promesse: forte
+  reco: B
+  action: affiche un champ de recherche local filtrant les demandes
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Ami(e)s
+  element: chips « Suggestions » et « Vos ami(e)s » (non fonctionnelles)
+  promesse: moyenne
+  reco: C
+  action: pourraient basculer l'affichage — contenu inexistant, promesse moyenne
+  cout: moyen
+  litige: false
+- app: Facebook
+  ecran: Ami(e)s
+  element: avatar/nom de chaque demandeur (ligne tapable implicite)
+  promesse: moyenne
+  reco: C
+  action: ouvrirait un profil tiers — hors périmètre v1
+  cout: eleve
+  litige: false
+- app: Facebook
+  ecran: Groupes
+  element: icône « plus » en-tête (créer un groupe)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille « Créer un groupe » factice (champ nom + fermeture)
+  cout: moyen
+  litige: true
+- app: Facebook
+  ecran: Groupes
+  element: icône loupe en-tête
+  promesse: forte
+  reco: B
+  action: affiche un champ de recherche local filtrant les groupes
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Groupes
+  element: vignette groupe (corps de la carte, hors bouton Rejoindre)
+  promesse: moyenne
+  reco: C
+  action: ouvrirait la page du groupe — hors périmètre
+  cout: eleve
+  litige: false
+- app: Facebook
+  ecran: Notifications
+  element: ellipsis sur chaque notification
+  promesse: forte
+  reco: B
+  action: confirmationDialog « Désactiver les notifications pour… », « Masquer »
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Notifications
+  element: ligne de notification tapable (corps — aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre le post ou la fiche d'ami concerné (naviguer vers FbFilVue / FbAmisVue)
+  cout: moyen
+  litige: true
+- app: Facebook
+  ecran: Menu
+  element: icône engrenage en-tête (réglages)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille Réglages Facebook factice (liste vide ou items décoratifs)
+  cout: moyen
+  litige: true
+- app: Facebook
+  ecran: Menu
+  element: icône loupe en-tête
+  promesse: forte
+  reco: B
+  action: affiche un champ de recherche local
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Menu
+  element: bloc profil Sarah (photo + « Voir votre profil » + chevron)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille profil factice (avatar + nom + quelques stats)
+  cout: moyen
+  litige: true
+- app: Facebook
+  ecran: Menu
+  element: raccourcis grille (Souvenirs, Enregistrements, Reels, Marketplace, Fils)
+  promesse: forte
+  reco: B
+  action: Reels → onglet Reels (déjà construit) ; autres → confirmationDialog ou feuille vide crédible
+  cout: faible
+  litige: false
+- app: Facebook
+  ecran: Menu
+  element: lignes accordéon (Aide, Paramètres, Meta AI, Mentions légales) avec chevron.down
+  promesse: forte
+  reco: B
+  action: confirmationDialog ou feuille simple pour chaque section
+  cout: moyen
+  litige: false
+- app: X
+  ecran: Fil
+  element: avatar Sarah en en-tête (profil)
+  promesse: moyenne
+  reco: C
+  action: ouvrirait un profil — hors périmètre v1
+  cout: eleve
+  litige: false
+- app: X
+  ecran: Fil
+  element: icône engrenage en-tête (réglages fil)
+  promesse: forte
+  reco: B
+  action: confirmationDialog options du fil (« Ajouter des sujets », « Filtrer »)
+  cout: faible
+  litige: false
+- app: X
+  ecran: Fil — Post
+  element: icône « bubble.left » (réponses) dans barre actions post — pas de handler
+  promesse: forte
+  reco: B
+  action: ouvre XPostDetailVue (déjà construit) — même effet que tap sur le post
+  cout: faible
+  litige: false
+- app: X
+  ecran: Fil — Post
+  element: icône « arrow.2.squarepath » (Reposter) dans barre actions
+  promesse: forte
+  reco: B
+  action: confirmationDialog « Reposter » / « Citer » avec bascule compteur
+  cout: faible
+  litige: false
+- app: X
+  ecran: Fil — Post
+  element: icône « chart.bar.xaxis » (vues) dans barre actions
+  promesse: faible
+  reco: C
+  action: simple compteur décoratif, personne n'essaie de cliquer dessus
+  cout: faible
+  litige: false
+- app: X
+  ecran: Fil — Post
+  element: icône « square.and.arrow.up » (partager) dans barre actions
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage (composant existant)
+  cout: faible
+  litige: false
+- app: X
+  ecran: Fil — Post
+  element: texte « 𝕏 » en haut à droite de chaque post (marque)
+  promesse: faible
+  reco: C
+  action: purement décoratif
+  cout: faible
+  litige: false
+- app: X
+  ecran: Fil — Post
+  element: avatar de l'auteur du post (XAvatar dans XPostVue)
+  promesse: moyenne
+  reco: C
+  action: ouvrirait un profil tiers — hors périmètre
+  cout: eleve
+  litige: false
+- app: X
+  ecran: Explore
+  element: onglets horizontaux (Tendances, Actualités, Sport, Div) — aucun handler
+  promesse: forte
+  reco: B
+  action: bascule l'affichage vers un sous-ensemble filtré des tendances
+  cout: faible
+  litige: false
+- app: X
+  ecran: Explore
+  element: ellipsis sur chaque tendance
+  promesse: forte
+  reco: B
+  action: confirmationDialog « Cette tendance ne m'intéresse pas », « Signaler »
+  cout: faible
+  litige: false
+- app: X
+  ecran: Explore
+  element: ligne tendance (corps tapable — aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre XPostDetailVue d'un post représentatif de la tendance
+  cout: moyen
+  litige: true
+- app: X
+  ecran: Notifications
+  element: ligne de notification (corps — aucun handler)
+  promesse: forte
+  reco: B
+  action: ouvre XPostDetailVue du post concerné (déjà construit)
+  cout: faible
+  litige: false
+- app: X
+  ecran: Notifications
+  element: avatar XAvatar dans chaque notification
+  promesse: moyenne
+  reco: C
+  action: ouvrirait profil tiers — hors périmètre
+  cout: eleve
+  litige: false
+- app: X
+  ecran: Messages
+  element: titre « Messages » (pas de bouton Nouveau message / Recherche)
+  promesse: forte
+  reco: B
+  action: ajouter icône loupe + icône crayon à droite du titre (ouvrent des feuilles factices)
+  cout: faible
+  litige: false
+- app: X
+  ecran: Composer
+  element: icônes d'action barre basse (photo, gift, list.bullet, mappin) — aucun handler
+  promesse: forte
+  reco: B
+  action: FeuillePartage pour photo ; confirmationDialog pour les autres
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Accueil
+  element: toggle Chat/Work — onglet « Work » inerte (pas de changement d'état)
+  promesse: forte
+  reco: B
+  action: bascule l'état sélectionné + change le message d'accueil (« Mode Work »)
+  cout: faible
+  litige: true
+- app: ChatGPT
+  ecran: Accueil
+  element: icône « clock.arrow.circlepath » en-tête (historique)
+  promesse: forte
+  reco: B
+  action: ouvre GPTMenuVue (déjà construit, section Récents bien visible)
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Accueil
+  element: icône « mic.fill » dans la barre de saisie
+  promesse: forte
+  reco: B
+  action: ouvre GPTConversationVue (même comportement que le bouton waveform)
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Accueil
+  element: icône « plus » dans la barre de saisie (joindre un fichier/image)
+  promesse: forte
+  reco: B
+  action: FeuillePartage factice ou confirmationDialog options pièce jointe
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Menu latéral
+  element: ligne « Images » (action vide `{}`)
+  promesse: forte
+  reco: B
+  action: ouvre GPTBibliothequeVue avec onglet Images pré-sélectionné (déjà construit)
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Menu latéral
+  element: ligne « Planifié » (action vide `{}`)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille « Aucune tâche planifiée » (état vide crédible)
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Menu latéral
+  element: ligne « Plus » (action vide `{}`)
+  promesse: forte
+  reco: B
+  action: confirmationDialog avec options « Mémoires », « GPTs », « Réglages »
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Menu latéral
+  element: lignes « Récents » (aucun handler — simple Text)
+  promesse: forte
+  reco: B
+  action: tap sur un récent ouvre GPTConversationVue avec la question pré-remplie
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Conversation
+  element: icône « square.and.pencil » en-tête (nouveau chat)
+  promesse: forte
+  reco: B
+  action: ferme la conversation et revient à l'accueil (dismiss())
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Conversation
+  element: icône « plus » dans la barre de saisie de la conversation
+  promesse: forte
+  reco: B
+  action: FeuillePartage ou confirmationDialog options pièce jointe
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Bibliothèque
+  element: vignettes photos (p31, p34) — aucun handler
+  promesse: forte
+  reco: B
+  action: ouvre PhotoDetailVue (déjà construit dans PhotosVue) ou plein écran simple
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Projets
+  element: chip « Créés par vous » — inerte
+  promesse: moyenne
+  reco: C
+  action: filtre identique, même contenu — promesse faible
+  cout: faible
+  litige: false
+- app: ChatGPT
+  ecran: Projets
+  element: ligne projet (Appartement, Voyage Écosse, Poterie) — aucun handler
+  promesse: forte
+  reco: B
+  action: ouvre GPTConversationVue avec le contexte du projet pré-affiché
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Accueil
+  element: avatar Sarah en haut à gauche
+  promesse: moyenne
+  reco: C
+  action: ouvrirait un profil utilisateur — hors périmètre
+  cout: eleve
+  litige: false
+- app: Spotify
+  ecran: Accueil
+  element: chips de filtre (Musique, Podcasts, Livres audio) — inertes
+  promesse: forte
+  reco: B
+  action: bascule l'état sélectionné + filtre la grille « Lancer la lecture » en conséquence
+  cout: moyen
+  litige: true
+- app: Spotify
+  ecran: Accueil
+  element: cartes « Lancer la lecture » (6 tuiles reprise) — aucun handler
+  promesse: forte
+  reco: B
+  action: ouvre SpotLecteurVue (déjà construit)
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Accueil
+  element: cartes « Conçu pour Sarah » (Découvertes, Daily Mix 01, Daily Mix 02)
+  promesse: forte
+  reco: B
+  action: ouvre SpotLecteurVue (déjà construit)
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Lecteur
+  element: ellipsis en-tête lecteur (options du titre)
+  promesse: forte
+  reco: B
+  action: confirmationDialog options (« Ajouter à une playlist », « Partager », « Voir l'artiste »)
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Lecteur
+  element: icône « shuffle » (lecture aléatoire) — aucun toggle d'état
+  promesse: forte
+  reco: B
+  action: bascule l'état (vert = actif / gris = inactif)
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Lecteur
+  element: icône « backward.end.fill » (titre précédent)
+  promesse: forte
+  reco: B
+  action: remet la progression à 0 (ou bascule sur un autre titre fictif)
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Lecteur
+  element: icône « forward.end.fill » (titre suivant)
+  promesse: forte
+  reco: B
+  action: bascule sur un autre titre de DonneesSpot.reprise
+  cout: moyen
+  litige: false
+- app: Spotify
+  ecran: Lecteur
+  element: icône « timer » (minuterie/sleep timer)
+  promesse: forte
+  reco: B
+  action: confirmationDialog options durée (15 min, 30 min, Fin du titre, Désactiver)
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Lecteur
+  element: lien « Afficher les paroles » dans la carte paroles
+  promesse: forte
+  reco: B
+  action: ouvre une feuille avec les paroles complètes fictives du titre
+  cout: moyen
+  litige: true
+- app: Spotify
+  ecran: Lecteur
+  element: texte titre / artiste dans la carte paroles (zone de la carte entière)
+  promesse: moyenne
+  reco: C
+  action: le lien « Afficher les paroles » suffit — doublon
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Lecteur
+  element: barre de progression (GeometryReader) — pas de scrubbing
+  promesse: forte
+  reco: B
+  action: ajouter DragGesture pour modifier la progression (scrubbing interactif)
+  cout: moyen
+  litige: true
+- app: Spotify
+  ecran: Artiste
+  element: icône « shuffle » dans la zone actions artiste
+  promesse: forte
+  reco: B
+  action: bascule lecture aléatoire + ouvre SpotLecteurVue
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Artiste
+  element: ellipsis sur chaque titre de la liste
+  promesse: forte
+  reco: B
+  action: confirmationDialog options (« Lire ensuite », « Ajouter à la playlist », « Partager »)
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Artiste
+  element: ligne titre artiste (corps) — aucun handler
+  promesse: forte
+  reco: B
+  action: ouvre SpotLecteurVue (déjà construit)
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Recherche
+  element: cartes de genres (Musique, Podcasts, Livres audio…) — aucun handler
+  promesse: forte
+  reco: B
+  action: filtre la recherche sur ce genre ou ouvre SpotLecteurVue d'un contenu représentatif
+  cout: moyen
+  litige: false
+- app: Spotify
+  ecran: Bibliothèque
+  element: icône loupe en-tête
+  promesse: forte
+  reco: B
+  action: affiche un champ de recherche local filtrant la bibliothèque
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Bibliothèque
+  element: icône « plus » en-tête (créer playlist)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille « Nouvelle playlist » factice (champ nom + fermeture)
+  cout: moyen
+  litige: false
+- app: Spotify
+  ecran: Bibliothèque
+  element: chips (Playlists, Artistes, Albums) — inertes
+  promesse: forte
+  reco: B
+  action: filtrent la liste selon le type
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Bibliothèque
+  element: lignes bibliothèque (Titres likés, Randonnée, GIMS, Jul, Léna) — aucun handler
+  promesse: forte
+  reco: B
+  action: playlist/artiste → SpotLecteurVue ou SpotArtisteVue (déjà construits)
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Mini-lecteur (global)
+  element: icône « hifispeaker » (sortie audio) dans le mini-lecteur
+  promesse: forte
+  reco: B
+  action: confirmationDialog options de sortie audio (iPhone, AirPods fictifs)
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Mini-lecteur (global)
+  element: icône « play.fill » dans le mini-lecteur (lecture/pause sans toggle d'état)
+  promesse: forte
+  reco: B
+  action: bascule play/pause avec état local (@State)
+  cout: faible
+  litige: false
+- app: Spotify
+  ecran: Premium
+  element: bouton « Essayez pendant 2 mois pour 6,07 € » — aucun handler
+  promesse: forte
+  reco: B
+  action: confirmationDialog ou alerte « Fonctionnalité non disponible dans cette version »
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Accueil
+  element: icône TV en-tête (Cast/YouTube sur TV)
+  promesse: forte
+  reco: B
+  action: confirmationDialog « Aucun appareil compatible détecté »
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Accueil
+  element: icône loupe en-tête (recherche)
+  promesse: forte
+  reco: B
+  action: ouvre YtRechercheVue ou champ de recherche superposé
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Accueil
+  element: chips de filtres horizontaux (Randonnée, Musique, Céramique, Actualités) — inertes
+  promesse: forte
+  reco: B
+  action: filtre les vidéos affichées selon la catégorie
+  cout: moyen
+  litige: false
+- app: YouTube
+  ecran: Accueil — Shorts
+  element: vignettes Shorts (sans handler — pas de navigation vers YtShortsVue)
+  promesse: forte
+  reco: B
+  action: ouvre YtShortsVue (déjà construit)
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Accueil — Carte vidéo
+  element: ellipsis vertical sur chaque carte vidéo (YtCarteVideo)
+  promesse: forte
+  reco: B
+  action: confirmationDialog options (« Ne pas recommander », « Partager », « Enregistrer »)
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Lecteur
+  element: bouton play overlay sur la miniature (faux play — image fixe)
+  promesse: forte
+  reco: C
+  action: la simulation vidéo est une image fixe assumée — le play est décoratif, cohérent
+  cout: eleve
+  litige: true
+- app: YouTube
+  ecran: Lecteur
+  element: icône « hand.thumbsdown » dans la barre d'actions
+  promesse: forte
+  reco: B
+  action: bascule dislike avec Haptique.leger() (symétrique du like)
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Lecteur
+  element: bouton « Partager »
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage (composant existant)
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Lecteur
+  element: bouton « Télécharger »
+  promesse: forte
+  reco: B
+  action: confirmationDialog ou alerte « Téléchargement non disponible dans cette version »
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Lecteur
+  element: bouton « Enregistrer »
+  promesse: forte
+  reco: B
+  action: confirmationDialog « Enregistrer dans » avec liste playlists factices
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Lecteur
+  element: avatar de la chaîne (cercle coloré) dans le bloc chaîne
+  promesse: moyenne
+  reco: C
+  action: ouvrirait une page chaîne — hors périmètre v1
+  cout: eleve
+  litige: false
+- app: YouTube
+  ecran: Lecteur
+  element: section Commentaires (bloc entier tapable ?)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille de commentaires défilante (réutilise le pattern FbCommentairesVue)
+  cout: moyen
+  litige: true
+- app: YouTube
+  ecran: Lecteur
+  element: cartes « À suivre » (YtCarteVideo sans action `{}`)
+  promesse: forte
+  reco: B
+  action: ouvre YtLecteurVue de la vidéo cliquée (handler existant dans YtAbonnementsVue)
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Shorts
+  element: icône caméra en-tête (créer un Short)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille « Créer un Short » factice
+  cout: moyen
+  litige: true
+- app: YouTube
+  ecran: Shorts
+  element: icône loupe en-tête
+  promesse: forte
+  reco: B
+  action: champ de recherche superposé
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Shorts
+  element: bouton « S'abonner » inline
+  promesse: forte
+  reco: B
+  action: bascule d'état Abonné(e) / S'abonner avec Haptique.leger()
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Shorts
+  element: icône « hand.thumbsdown » dans le panneau latéral
+  promesse: forte
+  reco: B
+  action: bascule dislike avec Haptique.leger()
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Shorts
+  element: icône « bubble.right » (commentaires)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille commentaires (pattern FbCommentairesVue)
+  cout: moyen
+  litige: false
+- app: YouTube
+  ecran: Shorts
+  element: icône « arrowshape.turn.up.right » (partager)
+  promesse: forte
+  reco: B
+  action: ouvre FeuillePartage (composant existant)
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Abonnements
+  element: avatars chaînes dans le carousel horizontal — aucun handler
+  promesse: moyenne
+  reco: C
+  action: ouvrirait une page chaîne — hors périmètre
+  cout: eleve
+  litige: false
+- app: YouTube
+  ecran: Vous
+  element: lien « @sarah_lvsr · Gérer votre compte Google »
+  promesse: forte
+  reco: B
+  action: confirmationDialog ou alerte « Gestion de compte non disponible »
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Vous
+  element: lien « Tout afficher » (historique)
+  promesse: forte
+  reco: B
+  action: ouvre une feuille liste de tout l'historique (les 3 vidéos existantes)
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Vous
+  element: vignettes historique horizontal — aucun handler
+  promesse: forte
+  reco: B
+  action: ouvre YtLecteurVue de la vidéo cliquée
+  cout: faible
+  litige: false
+- app: YouTube
+  ecran: Vous
+  element: lignes avec chevron (Historique, Playlists, Vidéos téléchargées, Vidéos likées)
+  promesse: forte
+  reco: B
+  action: Historique → liste vidéos ; Playlists → liste vide ; Likées → liste vidéos (toutes pour simuler)
+  cout: moyen
+  litige: false
+- app: Coque
+  ecran: Verrouillage
+  element: carte notification WhatsApp (Marc) — pas de swipe/action contextuelle
+  promesse: forte
+  reco: B
+  action: tap ouvre directement la conversation Marc dans WhatsApp (via Routeur ou déverrouillage + ouverture)
+  cout: moyen
+  litige: true
+- app: Coque
+  ecran: Verrouillage
+  element: carte notification Téléphone (Chloé « 2 appels manqués »)
+  promesse: forte
+  reco: B
+  action: tap déverrouille + ouvre TelephoneVue sur la fiche d'appel manqué de Chloé
+  cout: moyen
+  litige: true
+- app: Coque
+  ecran: Verrouillage
+  element: bouton rond verre « Lampe de poche » (flashlight.on.fill)
+  promesse: forte
+  reco: C
+  action: bascule d'état visuel (icône allumée/éteinte) — fonctionnalité hardware non pertinente en jeu
+  cout: faible
+  litige: false
+- app: Coque
+  ecran: Verrouillage
+  element: bouton rond verre « Appareil photo » (camera.fill)
+  promesse: forte
+  reco: B
+  action: déverrouille + ouvre une feuille « Appareil photo non disponible » ou alerte
+  cout: faible
+  litige: false
+- app: Coque
+  ecran: Accueil — Widget météo
+  element: widget météo entier (bloc verre — pas de handler)
+  promesse: forte
+  reco: B
+  action: ouvre MeteoVue() (déjà construit et connecté depuis l'icône Météo de la grille)
+  cout: faible
+  litige: false
+- app: Coque
+  ecran: Accueil — Pilule Recherche
+  element: pilule « Recherche » (loupe + texte — aucun handler)
+  promesse: forte
+  reco: A
+  action: ouvre un écran de recherche universelle (Spotlight-like) filtrant les apps et contenus du jeu
+  cout: eleve
+  litige: true
+- app: Coque
+  ecran: Accueil — Grille apps
+  element: icône « Musique » — alerte générique (app.attente) au lieu d'ouvrir une vraie app
+  promesse: forte
+  reco: A
+  action: construire une app Musique (bibliothèque iOS native simulée) ou pointer vers Spotify
+  cout: eleve
+  litige: true
+- app: Coque
+  ecran: Accueil — Grille apps
+  element: icône « App Store » — alerte spéciale mais toujours inerte
+  promesse: forte
+  reco: C
+  action: l'alerte ErreurLambda.reponse("appstore") est une réponse cohérente — garder
+  cout: faible
+  litige: false
+- app: Coque
+  ecran: Dock
+  element: toutes les 4 icônes du dock (Téléphone, Messages, Mail, Safari) ont des handlers — RAS
+  promesse: forte
+  reco: C
+  action: déjà fonctionnel
+  cout: faible
+  litige: false

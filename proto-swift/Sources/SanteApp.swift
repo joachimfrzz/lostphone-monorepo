@@ -258,6 +258,20 @@ struct ResumeSanteVue: View {
     @State private var fiche: String? = nil
     @State private var profilVisible = false
     @State private var tendancesVisibles = false
+    @State private var editionEpingles = false
+    @State private var epingles: [String] = ["pas", "sommeil", "coeur"]
+
+    private func carte(_ id: String) -> (titre: String, symbole: String, teinte: UInt, valeur: String, unite: String, date: String, mesures: [JourMesure], plafond: Double)? {
+        switch id {
+        case "pas": return ("Pas", "figure.walk", 0xFF9F0A, "3 860", "pas", "Aujourd'hui", DonneesSante.pas, 12000)
+        case "sommeil": return ("Sommeil", "bed.double.fill", 0x5AC8FA, "5 h 54", "", "La nuit dernière", DonneesSante.sommeil, 9)
+        case "coeur": return ("Fréq. cardiaque au repos", "heart.fill", 0xFA5252, "73", "BPM", "Aujourd'hui", DonneesSante.coeur, 100)
+        case "energie": return ("Énergie active", "flame.fill", 0xFF9F0A, "273", "kcal", "Aujourd'hui", DonneesSante.energie, 550)
+        case "fcmarche": return ("FC en marchant", "heart.fill", 0xFA5252, "115", "BPM", "Aujourd'hui", DonneesSante.fcMarche, 140)
+        case "audition": return ("Niveaux du casque", "ear", 0x0A84FF, "79", "dB", "Aujourd'hui", DonneesSante.audition, 100)
+        default: return nil
+        }
+    }
 
     var body: some View {
         ScrollView {
@@ -281,19 +295,17 @@ struct ResumeSanteVue: View {
                     Text("Épinglés").font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
                     Spacer()
                     Text("Modifier").font(.system(size: 14)).foregroundStyle(Color(hex: 0x0A84FF))
+                        .contentShape(Rectangle())
+                        .onTapGesture { editionEpingles = true }
                 }
 
-                CarteSante(titre: "Pas", symbole: "figure.walk", teinte: 0xFF9F0A,
-                           valeur: "3 860", unite: "pas", date: "Aujourd'hui",
-                           mesures: DonneesSante.pas, max: 12000) { fiche = "pas" }
-
-                CarteSante(titre: "Sommeil", symbole: "bed.double.fill", teinte: 0x5AC8FA,
-                           valeur: "5 h 54", unite: "", date: "La nuit dernière",
-                           mesures: DonneesSante.sommeil, max: 9) { fiche = "sommeil" }
-
-                CarteSante(titre: "Fréq. cardiaque au repos", symbole: "heart.fill", teinte: 0xFA5252,
-                           valeur: "73", unite: "BPM", date: "Aujourd'hui",
-                           mesures: DonneesSante.coeur, max: 100) { fiche = "coeur" }
+                ForEach(epingles, id: \.self) { id in
+                    if let c = carte(id) {
+                        CarteSante(titre: c.titre, symbole: c.symbole, teinte: c.teinte,
+                                   valeur: c.valeur, unite: c.unite, date: c.date,
+                                   mesures: c.mesures, max: c.plafond) { fiche = id }
+                    }
+                }
 
                 // Points forts (comme la vraie app : cartes générées sur les données)
                 Text("Points forts").font(.system(size: 20, weight: .bold)).foregroundStyle(.white).padding(.top, 6)
@@ -331,6 +343,56 @@ struct ResumeSanteVue: View {
         }
         .sheet(isPresented: $profilVisible) { ProfilSanteVue() }
         .sheet(isPresented: $tendancesVisibles) { TendancesSanteVue() }
+        .sheet(isPresented: $editionEpingles) { SanteEpinglesVue(epingles: $epingles) }
+    }
+}
+
+// Édition des épinglés (D69 lot 1 n°6 : bascules réelles, effet immédiat sur le Résumé)
+struct SanteEpinglesVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @Binding var epingles: [String]
+    private let toutes: [(String, String)] = [
+        ("pas", "Pas"), ("sommeil", "Sommeil"), ("coeur", "Fréq. cardiaque au repos"),
+        ("energie", "Énergie active"), ("fcmarche", "FC en marchant"), ("audition", "Niveaux du casque"),
+    ]
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 0) {
+                    ForEach(Array(toutes.enumerated()), id: \.offset) { i, m in
+                        HStack {
+                            Image(systemName: "pin.fill").font(.system(size: 13))
+                                .foregroundStyle(epingles.contains(m.0) ? Color(hex: 0x0A84FF) : Color.secondary)
+                                .frame(width: 24)
+                            Text(m.1).font(.system(size: 15)).foregroundStyle(.white)
+                            Spacer()
+                            Toggle("", isOn: Binding(
+                                get: { epingles.contains(m.0) },
+                                set: { actif in
+                                    if actif { if !epingles.contains(m.0) { epingles.append(m.0) } }
+                                    else { epingles.removeAll { $0 == m.0 } }
+                                }
+                            )).labelsHidden().tint(Color(hex: 0x0A84FF))
+                        }
+                        .padding(.horizontal, 14).padding(.vertical, 10)
+                        if i < toutes.count - 1 {
+                            Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 38)
+                        }
+                    }
+                }
+                .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
+                .padding(16)
+            }
+            .background(Color.black)
+            .navigationTitle("Épinglés")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("OK") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF))
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 

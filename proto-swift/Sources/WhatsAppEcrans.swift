@@ -477,6 +477,7 @@ struct BulleRiche: View {
     var citationNom: String? = nil
     var citationTexte: String? = nil
     var reaction: String? = nil
+    var distribue: Bool = true  // D54 : false → coche grise (joueur, non-distribué)
     var body: some View {
         HStack {
             if !recu { Spacer(minLength: 60) }
@@ -500,8 +501,12 @@ struct BulleRiche: View {
                     HStack(spacing: 3) {
                         Text(heure).font(.system(size: 11.5)).foregroundStyle(waTexte.opacity(0.55))
                         if !recu {
-                            Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(cocheBleue)
-                            Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(cocheBleue).padding(.leading, -7)
+                            if distribue {
+                                Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(cocheBleue)
+                                Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(cocheBleue).padding(.leading, -7)
+                            } else {
+                                Image(systemName: "checkmark").font(.system(size: 10, weight: .bold)).foregroundStyle(waTexte2)
+                            }
                         }
                     }
                 }

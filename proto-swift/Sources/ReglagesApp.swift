@@ -673,11 +673,18 @@ struct PaiementVue: View {
 }
 
 struct AbonnementsVue: View {
-    // Or narratif : Meetic (la rencontre), le reste banal
-    private let actifs: [(String, String, String, String)] = [
-        ("heart.circle.fill", "Meetic Premium", "Renouv. le 3 septembre", "29,99 €"),
-        ("icloud.fill", "iCloud+", "200 Go de stockage · Renouv. le 23 août", "2,99 €"),
-        ("music.note", "Deezer Premium", "Renouv. le 12 septembre", "11,99 €"),
+    private struct InfoAbonnement {
+        let symbole: String
+        let nom: String
+        let sousTitre: String
+        let prix: String
+        let prixMensuel: String
+        let renouvellement: String
+    }
+    private let actifs: [InfoAbonnement] = [
+        InfoAbonnement(symbole: "heart.circle.fill", nom: "Meetic", sousTitre: "Renouv. le 3 septembre", prix: "22,99 €", prixMensuel: "22,99 €/mois", renouvellement: "3 septembre 2026"),
+        InfoAbonnement(symbole: "icloud.fill", nom: "iCloud+", sousTitre: "200 Go de stockage · Renouv. le 1 septembre", prix: "0,99 €", prixMensuel: "0,99 €/mois", renouvellement: "1 septembre 2026"),
+        InfoAbonnement(symbole: "music.note", nom: "Deezer", sousTitre: "Renouv. le 9 septembre", prix: "11,99 €", prixMensuel: "11,99 €/mois", renouvellement: "9 septembre 2026"),
     ]
     private let inactifs: [(String, String, String)] = [
         ("face.smiling.inverse", "FaceApp : Perfect Face Editor", "A expiré le 17 février"),
@@ -689,17 +696,28 @@ struct AbonnementsVue: View {
                 VStack(spacing: 14) {
                     RegGroupe {
                         ForEach(Array(actifs.enumerated()), id: \.offset) { i, a in
-                            HStack(spacing: 12) {
-                                RegIcone(symbole: a.0, fond: Color(hex: 0x3A3A3E))
-                                VStack(alignment: .leading, spacing: 1) {
-                                    Text(a.1).font(.system(size: 16)).foregroundStyle(regTexte)
-                                    Text(a.2).font(.system(size: 12.5)).foregroundStyle(regTexte2)
+                            NavigationLink {
+                                RegAbonnementDetailVue(
+                                    symbole: a.symbole,
+                                    nom: a.nom,
+                                    prixMensuel: a.prixMensuel,
+                                    renouvellement: a.renouvellement
+                                )
+                            } label: {
+                                HStack(spacing: 12) {
+                                    RegIcone(symbole: a.symbole, fond: Color(hex: 0x3A3A3E))
+                                    VStack(alignment: .leading, spacing: 1) {
+                                        Text(a.nom).font(.system(size: 16)).foregroundStyle(regTexte)
+                                        Text(a.sousTitre).font(.system(size: 12.5)).foregroundStyle(regTexte2)
+                                    }
+                                    Spacer()
+                                    Text(a.prix).font(.system(size: 15)).foregroundStyle(regTexte2)
+                                    Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(regTexte2.opacity(0.6))
                                 }
-                                Spacer()
-                                Text(a.3).font(.system(size: 15)).foregroundStyle(regTexte2)
-                                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(regTexte2.opacity(0.6))
+                                .padding(.horizontal, 14).padding(.vertical, 10)
+                                .contentShape(Rectangle())
                             }
-                            .padding(.horizontal, 14).padding(.vertical, 10)
+                            .buttonStyle(.plain)
                             if i < actifs.count - 1 { RegSeparateur() }
                         }
                     }
@@ -725,6 +743,70 @@ struct AbonnementsVue: View {
         }
         .navigationTitle("Abonnements")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct RegAbonnementDetailVue: View {
+    let symbole: String
+    let nom: String
+    let prixMensuel: String
+    let renouvellement: String
+    @State private var demandeAnnulation = false
+    @State private var annule = false
+    var body: some View {
+        ZStack {
+            regFond.ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 14) {
+                    RegGroupe {
+                        VStack(alignment: .leading, spacing: 0) {
+                            HStack(spacing: 12) {
+                                RegIcone(symbole: symbole, fond: Color(hex: 0x3A3A3E))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(nom).font(.system(size: 17, weight: .semibold)).foregroundStyle(regTexte)
+                                    Text(prixMensuel).font(.system(size: 15)).foregroundStyle(regTexte2)
+                                }
+                                Spacer()
+                            }
+                            .padding(.horizontal, 14).padding(.top, 14).padding(.bottom, 10)
+                            RegSeparateur(retrait: 14)
+                            HStack {
+                                Text(annule ? "Expire le" : "Renouvellement").font(.system(size: 16)).foregroundStyle(regTexte)
+                                Spacer()
+                                Text(renouvellement).font(.system(size: 16)).foregroundStyle(regTexte2)
+                            }
+                            .padding(.horizontal, 14).padding(.vertical, 10)
+                        }
+                    }
+                    .padding(.top, 12)
+                    if !annule {
+                        RegGroupe {
+                            Button {
+                                demandeAnnulation = true
+                            } label: {
+                                Text("Annuler l'abonnement")
+                                    .font(.system(size: 16))
+                                    .foregroundStyle(Color.red)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.horizontal, 14).padding(.vertical, 10)
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    Color.clear.frame(height: 30)
+                }
+            }
+        }
+        .navigationTitle(nom)
+        .navigationBarTitleDisplayMode(.inline)
+        .preferredColorScheme(.dark)
+        .confirmationDialog("Annuler \(nom) ?", isPresented: $demandeAnnulation, titleVisibility: .visible) {
+            Button("Confirmer l'annulation", role: .destructive) { annule = true }
+            Button("Garder l'abonnement", role: .cancel) {}
+        } message: {
+            Text("Votre abonnement restera actif jusqu'au \(renouvellement).")
+        }
     }
 }
 

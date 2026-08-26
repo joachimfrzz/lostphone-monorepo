@@ -603,6 +603,61 @@ struct ConditionsMeteoVue: View {
     }
 }
 
+// ============================================================ UNITÉS MÉTÉO
+struct MeteoUnitesVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var celsius: Bool
+
+    init(celsius: Bool) { _celsius = State(initialValue: celsius) }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Button {
+                    celsius = true
+                } label: {
+                    HStack {
+                        Text("Celsius (°C)").foregroundStyle(.white)
+                        Spacer()
+                        if celsius { Image(systemName: "checkmark").foregroundStyle(.orange) }
+                    }
+                }
+                .listRowBackground(Color(hex: 0x2C2C2E))
+                Button {
+                    celsius = false
+                } label: {
+                    HStack {
+                        Text("Fahrenheit (°F)").foregroundStyle(.white)
+                        Spacer()
+                        if !celsius { Image(systemName: "checkmark").foregroundStyle(.orange) }
+                    }
+                }
+                .listRowBackground(Color(hex: 0x2C2C2E))
+            }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(Color(hex: 0x1C1C1E))
+            .navigationTitle("Unités")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("OK") {
+                        MagasinMeteoUnites.celsius = celsius
+                        dismiss()
+                    }
+                    .foregroundStyle(.orange)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
+        .presentationDetents([.medium])
+    }
+}
+
+struct MagasinMeteoUnites {
+    static var celsius: Bool = true
+}
+
 // ============================================================ LISTE DES VILLES
 struct ListeVillesVue: View {
     @Environment(\.dismiss) private var dismiss
@@ -611,6 +666,8 @@ struct ListeVillesVue: View {
     @State private var resultatChoisi: String? = nil
     @State private var chargement = false
     @State private var echec = false
+    @State private var signalerVisible = false
+    @State private var unitesVisible = false
 
     private let annuaire = ["Ajaccio", "Annecy", "Bordeaux", "Brest", "Cassis", "Clermont-Ferrand",
                             "Dijon", "Grenoble", "Lille", "Montpellier", "Nantes", "Nice",
@@ -688,14 +745,19 @@ struct ListeVillesVue: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
-                        Button("Modifier la liste") {}
-                        Button("Unités") {}
-                        Button("Signaler un problème") {}
+                        Button { unitesVisible = true } label: {
+                            Label("Unités", systemImage: "thermometer.medium")
+                        }
+                        Button { signalerVisible = true } label: {
+                            Label("Signaler un problème", systemImage: "exclamationmark.bubble")
+                        }
                     } label: {
                         Image(systemName: "ellipsis.circle").foregroundStyle(.white)
                     }
                 }
             }
+            .sheet(isPresented: $signalerVisible) { SignalerMeteoVue() }
+            .sheet(isPresented: $unitesVisible) { MeteoUnitesVue(celsius: MagasinMeteoUnites.celsius) }
             .alert("Connexion impossible", isPresented: $echec) {
                 Button("OK", role: .cancel) {}
             } message: {

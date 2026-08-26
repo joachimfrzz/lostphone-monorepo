@@ -952,6 +952,7 @@ struct MsgSuppressionsVue: View {
     @State private var selection = Set<String>()
     @State private var confirmationRecuperer = false
     @State private var confirmationSupprimer = false
+    @State private var convLecture: ConvMsg? = nil
 
     var body: some View {
         VStack(spacing: 0) {
@@ -974,6 +975,7 @@ struct MsgSuppressionsVue: View {
                                 Image(systemName: selection.contains(s.id) ? "checkmark.circle.fill" : "circle")
                                     .font(.system(size: 21))
                                     .foregroundStyle(selection.contains(s.id) ? msgBleu : msgTexte2)
+                                    .contentShape(Rectangle())
                                     .onTapGesture {
                                         Haptique.leger()
                                         if selection.contains(s.id) { selection.remove(s.id) }
@@ -989,6 +991,7 @@ struct MsgSuppressionsVue: View {
                             }
                             .padding(.horizontal, 18).padding(.vertical, 8)
                             .contentShape(Rectangle())
+                            .onTapGesture { Haptique.leger(); convLecture = s.conv }
                         }
                     }
                 }
@@ -1028,6 +1031,9 @@ struct MsgSuppressionsVue: View {
             Button("Annuler", role: .cancel) {}
         } message: {
             Text("Cette action est irréversible.")
+        }
+        .navigationDestination(item: $convLecture) { conv in
+            MsgConvVue(conv: conv)
         }
     }
 }

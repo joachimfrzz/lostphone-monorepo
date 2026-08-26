@@ -124,24 +124,113 @@ struct VilleRechercheVue: View {
     }
 }
 
+// ============================================================ SOMMEIL | RÉVEIL
+struct MagasinSommeil {
+    static var coucher: Date = Calendar.current.date(bySettingHour: 22, minute: 30, second: 0, of: Date()) ?? Date()
+    static var lever: Date = Calendar.current.date(bySettingHour: 7, minute: 0, second: 0, of: Date()) ?? Date()
+    static var alarmeActive: Bool = false
+    static var configure: Bool = false
+}
+
+struct HorlogeSommeilVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @Binding var configure: Bool
+    @Binding var coucher: Date
+    @Binding var lever: Date
+    @Binding var alarmeActive: Bool
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    DatePicker("Coucher", selection: $coucher, displayedComponents: .hourAndMinute)
+                        .datePickerStyle(.compact)
+                        .foregroundStyle(.white)
+                        .listRowBackground(Color(hex: 0x2C2C2E))
+                    DatePicker("Lever", selection: $lever, displayedComponents: .hourAndMinute)
+                        .datePickerStyle(.compact)
+                        .foregroundStyle(.white)
+                        .listRowBackground(Color(hex: 0x2C2C2E))
+                } header: {
+                    Text("Horaires").font(.system(size: 13)).foregroundStyle(.secondary).textCase(nil)
+                }
+                Section {
+                    HStack {
+                        Text("Alarme de réveil").foregroundStyle(.white)
+                        Spacer()
+                        Toggle("", isOn: $alarmeActive).labelsHidden().tint(Color(hex: 0x32D74B))
+                    }
+                    .listRowBackground(Color(hex: 0x2C2C2E))
+                } header: {
+                    Text("Alarme").font(.system(size: 13)).foregroundStyle(.secondary).textCase(nil)
+                }
+            }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(Color(hex: 0x1C1C1E))
+            .navigationTitle("Sommeil | Réveil")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Annuler") { dismiss() }.foregroundStyle(.orange)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Enregistrer") {
+                        MagasinSommeil.coucher = coucher
+                        MagasinSommeil.lever = lever
+                        MagasinSommeil.alarmeActive = alarmeActive
+                        MagasinSommeil.configure = true
+                        configure = true
+                        dismiss()
+                    }
+                    .font(.system(size: 16, weight: .semibold)).foregroundStyle(.orange)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+private func hhmm(_ d: Date) -> String {
+    let c = Calendar.current
+    return String(format: "%d:%02d", c.component(.hour, from: d), c.component(.minute, from: d))
+}
+
 // ============================================================ ALARMES
 struct AlarmesVue: View {
     @ObservedObject private var magasin = MagasinHorloge.partage
     @State private var edition = false
     @State private var alarmeEditee: Alarme? = nil
     @State private var nouvelle = false
+    @State private var sommeilVisible = false
+    @State private var sommeilConfigure = MagasinSommeil.configure
+    @State private var coucher = MagasinSommeil.coucher
+    @State private var lever = MagasinSommeil.lever
+    @State private var alarmeReveil = MagasinSommeil.alarmeActive
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
                     HStack {
-                        Text("Aucune alarme").font(.system(size: 16)).foregroundStyle(.secondary)
+                        if sommeilConfigure {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Coucher \(hhmm(coucher))  ·  Lever \(hhmm(lever))")
+                                    .font(.system(size: 15)).foregroundStyle(.white)
+                                if alarmeReveil {
+                                    Text("Alarme activée").font(.system(size: 13)).foregroundStyle(.secondary)
+                                }
+                            }
+                        } else {
+                            Text("Aucune alarme").font(.system(size: 16)).foregroundStyle(.secondary)
+                        }
                         Spacer()
                         Text("CONFIGURER").font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(.orange)
                             .padding(.horizontal, 12).padding(.vertical, 6)
                             .background(Color(hex: 0x2C2C2E), in: Capsule())
+                            .contentShape(Rectangle())
+                            .onTapGesture { sommeilVisible = true }
                     }
                     .listRowBackground(Color.black)
                 } header: {
@@ -197,6 +286,9 @@ struct AlarmesVue: View {
             .sheet(isPresented: $nouvelle) {
                 AlarmeEditionVue(alarme: Alarme(heure: 13 * 60, libelle: "Alarme", recurrence: "Jamais", active: true),
                                  creation: true)
+            }
+            .sheet(isPresented: $sommeilVisible) {
+                HorlogeSommeilVue(configure: $sommeilConfigure, coucher: $coucher, lever: $lever, alarmeActive: $alarmeReveil)
             }
         }
     }

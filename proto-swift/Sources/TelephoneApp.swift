@@ -123,6 +123,9 @@ struct OngletTel: View {
 struct TelRecentsVue: View {
     @State private var filtreManques = false
     @State private var menuVisible = false
+    @State private var appelVisible = false
+    @State private var appelDestinataire = ""
+    @State private var appelNumero = ""
 
     private var appels: [AppelRecent] {
         filtreManques ? DonneesTel.recents.filter { $0.manque } : DonneesTel.recents
@@ -200,13 +203,19 @@ struct TelRecentsVue: View {
                                 Text(a.type).font(.system(size: 14)).foregroundStyle(telTexte2)
                             }
                         }
-                        Spacer()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            let num = DonneesTel.contacts.first(where: { $0.0 == a.nom })?.1 ?? "numéro masqué"
+                            appelDestinataire = a.nom
+                            appelNumero = num
+                            Haptique.leger()
+                            appelVisible = true
+                        }
                         Text(a.date).font(.system(size: 15)).foregroundStyle(telTexte2)
                         NavigationLink(destination: TelFicheVue(nom: a.nom)) {
-                            EmptyView()
+                            Image(systemName: "info.circle").font(.system(size: 20)).foregroundStyle(telBleu)
                         }
-                        .frame(width: 0).opacity(0)
-                        Image(systemName: "info.circle").font(.system(size: 20)).foregroundStyle(telBleu)
                     }
                     .listRowBackground(telNoir)
                     .listRowSeparatorTint(Color(hex: 0x222222))
@@ -215,6 +224,9 @@ struct TelRecentsVue: View {
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .padding(.bottom, 70)
+        }
+        .fullScreenCover(isPresented: $appelVisible) {
+            AppelTelVue(destinataire: appelDestinataire, numero: appelNumero)
         }
     }
 }

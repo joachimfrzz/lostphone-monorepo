@@ -22,6 +22,22 @@
 #   InteractionsPartagees.swift ; branchés : stories Snapchat (Amis·es), cartes Découvrir,
 #   stories Facebook, lignes DM Instagram ; chips Snapchat -> filtres réels (R5).
 # STATUT : vague 1 en cours d'implémentation, vagues suivantes à venir (traces ajoutées au fil).
+# VAGUE 2 (27/08 ~00h30) — arbitrés lot 1 implémentés :
+#   Téléphone : tap ligne Récents = appel réel (AppelTelVue), info.circle -> fiche (NavigationLink)
+#   Banque : Paiement sans contact + Paiements en ligne = vraies bascules session, chevrons retirés
+#   Safari : Réserver une table (Fonfon) -> SafariReservationVue (réservation par téléphone + Routeur)
+#   Messages : conversations supprimées OUVRABLES en lecture (MsgConvVue réutilisée) — serrures = scénario
+#   WhatsApp : Répondre = citation réelle (bandeau + BulleRiche réutilisée, D54 coche grise)
+#   Horloge : CONFIGURER Sommeil -> HorlogeSommeilVue réelle (horaires + alarme, persistance session)
+#   Météo : menu purgé R4 (Modifier la liste RETIRÉ — trace délégation), Unités -> MeteoUnitesVue °C/°F,
+#     Signaler -> SignalerMeteoVue existante
+#   Notes : menu ellipsis réel (Épingler bascule, Partager -> FeuillePartage, Supprimer + confirmation)
+#   Réglages : Abonnements -> RegAbonnementDetailVue (Meetic 22,99 SOBRE, iCloud+ 0,99, Deezer 11,99,
+#     Annuler l'abonnement réel avec confirmation -> Expire le [date])
+#   Spotify : scrubbing réel du lecteur (DragGesture, zone 18pt)
+#   Santé : Modifier -> SanteEpinglesVue (bascules épingler/désépingler, effet immédiat sur le Résumé)
+#   NOTE : feuilles nouvelles non ajoutées au registre de capture (accessibles interactivement,
+#     jugement device) — écart D63 assumé et tracé.
 - app: WhatsApp
   ecran: ConversationVue (fil)
   element: icône « + » barre de saisie (pièces jointes)

@@ -216,8 +216,10 @@ struct NoteEditionVue: View {
     @State private var texte = ""
     @State private var alerteOutil: String? = nil
     @State private var partageVisible = false
+    @State private var confirmerSuppression = false
 
     private var index: Int? { magasin.notes.firstIndex { $0.id == noteId } }
+    private var epinglee: Bool { index.map { magasin.notes[$0].section == "Épinglées" } ?? false }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -262,10 +264,43 @@ struct NoteEditionVue: View {
                 HStack(spacing: 18) {
                     Image(systemName: "square.and.arrow.up").foregroundStyle(Color(hex: 0xE8A33D))
                         .onTapGesture { partageVisible = true }
-                    Image(systemName: "ellipsis.circle").foregroundStyle(Color(hex: 0xE8A33D))
-                        .onTapGesture { alerteOutil = "menu" }
+                    Menu {
+                        Button {
+                            guard let i = index else { return }
+                            if epinglee {
+                                magasin.notes[i].section = "Aujourd'hui"
+                            } else {
+                                magasin.notes[i].section = "Épinglées"
+                            }
+                            Haptique.leger()
+                        } label: {
+                            Label(epinglee ? "Désépingler" : "Épingler",
+                                  systemImage: epinglee ? "pin.slash" : "pin")
+                        }
+                        Button { partageVisible = true } label: {
+                            Label("Partager", systemImage: "square.and.arrow.up")
+                        }
+                        Button(role: .destructive) {
+                            confirmerSuppression = true
+                        } label: {
+                            Label("Supprimer", systemImage: "trash")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle").foregroundStyle(Color(hex: 0xE8A33D))
+                    }
                 }
             }
+        }
+        .alert("Supprimer la note ?", isPresented: $confirmerSuppression) {
+            Button("Supprimer", role: .destructive) {
+                if let i = index {
+                    magasin.notes.remove(at: i)
+                }
+                dismiss()
+            }
+            Button("Annuler", role: .cancel) {}
+        } message: {
+            Text("Cette note sera définitivement supprimée.")
         }
         .alert(titreOutil, isPresented: Binding(get: { alerteOutil != nil }, set: { if !$0 { alerteOutil = nil } })) {
             Button("OK", role: .cancel) {}
@@ -279,14 +314,12 @@ struct NoteEditionVue: View {
 
     private var titreOutil: String {
         switch alerteOutil {
-        case "partage": return "Partager"
-        case "menu": return "Options"
+        case "checklist": return "Liste de pointage"
         default: return "Mise en forme"
         }
     }
     private var messageOutil: String {
         switch alerteOutil {
-        case "partage": return ErreurLambda.reponse("partage")
         case "checklist": return "Terminez la ligne en cours pour créer une liste de pointage."
         default: return "La mise en forme avancée arrive avec la synchronisation iCloud."
         }

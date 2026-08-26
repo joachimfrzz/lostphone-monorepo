@@ -236,8 +236,13 @@ struct SpotLecteurVue: View {
                             Capsule().fill(Color.white.opacity(0.25)).frame(height: 4)
                             Capsule().fill(Color.white).frame(width: geo.size.width * progression / 222, height: 4)
                         }
+                        .frame(height: 18)
+                        .contentShape(Rectangle())
+                        .gesture(DragGesture(minimumDistance: 0).onChanged { v in
+                            progression = min(max(0, Double(v.location.x / geo.size.width) * 222), 222)
+                        })
                     }
-                    .frame(height: 4)
+                    .frame(height: 18)
                     HStack {
                         Text(String(format: "%d:%02d", Int(progression) / 60, Int(progression) % 60))
                         Spacer()

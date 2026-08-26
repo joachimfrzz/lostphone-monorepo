@@ -370,6 +370,8 @@ struct VirementsVue: View {
 struct CartesVue: View {
     @State private var oppositionAlerte = false
     @State private var plafondAlerte = false
+    @State private var sansContactActif = true
+    @State private var paiementsEnLigneActifs = true
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -399,9 +401,23 @@ struct CartesVue: View {
                     VStack(spacing: 0) {
                         LigneBanque(titre: "Plafonds de paiement et retrait", valeur: "Gérer") { plafondAlerte = true }
                         Divider()
-                        LigneBanque(titre: "Paiement sans contact", valeur: "Activé") { }
+                        HStack {
+                            Text("Paiement sans contact").font(.system(size: 15)).foregroundStyle(Color(hex: 0x1A1A2E))
+                            Spacer()
+                            Toggle("", isOn: $sansContactActif)
+                                .labelsHidden()
+                                .tint(Color(hex: 0x1E9E46))
+                        }
+                        .padding(14)
                         Divider()
-                        LigneBanque(titre: "Paiements en ligne", valeur: "Activés") { }
+                        HStack {
+                            Text("Paiements en ligne").font(.system(size: 15)).foregroundStyle(Color(hex: 0x1A1A2E))
+                            Spacer()
+                            Toggle("", isOn: $paiementsEnLigneActifs)
+                                .labelsHidden()
+                                .tint(lclBleu)
+                        }
+                        .padding(14)
                         Divider()
                         LigneBanque(titre: "Faire opposition", valeur: "", destructif: true) { oppositionAlerte = true }
                     }

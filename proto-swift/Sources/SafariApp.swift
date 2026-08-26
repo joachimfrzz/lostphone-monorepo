@@ -372,6 +372,7 @@ struct VesselVue: View {
 
 // Chez Fonfon — l'onglet de l'espoir
 struct FonfonVue: View {
+    @State private var reservationVisible = false
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             RoundedRectangle(cornerRadius: 12)
@@ -388,11 +389,62 @@ struct FonfonVue: View {
             Text("Réserver une table").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
                 .frame(maxWidth: .infinity).padding(.vertical, 12)
                 .background(Color(hex: 0x0A84FF), in: RoundedRectangle(cornerRadius: 12))
+                .contentShape(Rectangle())
+                .onTapGesture { reservationVisible = true }
             Text("Le restaurant emblématique du Vallon des Auffes vous accueille tous les jours, midi et soir. Notre bouillabaisse traditionnelle est servie en deux services, comme le veut la charte.")
                 .font(.system(size: 15)).foregroundStyle(.white.opacity(0.9)).lineSpacing(3)
             Spacer(minLength: 20)
         }
         .padding(.horizontal, 16)
+        .sheet(isPresented: $reservationVisible) { SafariReservationVue() }
+    }
+}
+
+struct SafariReservationVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 22) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Les réservations se font par téléphone au 04 91 52 14 38.")
+                        .font(.system(size: 16)).foregroundStyle(.white.opacity(0.9)).lineSpacing(3)
+                    HStack(spacing: 6) {
+                        Image(systemName: "clock.fill").foregroundStyle(.secondary).font(.system(size: 14))
+                        Text("Ouvert du mardi au samedi, 12h–14h et 19h30–22h")
+                            .font(.system(size: 14)).foregroundStyle(.secondary)
+                    }
+                }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color(hex: 0x2C2C2E), in: RoundedRectangle(cornerRadius: 14))
+
+                Button {
+                    dismiss()
+                    Routeur.partage.allerTelephone("04 91 52 14 38")
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "phone.fill").font(.system(size: 15))
+                        Text("Appeler le restaurant").font(.system(size: 16, weight: .semibold))
+                    }
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity).padding(.vertical, 14)
+                    .background(Color(hex: 0x30D158), in: RoundedRectangle(cornerRadius: 14))
+                }
+
+                Spacer()
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(hex: 0x1C1C1E).ignoresSafeArea())
+            .navigationTitle("Réservations")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fermer") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF))
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 

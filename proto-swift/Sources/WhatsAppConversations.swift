@@ -195,6 +195,7 @@ struct ConversationVue: View {
     @ObservedObject private var envois = EnvoisJoueur.partage
     @State private var saisie = ""
     @State private var appelVisible = false
+    @State private var citation: String? = nil
 
     // Le fil = données d'histoire + envois persistants du joueur (observés en direct,
     // plus d'instantané figé : la vue pré-créée par la liste reste toujours à jour)
@@ -263,6 +264,23 @@ struct ConversationVue: View {
                 .onChange(of: envois.parContact[nomContact]?.count ?? 0) { defileur.scrollTo("fin", anchor: .bottom) }
             }
 
+            // ——— Bandeau de citation (si une bulle a été visée via « Répondre »)
+            if let cit = citation {
+                HStack(spacing: 0) {
+                    RoundedRectangle(cornerRadius: 2).fill(Color(hex: 0xB48EF0)).frame(width: 4)
+                    Text(cit).font(.system(size: 13.5)).foregroundStyle(waTexte2).lineLimit(2)
+                        .padding(.horizontal, 9).padding(.vertical, 6)
+                    Spacer(minLength: 0)
+                    Image(systemName: "xmark.circle.fill").font(.system(size: 18)).foregroundStyle(waTexte2)
+                        .padding(.horizontal, 10)
+                        .contentShape(Rectangle())
+                        .onTapGesture { citation = nil }
+                }
+                .background(Color(hex: 0x1C201E))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .padding(.horizontal, 14).padding(.top, 4)
+            }
+
             // ——— Saisie FONCTIONNELLE : écrire envoie vraiment (heure réelle)
             HStack(spacing: 14) {
                 Image(systemName: "plus").font(.system(size: 24)).foregroundStyle(waTexte)
@@ -298,11 +316,18 @@ struct ConversationVue: View {
         guard !t.isEmpty else { return }
         let df = DateFormatter()
         df.dateFormat = "HH:mm"
-        let element = ElementConv.msgJoueur(t, df.string(from: Date()))
+        let element: ElementConv
+        if let cit = citation {
+            // D54 : envoi joueur avec citation — bulle riche, coche gris (non-distribuée)
+            element = .riche(false, t, df.string(from: Date()), "Moi", cit, nil)
+        } else {
+            element = ElementConv.msgJoueur(t, df.string(from: Date()))
+        }
         withAnimation(.spring(duration: 0.3)) {
             envois.ajouter(nomContact, element)
         }
         saisie = ""
+        citation = nil
     }
 
     // ——— Rendu d'un élément (menu contextuel natif sur les bulles : D51-1)
@@ -316,10 +341,10 @@ struct ConversationVue: View {
                 .padding(.top, 12).padding(.bottom, 8)
         case .systeme(let t): MessageSysteme(texte: t)
         case .msg(let r, let t, let h):
-            Bulle(recu: r, texte: t, heure: h).contextMenu { menuMessage }
+            Bulle(recu: r, texte: t, heure: h).contextMenu { menuPourTexte(t) }
         case .msgJoueur(let t, let h):
             // D54 : hors des moments d'histoire, l'envoi reste en non-distribution discrète (✓ gris)
-            Bulle(recu: false, texte: t, heure: h, distribue: false).contextMenu { menuMessage }
+            Bulle(recu: false, texte: t, heure: h, distribue: false).contextMenu { menuPourTexte(t) }
         case .msgGroupe(let exp, let coul, let t, let h):
             EnveloppeBulle(recu: true) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -336,10 +361,10 @@ struct ConversationVue: View {
                 .clipShape(.rect(topLeadingRadius: 5, bottomLeadingRadius: 18,
                                  bottomTrailingRadius: 18, topTrailingRadius: 18))
             }
-            .contextMenu { menuMessage }
+            .contextMenu { menuPourTexte(t) }
         case .riche(let r, let t, let h, let cn, let ct, let re):
-            BulleRiche(recu: r, texte: t, heure: h, citationNom: cn, citationTexte: ct, reaction: re)
-                .contextMenu { menuMessage }
+            BulleRiche(recu: r, texte: t, heure: h, citationNom: cn, citationTexte: ct, reaction: re, distribue: r)
+                .contextMenu { menuPourTexte(t) }
         case .vocal(let r, let d, let h): BulleVocale(recu: r, duree: d, heure: h)
         case .vocalAudio(let r, let d, let h, let f, let tr):
             BulleVocaleAudio(recu: r, duree: d, heure: h, fichier: f, transcription: tr)
@@ -347,7 +372,7 @@ struct ConversationVue: View {
             BulleAppel(recu: r, symbole: s, titre: t, sousTitre: st, heure: h, rouge: rouge)
                 .contentShape(Rectangle())
                 .onTapGesture { appelVisible = true }
-        case .image(let r, let h): BulleImage(recu: r, heure: h).contextMenu { menuMessage }
+        case .image(let r, let h): BulleImage(recu: r, heure: h).contextMenu { menuPourTexte("📷 Photo") }
         case .album(let r, let n, let h): BulleAlbum(recu: r, total: n, heure: h)
         case .video(let r, let d, let h): BulleVideo(recu: r, duree: d, heure: h)
         case .gif(let r, let h): BulleGIF(recu: r, heure: h)
@@ -363,8 +388,11 @@ struct ConversationVue: View {
     }
 
     @ViewBuilder
-    private var menuMessage: some View {
-        Button { } label: { Label("Répondre", systemImage: "arrowshape.turn.up.left") }
+    private func menuPourTexte(_ texte: String) -> some View {
+        Button {
+            let tronque = texte.count > 60 ? String(texte.prefix(60)) + "…" : texte
+            citation = tronque
+        } label: { Label("Répondre", systemImage: "arrowshape.turn.up.left") }
         Button { } label: { Label("Copier", systemImage: "doc.on.doc") }
         Button { } label: { Label("Transférer", systemImage: "arrowshape.turn.up.forward") }
         Button { } label: { Label("Épingler", systemImage: "pin") }

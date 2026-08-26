@@ -171,7 +171,7 @@ enum DonneesSante {
     ]
     // Nuit dernière (16 -> 17 août) : phases + horaires
     static let phasesNuit: [(nom: String, minutes: Int, teinte: UInt)] = [
-        ("Éveil", 24, 0xFF9F0A), ("Paradoxal", 52, 0x5AC8FA), ("Léger", 190, 0x0A84FF), ("Profond", 88, 0x3634A3),
+        ("Éveil", 24, 0xFF9F0A), ("Paradoxal", 56, 0x5AC8FA), ("Léger", 200, 0x0A84FF), ("Profond", 98, 0x3634A3),
     ]
     static let coucher = "01:12"
     static let lever = "07:30"}
@@ -404,10 +404,10 @@ struct PointFortSante: View {
             }
             Text(texte).font(.system(size: 13.5)).foregroundStyle(.white)
             HStack(alignment: .bottom, spacing: 4) {
-                ForEach(mesures.suffix(10)) { m in
+                ForEach(mesures.suffix(14)) { m in
                     Capsule().fill(Color(hex: teinte).opacity(0.75))
-                        .frame(height: CGFloat(8 + (m.valeur / max) * 26))
-                        .frame(maxWidth: .infinity)
+                        .frame(width: 5, height: CGFloat(8 + (m.valeur / max) * 26))
+                        .frame(maxWidth: .infinity, alignment: .bottom)
                 }
             }
             .frame(height: 36, alignment: .bottom)
@@ -488,7 +488,12 @@ struct FicheSanteVue: View {
                         Text(point.date + " 2026").font(.system(size: 13)).foregroundStyle(.secondary)
                     }
 
-                    // Graphique à barres (sélection au tap)
+                    // Graphique (poids : courbe à points ; sinon barres avec sélection au tap)
+                    if genre == "poids" {
+                        PoidsGrapheVue(mesures: config.mesures, teinte: config.teinte)
+                            .padding(14)
+                            .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
+                    } else {
                     VStack(spacing: 8) {
                         HStack(alignment: .bottom, spacing: periode == 2 ? 3 : 16) {
                             ForEach(visibles) { m in
@@ -517,6 +522,7 @@ struct FicheSanteVue: View {
                     }
                     .padding(14)
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
+                    }
 
                     // Historique (poids : liste des pesées, fidèle « Afficher toutes les données »)
                     if genre == "poids" {
@@ -577,6 +583,45 @@ struct SelecteurPeriodeSante: View {
         }
         .padding(3)
         .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 9))
+    }
+}
+
+// Courbe à points pour le poids (échelle resserrée min-1 / max+1)
+struct PoidsGrapheVue: View {
+    let mesures: [JourMesure]
+    let teinte: UInt
+
+    var body: some View {
+        let vals = mesures.map { $0.valeur }
+        let bas = (vals.min() ?? 60) - 1
+        let haut = (vals.max() ?? 64) + 1
+        VStack(spacing: 8) {
+            GeometryReader { geo in
+                let pts: [CGPoint] = mesures.enumerated().map { i, m in
+                    CGPoint(x: geo.size.width * (mesures.count == 1 ? 0.5 : CGFloat(i) / CGFloat(mesures.count - 1)),
+                            y: geo.size.height * (1 - CGFloat((m.valeur - bas) / (haut - bas))))
+                }
+                ZStack {
+                    Path { p in
+                        guard let premier = pts.first else { return }
+                        p.move(to: premier)
+                        for pt in pts.dropFirst() { p.addLine(to: pt) }
+                    }
+                    .stroke(Color(hex: teinte), lineWidth: 2)
+                    ForEach(Array(pts.enumerated()), id: \.offset) { _, pt in
+                        Circle().fill(Color(hex: teinte)).frame(width: 8, height: 8).position(pt)
+                    }
+                }
+            }
+            .frame(height: 150)
+            .padding(.horizontal, 6).padding(.top, 10)
+            HStack {
+                ForEach(Array(mesures.enumerated()), id: \.offset) { i, m in
+                    Text(m.date).font(.system(size: 9)).foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: i == 0 ? .leading : (i == mesures.count - 1 ? .trailing : .center))
+                }
+            }
+        }
     }
 }
 

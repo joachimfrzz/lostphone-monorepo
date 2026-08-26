@@ -148,3 +148,17 @@ sante.profil
 sante.medicale
 sante.urgence
 sante.historique
+messenger#0
+messenger#1
+messenger#2
+messenger#3
+messenger.chloe
+messenger.filles
+messenger.fiche
+messenger.membres
+messenger.medias
+messenger.appel
+messenger.parametres
+messenger.invitations
+messenger.archive
+messenger.nouveau

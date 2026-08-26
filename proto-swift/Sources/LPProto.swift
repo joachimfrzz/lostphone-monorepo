@@ -51,6 +51,7 @@ struct EcranCapture: View {
         case "whatsapp": ecransWhatsapp()
         case "fichiers": ecransFichiers()
         case "sante": ecransSante()
+        case "messenger": ecransMessenger()
         case "cartes": ecransCartes()
         default: VerrouillageView()
         }
@@ -78,6 +79,23 @@ struct EcranCapture: View {
         case "sante.urgence": ContactUrgenceSanteVue()
         case "sante.historique": HistoriqueSanteVue()
         default: SanteVue()
+        }
+    }
+
+    @ViewBuilder
+    private func ecransMessenger() -> some View {
+        switch cle {
+        case "messenger.chloe": MsgrConversationVue(conv: DonneesMessenger.conversations[0])
+        case "messenger.filles": MsgrConversationVue(conv: DonneesMessenger.conversations[2])
+        case "messenger.fiche": MsgrFicheVue(conv: DonneesMessenger.conversations[2])
+        case "messenger.membres": MsgrMembresVue()
+        case "messenger.medias": MsgrMediasVue(conv: DonneesMessenger.conversations[2])
+        case "messenger.appel": MsgrAppelVue(conv: DonneesMessenger.conversations[0])
+        case "messenger.parametres": MsgrParametresVue()
+        case "messenger.invitations": MsgrInvitationsVue()
+        case "messenger.archive": MsgrArchiveVue()
+        case "messenger.nouveau": MsgrNouvelleDiscussionVue()
+        default: MessengerVue()
         }
     }
 
@@ -602,6 +620,7 @@ struct AccueilView: View {
     @State private var fichiersOuverts = false
     @State private var cartesOuvertes = false
     @State private var santeOuverte = false
+    @State private var messengerOuvert = false
     @ObservedObject private var routeur = Routeur.partage
 
     private let apps: [(String, Color, String, Color)] = [
@@ -622,6 +641,7 @@ struct AccueilView: View {
         ("App Store", Color(hex: 0x0A84FF), "square.stack.3d.up.fill", .white),
         ("Fichiers", .white, "folder.fill", Color(hex: 0x0A84FF)),
         ("Dictaphone", Color(hex: 0x1C1C1E), "waveform", Color(hex: 0xFF3B30)),
+        ("Messenger", Color(hex: 0x0084FF), "bolt.horizontal.circle.fill", .white),
     ]
 
     private func fermerToutesLesApps() {
@@ -631,7 +651,7 @@ struct AccueilView: View {
         rappelsOuverts = false; dictaphoneOuvert = false; banqueOuverte = false
         calendrierOuvert = false; localiserOuvert = false; mailOuvert = false
         plansOuverts = false; safariOuvert = false
-        fichiersOuverts = false; cartesOuvertes = false; santeOuverte = false
+        fichiersOuverts = false; cartesOuvertes = false; santeOuverte = false; messengerOuvert = false
     }
 
     private func actionPour(_ nom: String) -> (() -> Void)? {
@@ -651,6 +671,7 @@ struct AccueilView: View {
         case "Fichiers": return { fichiersOuverts = true }
         case "Cartes": return { cartesOuvertes = true }
         case "Santé": return { santeOuverte = true }
+        case "Messenger": return { messengerOuvert = true }
         default: return nil
         }
     }
@@ -748,6 +769,7 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $fichiersOuverts) { FichiersVue() }
         .fullScreenCover(isPresented: $cartesOuvertes) { CartesVueWallet() }
         .fullScreenCover(isPresented: $santeOuverte) { SanteVue() }
+        .fullScreenCover(isPresented: $messengerOuvert) { MessengerVue() }
         .onChange(of: routeur.demande) { _, _ in
             // Navigation inter-apps : fermer l'app courante puis ouvrir la cible (P3)
             fermerToutesLesApps()

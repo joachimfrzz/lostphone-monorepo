@@ -13,7 +13,7 @@ struct MsgrConversation: Identifiable {
     var photo: String?      // clé pellicule ou nil -> initiale colorée
     var teinte: UInt
     var apercu: String
-    var date: String
+    var date: String = ""
     var nonLu: Bool = false
     var groupe: Bool = false
 }

@@ -99,6 +99,17 @@ struct SnapchatVue: View {
 // ============================================================ CHAT (liste, thème clair)
 struct SnapChatListeVue: View {
     @State private var conv: SnapAmi? = nil
+    @State private var filtre: String? = nil
+
+    private var amisVisibles: [SnapAmi] {
+        switch filtre {
+        case "Groupes": return DonneesSnap.amis.filter { $0.id == "soiree" }
+        case "Près de moi": return DonneesSnap.amis.filter { $0.id == "chloe" }
+        case "Meilleurs·es amis·es": return DonneesSnap.amis.filter { ["chloe", "ines", "camille"].contains($0.id) }
+        case "🤖 My AI": return DonneesSnap.amis.filter { $0.id == "team" }
+        default: return DonneesSnap.amis
+        }
+    }
 
     var body: some View {
         ScrollView {
@@ -130,16 +141,19 @@ struct SnapChatListeVue: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         ForEach(["🤖 My AI", "Groupes", "Près de moi", "Meilleurs·es amis·es"], id: \.self) { c in
-                            Text(c).font(.system(size: 13, weight: .semibold)).foregroundStyle(.black)
+                            Text(c).font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(filtre == c ? Color.white : Color.black)
                                 .padding(.horizontal, 13).padding(.vertical, 7)
-                                .background(Color(hex: 0xF0F0F0), in: Capsule())
+                                .background(filtre == c ? Color.black : Color(hex: 0xF0F0F0), in: Capsule())
+                                .contentShape(Capsule())
+                                .onTapGesture { Haptique.leger(); filtre = (filtre == c ? nil : c) }
                         }
                     }
                     .padding(.horizontal, 14)
                 }
 
                 VStack(spacing: 0) {
-                    ForEach(DonneesSnap.amis) { a in
+                    ForEach(amisVisibles) { a in
                         HStack(spacing: 11) {
                             SnapAvatar(ami: a)
                             VStack(alignment: .leading, spacing: 2) {
@@ -387,6 +401,8 @@ struct SnapCameraVue: View {
 
 // ============================================================ STORIES (Amis-es + Découvrir)
 struct SnapStoriesVue: View {
+    @State private var storyAmi: SnapAmi? = nil
+    @State private var carteDecouvrir: Int? = nil
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
@@ -416,6 +432,8 @@ struct SnapStoriesVue: View {
                                     .font(.system(size: 11)).foregroundStyle(.black).lineLimit(1)
                             }
                             .frame(width: 74)
+                            .contentShape(Rectangle())
+                            .onTapGesture { storyAmi = a }
                         }
                     }
                     .padding(.horizontal, 14).padding(.vertical, 4)
@@ -423,7 +441,7 @@ struct SnapStoriesVue: View {
 
                 Text("Découvrir").font(.system(size: 16, weight: .bold)).foregroundStyle(.black).padding(.horizontal, 14)
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
-                    ForEach(Array(DonneesSnap.decouvrir.enumerated()), id: \.offset) { _, d in
+                    ForEach(Array(DonneesSnap.decouvrir.enumerated()), id: \.offset) { i, d in
                         ZStack(alignment: .bottomLeading) {
                             Group {
                                 if let img = ChargeurPhoto.image(d.1) {
@@ -438,12 +456,27 @@ struct SnapStoriesVue: View {
                                 .padding(10)
                         }
                         .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .contentShape(Rectangle())
+                        .onTapGesture { carteDecouvrir = i }
                     }
                 }
                 .padding(.horizontal, 14)
                 Spacer(minLength: 100)
             }
             .padding(.top, 6)
+        }
+        .fullScreenCover(isPresented: Binding(get: { storyAmi != nil }, set: { if !$0 { storyAmi = nil } })) {
+            VisualiseurContenuVue(titre: (storyAmi ?? DonneesSnap.amis[0]).nom,
+                                  sousTitre: "Story · il y a 3 h",
+                                  emoji: (storyAmi ?? DonneesSnap.amis[0]).emoji,
+                                  teinte: 0xB84DFF)
+        }
+        .fullScreenCover(isPresented: Binding(get: { carteDecouvrir != nil }, set: { if !$0 { carteDecouvrir = nil } })) {
+            VisualiseurContenuVue(titre: DonneesSnap.decouvrir[carteDecouvrir ?? 0].0,
+                                  sousTitre: "Découvrir",
+                                  imageCle: DonneesSnap.decouvrir[carteDecouvrir ?? 0].1,
+                                  teinte: DonneesSnap.decouvrir[carteDecouvrir ?? 0].2,
+                                  avecMessage: false)
         }
     }
 }

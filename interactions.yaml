@@ -2,8 +2,26 @@
 # Audit exhaustif des éléments à AFFORDANCE laissés inertes, 30 apps, 538 éléments.
 # reco : A = vraie action à construire | B = interaction légère crédible (jamais un faux-semblant)
 #        C = garder inerte (promesse faible, réalisme) | D = supprimer (rare)
-# litige : true = soumis à l'arbitrage de Joachim avant implémentation.
-# STATUT : EN ATTENTE D'ARBITRAGE — ne rien implémenter avant le GO.
+#
+# ═══ ARBITRAGES DU 26/08 (D69) ═══
+# GO Joachim : toutes les recos non litigieuses sont VALIDÉES. Litiges délégués à l'agent
+# (application de D69 : narratif prime, R10 garde-fou), traces des arbitrages ci-dessous.
+# LOT 1 arbitré par Joachim :
+#   1 Coque/Recherche -> A (vague dédiée) | 2 WhatsApp/Répondre -> A simplifié (citation)
+#   3 Photos/Sélect. -> C (ARBITRAGE JOACHIM+agent : la pellicule = corpus d'indices,
+#     pas d'actions de lot destructrices sur les preuves) | 4 Photos/éditeur -> C (grisé)
+#   5 Horloge/CONFIGURER -> B (vraie feuille d'horaires) | 6 Santé/Modifier -> B (bascules épinglés réelles)
+#   7 Messages/conversations supprimées -> B ouvrables (les serrures = scénario, pas l'app)
+#   8 Réglages/Meetic -> B sobre | 9 Safari/Fonfon -> B diégétique (réservation par téléphone + Routeur)
+#   10 Banque/bascules -> B | 11 Téléphone/tap-ligne=appel -> B (fidélité iOS, P5)
+#   12 Plans/Ajouter un arrêt -> C assumé | 13 Spotify/scrubbing -> B (DragGesture)
+#   14 YouTube/play -> B VRAIE VIDÉO (ARBITRAGE JOACHIM : pas de fausse lecture sur image fixe —
+#     mini-clips réels embarqués + composant LecteurVideo AVPlayer, réutilisable pour les histoires)
+#   15 Stories/Découvrir/DM -> B via composants partagés R1/R3
+# VAGUE 1 (26/08 soir) : VisualiseurContenuVue (R1) + FilGeneriqueVue (R3) créés dans
+#   InteractionsPartagees.swift ; branchés : stories Snapchat (Amis·es), cartes Découvrir,
+#   stories Facebook, lignes DM Instagram ; chips Snapchat -> filtres réels (R5).
+# STATUT : vague 1 en cours d'implémentation, vagues suivantes à venir (traces ajoutées au fil).
 - app: WhatsApp
   ecran: ConversationVue (fil)
   element: icône « + » barre de saisie (pièces jointes)

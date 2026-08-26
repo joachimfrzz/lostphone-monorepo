@@ -104,6 +104,7 @@ struct FacebookVue: View {
 // ============================================================ FIL
 struct FbFilVue: View {
     @State private var commentairesVisibles = false
+    @State private var storyOuverte: Int? = nil
 
     var body: some View {
         ScrollView {
@@ -160,7 +161,7 @@ struct FbFilVue: View {
                             .frame(height: 62, alignment: .bottom)
                         }
                         .clipShape(RoundedRectangle(cornerRadius: 12))
-                        ForEach(Array([("Chloé", "p12"), ("Inès", "p22"), ("Léa", "p18")].enumerated()), id: \.offset) { _, s in
+                        ForEach(Array([("Chloé", "p12"), ("Inès", "p22"), ("Léa", "p18")].enumerated()), id: \.offset) { i, s in
                             ZStack(alignment: .bottomLeading) {
                                 Group {
                                     if let img = ChargeurPhoto.image(s.1) {
@@ -172,6 +173,8 @@ struct FbFilVue: View {
                                 Text(s.0).font(.system(size: 12, weight: .semibold)).foregroundStyle(.white).padding(8)
                             }
                             .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .contentShape(Rectangle())
+                            .onTapGesture { storyOuverte = i }
                         }
                     }
                     .padding(.horizontal, 14)
@@ -187,6 +190,11 @@ struct FbFilVue: View {
             .padding(.top, 6)
         }
         .sheet(isPresented: $commentairesVisibles) { FbCommentairesVue() }
+        .fullScreenCover(isPresented: Binding(get: { storyOuverte != nil }, set: { if !$0 { storyOuverte = nil } })) {
+            VisualiseurContenuVue(titre: [("Chloé Berthier", "p12"), ("Inès Djellal", "p22"), ("Léa Moreau", "p18")][storyOuverte ?? 0].0,
+                                  sousTitre: "Story · il y a 5 h",
+                                  imageCle: [("Chloé", "p12"), ("Inès", "p22"), ("Léa", "p18")][storyOuverte ?? 0].1)
+        }
     }
 }
 

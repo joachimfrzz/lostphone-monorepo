@@ -54,7 +54,7 @@ struct EcranCapture: View {
         case "messenger": ecransMessenger()
         case "instagram": ecransInstagram()
         case "snapchat": ecransSnapchat()
-        case "facebook": FacebookVue()
+        case "facebook": ecransFacebook()
         case "x": ecransX()
         case "chatgpt": ChatGPTVue()
         case "spotify": SpotifyVue()
@@ -113,6 +113,7 @@ struct EcranCapture: View {
         case "instagram.profilprive": InstaProfilTiersVue(compte: DonneesInsta.comptes[3])
         case "instagram.dm": InstaDMVue()
         case "instagram.activite": InstaActiviteVue()
+        case "instagram.dmconv": FilGeneriqueVue(nom: "Chloé Berthier", teinte: 0xE64980, messages: [(false, "Regarde cette publication, ça m'a fait penser à toi 😍"), (true, "Ahah j'adore !! On y va ?"), (false, "Carrément, je regarde les dates")])
         default: InstagramVue()
         }
     }
@@ -121,7 +122,16 @@ struct EcranCapture: View {
     private func ecransSnapchat() -> some View {
         switch cle {
         case "snapchat.conv": SnapConversationVue(ami: DonneesSnap.amis[0])
+        case "snapchat.story": VisualiseurContenuVue(titre: "Chloé 💛", sousTitre: "Story · il y a 3 h", emoji: "👩🏻‍🦰", teinte: 0xB84DFF)
         default: SnapchatVue()
+        }
+    }
+
+    @ViewBuilder
+    private func ecransFacebook() -> some View {
+        switch cle {
+        case "facebook.story": VisualiseurContenuVue(titre: "Chloé Berthier", sousTitre: "Story · il y a 5 h", imageCle: "p12")
+        default: FacebookVue()
         }
     }
 

@@ -616,6 +616,7 @@ struct InstaProfilTiersVue: View {
 // ============================================================ DM + ACTIVITÉ
 struct InstaDMVue: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var filOuvert: InstaCompte? = nil
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -632,6 +633,8 @@ struct InstaDMVue: View {
                             Image(systemName: "camera").font(.system(size: 19)).foregroundStyle(.secondary)
                         }
                         .padding(.horizontal, 14).padding(.vertical, 8)
+                        .contentShape(Rectangle())
+                        .onTapGesture { filOuvert = c }
                     }
                 }
                 .padding(.top, 8)
@@ -643,6 +646,13 @@ struct InstaDMVue: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("OK") { dismiss() }.foregroundStyle(Color(hex: 0x0095F6))
                 }
+            }
+            .sheet(isPresented: Binding(get: { filOuvert != nil }, set: { if !$0 { filOuvert = nil } })) {
+                FilGeneriqueVue(nom: (filOuvert ?? DonneesInsta.comptes[0]).nom,
+                                teinte: (filOuvert ?? DonneesInsta.comptes[0]).teinte,
+                                messages: (filOuvert?.id == "chloe.brt")
+                                ? [(false, "Regarde cette publication, ça m'a fait penser à toi 😍"), (true, "Ahah j'adore !! On y va ?"), (false, "Carrément, je regarde les dates")]
+                                : [(false, "Vu · pas encore de réponse")])
             }
         }
         .preferredColorScheme(.dark)

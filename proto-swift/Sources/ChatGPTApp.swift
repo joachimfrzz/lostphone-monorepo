@@ -31,6 +31,7 @@ struct ChatGPTVue: View {
     @State private var menuVisible = false
     @State private var convVisible = false
     @State private var saisie = ""
+    @State private var modeWork = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -43,24 +44,34 @@ struct ChatGPTVue: View {
                         .onTapGesture { menuVisible = true }
                     Spacer()
                     HStack(spacing: 0) {
-                        Text("Chat").font(.system(size: 13, weight: .semibold)).foregroundStyle(.black)
+                        Text("Chat").font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(modeWork ? Color.white : Color.black)
                             .padding(.horizontal, 16).padding(.vertical, 6)
-                            .background(Color.white, in: Capsule())
-                        Text("Work").font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
+                            .background(modeWork ? Color.clear : Color.white, in: Capsule())
+                            .contentShape(Rectangle())
+                            .onTapGesture { withAnimation { modeWork = false } }
+                        Text("Work").font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(modeWork ? Color.black : Color.white)
                             .padding(.horizontal, 16).padding(.vertical, 6)
+                            .background(modeWork ? Color.white : Color.clear, in: Capsule())
+                            .contentShape(Rectangle())
+                            .onTapGesture { withAnimation { modeWork = true } }
                     }
                     .padding(3)
                     .background(Color(hex: gptCarte), in: Capsule())
                     Spacer()
                     Image(systemName: "clock.arrow.circlepath").font(.system(size: 18)).foregroundStyle(.white)
+                        .contentShape(Rectangle())
+                        .onTapGesture { menuVisible = true }
                 }
                 .padding(.horizontal, 16).padding(.top, 6)
 
                 Spacer()
-                Text("Salut Sarah 😊 Qu'est-ce qu'on fait ce soir ?")
+                Text(modeWork ? "Mode Work — Qu'est-ce qu'on accomplit aujourd'hui ?" : "Salut Sarah 😊 Qu'est-ce qu'on fait ce soir ?")
                     .font(.system(size: 21, weight: .semibold)).foregroundStyle(.white)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
+                    .animation(.easeInOut(duration: 0.2), value: modeWork)
                 Spacer()
 
                 // Champ de saisie

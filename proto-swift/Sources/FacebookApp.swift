@@ -101,10 +101,58 @@ struct FacebookVue: View {
     }
 }
 
+// ============================================================ COMPOSEUR DE POST
+struct FbComposeurVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var onPublier: (String) -> Void
+    @State private var texte = ""
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .top, spacing: 10) {
+                    Group {
+                        if let img = ChargeurPhoto.image("p04") {
+                            Image(uiImage: img).resizable().scaledToFill().frame(width: 40, height: 40).clipShape(Circle())
+                        } else { Circle().fill(Color(hex: 0x5B7CFA)).frame(width: 40, height: 40) }
+                    }
+                    TextField("", text: $texte, prompt: Text("Quoi de neuf, Sarah ?").foregroundStyle(.gray), axis: .vertical)
+                        .font(.system(size: 16)).foregroundStyle(.black)
+                }
+                .padding(.horizontal, 14)
+                Spacer()
+            }
+            .padding(.top, 14)
+            .background(Color.white)
+            .navigationTitle("Créer une publication")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Annuler") { dismiss() }.foregroundStyle(Color(hex: fbBleu))
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Publier") {
+                        if !texte.isEmpty { onPublier(texte) }
+                        dismiss()
+                    }
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(texte.isEmpty ? Color.gray : Color.white)
+                    .padding(.horizontal, 10).padding(.vertical, 6)
+                    .background(texte.isEmpty ? Color(hex: 0xBCC0C4) : Color(hex: fbBleu), in: Capsule())
+                    .disabled(texte.isEmpty)
+                }
+            }
+        }
+        .preferredColorScheme(.light)
+    }
+}
+
 // ============================================================ FIL
 struct FbFilVue: View {
     @State private var commentairesVisibles = false
     @State private var storyOuverte: Int? = nil
+    @State private var composeurVisible = false
+    @State private var postsLocaux: [String] = []
 
     var body: some View {
         ScrollView {
@@ -112,9 +160,10 @@ struct FbFilVue: View {
                 HStack {
                     Text("facebook").font(.system(size: 26, weight: .heavy)).foregroundStyle(Color(hex: fbBleu))
                     Spacer()
-                    ForEach(["plus.circle.fill", "magnifyingglass.circle.fill"], id: \.self) { s in
-                        Image(systemName: s).font(.system(size: 26)).foregroundStyle(.black)
-                    }
+                    Image(systemName: "plus.circle.fill").font(.system(size: 26)).foregroundStyle(.black)
+                        .contentShape(Rectangle())
+                        .onTapGesture { composeurVisible = true }
+                    Image(systemName: "magnifyingglass.circle.fill").font(.system(size: 26)).foregroundStyle(.black)
                     ZStack(alignment: .topTrailing) {
                         Image(systemName: "message.circle.fill").font(.system(size: 26)).foregroundStyle(.black)
                         Text("8").font(.system(size: 9, weight: .bold)).foregroundStyle(.white)
@@ -180,6 +229,12 @@ struct FbFilVue: View {
                     .padding(.horizontal, 14)
                 }
 
+                // Posts locaux (composeur)
+                ForEach(postsLocaux.reversed(), id: \.self) { t in
+                    Rectangle().fill(Color(hex: 0xF0F2F5)).frame(height: 6)
+                    FbPostVue(post: FbPost(auteur: "Sarah Levasseur", teinte: 0x5B7CFA, meta: "À l'instant · 👥",
+                                          texte: t, image: nil, reactions: "0", commentaires: "0 commentaire", partages: "0 partage")) { commentairesVisibles = true }
+                }
                 // Posts
                 ForEach(DonneesFb.posts) { p in
                     Rectangle().fill(Color(hex: 0xF0F2F5)).frame(height: 6)
@@ -190,6 +245,9 @@ struct FbFilVue: View {
             .padding(.top, 6)
         }
         .sheet(isPresented: $commentairesVisibles) { FbCommentairesVue() }
+        .sheet(isPresented: $composeurVisible) {
+            FbComposeurVue { texte in postsLocaux.append(texte) }
+        }
         .fullScreenCover(isPresented: Binding(get: { storyOuverte != nil }, set: { if !$0 { storyOuverte = nil } })) {
             VisualiseurContenuVue(titre: [("Chloé Berthier", "p12"), ("Inès Djellal", "p22"), ("Léa Moreau", "p18")][storyOuverte ?? 0].0,
                                   sousTitre: "Story · il y a 5 h",
@@ -328,6 +386,7 @@ struct FbCommentaire: View {
 // ============================================================ REELS
 struct FbReelsVue: View {
     @State private var aime = false
+    @State private var creerReelVisible = false
     var body: some View {
         ZStack {
             Group {
@@ -342,6 +401,8 @@ struct FbReelsVue: View {
                     Text("Reels").font(.system(size: 22, weight: .bold)).foregroundStyle(.white)
                     Spacer()
                     Image(systemName: "camera").font(.system(size: 21)).foregroundStyle(.white)
+                        .contentShape(Rectangle())
+                        .onTapGesture { creerReelVisible = true }
                 }
                 .padding(.horizontal, 14).padding(.top, 4)
                 Spacer()
@@ -375,6 +436,35 @@ struct FbReelsVue: View {
                 .padding(.horizontal, 14).padding(.bottom, 96)
             }
         }
+        .sheet(isPresented: $creerReelVisible) {
+            FbFeuilleSimpleVue(titre: "Créer un Reel", message: "La création de Reels sera disponible prochainement.")
+        }
+    }
+}
+
+// Feuille simple réutilisable
+struct FbFeuilleSimpleVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let titre: String
+    let message: String
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 16) {
+                Image(systemName: "play.rectangle.fill").font(.system(size: 48)).foregroundStyle(Color(hex: fbBleu))
+                Text(message).font(.system(size: 15)).foregroundStyle(.gray).multilineTextAlignment(.center).padding(.horizontal, 32)
+                Spacer()
+            }
+            .padding(.top, 40)
+            .background(Color.white)
+            .navigationTitle(titre)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fermer") { dismiss() }.foregroundStyle(Color(hex: fbBleu))
+                }
+            }
+        }
+        .preferredColorScheme(.light)
     }
 }
 
@@ -444,6 +534,7 @@ struct FbAmisVue: View {
 // ============================================================ GROUPES
 struct FbGroupesVue: View {
     @State private var rejoints: Set<String> = []
+    @State private var creerGroupeVisible = false
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
@@ -451,6 +542,8 @@ struct FbGroupesVue: View {
                     Text("Groupes").font(.system(size: 24, weight: .bold)).foregroundStyle(.black)
                     Spacer()
                     Image(systemName: "plus").font(.system(size: 19)).foregroundStyle(.black)
+                        .contentShape(Rectangle())
+                        .onTapGesture { creerGroupeVisible = true }
                     Image(systemName: "magnifyingglass").font(.system(size: 19)).foregroundStyle(.black).padding(.leading, 12)
                 }
                 .padding(.horizontal, 14)
@@ -488,11 +581,15 @@ struct FbGroupesVue: View {
             .padding(.top, 6)
         }
         .background(Color(hex: 0xF7F8FA))
+        .sheet(isPresented: $creerGroupeVisible) {
+            FbFeuilleSimpleVue(titre: "Créer un groupe", message: "Choisissez un nom et invitez vos amis pour commencer.")
+        }
     }
 }
 
 // ============================================================ NOTIFICATIONS
 struct FbNotificationsVue: View {
+    @State private var filVisible = false
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
@@ -517,16 +614,21 @@ struct FbNotificationsVue: View {
                     }
                     .padding(.horizontal, 14).padding(.vertical, 5)
                     .background(n.3 ? Color.white : Color(hex: 0xE7F0FF))
+                    .contentShape(Rectangle())
+                    .onTapGesture { Haptique.leger(); filVisible = true }
                 }
                 Spacer(minLength: 90)
             }
             .padding(.top, 6)
         }
+        .fullScreenCover(isPresented: $filVisible) { FbFilVue() }
     }
 }
 
 // ============================================================ MENU
 struct FbMenuVue: View {
+    @State private var reglagesVisible = false
+    @State private var profilVisible = false
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
@@ -534,6 +636,8 @@ struct FbMenuVue: View {
                     Text("Menu").font(.system(size: 24, weight: .bold)).foregroundStyle(.black)
                     Spacer()
                     Image(systemName: "gearshape.fill").font(.system(size: 19)).foregroundStyle(.black)
+                        .contentShape(Rectangle())
+                        .onTapGesture { reglagesVisible = true }
                     Image(systemName: "magnifyingglass").font(.system(size: 19)).foregroundStyle(.black).padding(.leading, 12)
                 }
                 .padding(.horizontal, 14)
@@ -555,6 +659,8 @@ struct FbMenuVue: View {
                 .background(Color.white, in: RoundedRectangle(cornerRadius: 12))
                 .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(Color(hex: 0xE4E6EB), lineWidth: 1))
                 .padding(.horizontal, 14)
+                .contentShape(Rectangle())
+                .onTapGesture { profilVisible = true }
 
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2), spacing: 10) {
                     ForEach(Array([
@@ -593,5 +699,55 @@ struct FbMenuVue: View {
             .padding(.top, 6)
         }
         .background(Color(hex: 0xF7F8FA))
+        .sheet(isPresented: $reglagesVisible) {
+            FbFeuilleSimpleVue(titre: "Réglages et confidentialité", message: "Gérez vos paramètres Facebook ici.")
+        }
+        .sheet(isPresented: $profilVisible) { FbProfilVue() }
+    }
+}
+
+struct FbProfilVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 0) {
+                    Rectangle().fill(Color(hex: 0xE4E6EB)).frame(height: 130)
+                    VStack(spacing: 10) {
+                        Group {
+                            if let img = ChargeurPhoto.image("p04") {
+                                Image(uiImage: img).resizable().scaledToFill().frame(width: 96, height: 96).clipShape(Circle())
+                            } else { Circle().fill(Color(hex: 0x5B7CFA)).frame(width: 96, height: 96) }
+                        }
+                        .overlay(Circle().strokeBorder(Color.white, lineWidth: 4))
+                        .offset(y: -48)
+                        .padding(.bottom, -40)
+                        Text("Sarah Levasseur").font(.system(size: 22, weight: .bold)).foregroundStyle(.black)
+                        HStack(spacing: 20) {
+                            VStack(spacing: 2) {
+                                Text("247").font(.system(size: 15, weight: .bold)).foregroundStyle(.black)
+                                Text("Ami(e)s").font(.system(size: 12)).foregroundStyle(.gray)
+                            }
+                            VStack(spacing: 2) {
+                                Text("5").font(.system(size: 15, weight: .bold)).foregroundStyle(.black)
+                                Text("Publications").font(.system(size: 12)).foregroundStyle(.gray)
+                            }
+                        }
+                        .padding(.top, 4)
+                    }
+                    .padding(.horizontal, 14)
+                    Spacer(minLength: 40)
+                }
+            }
+            .background(Color.white)
+            .navigationTitle("Profil")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fermer") { dismiss() }.foregroundStyle(Color(hex: fbBleu))
+                }
+            }
+        }
+        .preferredColorScheme(.light)
     }
 }

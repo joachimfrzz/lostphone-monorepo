@@ -287,6 +287,7 @@ struct XPostDetailVue: View {
 // ============================================================ EXPLORE
 struct XExploreVue: View {
     @State private var texte = ""
+    @State private var postTendanceOuvert: XPost? = nil
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
@@ -318,10 +319,15 @@ struct XExploreVue: View {
                         Image(systemName: "ellipsis").foregroundStyle(.gray)
                     }
                     .padding(.horizontal, 14).padding(.vertical, 8)
+                    .contentShape(Rectangle())
+                    .onTapGesture { postTendanceOuvert = DonneesX.posts[min(i, DonneesX.posts.count - 1)] }
                 }
                 Spacer(minLength: 90)
             }
             .padding(.top, 8)
+        }
+        .fullScreenCover(isPresented: Binding(get: { postTendanceOuvert != nil }, set: { if !$0 { postTendanceOuvert = nil } })) {
+            XPostDetailVue(post: postTendanceOuvert ?? DonneesX.posts[0])
         }
     }
 }

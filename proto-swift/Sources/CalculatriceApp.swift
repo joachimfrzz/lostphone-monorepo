@@ -14,6 +14,7 @@ struct CalculatriceVue: View {
     @State private var historique: [String] = []
     @State private var historiqueVisible = false
     @State private var copie = false
+    @State private var alerteScientifique = false
 
     private let orange = Color(hex: 0xFC8400)      // mesuré sur la référence (f001)
     private let grisFonce = Color(hex: 0x545456)   // rangée haute ⌫ C % — CLAIRE sur la référence
@@ -120,6 +121,7 @@ struct CalculatriceVue: View {
                     .font(.system(size: 17)).foregroundStyle(.white.opacity(0.85))
                     .frame(width: 40, height: 40)
                     .background(Color(hex: 0x1C1C1E), in: Circle())
+                    .onTapGesture { alerteScientifique = true }
             }
             .padding(.horizontal, 18).padding(.top, 6)
 
@@ -188,6 +190,11 @@ struct CalculatriceVue: View {
         .preferredColorScheme(.dark)
         .alert("Copié", isPresented: $copie) { Button("OK", role: .cancel) {} } message: {
             Text("Le résultat a été copié dans le presse-papiers.")
+        }
+        .alert("Mode scientifique", isPresented: $alerteScientifique) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Le mode scientifique n'est pas disponible sur cet iPhone. Faites pivoter l'appareil en paysage pour y accéder.")
         }
         .sheet(isPresented: $historiqueVisible) {
             NavigationStack {

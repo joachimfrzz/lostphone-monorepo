@@ -313,7 +313,7 @@ struct VilleMeteoVue: View {
         .sheet(isPresented: $conditionsVisibles) { ConditionsMeteoVue(ville: ville) }
         .sheet(isPresented: $signaler) { SignalerMeteoVue() }
         .alert("Plans", isPresented: $plans) { Button("OK", role: .cancel) {} } message: {
-            Text(ErreurLambda.reponse("app.attente"))
+            Text("Plans s'ouvre.")
         }
     }
 }
@@ -774,6 +774,8 @@ struct CarteMeteoVue: View {
     @State private var position = MapCameraPosition.region(
         MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 45.7640, longitude: 4.8357),
                            span: MKCoordinateSpan(latitudeDelta: 6.5, longitudeDelta: 6.5)))
+    @State private var styleVisible = false
+    @State private var styleSatellite = false
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -788,7 +790,7 @@ struct CarteMeteoVue: View {
                     }
                 }
             }
-            .mapStyle(.standard(elevation: .flat, pointsOfInterest: .excludingAll))
+            .mapStyle(styleSatellite ? .imagery(elevation: .flat) : .standard(elevation: .flat, pointsOfInterest: .excludingAll))
             .ignoresSafeArea()
 
             HStack {
@@ -803,13 +805,26 @@ struct CarteMeteoVue: View {
                         .font(.system(size: 17)).foregroundStyle(.white)
                         .frame(width: 40, height: 40)
                         .background(.ultraThinMaterial, in: Circle())
+                        .onTapGesture { styleVisible = true }
                     Image(systemName: "location")
                         .font(.system(size: 16)).foregroundStyle(.white)
                         .frame(width: 40, height: 40)
                         .background(.ultraThinMaterial, in: Circle())
+                        .onTapGesture {
+                            withAnimation {
+                                position = .region(MKCoordinateRegion(
+                                    center: CLLocationCoordinate2D(latitude: 45.7640, longitude: 4.8357),
+                                    span: MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)))
+                            }
+                        }
                 }
             }
             .padding(.horizontal, 16).padding(.top, 8)
+        }
+        .confirmationDialog("Style de carte", isPresented: $styleVisible) {
+            Button("Standard") { styleSatellite = false }
+            Button("Satellite") { styleSatellite = true }
+            Button("Annuler", role: .cancel) {}
         }
         .preferredColorScheme(.dark)
     }

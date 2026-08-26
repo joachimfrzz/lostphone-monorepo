@@ -131,6 +131,7 @@ struct InstagramVue: View {
 // ============================================================ FEED
 struct InstaFeedVue: View {
     @State private var storyOuverte: InstaCompte? = nil
+    @State private var ajoutStoryVisible = false
     @State private var dmOuverts = false
     @State private var activiteOuverte = false
 
@@ -169,6 +170,8 @@ struct InstaFeedVue: View {
                             }
                             Text("Votre story").font(.system(size: 11.5)).foregroundStyle(.secondary)
                         }
+                        .contentShape(Rectangle())
+                        .onTapGesture { ajoutStoryVisible = true }
                         ForEach(DonneesInsta.comptes) { c in
                             VStack(spacing: 4) {
                                 InstaAvatar(compte: c, taille: 62, anneau: true)
@@ -197,6 +200,55 @@ struct InstaFeedVue: View {
         }
         .sheet(isPresented: $dmOuverts) { InstaDMVue() }
         .sheet(isPresented: $activiteOuverte) { InstaActiviteVue() }
+        .sheet(isPresented: $ajoutStoryVisible) { InstaAjoutStoryVue() }
+    }
+}
+
+struct InstaAjoutStoryVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                Image(systemName: "rectangle.stack.person.crop.fill")
+                    .font(.system(size: 52)).foregroundStyle(Color(hex: 0x0095F6))
+                    .padding(.top, 40)
+                Text("Ajouter à votre story")
+                    .font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
+                Text("Partagez une photo, une vidéo ou un texte avec vos abonnés.")
+                    .font(.system(size: 14)).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                    .padding(.horizontal, 30)
+                VStack(spacing: 12) {
+                    Button(action: { Haptique.leger(); dismiss() }) {
+                        Label("Galerie photo", systemImage: "photo.on.rectangle")
+                            .font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                            .frame(maxWidth: .infinity).padding(.vertical, 14)
+                            .background(Color(hex: 0x0095F6), in: RoundedRectangle(cornerRadius: 12))
+                    }
+                    Button(action: { Haptique.leger(); dismiss() }) {
+                        Label("Appareil photo", systemImage: "camera.fill")
+                            .font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                            .frame(maxWidth: .infinity).padding(.vertical, 14)
+                            .background(Color(hex: 0x262626), in: RoundedRectangle(cornerRadius: 12))
+                    }
+                    Button(action: { Haptique.leger(); dismiss() }) {
+                        Label("Texte", systemImage: "textformat")
+                            .font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                            .frame(maxWidth: .infinity).padding(.vertical, 14)
+                            .background(Color(hex: 0x262626), in: RoundedRectangle(cornerRadius: 12))
+                    }
+                }
+                .padding(.horizontal, 20)
+                Spacer()
+            }
+            .background(Color.black)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fermer") { dismiss() }.foregroundStyle(Color(hex: 0x0095F6))
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 
@@ -314,6 +366,7 @@ struct InstaStoryVue: View {
 struct InstaRechercheVue: View {
     @State private var texte = ""
     @State private var profilOuvert: InstaCompte? = nil
+    @State private var imageOuverte: String? = nil
     @FocusState private var actif: Bool
 
     var body: some View {
@@ -369,6 +422,8 @@ struct InstaRechercheVue: View {
                                 }
                             }
                             .frame(height: 128).clipped()
+                            .contentShape(Rectangle())
+                            .onTapGesture { imageOuverte = cle }
                         }
                     }
                 }
@@ -378,6 +433,10 @@ struct InstaRechercheVue: View {
         }
         .fullScreenCover(isPresented: Binding(get: { profilOuvert != nil }, set: { if !$0 { profilOuvert = nil } })) {
             InstaProfilTiersVue(compte: profilOuvert ?? DonneesInsta.comptes[0])
+        }
+        .fullScreenCover(isPresented: Binding(get: { imageOuverte != nil }, set: { if !$0 { imageOuverte = nil } })) {
+            VisualiseurContenuVue(titre: "Découverte", sousTitre: "Recherche",
+                                  imageCle: imageOuverte, teinte: 0x0095F6, avecMessage: false)
         }
     }
 }
@@ -450,6 +509,7 @@ struct InstaReelsVue: View {
 // ============================================================ PROFIL SARAH
 struct InstaProfilVue: View {
     @State private var ongletGrille = 0
+    @State private var creationPostVisible = false
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
@@ -458,6 +518,8 @@ struct InstaProfilVue: View {
                     Image(systemName: "chevron.down").font(.system(size: 12, weight: .semibold)).foregroundStyle(.white)
                     Spacer()
                     Image(systemName: "plus.app").font(.system(size: 22)).foregroundStyle(.white)
+                        .contentShape(Rectangle())
+                        .onTapGesture { creationPostVisible = true }
                     Image(systemName: "line.3.horizontal").font(.system(size: 22)).foregroundStyle(.white).padding(.leading, 14)
                 }
                 .padding(.horizontal, 14)
@@ -535,6 +597,56 @@ struct InstaProfilVue: View {
             }
             .padding(.top, 6)
         }
+        .sheet(isPresented: $creationPostVisible) { InstaCreationPostVue() }
+    }
+}
+
+struct InstaCreationPostVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var legende = ""
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 12) {
+                    Group {
+                        if let img = ChargeurPhoto.image("p04") {
+                            Image(uiImage: img).resizable().scaledToFill()
+                                .frame(width: 62, height: 62).clipShape(RoundedRectangle(cornerRadius: 8))
+                        } else {
+                            RoundedRectangle(cornerRadius: 8).fill(Color(hex: 0x262626)).frame(width: 62, height: 62)
+                                .overlay(Image(systemName: "photo").font(.system(size: 24)).foregroundStyle(.secondary))
+                        }
+                    }
+                    TextField("Rédigez une légende…", text: $legende, axis: .vertical)
+                        .font(.system(size: 14.5)).foregroundStyle(.white)
+                }
+                .padding(.horizontal, 14).padding(.top, 10)
+                Divider().overlay(Color(hex: 0x262626))
+                Button(action: { Haptique.leger(); dismiss() }) {
+                    Label("Choisir une photo", systemImage: "photo.on.rectangle")
+                        .font(.system(size: 15)).foregroundStyle(.white)
+                }
+                .padding(.horizontal, 14)
+                Spacer()
+            }
+            .background(Color.black)
+            .navigationTitle("Nouveau post")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Annuler") { dismiss() }.foregroundStyle(Color(hex: 0x0095F6))
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Partager") {
+                        Haptique.leger()
+                        dismiss()
+                    }
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Color(hex: 0x0095F6))
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 
@@ -617,6 +729,7 @@ struct InstaProfilTiersVue: View {
 struct InstaDMVue: View {
     @Environment(\.dismiss) private var dismiss
     @State private var filOuvert: InstaCompte? = nil
+    @State private var cameraVisible = false
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -631,6 +744,8 @@ struct InstaDMVue: View {
                             }
                             Spacer()
                             Image(systemName: "camera").font(.system(size: 19)).foregroundStyle(.secondary)
+                                .contentShape(Rectangle())
+                                .onTapGesture { cameraVisible = true }
                         }
                         .padding(.horizontal, 14).padding(.vertical, 8)
                         .contentShape(Rectangle())
@@ -653,6 +768,36 @@ struct InstaDMVue: View {
                                 messages: (filOuvert?.id == "chloe.brt")
                                 ? [(false, "Regarde cette publication, ça m'a fait penser à toi 😍"), (true, "Ahah j'adore !! On y va ?"), (false, "Carrément, je regarde les dates")]
                                 : [(false, "Vu · pas encore de réponse")])
+            }
+            .sheet(isPresented: $cameraVisible) { InstaCameraSheetVue() }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+struct InstaCameraSheetVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                LinearGradient(colors: [Color(hex: 0x101418), Color(hex: 0x05060A)], startPoint: .top, endPoint: .bottom)
+                    .ignoresSafeArea()
+                VStack {
+                    Spacer()
+                    Circle().strokeBorder(Color.white, lineWidth: 5).frame(width: 70, height: 70)
+                        .contentShape(Circle())
+                        .onTapGesture { Haptique.leger(); dismiss() }
+                    Text("Appuyez pour prendre une photo")
+                        .font(.system(size: 13)).foregroundStyle(.white.opacity(0.7))
+                        .padding(.top, 8)
+                    Spacer()
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fermer") { dismiss() }.foregroundStyle(Color(hex: 0x0095F6))
+                }
             }
         }
         .preferredColorScheme(.dark)

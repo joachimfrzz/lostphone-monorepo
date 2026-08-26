@@ -53,6 +53,7 @@ struct RappelsVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinRappels.partage
     @State private var nouveauVisible = false
+    @State private var nouvelleListeVisible = false
 
     var body: some View {
         NavigationStack {
@@ -120,11 +121,13 @@ struct RappelsVue: View {
                     HStack(spacing: 16) {
                         Image(systemName: "magnifyingglass").foregroundStyle(Color(hex: 0x0A84FF))
                         Image(systemName: "text.badge.plus").foregroundStyle(Color(hex: 0x0A84FF))
+                            .onTapGesture { nouvelleListeVisible = true }
                         Image(systemName: "ellipsis.circle").foregroundStyle(Color(hex: 0x0A84FF))
                     }
                 }
             }
             .sheet(isPresented: $nouveauVisible) { NouveauRappelVue() }
+            .sheet(isPresented: $nouvelleListeVisible) { RappelsNouvelleListeVue() }
         }
         .preferredColorScheme(.dark)
     }
@@ -472,5 +475,57 @@ struct NouveauRappelVue: View {
         }
         .preferredColorScheme(.dark)
         .presentationDetents([.large])
+    }
+}
+
+struct RappelsNouvelleListeVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var nom = ""
+    @State private var couleurIdx = 0
+    private let couleurs: [Color] = [.red, .orange, .yellow, .green, .blue, .purple, .pink]
+    private let symboles = ["list.bullet", "star.fill", "cart.fill", "heart.fill", "bookmark.fill", "house.fill"]
+    @State private var symboleIdx = 0
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    HStack {
+                        Image(systemName: symboles[symboleIdx])
+                            .foregroundStyle(.white)
+                            .frame(width: 40, height: 40)
+                            .background(couleurs[couleurIdx], in: Circle())
+                        TextField("Titre", text: $nom)
+                            .font(.system(size: 17))
+                    }
+                }
+                Section("Couleur") {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(couleurs.indices, id: \.self) { i in
+                                Circle().fill(couleurs[i]).frame(width: 32, height: 32)
+                                    .overlay(couleurIdx == i ? Circle().stroke(.white, lineWidth: 2) : nil)
+                                    .onTapGesture { couleurIdx = i }
+                            }
+                        }
+                        .padding(.vertical, 6)
+                    }
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .background(Color.black)
+            .navigationTitle("Nouvelle liste")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annuler") { dismiss() }.foregroundStyle(.blue)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("OK") { dismiss() }.foregroundStyle(.blue)
+                        .disabled(nom.isEmpty)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }

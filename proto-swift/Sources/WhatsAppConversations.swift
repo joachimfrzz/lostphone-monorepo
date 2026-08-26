@@ -186,6 +186,12 @@ final class EnvoisJoueur: ObservableObject {
     func ajouter(_ contact: String, _ element: ElementConv) {
         parContact[contact, default: []].append(element)
     }
+    func supprimer(_ contact: String, texte: String) {
+        parContact[contact]?.removeAll { el in
+            if case .msgJoueur(let t, _) = el { return t == texte }
+            return false
+        }
+    }
 }
 
 // ============================================================ VUE GÉNÉRIQUE
@@ -196,6 +202,10 @@ struct ConversationVue: View {
     @State private var saisie = ""
     @State private var appelVisible = false
     @State private var citation: String? = nil
+    @State private var transfertVisible = false
+    @State private var transfertTexte = ""
+    @State private var micErreurVisible = false
+    @State private var videoErreurVisible = false
 
     // Le fil = données d'histoire + envois persistants du joueur (observés en direct,
     // plus d'instantané figé : la vue pré-créée par la liste reste toujours à jour)
@@ -293,6 +303,8 @@ struct ConversationVue: View {
                 if saisie.trimmingCharacters(in: .whitespaces).isEmpty {
                     Image(systemName: "camera").font(.system(size: 21)).foregroundStyle(waTexte)
                     Image(systemName: "mic").font(.system(size: 21)).foregroundStyle(waTexte)
+                        .contentShape(Rectangle())
+                        .onTapGesture { micErreurVisible = true }
                 } else {
                     Button(action: envoyer) {
                         Circle().fill(waVertVif).frame(width: 34, height: 34)
@@ -308,6 +320,15 @@ struct ConversationVue: View {
         .fullScreenCover(isPresented: $appelVisible) {
             // Règle 16/08 : soit l'appel fait partie de l'histoire, soit personne ne décroche.
             AppelVue(nom: nomContact)
+        }
+        .alert(ErreurLambda.reponse("reseau"), isPresented: $micErreurVisible) {
+            Button("OK", role: .cancel) {}
+        }
+        .alert(ErreurLambda.reponse("reseau"), isPresented: $videoErreurVisible) {
+            Button("OK", role: .cancel) {}
+        }
+        .sheet(isPresented: $transfertVisible) {
+            TransfertContactVue(texte: transfertTexte, nomSource: nomContact)
         }
     }
 
@@ -374,7 +395,10 @@ struct ConversationVue: View {
                 .onTapGesture { appelVisible = true }
         case .image(let r, let h): BulleImage(recu: r, heure: h).contextMenu { menuPourTexte("📷 Photo") }
         case .album(let r, let n, let h): BulleAlbum(recu: r, total: n, heure: h)
-        case .video(let r, let d, let h): BulleVideo(recu: r, duree: d, heure: h)
+        case .video(let r, let d, let h):
+            BulleVideo(recu: r, duree: d, heure: h)
+                .contentShape(Rectangle())
+                .onTapGesture { videoErreurVisible = true }
         case .gif(let r, let h): BulleGIF(recu: r, heure: h)
         case .document(let r, let n, let det, let h): BulleDocument(recu: r, nom: n, details: det, heure: h)
         case .musique(let r, let t, let d, let h): BulleMusique(recu: r, titre: t, duree: d, heure: h)
@@ -393,16 +417,24 @@ struct ConversationVue: View {
             let tronque = texte.count > 60 ? String(texte.prefix(60)) + "…" : texte
             citation = tronque
         } label: { Label("Répondre", systemImage: "arrowshape.turn.up.left") }
-        Button { } label: { Label("Copier", systemImage: "doc.on.doc") }
-        Button { } label: { Label("Transférer", systemImage: "arrowshape.turn.up.forward") }
+        Button { UIPasteboard.general.string = texte } label: { Label("Copier", systemImage: "doc.on.doc") }
+        Button {
+            transfertTexte = texte
+            transfertVisible = true
+        } label: { Label("Transférer", systemImage: "arrowshape.turn.up.forward") }
         Button { } label: { Label("Épingler", systemImage: "pin") }
-        Button(role: .destructive) { } label: { Label("Supprimer", systemImage: "trash") }
+        Button(role: .destructive) {
+            withAnimation {
+                envois.supprimer(nomContact, texte: texte)
+            }
+        } label: { Label("Supprimer", systemImage: "trash") }
     }
 }
 
 // ============================================================ ONGLET ACTUS (statuts + chaînes)
 struct ActusVue: View {
     @State private var suivies: Set<String> = []
+    @State private var statutChloeVisible = false
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -447,6 +479,12 @@ struct ActusVue: View {
                         Spacer()
                     }
                     .padding(.horizontal, 20).padding(.vertical, 8)
+                    .contentShape(Rectangle())
+                    .onTapGesture { Haptique.leger(); statutChloeVisible = true }
+                    .fullScreenCover(isPresented: $statutChloeVisible) {
+                        VisualiseurContenuVue(titre: "Chloé", sousTitre: "il y a 43 min",
+                                              emoji: "🤍", teinte: 0xE17BB2, avecMessage: true)
+                    }
 
                     Text("Chaînes").font(.system(size: 20, weight: .bold)).foregroundStyle(waTexte)
                         .padding(.horizontal, 20).padding(.top, 22)
@@ -507,5 +545,58 @@ struct CommunautesVue: View {
             Spacer()
             Spacer()
         }
+    }
+}
+
+// ============================================================ TRANSFERT — sélection de contact
+struct TransfertContactVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let texte: String
+    let nomSource: String
+    @State private var confirme: String? = nil
+    private let destinataires = DonneesWA.fiches.keys.sorted()
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                waNoir.ignoresSafeArea()
+                List {
+                    ForEach(destinataires, id: \.self) { nom in
+                        if nom != nomSource {
+                            HStack(spacing: 12) {
+                                AvatarSilhouette(taille: 40)
+                                Text(nom).font(.system(size: 17)).foregroundStyle(waTexte)
+                            }
+                            .listRowBackground(waNoir)
+                            .listRowSeparatorTint(Color(hex: 0x222222))
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                Haptique.leger()
+                                EnvoisJoueur.partage.ajouter(nom, .transfere(false, texte, DateFormatter().string(from: Date())))
+                                confirme = nom
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { dismiss() }
+                            }
+                        }
+                    }
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                if let c = confirme {
+                    Text("Transféré à \(c) ✓")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(waTexte)
+                        .padding(.horizontal, 18).padding(.vertical, 10)
+                        .background(Color(hex: 0x1C201E), in: Capsule())
+                }
+            }
+            .navigationTitle("Transférer à")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annuler") { dismiss() }.foregroundStyle(waVertDoux)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }

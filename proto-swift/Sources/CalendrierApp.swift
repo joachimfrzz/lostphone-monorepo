@@ -75,6 +75,8 @@ struct CalendrierVue: View {
     @State private var creation = false
     @State private var rechercheVisible = false
     @State private var jourOuvert: (Int, Int, Int)? = nil
+    @State private var conflitsVisible = false
+    @State private var invitationsVisible = false
 
     // Période couverte : février 2025 → décembre 2026
     private let moisListe: [(Int, Int)] = {
@@ -126,7 +128,9 @@ struct CalendrierVue: View {
                     Spacer()
                     HStack(spacing: 14) {
                         Image(systemName: "exclamationmark.circle").font(.system(size: 18))
+                            .onTapGesture { conflitsVisible = true }
                         Image(systemName: "tray").font(.system(size: 17))
+                            .onTapGesture { invitationsVisible = true }
                     }
                     .foregroundStyle(.white)
                     .padding(.horizontal, 18).padding(.vertical, 10)
@@ -169,6 +173,42 @@ struct CalendrierVue: View {
                 if let (a, m, j) = jourOuvert {
                     JourVue(annee: a, mois: m, jour: j)
                 }
+            }
+            .sheet(isPresented: $conflitsVisible) {
+                NavigationStack {
+                    ZStack {
+                        Color.black.ignoresSafeArea()
+                        VStack(spacing: 12) {
+                            Image(systemName: "exclamationmark.triangle").font(.system(size: 30)).foregroundStyle(.orange)
+                            Text("Aucun conflit d'horaire").font(.system(size: 16)).foregroundStyle(.white)
+                            Text("Vos événements de la semaine sont compatibles.")
+                                .font(.system(size: 13)).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                        }
+                        .padding(30)
+                    }
+                    .navigationTitle("Conflits").navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("OK") { conflitsVisible = false }.foregroundStyle(.blue) } }
+                }
+                .preferredColorScheme(.dark)
+                .presentationDetents([.medium])
+            }
+            .sheet(isPresented: $invitationsVisible) {
+                NavigationStack {
+                    ZStack {
+                        Color.black.ignoresSafeArea()
+                        VStack(spacing: 12) {
+                            Image(systemName: "tray").font(.system(size: 30)).foregroundStyle(.secondary)
+                            Text("Aucune invitation").font(.system(size: 16)).foregroundStyle(.white)
+                            Text("Vous n'avez pas d'invitation en attente.")
+                                .font(.system(size: 13)).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                        }
+                        .padding(30)
+                    }
+                    .navigationTitle("Invitations").navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("OK") { invitationsVisible = false }.foregroundStyle(.blue) } }
+                }
+                .preferredColorScheme(.dark)
+                .presentationDetents([.medium])
             }
         }
         .preferredColorScheme(.dark)

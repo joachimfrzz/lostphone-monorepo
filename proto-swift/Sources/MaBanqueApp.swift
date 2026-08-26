@@ -126,6 +126,7 @@ struct MaBanqueVue: View {
 struct ComptesVue: View {
     @ObservedObject private var magasin = MagasinBanque.partage
     @State private var ribVisible = false
+    @State private var livretVisible = false
 
     var body: some View {
         NavigationStack {
@@ -164,9 +165,12 @@ struct ComptesVue: View {
                         }
                         Spacer()
                         Text(euros(magasin.soldeLivretA)).font(.system(size: 22, weight: .bold)).foregroundStyle(Color(hex: 0x1A1A2E))
+                        Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(Color(hex: 0x6E7480))
                     }
                     .padding(16)
                     .background(Color(hex: 0xF2F4F8), in: RoundedRectangle(cornerRadius: 16))
+                    .contentShape(Rectangle())
+                    .onTapGesture { livretVisible = true }
 
                     // Historique
                     VStack(alignment: .leading, spacing: 0) {
@@ -208,6 +212,7 @@ struct ComptesVue: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .sheet(isPresented: $ribVisible) { RIBVue() }
+            .sheet(isPresented: $livretVisible) { BanqueLivretAVue(solde: magasin.soldeLivretA) }
         }
     }
 }
@@ -519,5 +524,68 @@ struct MessageBanque: View {
         .background(Color(hex: 0xF9FAFC), in: RoundedRectangle(cornerRadius: 14))
         .contentShape(Rectangle())
         .onTapGesture { withAnimation(.easeInOut(duration: 0.2)) { ouvert.toggle() } }
+    }
+}
+
+// ============================================================ LIVRET A
+struct BanqueLivretAVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let solde: Double
+    private func euros(_ v: Double) -> String {
+        String(format: "%.2f €", v).replacingOccurrences(of: ".", with: ",")
+    }
+    private let historique: [(String, String, Double)] = [
+        ("VIREMENT VERS LIVRET A", "Compte courant", -200.0),
+        ("INTÉRÊTS 2026", "Crédit d'intérêts", 1.85),
+        ("VIREMENT DEPUIS LIVRET A", "Compte courant", 150.0),
+        ("INTÉRÊTS 2025", "Crédit d'intérêts", 2.12),
+    ]
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 14) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Livret A").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                        Text("•••• 3310 · Taux : 3,00 %").font(.system(size: 12)).foregroundStyle(.white.opacity(0.7))
+                        Text(euros(solde)).font(.system(size: 34, weight: .bold)).foregroundStyle(.white)
+                    }
+                    .padding(16).frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color(hex: 0x2F9E44), in: RoundedRectangle(cornerRadius: 16))
+                    .padding(.horizontal, 16)
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Historique").font(.system(size: 17, weight: .bold)).foregroundStyle(Color(hex: 0x1A1A2E))
+                            .padding(.bottom, 10)
+                        ForEach(Array(historique.enumerated()), id: \.offset) { _, op in
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(op.0).font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(hex: 0x1A1A2E))
+                                    Text(op.1).font(.system(size: 12)).foregroundStyle(Color(hex: 0x6E7480))
+                                }
+                                Spacer()
+                                Text(euros(abs(op.2))).font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(op.2 > 0 ? Color(hex: 0x1E9E46) : Color(hex: 0x1A1A2E))
+                            }
+                            .padding(.vertical, 8)
+                            Divider()
+                        }
+                    }
+                    .padding(16)
+                    .background(Color(hex: 0xF9FAFC), in: RoundedRectangle(cornerRadius: 14))
+                    .padding(.horizontal, 16)
+                    Color.clear.frame(height: 30)
+                }
+                .padding(.top, 16)
+            }
+            .background(Color.white)
+            .navigationTitle("Livret A")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("OK") { dismiss() }.foregroundStyle(lclBleu)
+                }
+            }
+        }
+        .preferredColorScheme(.light)
+        .presentationDetents([.large])
     }
 }

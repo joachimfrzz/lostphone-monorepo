@@ -279,6 +279,8 @@ struct SnapCarteVue: View {
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 45.7640, longitude: 4.8357),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+    @State private var rechercheVisible = false
+    @State private var filtreCarteActif: String? = nil
 
     private struct Epingle: Identifiable {
         let id = UUID()
@@ -319,6 +321,8 @@ struct SnapCarteVue: View {
                     Text("Lyon").font(.system(size: 17, weight: .bold)).foregroundStyle(.black)
                         .padding(.horizontal, 14).padding(.vertical, 6)
                         .background(Color.white.opacity(0.92), in: Capsule())
+                        .contentShape(Capsule())
+                        .onTapGesture { rechercheVisible = true }
                     Spacer()
                     Circle().fill(Color.white.opacity(0.92)).frame(width: 34, height: 34)
                         .overlay(Image(systemName: "gearshape.fill").font(.system(size: 15)).foregroundStyle(.black))
@@ -326,9 +330,12 @@ struct SnapCarteVue: View {
                 .padding(.horizontal, 14).padding(.top, 6)
                 HStack(spacing: 8) {
                     ForEach(["Souvenirs", "Tendance", "Footsteps", "Visité"], id: \.self) { c in
-                        Text(c).font(.system(size: 12, weight: .semibold)).foregroundStyle(.black)
+                        Text(c).font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(filtreCarteActif == c ? Color.white : Color.black)
                             .padding(.horizontal, 11).padding(.vertical, 6)
-                            .background(Color.white.opacity(0.92), in: Capsule())
+                            .background(filtreCarteActif == c ? Color.black : Color.white.opacity(0.92), in: Capsule())
+                            .contentShape(Capsule())
+                            .onTapGesture { Haptique.leger(); filtreCarteActif = (filtreCarteActif == c ? nil : c) }
                     }
                 }
                 Spacer()
@@ -357,16 +364,55 @@ struct SnapCarteVue: View {
             .padding(.leading, 14)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .sheet(isPresented: $rechercheVisible) { SnapRechercheCarteVue() }
+    }
+}
+
+struct SnapRechercheCarteVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var recherche = ""
+    private let lieux = ["Lyon 1er", "Lyon 2e", "Lyon 3e", "Lyon 6e", "Villeurbanne", "Caluire-et-Cuire"]
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass").font(.system(size: 14)).foregroundStyle(.secondary)
+                    TextField("Rechercher un lieu", text: $recherche).font(.system(size: 15))
+                }
+                .padding(.horizontal, 12).frame(height: 38)
+                .background(Color(hex: 0xF0F0F0), in: RoundedRectangle(cornerRadius: 10))
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                List(lieux.filter { recherche.isEmpty || $0.localizedCaseInsensitiveContains(recherche) }, id: \.self) { lieu in
+                    Button(action: { Haptique.leger(); dismiss() }) {
+                        Label(lieu, systemImage: "location.fill")
+                            .foregroundStyle(.black)
+                    }
+                }
+                .listStyle(.plain)
+            }
+            .navigationTitle("Carte")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fermer") { dismiss() }
+                }
+            }
+        }
     }
 }
 
 // ============================================================ CAMÉRA (viseur diégétique)
 struct SnapCameraVue: View {
+    @State private var flashActif = false
+    @State private var envoiVisible = false
     var body: some View {
         ZStack {
             // Viseur : pas d'accès caméra dans la fiction -> scène sombre plausible (D56 : même type que l'action)
             LinearGradient(colors: [Color(hex: 0x101418), Color(hex: 0x05060A)], startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
+            if flashActif {
+                Color.white.ignoresSafeArea().transition(.opacity).zIndex(10)
+            }
             VStack {
                 HStack {
                     Circle().fill(Color(hex: 0xFFE9EC)).frame(width: 34, height: 34)
@@ -390,12 +436,65 @@ struct SnapCameraVue: View {
                     Circle().fill(Color.black.opacity(0.4)).frame(width: 44, height: 44)
                         .overlay(Image(systemName: "photo.on.rectangle").font(.system(size: 17)).foregroundStyle(.white))
                     Circle().strokeBorder(Color.white, lineWidth: 5).frame(width: 78, height: 78)
+                        .contentShape(Circle())
+                        .onTapGesture {
+                            Haptique.leger()
+                            withAnimation(.easeOut(duration: 0.1)) { flashActif = true }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
+                                withAnimation { flashActif = false }
+                                envoiVisible = true
+                            }
+                        }
                     Circle().fill(Color.black.opacity(0.4)).frame(width: 44, height: 44)
                         .overlay(Image(systemName: "face.smiling").font(.system(size: 17)).foregroundStyle(.white))
                 }
                 .padding(.bottom, 116)
             }
         }
+        .sheet(isPresented: $envoiVisible) { SnapEnvoiSnapVue() }
+    }
+}
+
+struct SnapEnvoiSnapVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                Group {
+                    if let img = ChargeurPhoto.image("p04") {
+                        Image(uiImage: img).resizable().scaledToFill()
+                    } else {
+                        Rectangle().fill(Color(hex: 0x1C1C1E))
+                    }
+                }
+                .frame(maxWidth: .infinity).frame(height: 260).clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .padding(.horizontal, 16).padding(.top, 10)
+                Text("Envoyer à…").font(.system(size: 18, weight: .bold)).foregroundStyle(.white)
+                VStack(spacing: 0) {
+                    ForEach(DonneesSnap.amis.prefix(4)) { a in
+                        HStack(spacing: 12) {
+                            SnapAvatar(ami: a, taille: 40)
+                            Text(a.nom).font(.system(size: 15)).foregroundStyle(.white)
+                            Spacer()
+                            Image(systemName: "circle").font(.system(size: 20)).foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal, 16).padding(.vertical, 8)
+                        .contentShape(Rectangle())
+                        .onTapGesture { Haptique.leger(); dismiss() }
+                    }
+                }
+                Spacer()
+            }
+            .background(Color.black)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fermer") { dismiss() }.foregroundStyle(Color(hex: snapBleu))
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 

@@ -53,6 +53,7 @@ struct PlansVue: View {
     @State private var lieuOuvert: LieuPlan? = nil
     @State private var itineraireVers: LieuPlan? = nil
     @State private var navigationActive: LieuPlan? = nil
+    @State private var itineraireRapideVisible = false
 
     private var resultats: [LieuPlan] {
         let tous = DonneesPlans.proximite + DonneesPlans.recents
@@ -94,9 +95,17 @@ struct PlansVue: View {
                     VStack(spacing: 0) {
                         Image(systemName: "car.fill").font(.system(size: 15)).foregroundStyle(.white.opacity(0.9))
                             .frame(width: 42, height: 42)
+                            .onTapGesture { itineraireRapideVisible = true }
                         Divider().frame(width: 42).overlay(Color.white.opacity(0.15))
                         Image(systemName: "location").font(.system(size: 15)).foregroundStyle(.white.opacity(0.9))
                             .frame(width: 42, height: 42)
+                            .onTapGesture {
+                                withAnimation {
+                                    position = .region(MKCoordinateRegion(
+                                        center: CLLocationCoordinate2D(latitude: 45.7660, longitude: 4.8350),
+                                        span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)))
+                                }
+                            }
                     }
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
                 }
@@ -203,6 +212,11 @@ struct PlansVue: View {
         }
         .fullScreenCover(item: $navigationActive) { l in
             NavigationGuideeVue(lieu: l)
+        }
+        .sheet(isPresented: $itineraireRapideVisible) {
+            if let premier = DonneesPlans.recents.first {
+                ItinerairePlanVue(lieu: premier) { navigationActive = premier; itineraireRapideVisible = false }
+            }
         }
     }
 }

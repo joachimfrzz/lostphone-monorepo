@@ -492,6 +492,7 @@ struct MinuteursVue: View {
     @State private var h = 0
     @State private var mn = 5
     @State private var s = 0
+    @State private var ajoutVisible = false
     @State private var fin: Date? = nil
     @State private var duree: TimeInterval = 0
     @State private var enPause = false
@@ -655,9 +656,65 @@ struct MinuteursVue: View {
                     Button("Modifier") {}.foregroundStyle(.orange)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button { } label: { Image(systemName: "plus").foregroundStyle(.orange) }
+                    Button { ajoutVisible = true } label: { Image(systemName: "plus").foregroundStyle(.orange) }
+                }
+            }
+            .sheet(isPresented: $ajoutVisible) {
+                HorlogeNouveauMinuteurVue { sec in lancer(sec); ajoutVisible = false }
+            }
+        }
+    }
+}
+
+struct HorlogeNouveauMinuteurVue: View {
+    let onValider: (Int) -> Void
+    @State private var heure = 0
+    @State private var minute = 5
+    @State private var seconde = 0
+    @State private var description = ""
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 14) {
+                HStack(spacing: 0) {
+                    Picker("", selection: $heure) { ForEach(0..<24, id: \.self) { Text("\($0) h").tag($0) } }
+                        .pickerStyle(.wheel).frame(width: 100).clipped()
+                    Picker("", selection: $minute) { ForEach(0..<60, id: \.self) { Text("\($0) min").tag($0) } }
+                        .pickerStyle(.wheel).frame(width: 100).clipped()
+                    Picker("", selection: $seconde) { ForEach(0..<60, id: \.self) { Text("\($0) s").tag($0) } }
+                        .pickerStyle(.wheel).frame(width: 100).clipped()
+                }
+                .frame(height: 180)
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("Nom").foregroundStyle(.white)
+                        Spacer()
+                        TextField("Minuteur", text: $description)
+                            .multilineTextAlignment(.trailing).foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 16).padding(.vertical, 12)
+                    .background(Color(hex: 0x1C1C1E))
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal, 16)
+                Spacer()
+            }
+            .background(Color.black)
+            .navigationTitle("Nouveau minuteur")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annuler") { dismiss() }.foregroundStyle(.orange)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Démarrer") {
+                        let sec = heure * 3600 + minute * 60 + seconde
+                        onValider(sec > 0 ? sec : 300)
+                    }.foregroundStyle(.orange)
                 }
             }
         }
+        .preferredColorScheme(.dark)
+        .presentationDetents([.medium])
     }
 }

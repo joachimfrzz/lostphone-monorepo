@@ -237,6 +237,9 @@ struct TelFicheVue: View {
     let nom: String
     @State private var appelVisible = false
     @State private var messagesVisible = false
+    @State private var ongletVocaux = false
+    @State private var notesTexte = ""
+    @State private var notesEnEdition = false
 
     private var numero: String {
         DonneesTel.contacts.first(where: { $0.0 == nom })?.1 ?? "numéro masqué"
@@ -287,16 +290,52 @@ struct TelFicheVue: View {
 
                     // Miroir phase B (réf 03-fiche-contact) : segments + carte numéro + Notes
                     HStack(spacing: 0) {
-                        Text("Détails").font(.system(size: 14, weight: .semibold)).foregroundStyle(telTexte)
+                        Text("Détails")
+                            .font(.system(size: 14, weight: ongletVocaux ? .regular : .semibold))
+                            .foregroundStyle(ongletVocaux ? telTexte2 : telTexte)
                             .padding(.vertical, 7).frame(maxWidth: .infinity)
-                            .background(.ultraThinMaterial, in: Capsule())
-                        Text("Messages vocaux").font(.system(size: 14)).foregroundStyle(telTexte2)
+                            .background(ongletVocaux ? .clear : .ultraThinMaterial, in: Capsule())
+                            .contentShape(Rectangle())
+                            .onTapGesture { withAnimation(.easeInOut(duration: 0.18)) { ongletVocaux = false } }
+                        Text("Messages vocaux")
+                            .font(.system(size: 14, weight: ongletVocaux ? .semibold : .regular))
+                            .foregroundStyle(ongletVocaux ? telTexte : telTexte2)
                             .padding(.vertical, 7).frame(maxWidth: .infinity)
+                            .background(ongletVocaux ? .ultraThinMaterial : .clear, in: Capsule())
+                            .contentShape(Rectangle())
+                            .onTapGesture { withAnimation(.easeInOut(duration: 0.18)) { ongletVocaux = true } }
                     }
                     .padding(3)
                     .background(Color.white.opacity(0.06), in: Capsule())
                     .padding(.horizontal, 16).padding(.top, 18)
 
+                    if ongletVocaux {
+                        // Onglet Messages vocaux : filtrés depuis DonneesTel.messagerie
+                        let vocaux = DonneesTel.messagerie.filter { $0.nom == nom }
+                        if vocaux.isEmpty {
+                            VStack(spacing: 8) {
+                                Image(systemName: "recordingtape").font(.system(size: 36)).foregroundStyle(telTexte2)
+                                Text("Aucun message vocal").font(.system(size: 15)).foregroundStyle(telTexte2)
+                            }
+                            .frame(maxWidth: .infinity).padding(.top, 40)
+                        } else {
+                            ForEach(vocaux, id: \.fichier) { v in
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack {
+                                        Text(v.date).font(.system(size: 13)).foregroundStyle(telTexte2)
+                                        Spacer()
+                                        Text(v.duree).font(.system(size: 13)).foregroundStyle(telTexte2)
+                                    }
+                                    Text("« \(v.transcription.prefix(80))… »")
+                                        .font(.system(size: 14)).foregroundStyle(telTexte.opacity(0.85))
+                                        .lineLimit(3)
+                                }
+                                .padding(14)
+                                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+                                .padding(.horizontal, 16).padding(.top, 10)
+                            }
+                        }
+                    } else {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("portable").font(.system(size: 13)).foregroundStyle(telTexte2)
                         HStack {
@@ -312,12 +351,22 @@ struct TelFicheVue: View {
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Notes").font(.system(size: 13)).foregroundStyle(telTexte2)
-                        Color.clear.frame(height: 26)
+                        if notesEnEdition {
+                            TextField("Ajouter une note…", text: $notesTexte)
+                                .font(.system(size: 15)).foregroundStyle(telTexte)
+                                .onSubmit { notesEnEdition = false }
+                        } else {
+                            Text(notesTexte.isEmpty ? " " : notesTexte)
+                                .font(.system(size: 15)).foregroundStyle(notesTexte.isEmpty ? telTexte2 : telTexte)
+                                .frame(height: 26, alignment: .leading)
+                        }
                     }
                     .padding(14)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
                     .padding(.horizontal, 16).padding(.top, 10)
+                    .contentShape(Rectangle())
+                    .onTapGesture { notesEnEdition = true }
 
                     // Historique — DÉRIVÉ du même journal que l'onglet Récents (cohérence R3)
                     VStack(alignment: .leading, spacing: 0) {
@@ -386,6 +435,7 @@ struct TelFicheVue: View {
                     }
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
                     .padding(.horizontal, 16).padding(.top, 10)
+                    } // fin else (onglet Détails)
                     Spacer(minLength: 50)
                 }
             }

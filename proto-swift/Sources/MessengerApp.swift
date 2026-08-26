@@ -175,6 +175,7 @@ struct MsgrDiscussionsVue: View {
     @State private var conv: MsgrConversation? = nil
     @State private var nouveau = false
     @State private var recherche = ""
+    @State private var noteVisible = false
     @FocusState private var champActif: Bool
 
     private var visibles: [MsgrConversation] {
@@ -233,6 +234,8 @@ struct MsgrDiscussionsVue: View {
                             }
                             Text("Votre note").font(.system(size: 11)).foregroundStyle(.secondary)
                         }
+                        .contentShape(Rectangle())
+                        .onTapGesture { noteVisible = true }
                         ForEach(DonneesMessenger.conversations.prefix(4)) { c in
                             VStack(spacing: 5) {
                                 MsgrAvatar(conv: c, taille: 58)
@@ -277,6 +280,45 @@ struct MsgrDiscussionsVue: View {
             MsgrConversationVue(conv: conv ?? DonneesMessenger.conversations[0])
         }
         .sheet(isPresented: $nouveau) { MsgrNouvelleDiscussionVue() }
+        .sheet(isPresented: $noteVisible) { MsgrSaisieNoteVue() }
+    }
+}
+
+struct MsgrSaisieNoteVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var texteNote = ""
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Votre note sera visible par vos amis pendant 24 heures.")
+                    .font(.system(size: 13)).foregroundStyle(.secondary)
+                    .padding(.horizontal, 16).padding(.top, 8)
+                TextField("Partagez une note…", text: $texteNote, axis: .vertical)
+                    .font(.system(size: 16)).foregroundStyle(.white)
+                    .padding(.horizontal, 16).padding(.vertical, 10)
+                    .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal, 16)
+                Spacer()
+            }
+            .background(Color.black)
+            .navigationTitle("Publier une note")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Annuler") { dismiss() }.foregroundStyle(Color(hex: msgrBleu))
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Publier") {
+                        Haptique.leger()
+                        dismiss()
+                    }
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(texteNote.isEmpty ? Color.secondary : Color(hex: msgrBleu))
+                    .disabled(texteNote.isEmpty)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 
@@ -287,6 +329,7 @@ struct MsgrConversationVue: View {
     @State private var saisie = ""
     @State private var ficheVisible = false
     @State private var appelVisible = false
+    @State private var pjVisible = false
     @State private var messages: [MsgrMessage] = []
     @State private var envoyes: [String] = []
 
@@ -340,7 +383,11 @@ struct MsgrConversationVue: View {
             // Composeur (référence : + appareil photo galerie micro, Aa, pouce bleu)
             HStack(spacing: 12) {
                 Image(systemName: "plus.circle.fill").font(.system(size: 24)).foregroundStyle(Color(hex: msgrBleu))
+                    .contentShape(Rectangle())
+                    .onTapGesture { pjVisible = true }
                 Image(systemName: "camera.fill").font(.system(size: 20)).foregroundStyle(Color(hex: msgrBleu))
+                    .contentShape(Rectangle())
+                    .onTapGesture { appelVisible = true }
                 Image(systemName: "photo").font(.system(size: 20)).foregroundStyle(Color(hex: msgrBleu))
                 Image(systemName: "mic.fill").font(.system(size: 20)).foregroundStyle(Color(hex: msgrBleu))
                 TextField("Aa", text: $saisie)
@@ -365,6 +412,40 @@ struct MsgrConversationVue: View {
         .background(Color.black)
         .sheet(isPresented: $ficheVisible) { MsgrFicheVue(conv: conv) }
         .fullScreenCover(isPresented: $appelVisible) { MsgrAppelVue(conv: conv) }
+        .sheet(isPresented: $pjVisible) { MsgrMenuPJVue() }
+        .preferredColorScheme(.dark)
+    }
+}
+
+struct MsgrMenuPJVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            List {
+                Button(action: { dismiss() }) {
+                    Label("Photo / Vidéo", systemImage: "photo.on.rectangle")
+                }
+                Button(action: { dismiss() }) {
+                    Label("Appareil photo", systemImage: "camera")
+                }
+                Button(action: { dismiss() }) {
+                    Label("Localisation", systemImage: "location")
+                }
+                Button(action: { dismiss() }) {
+                    Label("GIF", systemImage: "play.rectangle")
+                }
+            }
+            .listStyle(.insetGrouped)
+            .background(Color.black)
+            .scrollContentBackground(.hidden)
+            .navigationTitle("Pièces jointes")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fermer") { dismiss() }.foregroundStyle(Color(hex: msgrBleu))
+                }
+            }
+        }
         .preferredColorScheme(.dark)
     }
 }
@@ -709,6 +790,7 @@ struct MsgrMediasVue: View {
 
 // ============================================================ STORIES
 struct MsgrStoriesVue: View {
+    @State private var ajoutStoryVisible = false
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
@@ -730,10 +812,55 @@ struct MsgrStoriesVue: View {
                     }
                     .padding(10)
                 }
+                .contentShape(Rectangle())
+                .onTapGesture { ajoutStoryVisible = true }
                 Spacer(minLength: 100)
             }
             .padding(16)
         }
+        .sheet(isPresented: $ajoutStoryVisible) { MsgrAjoutStoryVue() }
+    }
+}
+
+struct MsgrAjoutStoryVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 24) {
+                Image(systemName: "rectangle.stack.person.crop.fill")
+                    .font(.system(size: 52)).foregroundStyle(Color(hex: msgrBleu))
+                    .padding(.top, 40)
+                Text("Ajouter à votre story")
+                    .font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
+                Text("Choisissez comment ajouter du contenu à votre story visible par vos amis.")
+                    .font(.system(size: 14)).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                    .padding(.horizontal, 30)
+                VStack(spacing: 12) {
+                    Button(action: { Haptique.leger(); dismiss() }) {
+                        Label("Choisir une photo", systemImage: "photo.on.rectangle")
+                            .font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                            .frame(maxWidth: .infinity).padding(.vertical, 14)
+                            .background(Color(hex: msgrBleu), in: RoundedRectangle(cornerRadius: 12))
+                    }
+                    Button(action: { Haptique.leger(); dismiss() }) {
+                        Label("Prendre une photo", systemImage: "camera.fill")
+                            .font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                            .frame(maxWidth: .infinity).padding(.vertical, 14)
+                            .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 12))
+                    }
+                }
+                .padding(.horizontal, 20)
+                Spacer()
+            }
+            .background(Color.black)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fermer") { dismiss() }.foregroundStyle(Color(hex: msgrBleu))
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 
@@ -786,6 +913,8 @@ struct MsgrMenuVue: View {
     @State private var parametres = false
     @State private var invitations = false
     @State private var archive = false
+    @State private var alerteFacebook = false
+    @State private var alerteFacebookTitre = ""
 
     var body: some View {
         ScrollView {
@@ -826,9 +955,18 @@ struct MsgrMenuVue: View {
 
                 Text("Aussi de Meta").font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary)
                 VStack(spacing: 0) {
-                    MsgrLigne(symbole: "play.rectangle", titre: "Facebook Reels") {}
-                    MsgrLigne(symbole: "calendar", titre: "Événements Facebook") {}
-                    MsgrLigne(symbole: "heart", titre: "Facebook Rencontres") {}
+                    MsgrLigne(symbole: "play.rectangle", titre: "Facebook Reels") {
+                        alerteFacebookTitre = "Facebook Reels"
+                        alerteFacebook = true
+                    }
+                    MsgrLigne(symbole: "calendar", titre: "Événements Facebook") {
+                        alerteFacebookTitre = "Événements Facebook"
+                        alerteFacebook = true
+                    }
+                    MsgrLigne(symbole: "heart", titre: "Facebook Rencontres") {
+                        alerteFacebookTitre = "Facebook Rencontres"
+                        alerteFacebook = true
+                    }
                 }
                 .background(Color(hex: 0x141414), in: RoundedRectangle(cornerRadius: 14))
                 Spacer(minLength: 100)
@@ -838,6 +976,12 @@ struct MsgrMenuVue: View {
         .sheet(isPresented: $parametres) { MsgrParametresVue() }
         .sheet(isPresented: $invitations) { MsgrInvitationsVue() }
         .sheet(isPresented: $archive) { MsgrArchiveVue() }
+        .alert("Ouvrir dans Facebook ?", isPresented: $alerteFacebook) {
+            Button("Ouvrir \(alerteFacebookTitre)", role: .none) { Haptique.leger() }
+            Button("Annuler", role: .cancel) {}
+        } message: {
+            Text("Cette fonctionnalité est disponible dans l'application Facebook.")
+        }
     }
 }
 

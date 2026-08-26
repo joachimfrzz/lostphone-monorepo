@@ -139,6 +139,8 @@ struct ActionRonde: View {
 
 // ============================================================ ONGLET VOUS (profil de Sarah)
 struct VousVue: View {
+    @State private var qrVisible = false
+    @State private var plusErreurVisible = false
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -146,6 +148,8 @@ struct VousVue: View {
                 Spacer()
                 HStack(spacing: 22) {
                     Image(systemName: "qrcode").font(.system(size: 17))
+                        .contentShape(Rectangle())
+                        .onTapGesture { Haptique.leger(); qrVisible = true }
                     Image(systemName: "pencil").font(.system(size: 17))
                 }
                 .foregroundStyle(waTexte)
@@ -153,6 +157,10 @@ struct VousVue: View {
                 .background(Color(hex: 0x1C1C1E), in: Capsule())
             }
             .padding(.horizontal, 16).padding(.top, 8)
+            .sheet(isPresented: $qrVisible) { WAQRCodeVue() }
+            .alert(ErreurLambda.reponse("creation.indisponible"), isPresented: $plusErreurVisible) {
+                Button("OK", role: .cancel) {}
+            }
 
             ScrollView {
                 VStack(spacing: 0) {
@@ -165,6 +173,8 @@ struct VousVue: View {
                     HStack(spacing: 6) {
                         Text("Sarah").font(.system(size: 30, weight: .bold)).foregroundStyle(waTexte)
                         Image(systemName: "plus.circle").font(.system(size: 18)).foregroundStyle(waVertDoux)
+                            .contentShape(Rectangle())
+                            .onTapGesture { plusErreurVisible = true }
                     }
                     .padding(.top, 12).padding(.bottom, 20)
 
@@ -258,18 +268,20 @@ struct ArchiveesVue: View {
 
             List {
                 ForEach(convs, id: \.0) { c in
-                    HStack(alignment: .top, spacing: 12) {
-                        AvatarSilhouette(taille: 52)
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack {
-                                Text(c.0).font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)
-                                Spacer()
-                                Text(c.2).font(.system(size: 14)).foregroundStyle(waTexte2)
+                    NavigationLink(destination: ConversationVue(nomContact: c.0)) {
+                        HStack(alignment: .top, spacing: 12) {
+                            AvatarSilhouette(taille: 52)
+                            VStack(alignment: .leading, spacing: 2) {
+                                HStack {
+                                    Text(c.0).font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)
+                                    Spacer()
+                                    Text(c.2).font(.system(size: 14)).foregroundStyle(waTexte2)
+                                }
+                                Text(c.1).font(.system(size: 15)).foregroundStyle(waTexte2).lineLimit(2)
                             }
-                            Text(c.1).font(.system(size: 15)).foregroundStyle(waTexte2).lineLimit(2)
                         }
+                        .padding(.vertical, 4)
                     }
-                    .padding(.vertical, 4)
                     .listRowBackground(waNoir)
                     .listRowSeparatorTint(Color(hex: 0x222222))
                 }
@@ -527,5 +539,35 @@ struct BulleRiche: View {
             .padding(.bottom, reaction != nil ? 14 : 0)
             if recu { Spacer(minLength: 60) }
         }
+    }
+}
+
+// ============================================================ QR CODE FACTICE (VousVue)
+struct WAQRCodeVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                waNoir.ignoresSafeArea()
+                VStack(spacing: 20) {
+                    Image(systemName: "qrcode").font(.system(size: 180)).foregroundStyle(waTexte)
+                        .padding(20)
+                        .background(Color.white, in: RoundedRectangle(cornerRadius: 16))
+                    Text("+33 6 99 01 47 23")
+                        .font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)
+                    Text("Scannez ce code pour m'ajouter sur WhatsApp")
+                        .font(.system(size: 14)).foregroundStyle(waTexte2)
+                        .multilineTextAlignment(.center).padding(.horizontal, 40)
+                }
+            }
+            .navigationTitle("Mon code QR")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Fermer") { dismiss() }.foregroundStyle(waVertDoux)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }

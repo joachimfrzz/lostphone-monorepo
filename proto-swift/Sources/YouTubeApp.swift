@@ -217,6 +217,7 @@ struct YtLecteurVue: View {
     let video: YtVideo
     @State private var aime = false
     @State private var abonne = false
+    @State private var commentairesVisibles = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -281,6 +282,8 @@ struct YtLecteurVue: View {
                         HStack(spacing: 6) {
                             Text("Commentaires").font(.system(size: 14, weight: .bold)).foregroundStyle(.white)
                             Text("68").font(.system(size: 12.5)).foregroundStyle(.gray)
+                            Spacer()
+                            Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(.gray)
                         }
                         ForEach(Array(DonneesYt.commentaires.enumerated()), id: \.offset) { _, c in
                             HStack(alignment: .top, spacing: 9) {
@@ -294,6 +297,8 @@ struct YtLecteurVue: View {
                     }
                     .padding(12)
                     .background(Color(hex: 0x272727), in: RoundedRectangle(cornerRadius: 12))
+                    .contentShape(RoundedRectangle(cornerRadius: 12))
+                    .onTapGesture { commentairesVisibles = true }
 
                     Text("À suivre").font(.system(size: 15, weight: .bold)).foregroundStyle(.white)
                     ForEach(DonneesYt.videos.filter { $0.id != video.id }) { v in
@@ -306,6 +311,61 @@ struct YtLecteurVue: View {
             BarreHome { dismiss() }
         }
         .background(Color(hex: ytFond))
+        .sheet(isPresented: $commentairesVisibles) { YtCommentairesVue() }
+        .preferredColorScheme(.dark)
+    }
+}
+
+struct YtCommentairesVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var saisie = ""
+    @State private var envoyes: [String] = []
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        ForEach(Array(DonneesYt.commentaires.enumerated()), id: \.offset) { _, c in
+                            HStack(alignment: .top, spacing: 10) {
+                                Circle().fill(Color(hex: 0x3F3F3F)).frame(width: 34, height: 34)
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(c.0).font(.system(size: 12.5)).foregroundStyle(.gray)
+                                    Text(c.1).font(.system(size: 13.5)).foregroundStyle(.white)
+                                }
+                            }
+                        }
+                        ForEach(Array(envoyes.enumerated()), id: \.offset) { _, t in
+                            HStack(alignment: .top, spacing: 10) {
+                                Circle().fill(Color(hex: 0x5B7CFA)).frame(width: 34, height: 34)
+                                    .overlay(Text("S").font(.system(size: 14, weight: .semibold)).foregroundStyle(.white))
+                                Text(t).font(.system(size: 13.5)).foregroundStyle(.white)
+                            }
+                        }
+                    }
+                    .padding(14)
+                }
+                Divider().overlay(Color(hex: 0x272727))
+                HStack(spacing: 10) {
+                    TextField("Commentez…", text: $saisie)
+                        .font(.system(size: 14)).foregroundStyle(.white)
+                        .padding(.horizontal, 13).padding(.vertical, 9)
+                        .background(Color(hex: 0x272727), in: Capsule())
+                        .onSubmit { if !saisie.isEmpty { envoyes.append(saisie); saisie = "" } }
+                    Image(systemName: "paperplane.fill").foregroundStyle(Color(hex: ytRouge))
+                        .contentShape(Rectangle())
+                        .onTapGesture { if !saisie.isEmpty { envoyes.append(saisie); saisie = "" } }
+                }
+                .padding(12)
+            }
+            .background(Color(hex: ytFond))
+            .navigationTitle("Commentaires  68")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("OK") { dismiss() }.foregroundStyle(.white)
+                }
+            }
+        }
         .preferredColorScheme(.dark)
     }
 }
@@ -313,6 +373,7 @@ struct YtLecteurVue: View {
 // ============================================================ SHORTS
 struct YtShortsVue: View {
     @State private var aime = false
+    @State private var creerShortVisible = false
     var body: some View {
         ZStack {
             Group {
@@ -327,6 +388,8 @@ struct YtShortsVue: View {
                     Text("Shorts").font(.system(size: 21, weight: .bold)).foregroundStyle(.white)
                     Spacer()
                     Image(systemName: "camera").font(.system(size: 20)).foregroundStyle(.white)
+                        .contentShape(Rectangle())
+                        .onTapGesture { creerShortVisible = true }
                     Image(systemName: "magnifyingglass").font(.system(size: 20)).foregroundStyle(.white).padding(.leading, 14)
                 }
                 .padding(.horizontal, 14).padding(.top, 4)
@@ -374,6 +437,31 @@ struct YtShortsVue: View {
                 .padding(.horizontal, 14).padding(.bottom, 96)
             }
         }
+        .sheet(isPresented: $creerShortVisible) { YtCreerShortVue() }
+    }
+}
+
+struct YtCreerShortVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 20) {
+                Image(systemName: "video.badge.plus").font(.system(size: 52)).foregroundStyle(Color(hex: ytRouge))
+                Text("La création de Shorts n'est pas disponible dans cette version.")
+                    .font(.system(size: 15)).foregroundStyle(.gray).multilineTextAlignment(.center).padding(.horizontal, 32)
+                Spacer()
+            }
+            .padding(.top, 50)
+            .background(Color(hex: ytFond))
+            .navigationTitle("Créer un Short")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fermer") { dismiss() }.foregroundStyle(.white)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 

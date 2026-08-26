@@ -533,6 +533,8 @@ struct DestinatairePartage: View {
 struct VerrouillageView: View {
     @State private var deverrouille = false
     @State private var glisse: CGFloat = 0
+    @State private var whatsappNotifOuvert = false
+    @State private var telephoneNotifOuvert = false
 
     var body: some View {
         ZStack {
@@ -544,6 +546,12 @@ struct VerrouillageView: View {
                     .statusBarHidden(true)
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
+        }
+        .fullScreenCover(isPresented: $whatsappNotifOuvert) {
+            NavigationStack { ConversationVue(nomContact: "Marc ❤️") }
+        }
+        .fullScreenCover(isPresented: $telephoneNotifOuvert) {
+            NavigationStack { TelFicheVue(nom: "Chloé") }
         }
     }
 
@@ -581,10 +589,20 @@ struct VerrouillageView: View {
                 NotifCard(couleur: Color(hex: 0x25D366), symbole: "message.fill",
                           app: "WhatsApp · Marc ❤️", quand: "il y a 2 h",
                           corps: "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges co…")
+                    .contentShape(RoundedRectangle(cornerRadius: 24))
+                    .onTapGesture {
+                        withAnimation(.spring(duration: 0.45)) { deverrouille = true }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { whatsappNotifOuvert = true }
+                    }
                 NotifCard(couleur: Color(hex: 0x34C759), symbole: "phone.fill",
                           app: "Téléphone · Chloé", quand: "19:32",
                           corps: "2 appels manqués")
                     .padding(.top, 8)
+                    .contentShape(RoundedRectangle(cornerRadius: 24))
+                    .onTapGesture {
+                        withAnimation(.spring(duration: 0.45)) { deverrouille = true }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { telephoneNotifOuvert = true }
+                    }
 
                 HStack {
                     RondVerre(symbole: "flashlight.on.fill")
@@ -611,6 +629,7 @@ struct VerrouillageView: View {
         .onTapGesture { withAnimation(.spring(duration: 0.45)) { deverrouille = true } }
     }
 }
+
 
 struct NotifCard: View {
     let couleur: Color

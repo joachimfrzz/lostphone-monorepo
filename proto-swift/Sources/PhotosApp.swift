@@ -348,6 +348,8 @@ struct PhototequeVue: View {
     @State private var portee = 2 // 0 Années, 1 Mois, 2 Toutes
     @State private var moisVisible = ""
     @State private var photoOuverte: PhotoItem? = nil
+    @State private var alerteSynchro = false
+    @State private var triVisible = false
 
     private let colonnes = Array(repeating: GridItem(.flexible(), spacing: 2), count: 3)
 
@@ -364,11 +366,14 @@ struct PhototequeVue: View {
                             Image(systemName: "chevron.right").font(.system(size: 9, weight: .semibold))
                         }
                         .font(.system(size: 12.5)).foregroundStyle(phTexte2)
+                        .contentShape(Rectangle())
+                        .onTapGesture { alerteSynchro = true }
                     }
                     Spacer()
                     Image(systemName: "line.3.horizontal.decrease")
                         .font(.system(size: 15, weight: .semibold)).foregroundStyle(phTexte)
                         .padding(10).background(phCarte, in: Circle())
+                        .onTapGesture { triVisible = true }
                     Text("Sélect.").font(.system(size: 15)).foregroundStyle(phTexte)
                         .padding(.horizontal, 13).padding(.vertical, 8)
                         .background(phCarte, in: Capsule())
@@ -407,6 +412,17 @@ struct PhototequeVue: View {
         }
         .fullScreenCover(item: $photoOuverte) { photo in
             PhotoDetailVue(depart: photo)
+        }
+        .alert("iCloud — Espace insuffisant", isPresented: $alerteSynchro) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("173 Go sur 200 Go utilisés. La synchronisation est suspendue. Libérez de l'espace ou passez à un forfait supérieur dans Réglages > Compte Apple > iCloud.")
+        }
+        .confirmationDialog("Afficher par", isPresented: $triVisible) {
+            Button("Récentes") {}
+            Button("Favorites") { portee = 2 }
+            Button("Captures d'écran") { portee = 2 }
+            Button("Annuler", role: .cancel) {}
         }
     }
 
@@ -630,16 +646,22 @@ struct PhotoDetailVue: View {
 struct FichePhotoVue: View {
     @Environment(\.dismiss) private var dismiss
     let item: PhotoItem
+    @State private var legendeVisible = false
+    @State private var legendeSaisie = ""
+    @State private var legendeAffichee = ""
+    @State private var lieuVisible = false
     var body: some View {
         NavigationStack {
             ZStack {
                 phFond.ignoresSafeArea()
                 ScrollView {
                     VStack(alignment: .leading, spacing: 14) {
-                        Text(item.legende.isEmpty ? "Ajouter une légende" : item.legende)
+                        Text(legendeAffichee.isEmpty ? (item.legende.isEmpty ? "Ajouter une légende" : item.legende) : legendeAffichee)
                             .font(.system(size: 15))
-                            .foregroundStyle(item.legende.isEmpty ? phTexte2 : phTexte)
+                            .foregroundStyle((legendeAffichee.isEmpty && item.legende.isEmpty) ? phTexte2 : phTexte)
                             .padding(.top, 8)
+                            .contentShape(Rectangle())
+                            .onTapGesture { legendeSaisie = legendeAffichee.isEmpty ? item.legende : legendeAffichee; legendeVisible = true }
                         HStack {
                             Text(item.date).font(.system(size: 15, weight: .semibold)).foregroundStyle(phTexte)
                             Spacer()
@@ -674,6 +696,8 @@ struct FichePhotoVue: View {
                             }
                             .padding(14)
                             .background(phCarte, in: RoundedRectangle(cornerRadius: 12))
+                            .contentShape(Rectangle())
+                            .onTapGesture { lieuVisible = true }
                         } else {
                             Text("Ajouter un lieu…").font(.system(size: 14.5)).foregroundStyle(phBleu)
                                 .padding(.horizontal, 4)
@@ -690,6 +714,15 @@ struct FichePhotoVue: View {
                     Button("OK") { dismiss() }.foregroundStyle(phBleu)
                 }
             }
+        }
+        .alert("Légende", isPresented: $legendeVisible, actions: {
+            TextField("Ajouter une légende", text: $legendeSaisie)
+            Button("Enregistrer") { legendeAffichee = legendeSaisie }
+            Button("Annuler", role: .cancel) {}
+        })
+        .fullScreenCover(isPresented: $lieuVisible) {
+            NavigationStack { PlanPhotosVue() }
+                .preferredColorScheme(.dark)
         }
         .preferredColorScheme(.dark)
         .presentationDetents([.medium])
@@ -922,7 +955,12 @@ struct CollectionsPhotosVue: View {
                                        compte: "\(magasin.visibles.filter { $0.selfie }.count)")
                     }.buttonStyle(.plain)
                     Divider().overlay(Color.white.opacity(0.08)).padding(.leading, 44)
-                    LigneTypeMedia(symbole: "camera.viewfinder", nom: "Captures d'écran", compte: "0")
+                    NavigationLink {
+                        AlbumVue(titre: "Captures d'écran", items: magasin.visibles.filter { $0.capture })
+                    } label: {
+                        LigneTypeMedia(symbole: "camera.viewfinder", nom: "Captures d'écran",
+                                       compte: "\(magasin.visibles.filter { $0.capture }.count)")
+                    }.buttonStyle(.plain)
                 }
                 .background(phCarte, in: RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal, 16)
@@ -1011,6 +1049,9 @@ struct CarteEpinglee<Destination: View>: View {
 struct PersonnePhotos: View {
     let nom: String
     let photo: String
+    @State private var albumVisible = false
+    @State private var nommerVisible = false
+    @State private var nomSaisi = ""
     var body: some View {
         VStack(spacing: 6) {
             Group {
@@ -1020,9 +1061,29 @@ struct PersonnePhotos: View {
             }
             .frame(width: 72, height: 72).clipped()
             .clipShape(Circle())
-            Text(nom.isEmpty ? "Nommer" : nom)
+            .contentShape(Circle())
+            .onTapGesture { albumVisible = true }
+            Text(nom.isEmpty ? (nomSaisi.isEmpty ? "Nommer" : nomSaisi) : nom)
                 .font(.system(size: 12.5))
                 .foregroundStyle(nom.isEmpty ? phBleu : phTexte)
+                .onTapGesture {
+                    if nom.isEmpty { nommerVisible = true }
+                    else { albumVisible = true }
+                }
+        }
+        .alert("Nommer la personne", isPresented: $nommerVisible, actions: {
+            TextField("Prénom", text: $nomSaisi)
+            Button("OK") {}
+            Button("Annuler", role: .cancel) { nomSaisi = "" }
+        })
+        .fullScreenCover(isPresented: $albumVisible) {
+            NavigationStack {
+                AlbumVue(titre: nom.isEmpty ? (nomSaisi.isEmpty ? "Inconnue" : nomSaisi) : nom,
+                         items: MagasinPhotos.partage.visibles.filter {
+                             !nom.isEmpty ? ($0.motsCles.contains(nom.lowercased()) || $0.motsCles.contains("selfie")) : true
+                         }.prefix(8).map { $0 })
+            }
+            .preferredColorScheme(.dark)
         }
     }
 }
@@ -1118,13 +1179,16 @@ struct SouvenirVue: View {
 
 // Plan : carte avec grappes de photos géolocalisées
 struct PlanPhotosVue: View {
-    @State private var photoOuverte: PhotoItem? = nil
+    @State private var albumGrappe: (String, [PhotoItem])? = nil
     private let grappes: [(String, CLLocationCoordinate2D, String, Int)] = [
         ("p06", CLLocationCoordinate2D(latitude: 45.7772, longitude: 4.8558), "Parc de la Tête d'Or", 4),
         ("p15", CLLocationCoordinate2D(latitude: 45.7647, longitude: 4.9532), "Décines-Charpieu", 1),
         ("p01", CLLocationCoordinate2D(latitude: 45.9405, longitude: 4.6108), "Theizé", 5),
         ("p69", CLLocationCoordinate2D(latitude: 45.7679, longitude: 4.8320), "Lyon 1er", 1),
     ]
+    private func photosGrappe(_ lieu: String) -> [PhotoItem] {
+        MagasinPhotos.partage.visibles.filter { $0.lieu.contains(lieu.split(separator: " ").first.map(String.init) ?? lieu) }
+    }
     var body: some View {
         Map(initialPosition: .region(MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 45.83, longitude: 4.80),
@@ -1147,12 +1211,27 @@ struct PlanPhotosVue: View {
                                 .offset(x: 7, y: -7)
                         }
                     }
+                    .contentShape(Rectangle())
+                    .onTapGesture { Haptique.leger(); albumGrappe = (g.2, photosGrappe(g.2)) }
                 }
             }
         }
         .navigationTitle("Plan")
         .navigationBarTitleDisplayMode(.inline)
+        .fullScreenCover(item: Binding(
+            get: { albumGrappe.map { PhotoAlbumItem(titre: $0.0, items: $0.1) } },
+            set: { if $0 == nil { albumGrappe = nil } }
+        )) { a in
+            NavigationStack { AlbumVue(titre: a.titre, items: a.items) }
+                .preferredColorScheme(.dark)
+        }
     }
+}
+
+struct PhotoAlbumItem: Identifiable {
+    let id = UUID()
+    let titre: String
+    let items: [PhotoItem]
 }
 
 // Masquées : VERROUILLÉE et le reste (D57) — 648 éléments derrière le cadenas
@@ -1237,6 +1316,7 @@ struct RecupPhotoVue: View {
     @Environment(\.dismiss) private var dismiss
     let item: PhotoItem
     @ObservedObject private var magasin = MagasinPhotos.partage
+    @State private var confirmationSupprDef = false
     var body: some View {
         ZStack {
             phFond.ignoresSafeArea()
@@ -1257,6 +1337,8 @@ struct RecupPhotoVue: View {
                 HStack {
                     Text("Supprimer").font(.system(size: 16)).foregroundStyle(Color(hex: 0xFF453A))
                         .padding(.horizontal, 8).padding(.vertical, 10)
+                        .contentShape(Rectangle())
+                        .onTapGesture { confirmationSupprDef = true }
                     Spacer()
                     Text("Récupérer").font(.system(size: 16)).foregroundStyle(phTexte)
                         .padding(.horizontal, 8).padding(.vertical, 10)
@@ -1268,6 +1350,16 @@ struct RecupPhotoVue: View {
                 }
                 .padding(.horizontal, 16).padding(.bottom, 8)
             }
+        }
+        .confirmationDialog("Supprimer définitivement ?", isPresented: $confirmationSupprDef, titleVisibility: .visible) {
+            Button("Supprimer définitivement", role: .destructive) {
+                magasin.supprimees.remove(item.id)
+                magasin.supprimees.insert(item.id + "_def")
+                dismiss()
+            }
+            Button("Annuler", role: .cancel) {}
+        } message: {
+            Text("Cette photo sera supprimée définitivement et ne pourra pas être récupérée.")
         }
     }
 }

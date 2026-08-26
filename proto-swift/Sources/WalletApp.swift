@@ -38,6 +38,8 @@ struct CartesVueWallet: View {
     @State private var billetOuvert = false
     @State private var ajoutVisible = false
     @State private var reglagesVisibles = false
+    @State private var fideliteOuverte = false
+    @State private var rechercheVisible = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -49,7 +51,7 @@ struct CartesVueWallet: View {
                         Spacer()
                         HStack(spacing: 14) {
                             Image(systemName: "plus").onTapGesture { ajoutVisible = true }
-                            Image(systemName: "magnifyingglass")
+                            Image(systemName: "magnifyingglass").onTapGesture { rechercheVisible = true }
                             Image(systemName: "ellipsis").onTapGesture { reglagesVisibles = true }
                         }
                         .font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
@@ -63,6 +65,7 @@ struct CartesVueWallet: View {
                             .onTapGesture { carteOuverte = true }
                         CarteFideliteVue()
                             .offset(y: 64)
+                            .onTapGesture { fideliteOuverte = true }
                         BilletSNCFVue(compact: true)
                             .offset(y: 128)
                             .onTapGesture { billetOuvert = true }
@@ -77,8 +80,10 @@ struct CartesVueWallet: View {
         }
         .fullScreenCover(isPresented: $carteOuverte) { CarteOuverteVue() }
         .fullScreenCover(isPresented: $billetOuvert) { BilletOuvertVue() }
+        .fullScreenCover(isPresented: $fideliteOuverte) { CarteFideliteOuverteVue() }
         .sheet(isPresented: $ajoutVisible) { AjoutCarteVue() }
         .sheet(isPresented: $reglagesVisibles) { ReglagesCartesVue() }
+        .sheet(isPresented: $rechercheVisible) { RechercheCartesVue() }
         .preferredColorScheme(.dark)
     }
 }
@@ -121,6 +126,155 @@ struct CarteFideliteVue: View {
                 .padding(14)
             }
             .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
+    }
+}
+
+// ============================================================ CARTE FIDÉLITÉ OUVERTE (Phox Photo — patron LCL)
+struct CarteFideliteOuverteVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var menuVisible = false
+    @State private var signalementEnvoye = false
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Color.black.ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 14) {
+                    HStack {
+                        Button { dismiss() } label: {
+                            Image(systemName: "xmark").font(.system(size: 14, weight: .semibold)).foregroundStyle(.white)
+                                .frame(width: 30, height: 30).background(Color(hex: 0x2C2C2E), in: Circle())
+                        }
+                        Spacer()
+                        Image(systemName: "ellipsis").font(.system(size: 16)).foregroundStyle(.white)
+                            .frame(width: 30, height: 30).background(Color(hex: 0x2C2C2E), in: Circle())
+                            .onTapGesture { menuVisible = true }
+                    }
+                    .padding(.horizontal, 16).padding(.top, 8)
+
+                    // Carte fidélité agrandie (même patron que CarteLCLVue)
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(LinearGradient(colors: [Color(hex: 0x8B5CF6), Color(hex: 0x5B21B6)],
+                                             startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .frame(height: 190)
+                        .overlay(alignment: .topLeading) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Phox Photo").font(.system(size: 17, weight: .bold)).foregroundStyle(.white)
+                                Text("Carte de fidélité").font(.system(size: 11)).foregroundStyle(.white.opacity(0.75))
+                            }
+                            .padding(14)
+                        }
+                        .overlay(alignment: .bottomLeading) {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("N° client : 4821 0037 6294").font(.system(size: 14, weight: .semibold)).foregroundStyle(.white.opacity(0.9))
+                                Text("Points : 1 240 pts").font(.system(size: 11, weight: .medium)).foregroundStyle(.white.opacity(0.75))
+                            }
+                            .padding(14)
+                        }
+                        .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
+                        .padding(.horizontal, 16)
+
+                    // Code-barres factice (EAN-13 décoratif)
+                    VStack(spacing: 10) {
+                        Text("Présentez ce code en caisse").font(.system(size: 13)).foregroundStyle(.secondary)
+                        HStack(spacing: 0) {
+                            ForEach(0..<65, id: \.self) { i in
+                                Rectangle()
+                                    .fill((i * 3 + i % 7 + i / 5) % 4 == 0 ? Color.white : Color(hex: 0x2C2C2E))
+                                    .frame(width: (i % 3 == 0) ? 3 : 2, height: 80)
+                            }
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 2))
+                        Text("4 821 0037 6294 5").font(.system(size: 11)).foregroundStyle(.secondary).monospacedDigit()
+                    }
+                    .padding(16)
+                    .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
+                    .padding(.horizontal, 16)
+
+                    // Infos solde points
+                    VStack(spacing: 0) {
+                        HStack {
+                            Text("Points acquis").font(.system(size: 14)).foregroundStyle(.white)
+                            Spacer()
+                            Text("1 240 pts").font(.system(size: 14)).foregroundStyle(.white)
+                        }
+                        .padding(14)
+                        Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 14)
+                        HStack {
+                            Text("Valeur en bon d'achat").font(.system(size: 14)).foregroundStyle(.white)
+                            Spacer()
+                            Text("12,40 €").font(.system(size: 14)).foregroundStyle(.white)
+                        }
+                        .padding(14)
+                        Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 14)
+                        HStack {
+                            Text("Prochain palier").font(.system(size: 14)).foregroundStyle(.white)
+                            Spacer()
+                            Text("260 pts pour 15 €").font(.system(size: 14)).foregroundStyle(.secondary)
+                        }
+                        .padding(14)
+                    }
+                    .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
+                    .padding(.horizontal, 16)
+
+                    Spacer(minLength: 110)
+                }
+            }
+
+            BarreHome { dismiss() }
+        }
+        .confirmationDialog("Carte Phox Photo", isPresented: $menuVisible) {
+            Button("Informations sur la carte") { }
+            Button("Supprimer la carte", role: .destructive) { dismiss() }
+            Button("Annuler", role: .cancel) {}
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+// ============================================================ RECHERCHE CARTES
+struct RechercheCartesVue: View {
+    @Environment(\.dismiss) private var dismiss
+    private let items = ["Carte LCL Visa •••• 4417", "Phox Photo — Fidélité", "TGV INOUI — Billet 28 août"]
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Cartes et passes").font(.system(size: 13)).foregroundStyle(.secondary)
+                        .padding(.horizontal, 16).padding(.top, 14).padding(.bottom, 8)
+                    VStack(spacing: 0) {
+                        ForEach(Array(items.enumerated()), id: \.offset) { i, nom in
+                            HStack {
+                                Image(systemName: "creditcard").font(.system(size: 15)).foregroundStyle(.secondary)
+                                    .frame(width: 26)
+                                Text(nom).font(.system(size: 15)).foregroundStyle(.white)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 14).padding(.vertical, 11)
+                            .contentShape(Rectangle())
+                            .onTapGesture { dismiss() }
+                            if i < items.count - 1 {
+                                Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 54)
+                            }
+                        }
+                    }
+                    .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
+                    .padding(.horizontal, 16)
+                    Spacer()
+                }
+            }
+            .navigationTitle("Recherche")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("OK") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF))
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
+        .presentationDetents([.medium])
     }
 }
 
@@ -202,6 +356,7 @@ struct CarteOuverteVue: View {
 struct TransactionVue: View {
     @Environment(\.dismiss) private var dismiss
     let transaction: TransactionCarte
+    @State private var signalement = false
 
     var body: some View {
         NavigationStack {
@@ -254,6 +409,8 @@ struct TransactionVue: View {
                         Text("Signaler des informations incorrectes")
                             .font(.system(size: 14)).foregroundStyle(Color(hex: 0x0A84FF))
                             .frame(maxWidth: .infinity, alignment: .leading).padding(14)
+                            .contentShape(Rectangle())
+                            .onTapGesture { Haptique.leger(); signalement = true }
                     }
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
 
@@ -271,6 +428,11 @@ struct TransactionVue: View {
         }
         .preferredColorScheme(.dark)
         .presentationDetents([.large])
+        .alert("Signalement envoyé", isPresented: $signalement) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Votre signalement a été transmis à LCL. Notre équipe examinera cette transaction dans les 48 h.")
+        }
     }
 }
 

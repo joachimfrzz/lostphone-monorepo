@@ -636,17 +636,19 @@ struct PaiementVue: View {
                         }
                         .padding(14)
                         RegSeparateur(retrait: 14)
-                        HStack(spacing: 12) {
-                            RoundedRectangle(cornerRadius: 4).fill(Color(hex: 0x00539B)).frame(width: 34, height: 24)
-                                .overlay(Text("LCL").font(.system(size: 9, weight: .bold)).foregroundStyle(.white))
-                            VStack(alignment: .leading, spacing: 1) {
-                                Text("Carte LCL Visa").font(.system(size: 16)).foregroundStyle(regTexte)
-                                Text("•••• 8207 (Apple Pay)").font(.system(size: 12.5)).foregroundStyle(regTexte2)
+                        NavigationLink { CarteDetailVue() } label: {
+                            HStack(spacing: 12) {
+                                RoundedRectangle(cornerRadius: 4).fill(Color(hex: 0x00539B)).frame(width: 34, height: 24)
+                                    .overlay(Text("LCL").font(.system(size: 9, weight: .bold)).foregroundStyle(.white))
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text("Carte LCL Visa").font(.system(size: 16)).foregroundStyle(regTexte)
+                                    Text("•••• 8207 (Apple Pay)").font(.system(size: 12.5)).foregroundStyle(regTexte2)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(regTexte2.opacity(0.6))
                             }
-                            Spacer()
-                            Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(regTexte2.opacity(0.6))
-                        }
-                        .padding(14)
+                            .padding(14)
+                        }.buttonStyle(.plain)
                         RegSeparateur(retrait: 14)
                         Text("Ajouter un mode de paiement").font(.system(size: 16)).foregroundStyle(regBleu)
                             .frame(maxWidth: .infinity, alignment: .leading).padding(14)
@@ -817,6 +819,7 @@ struct ICloudVue: View {
         "Livres": true, "Pages": true, "WhatsApp": true,
     ]
     private let ordre = ["Photos", "Rappels", "Safari", "Maison", "Cartes", "Siri", "Téléphone et FaceTime", "WhatsApp", "Livres", "Pages"]
+    @State private var alerteSauvegarde = false
     var body: some View {
         ZStack {
             regFond.ignoresSafeArea()
@@ -853,8 +856,11 @@ struct ICloudVue: View {
                             Text("Sauvegarde iCloud").font(.system(size: 16)).foregroundStyle(regTexte)
                             Spacer()
                             Text("Il y a 26 jours").font(.system(size: 15)).foregroundStyle(Color(hex: 0xFF9F0A))
+                            Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(regTexte2.opacity(0.6))
                         }
                         .padding(14)
+                        .contentShape(Rectangle())
+                        .onTapGesture { alerteSauvegarde = true }
                     }
                     Text("La dernière sauvegarde n'a pas pu être effectuée : espace iCloud insuffisant.")
                         .font(.system(size: 12.5)).foregroundStyle(regTexte2)
@@ -881,6 +887,11 @@ struct ICloudVue: View {
         }
         .navigationTitle("iCloud")
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Sauvegarde iCloud", isPresented: $alerteSauvegarde) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("La dernière sauvegarde date d'il y a 26 jours. Espace insuffisant : 173 Go utilisés sur 200 Go. Passez à iCloud+ 2 To dans Réglages > Compte Apple > iCloud.")
+        }
     }
 }
 
@@ -1358,15 +1369,25 @@ struct UtilisationBatterieVue: View {
                     Text("Utilisation de la batterie par app").font(.system(size: 13)).foregroundStyle(regTexte2)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20)
                     RegGroupe {
-                        LigneAppBatterie(nom: "WhatsApp", detail: "À l'écran : 3h 42min · En arrière-plan : 26min", part: "24 %", alerte: true)
+                        NavigationLink { RegContenuVue(nom: "WhatsApp") } label: {
+                            LigneAppBatterie(nom: "WhatsApp", detail: "À l'écran : 3h 42min · En arrière-plan : 26min", part: "24 %", alerte: true)
+                        }.buttonStyle(.plain)
                         RegSeparateur()
-                        LigneAppBatterie(nom: "Safari", detail: "À l'écran : 48min", part: "9 %", alerte: true)
+                        NavigationLink { RegContenuVue(nom: "Safari") } label: {
+                            LigneAppBatterie(nom: "Safari", detail: "À l'écran : 48min", part: "9 %", alerte: true)
+                        }.buttonStyle(.plain)
                         RegSeparateur()
-                        LigneAppBatterie(nom: "Téléphone", detail: "À l'écran : 21min", part: "8 %", alerte: true)
+                        NavigationLink { RegContenuVue(nom: "Téléphone") } label: {
+                            LigneAppBatterie(nom: "Téléphone", detail: "À l'écran : 21min", part: "8 %", alerte: true)
+                        }.buttonStyle(.plain)
                         RegSeparateur()
-                        LigneAppBatterie(nom: "Photos", detail: "À l'écran : 12min", part: "4 %", alerte: false)
+                        NavigationLink { RegContenuVue(nom: "Photos") } label: {
+                            LigneAppBatterie(nom: "Photos", detail: "À l'écran : 12min", part: "4 %", alerte: false)
+                        }.buttonStyle(.plain)
                         RegSeparateur()
-                        LigneAppBatterie(nom: "Ma Banque", detail: "À l'écran : 6min", part: "2 %", alerte: false)
+                        NavigationLink { RegContenuVue(nom: "Ma Banque") } label: {
+                            LigneAppBatterie(nom: "Ma Banque", detail: "À l'écran : 6min", part: "2 %", alerte: false)
+                        }.buttonStyle(.plain)
                         RegSeparateur()
                         Text("En afficher plus").font(.system(size: 15)).foregroundStyle(regBleu)
                             .frame(maxWidth: .infinity, alignment: .leading).padding(14)
@@ -1631,17 +1652,23 @@ struct StockageVue: View {
 
                     RegGroupe {
                         ForEach(Array(apps.enumerated()), id: \.offset) { i, a in
-                            HStack(spacing: 12) {
-                                RegIcone(symbole: "app.fill", fond: Color(hex: 0x3A3A3E))
-                                VStack(alignment: .leading, spacing: 1) {
-                                    Text(a.0).font(.system(size: 16)).foregroundStyle(regTexte)
-                                    Text(a.2).font(.system(size: 12)).foregroundStyle(regTexte2)
+                            NavigationLink {
+                                RegStockageAppVue(nom: a.0, taille: a.1, derniere: a.2)
+                            } label: {
+                                HStack(spacing: 12) {
+                                    RegIcone(symbole: "app.fill", fond: Color(hex: 0x3A3A3E))
+                                    VStack(alignment: .leading, spacing: 1) {
+                                        Text(a.0).font(.system(size: 16)).foregroundStyle(regTexte)
+                                        Text(a.2).font(.system(size: 12)).foregroundStyle(regTexte2)
+                                    }
+                                    Spacer()
+                                    Text(a.1).font(.system(size: 15)).foregroundStyle(regTexte2)
+                                    Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(regTexte2.opacity(0.6))
                                 }
-                                Spacer()
-                                Text(a.1).font(.system(size: 15)).foregroundStyle(regTexte2)
-                                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(regTexte2.opacity(0.6))
+                                .padding(.horizontal, 14).padding(.vertical, 9)
+                                .contentShape(Rectangle())
                             }
-                            .padding(.horizontal, 14).padding(.vertical, 9)
+                            .buttonStyle(.plain)
                             if i < apps.count - 1 { RegSeparateur() }
                         }
                     }
@@ -1651,6 +1678,48 @@ struct StockageVue: View {
         }
         .navigationTitle("Stockage iPhone")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct RegStockageAppVue: View {
+    let nom: String
+    let taille: String
+    let derniere: String
+    @State private var decharge = false
+    @State private var confirmation = false
+    var body: some View {
+        ZStack {
+            regFond.ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 14) {
+                    RegGroupe {
+                        HStack { Text("Taille de l'app").font(.system(size: 16)).foregroundStyle(regTexte); Spacer(); Text(taille).font(.system(size: 16)).foregroundStyle(regTexte2) }.padding(.horizontal, 14).padding(.vertical, 9)
+                        RegSeparateur(retrait: 14)
+                        HStack { Text("Documents et données").font(.system(size: 16)).foregroundStyle(regTexte); Spacer(); Text("122 Mo").font(.system(size: 16)).foregroundStyle(regTexte2) }.padding(.horizontal, 14).padding(.vertical, 9)
+                        RegSeparateur(retrait: 14)
+                        HStack { Text("Dernière utilisation").font(.system(size: 16)).foregroundStyle(regTexte); Spacer(); Text(derniere.replacingOccurrences(of: "Dernière utilisation : ", with: "")).font(.system(size: 16)).foregroundStyle(regTexte2) }.padding(.horizontal, 14).padding(.vertical, 9)
+                    }.padding(.top, 12)
+                    RegGroupe {
+                        Button {
+                            decharge = true
+                            confirmation = true
+                        } label: {
+                            Text(decharge ? "App déchargée" : "Décharger l'app")
+                                .font(.system(size: 16)).foregroundStyle(decharge ? regTexte2 : regBleu)
+                                .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 14).padding(.vertical, 10)
+                        }.buttonStyle(.plain)
+                    }
+                    Color.clear.frame(height: 30)
+                }
+            }
+        }
+        .navigationTitle(nom)
+        .navigationBarTitleDisplayMode(.inline)
+        .alert("App déchargée", isPresented: $confirmation) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("\(nom) a été déchargée. Les documents et données sont conservés.")
+        }
     }
 }
 
@@ -2215,6 +2284,8 @@ struct ConfidentialiteVue: View {
 
 // ============================================================ CARTES ET APPLE PAY (or narratif)
 struct CartesPayVue: View {
+    @State private var alerteSuspendue = false
+    @State private var nomCarteSuspendue = ""
     var body: some View {
         ZStack {
             regFond.ignoresSafeArea()
@@ -2242,8 +2313,12 @@ struct CartesPayVue: View {
                         }.buttonStyle(.plain)
                         RegSeparateur()
                         LigneCarte(couleur: Color(hex: 0xE8590C), nom: "VISA PREPAGO", detail: "•••• 5246", alerte: "Suspendue")
+                            .contentShape(Rectangle())
+                            .onTapGesture { nomCarteSuspendue = "VISA PREPAGO"; alerteSuspendue = true }
                         RegSeparateur()
                         LigneCarte(couleur: Color(hex: 0x2F9E44), nom: "Carte Virtuelle Nirio", detail: "•••• 8476", alerte: "Suspendue")
+                            .contentShape(Rectangle())
+                            .onTapGesture { nomCarteSuspendue = "Carte Virtuelle Nirio"; alerteSuspendue = true }
                     }
                     Text("Deux cartes prépayées ont été suspendues par leur émetteur.")
                         .font(.system(size: 12.5)).foregroundStyle(regTexte2)
@@ -2274,6 +2349,11 @@ struct CartesPayVue: View {
         }
         .navigationTitle("Cartes et Apple Pay")
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Carte suspendue", isPresented: $alerteSuspendue) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Cette carte (\(nomCarteSuspendue)) a été suspendue par son émetteur. Contactez votre banque pour plus d'informations.")
+        }
     }
 }
 

@@ -117,6 +117,8 @@ struct RecentsFichiersVue: View {
     @State private var renommageId: UUID? = nil
     @State private var nouveauNom = ""
     @State private var partageVisible = false
+    @State private var selectionActive = false
+    @State private var selectionIds: Set<UUID> = []
 
     private var items: [FichierItem] {
         let base = magasin.visibles.filter { $0.genre != "dossier" }
@@ -131,7 +133,7 @@ struct RecentsFichiersVue: View {
                     Text("Récents").font(.system(size: 30, weight: .bold)).foregroundStyle(.white)
                     Spacer()
                     Menu {
-                        Button { } label: { Label("Sélectionner", systemImage: "checkmark.circle") }
+                        Button { selectionActive.toggle() } label: { Label(selectionActive ? "Terminer" : "Sélectionner", systemImage: "checkmark.circle") }
                         Button { } label: { Label("Scanner des documents", systemImage: "doc.viewfinder") }
                         Button { } label: { Label("Se connecter au serveur", systemImage: "server.rack") }
                         Divider()

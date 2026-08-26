@@ -183,6 +183,8 @@ struct ListeMemosVue: View {
     @State private var partageVisible = false
     @State private var enregAlerteListe = false
     @State private var remplacerAlerte = false
+    @State private var selectionActive = false
+    @State private var selectionIds: Set<UUID> = []
 
     init(titre: String, filtre: @escaping (MemoVocal) -> Bool) {
         self.titre = titre; self.filtre = filtre
@@ -329,9 +331,10 @@ struct ListeMemosVue: View {
                         .foregroundStyle(.white)
                         .frame(width: 32, height: 32)
                         .background(Color(hex: 0x1C1C1E), in: Circle())
-                    Text("Sélectionner").font(.system(size: 15)).foregroundStyle(Color(hex: 0x0A84FF))
+                    Text(selectionActive ? "Annuler" : "Sélectionner").font(.system(size: 15)).foregroundStyle(Color(hex: 0x0A84FF))
                         .padding(.horizontal, 12).padding(.vertical, 6)
                         .background(Color(hex: 0x1C1C1E), in: Capsule())
+                        .onTapGesture { selectionActive.toggle(); if !selectionActive { selectionIds.removeAll() } }
                 }
             }
         }

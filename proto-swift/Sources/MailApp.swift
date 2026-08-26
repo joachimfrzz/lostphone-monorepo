@@ -97,6 +97,7 @@ struct MailVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinMail.partage
     @State private var composer = false
+    @State private var modifierVisible = false
 
     var body: some View {
         NavigationStack {
@@ -169,10 +170,27 @@ struct MailVue: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Text("Modifier").foregroundStyle(Color(hex: 0x0A84FF))
+                    Button("Modifier") { modifierVisible = true }.foregroundStyle(Color(hex: 0x0A84FF))
                 }
             }
             .sheet(isPresented: $composer) { ComposerMailVue() }
+            .sheet(isPresented: $modifierVisible) {
+                NavigationStack {
+                    ZStack {
+                        Color.black.ignoresSafeArea()
+                        VStack(spacing: 8) {
+                            Image(systemName: "tray.2.fill").font(.system(size: 30)).foregroundStyle(.secondary)
+                            Text("Modifier les boîtes").font(.system(size: 16)).foregroundStyle(.white)
+                            Text("Réception, Envoyés, Corbeille — aucune boîte supprimable dans cette configuration.")
+                                .font(.system(size: 13)).foregroundStyle(.secondary).multilineTextAlignment(.center).padding(.horizontal, 30)
+                        }
+                    }
+                    .navigationTitle("Modifier").navigationBarTitleDisplayMode(.inline)
+                    .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("OK") { modifierVisible = false }.foregroundStyle(Color(hex: 0x0A84FF)) } }
+                }
+                .preferredColorScheme(.dark)
+                .presentationDetents([.medium])
+            }
         }
         .preferredColorScheme(.dark)
     }
@@ -208,6 +226,7 @@ struct ListeMailVue: View {
     let boite: String
     @ObservedObject private var magasin = MagasinMail.partage
     @State private var recherche = ""
+    @State private var selectionActive = false
 
     private var items: [Courriel] {
         var l: [Courriel]
@@ -293,10 +312,13 @@ struct ListeMailVue: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 14) {
-                    Text("Sélectionner").font(.system(size: 14))
+                    Button(selectionActive ? "Annuler" : "Sélectionner") {
+                        selectionActive.toggle()
+                    }
+                    .font(.system(size: 14)).foregroundStyle(Color(hex: 0x0A84FF))
                     Image(systemName: "ellipsis.circle")
+                        .foregroundStyle(Color(hex: 0x0A84FF))
                 }
-                .foregroundStyle(Color(hex: 0x0A84FF))
             }
         }
     }

@@ -107,6 +107,18 @@ struct SpotifyVue: View {
 // ============================================================ ACCUEIL
 struct SpotAccueilVue: View {
     @State private var artisteVisible = false
+    @State private var chipSelectionne = 0
+    private let chips = ["Tout", "Musique", "Podcasts", "Livres audio"]
+
+    var tuilesFiltrees: [SpotTitre] {
+        switch chipSelectionne {
+        case 1: return DonneesSpot.reprise.filter { $0.artiste != "Léna Situations · Podcast" }
+        case 2: return DonneesSpot.reprise.filter { $0.artiste.contains("Podcast") }
+        case 3: return []
+        default: return DonneesSpot.reprise
+        }
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -116,18 +128,23 @@ struct SpotAccueilVue: View {
                             Image(uiImage: img).resizable().scaledToFill().frame(width: 32, height: 32).clipShape(Circle())
                         } else { Circle().fill(Color(hex: 0x5B7CFA)).frame(width: 32, height: 32) }
                     }
-                    ForEach(Array([("Tout", true), ("Musique", false), ("Podcasts", false), ("Livres audio", false)].enumerated()), id: \.offset) { _, c in
-                        Text(c.0).font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(c.1 ? Color.black : Color.white)
+                    ForEach(Array(chips.enumerated()), id: \.offset) { i, c in
+                        Text(c).font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(chipSelectionne == i ? Color.black : Color.white)
                             .padding(.horizontal, 13).padding(.vertical, 7)
-                            .background(c.1 ? Color(hex: spotVert) : Color(hex: 0x2A2A2A), in: Capsule())
+                            .background(chipSelectionne == i ? Color(hex: spotVert) : Color(hex: 0x2A2A2A), in: Capsule())
+                            .contentShape(Capsule())
+                            .onTapGesture { withAnimation { chipSelectionne = i } }
                     }
                 }
                 .padding(.horizontal, 14)
 
                 Text("Lancer la lecture").font(.system(size: 20, weight: .bold)).foregroundStyle(.white).padding(.horizontal, 14)
+                if tuilesFiltrees.isEmpty {
+                    Text("Aucun contenu dans cette catégorie").font(.system(size: 14)).foregroundStyle(.gray).padding(.horizontal, 14)
+                }
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 2), spacing: 8) {
-                    ForEach(DonneesSpot.reprise) { t in
+                    ForEach(tuilesFiltrees) { t in
                         HStack(spacing: 8) {
                             Group {
                                 if let cle = t.image, let img = ChargeurPhoto.image(cle) {
@@ -197,6 +214,7 @@ struct SpotLecteurVue: View {
     @Environment(\.dismiss) private var dismiss
     @State private var enLecture = true
     @State private var progression: Double = 63
+    @State private var parolesVisible = false
     private let minuteur = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -274,6 +292,8 @@ struct SpotLecteurVue: View {
                     Text("J'arrive en Air Max, personne peut stopper la machine\nOn connaît le quartier, on connaît la routine")
                         .font(.system(size: 15, weight: .bold)).foregroundStyle(.white)
                     Text("Afficher les paroles").font(.system(size: 12, weight: .semibold)).foregroundStyle(.white.opacity(0.85))
+                        .contentShape(Rectangle())
+                        .onTapGesture { parolesVisible = true }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(14)
@@ -288,6 +308,43 @@ struct SpotLecteurVue: View {
             }
         }
         .onReceive(minuteur) { _ in if enLecture && progression < 222 { progression += 1 } }
+        .sheet(isPresented: $parolesVisible) { SpotParolesVue() }
+        .preferredColorScheme(.dark)
+    }
+}
+
+struct SpotParolesVue: View {
+    @Environment(\.dismiss) private var dismiss
+    private let paroles = [
+        "J'arrive en Air Max, personne peut stopper la machine",
+        "On connaît le quartier, on connaît la routine",
+        "On traverse la nuit, on fait les rues jusqu'à l'aube",
+        "Air Max aux pieds, le flow il cartoune",
+        "J'pose mes pas là où personne n'aurait osé",
+        "T'as vu le chemin, t'as vu tout ce qu'on a traversé",
+        "Air Max aux pieds, on reste debout quand ça tangue",
+        "On garde la tête haute, c'est notre langue",
+    ]
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    ForEach(Array(paroles.enumerated()), id: \.offset) { _, l in
+                        Text(l).font(.system(size: 18, weight: .bold)).foregroundStyle(.white)
+                    }
+                    Spacer(minLength: 40)
+                }
+                .padding(.horizontal, 22).padding(.top, 16)
+            }
+            .background(Color(hex: 0xD62828))
+            .navigationTitle("Paroles — Air Max")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Fermer") { dismiss() }.foregroundStyle(.white)
+                }
+            }
+        }
         .preferredColorScheme(.dark)
     }
 }

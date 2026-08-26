@@ -272,6 +272,8 @@ struct SousReglageVue: View {
     @Environment(\.dismiss) private var dismiss
     let titre: String
     @State private var etats: [Int: Bool] = [:]
+    @State private var confirmationDestructif = false
+    @State private var nomDestructif = ""
 
     var body: some View {
         VStack(spacing: 0) {
@@ -321,6 +323,12 @@ struct SousReglageVue: View {
         }
         .background(waNoir.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
+        .confirmationDialog(nomDestructif, isPresented: $confirmationDestructif, titleVisibility: .visible) {
+            Button(nomDestructif, role: .destructive) {}
+            Button("Annuler", role: .cancel) {}
+        } message: {
+            Text("Cette action est irréversible.")
+        }
     }
 
     @ViewBuilder
@@ -358,6 +366,11 @@ struct SousReglageVue: View {
                 Spacer()
             }
             .padding(.horizontal, 16).padding(.vertical, 12)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                nomDestructif = nom
+                confirmationDestructif = true
+            }
         }
     }
 }

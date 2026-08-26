@@ -22,6 +22,228 @@
 #   InteractionsPartagees.swift ; branchés : stories Snapchat (Amis·es), cartes Découvrir,
 #   stories Facebook, lignes DM Instagram ; chips Snapchat -> filtres réels (R5).
 # STATUT : vague 1 en cours d'implémentation, vagues suivantes à venir (traces ajoutées au fil).
+# VAGUE 3 (nuit du 27/08) — litiges délégués traités (~50 B, ~20 C assumés), traces intégrales :
+# --- vague3-granit.md ---
+# # Trace vague 3 — Lot Granit (27/08)
+# ## CARTES / WALLET (WalletApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Cartes | Accueil | magnifyingglass (sans handler) | B implémenté : sheet RechercheCartesVue listant les 3 cartes/passes |
+# | Cartes | Accueil — pile | CarteFideliteVue (pas de onTapGesture) | B implémenté : fullScreenCover CarteFideliteOuverteVue (patron CarteOuverteVue) avec n° client 4821 0037 6294, 1 240 pts fidélité, code-barres EAN factice, menu ellipsis |
+# | Cartes | Détail transaction | "Signaler des informations incorrectes" (Text bleu, pas de handler) | B implémenté : .alert "Signalement envoyé à LCL" |
+# | Cartes | Détail transaction | mini-carte Plans (allowsHitTesting: false) | C assumé : choix délibéré raisonnable (déjà justifié dans l'audit) |
+# ## PHOTOS (PhotosApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Photos | Photothèque — en-tête | Bandeau "Synchronisation suspendue ›" (sans handler) | B implémenté : .alert "173 Go sur 200 Go utilisés" |
+# | Photos | Photothèque — en-tête | Bouton filtre "line.3.horizontal.decrease" (sans handler) | B implémenté : .confirmationDialog "Récentes / Favorites / Captures d'écran" |
+# | Photos | Photothèque — en-tête | Bouton "Sélect." | C assumé : déjà tranché A définitif en vague 1-2 — SAUTÉ |
+# | Photos | Détail photo | Éditeur "slider.horizontal.3" | C assumé : déjà tranché A définitif en vague 1-2 — SAUTÉ |
+# | Photos | Fiche photo | Bloc lieu (mappin + texte) | B implémenté : fullScreenCover PlanPhotosVue centré |
+# | Photos | Fiche photo | Zone légende "Ajouter une légende" | B implémenté : .alert de saisie TextField, stocke dans @State legendeAffichee |
+# | Photos | Collections / Personnes | Avatars circulaires (Sarah, Chloé, Maman, Papa, non nommé) | B implémenté : tap avatar → fullScreenCover AlbumVue filtré ; tap "Nommer" → alert saisie nom |
+# | Photos | Collections / Personnes | Texte bleu "Nommer" (Marc non identifié) | B implémenté : alert saisie nom intégrée dans PersonnePhotos |
+# | Photos | Collections / Types de média | Ligne "Captures d'écran — 0" (LigneTypeMedia sans NavigationLink) | B implémenté : NavigationLink → AlbumVue filtre capture == true |
+# | Photos | Plan (PlanPhotosVue) | Annotations photo sur carte (sans onTapGesture) | B implémenté : onTapGesture → fullScreenCover AlbumVue filtré par lieu (PhotoAlbumItem Identifiable) |
+# | Photos | Récupération photo | Bouton "Supprimer" (Text rouge, sans handler) | B implémenté : .confirmationDialog "Supprimer définitivement ?" symétrique au Récupérer |
+# ## RÉGLAGES (ReglagesApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Réglages | Paiement et livraison | Ligne "Carte LCL Visa •••• 8207 (Apple Pay)" | B implémenté : NavigationLink → CarteDetailVue (déjà construite) |
+# | Réglages | Abonnements | Lignes Meetic/iCloud+/Deezer | C assumé : déjà traité en vague 1-2 — SAUTÉ |
+# | Réglages | iCloud | Ligne "Sauvegarde iCloud — Il y a 26 jours" | B implémenté : .alert "espace insuffisant, 173 Go / 200 Go" avec chevron ajouté |
+# | Réglages | Batterie / UtilisationBatterieVue | Lignes LigneAppBatterie (6 lignes, chevron visuel) | B implémenté : NavigationLink → RegContenuVue(nom: app) sur chaque ligne |
+# | Réglages | Général / StockageVue | Lignes d'apps (7 lignes, chevron) | B implémenté : NavigationLink → RegStockageAppVue (taille, dernière utilisation, bouton Décharger l'app) |
+# | Réglages | Cartes et Apple Pay | Lignes VISA PREPAGO et Carte Virtuelle Nirio (Suspendue) | B implémenté : onTapGesture → .alert "carte suspendue par émetteur" |
+# ## HORLOGE (HorlogeApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Horloge | Alarmes | Bouton CONFIGURER Sommeil | C assumé : déjà tranché en vague 1-2 — SAUTÉ |
+# | Horloge | Minuteurs | Bouton "+" barre haute (action vide {}) | B implémenté : sheet HorlogeNouveauMinuteurVue avec pickers h/mn/s et nom, bouton Démarrer |
+# ## CALCULATRICE (CalculatriceApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Calculatrice | Principal | Icône "list.number" (Image sans handler) | B implémenté : onTapGesture → .alert "Mode scientifique non disponible, tourner en paysage" |
+# ## MÉTÉO (MeteoApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Météo | Page ville | Menus Météo (Modifier liste, Unités, Signaler) | C assumé : déjà traité en vague 1-2 — SAUTÉ |
+# | Météo | Page ville | Lien "Afficher dans Plans" (ErreurLambda) | B implémenté : appel Routeur.partage.allerPlans() direct (suppression alerte ErreurLambda) |
+# | Météo | Carte météo | Icône "square.3.layers.3d" (Image sans handler) | B implémenté : onTapGesture → .confirmationDialog "Standard / Satellite", bascule mapStyle |
+# | Météo | Conditions | Lignes Température / Précipitations | C assumé : déjà traité en vague 1-2 — SAUTÉ |
+# ## NOTES (NotesApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Notes | Liste | Bouton "Sélectionner des notes" | C assumé : menus Notes déjà traités en vague 1-2 — SAUTÉ |
+# | Notes | Édition | Icône ellipsis.circle (alerte générique) | C assumé : menus Notes déjà traités en vague 1-2 — SAUTÉ |
+# | Notes | Édition | Icône "textformat" (alerte générique) | C assumé : menus Notes déjà traités en vague 1-2 — SAUTÉ |
+# ## RAPPELS (RappelsApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Rappels | Accueil | Icône "text.badge.plus" (Image sans handler) | B implémenté : sheet RappelsNouvelleListeVue (nom + couleur + icône, Form) |
+# ## DICTAPHONE (DictaphoneApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Dictaphone | Liste mémos | Chip "Sélectionner" (Text, sans handler) | B implémenté : onTapGesture bascule selectionActive, texte devient "Annuler" |
+# ## MA BANQUE (MaBanqueApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | MaBanque | Comptes | Carte Livret A (bloc entier, tapable, aucun handler) | B implémenté : sheet BanqueLivretAVue (solde, taux 3%, historique 4 opérations, virement) |
+# | MaBanque | Cartes | Ligne "Paiement sans contact" (handler vide {}) | C assumé : Toggle $sansContactActif déjà fonctionnel dans le code — faux litige |
+# | MaBanque | Cartes | Ligne "Paiements en ligne" (handler vide {}) | C assumé : Toggle $paiementsEnLigneActifs déjà fonctionnel — faux litige |
+# ## CALENDRIER (CalendrierApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Calendrier | Vue principale — capsule basse | Icône "exclamationmark.circle" (sans handler) | B implémenté : onTapGesture → sheet conflitsVisible "Aucun conflit" |
+# | Calendrier | Vue principale — capsule basse | Icône "tray" (sans handler) | B implémenté : onTapGesture → sheet invitationsVisible "Aucune invitation" |
+# ## LOCALISER (LocaliserApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Localiser | Appareils | Icône "+" en en-tête (sans handler) | C assumé : ajouter appareil nécessite Apple ID hors portée |
+# | Localiser | Objets | Icône "+" en en-tête (sans handler) | C assumé : nécessite AirTag physique hors portée |
+# ## MAIL (MailApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Mail | Boîtes — MailVue toolbar | Texte "Modifier" (Text simple, pas un Button) | B implémenté : Button → sheet "Modifier les boîtes" explicatif |
+# | Mail | Liste — ListeMailVue toolbar | Texte "Sélectionner" (Text simple, pas un Button) | B implémenté : Button → bascule selectionActive, texte devient "Annuler" |
+# ## PLANS (PlansApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Plans | Carte principale — boutons flottants droite | Icône "car.fill" (sans handler) | B implémenté : onTapGesture → sheet ItinerairePlanVue sur premier lieu récent |
+# | Plans | Itinéraire | "Ajouter un arrêt" | C assumé : déjà tranché C définitif en vague 1-2 — SAUTÉ |
+# ## SAFARI (SafariApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Safari | FonfonVue | Bouton "Réserver une table" | C assumé : Fonfon déjà traité en vague 1-2 — SAUTÉ |
+# ## FICHIERS (FichiersApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Fichiers | Récents — menu ellipsis | Bouton "Sélectionner" (handler vide {}) | B implémenté : bascule selectionActive (toggle mode sélection) |
+# | Fichiers | Récents — menu ellipsis | Bouton "Scanner des documents" (handler vide {}) | C assumé : simuler un scan hors portée |
+# | Fichiers | Explorer | Chevron "chevron.down" sur "Favoris" | C assumé : interaction décorative acceptable |
+# ## SANTÉ (SanteApp.swift)
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | Santé | Résumé | Lien "Modifier" (épinglés) | C assumé : déjà tranché en vague 1-2 — SAUTÉ |
+# ---
+# ## Vérifications d'équilibre (python3)
+# | Fichier | {} | () |
+# |---------|----|----|
+# | WalletApp.swift | ✓ (167/167) | ✓ (757/757) |
+# | PhotosApp.swift | ✓ (351/351) | ✓ (1182/1182) |
+# | ReglagesApp.swift | ✓ (696/696) | ✓ (2919/2919) |
+# | HorlogeApp.swift | ✓ (217/217) | ✓ (653/653) |
+# | CalculatriceApp.swift | ✓ (88/88) | ✓ (188/188) |
+# | MeteoApp.swift | ✓ (211/211) | ✓ (953/953) |
+# | RappelsApp.swift | ✓ (165/165) | ✓ (498/498) |
+# | DictaphoneApp.swift | ✓ (145/145) | ✓ (321/321) |
+# | MaBanqueApp.swift | ✓ (130/130) | ✓ (631/631) |
+# | CalendrierApp.swift | ✓ (162/162) | ✓ (504/504) |
+# | MailApp.swift | ✓ (111/111) | ✓ (431/431) |
+# | PlansApp.swift | ✓ (149/149) | ✓ (639/639) |
+# | FichiersApp.swift | ✓ (225/225) | ✓ (751/751) |
+# --- vague3-nexus.md ---
+# # Vague 3 — Lot 6 — nexus (Messenger · Instagram · Snapchat)
+# # Nuit du 27/08 — fichiers modifiés : MessengerApp.swift, InstagramApp.swift, SnapchatApp.swift
+# ## Messenger — 7 litiges
+# | app | écran | élément | décision |
+# |---|---|---|---|
+# | Messenger | Discussions | bulle «Partagez une note…» (note perso en-tête) | B implémenté : onTapGesture { noteVisible = true } → sheet MsgrSaisieNoteVue (TextField + bouton Publier, dismiss) |
+# | Messenger | Conversation | icône plus.circle.fill (menu pièces jointes) | B implémenté : onTapGesture { pjVisible = true } → sheet MsgrMenuPJVue (Liste : Photo, Appareil photo, Localisation, GIF) |
+# | Messenger | Conversation | icône camera.fill (composeur) | B implémenté : onTapGesture { appelVisible = true } → réutilise MsgrAppelVue existant (mode vidéo / appel) |
+# | Messenger | Conversation | réaction emoji sur bulle | C assumé : dans la vraie app tap ouvre le détail des réactions — interaction non justifiée pour le jeu, la bulle de réaction reste décorative (R10) |
+# | Messenger | Stories | carte story Sarah (Ajouter à la story) | B implémenté : onTapGesture { ajoutStoryVisible = true } → sheet MsgrAjoutStoryVue (choix Galerie / Appareil photo) |
+# | Messenger | Menu | ligne «Facebook Reels» | B implémenté : alerte native «Ouvrir dans Facebook ?» avec bouton Ouvrir / Annuler (alerteFacebook @State + titre dynamique) |
+# | Messenger | Menu | ligne «Événements Facebook» | B implémenté : même alerte — alerteFacebookTitre = "Événements Facebook" |
+# | Messenger | Menu | ligne «Facebook Rencontres» | B implémenté : même alerte — alerteFacebookTitre = "Facebook Rencontres" |
+# **MESSENGER : B=7 / C=1 (réaction emoji)**
+# ---
+# ## Instagram — 5 litiges
+# | app | écran | élément | décision |
+# |---|---|---|---|
+# | Instagram | Feed | «Votre story» + cercle bleu plus (ajout story) | B implémenté : onTapGesture { ajoutStoryVisible = true } → sheet InstaAjoutStoryVue (Galerie / Appareil photo / Texte) |
+# | Instagram | Recherche | vignettes de la mosaïque (aucun handler tap) | B implémenté : onTapGesture { imageOuverte = cle } → fullScreenCover VisualiseurContenuVue (imageCle, avecMessage: false) |
+# | Instagram | Profil Sarah | icône plus.app en-tête (créer publication) | B implémenté : onTapGesture { creationPostVisible = true } → sheet InstaCreationPostVue (photo fictive + champ légende + bouton Partager) |
+# | Instagram | DM | icône camera par ligne de conversation | B implémenté : onTapGesture { cameraVisible = true } → sheet InstaCameraSheetVue (viseur sombre + cercle déclencheur) |
+# | Instagram | DM | lignes de conversation (tap ouvre conv) | SKIP — déjà câblé en vague 2 (onTapGesture { filOuvert = c } → FilGeneriqueVue) |
+# **INSTAGRAM : B=4 / C=0 (1 SKIP déjà câblé)**
+# ---
+# ## Snapchat — 7 litiges
+# | app | écran | élément | décision |
+# |---|---|---|---|
+# | Snapchat | Chat (liste) | chip «🤖 My AI» | SKIP — chips filtres déjà câblés en vague 2 (onTapGesture + @State filtre complet présent dans le code) |
+# | Snapchat | Chat (liste) | chip «Groupes» | SKIP — même raison |
+# | Snapchat | Chat (liste) | chip «Près de moi» | SKIP — même raison |
+# | Snapchat | Chat (liste) | chip «Meilleurs·es amis·es» | SKIP — même raison |
+# | Snapchat | Carte (Snap Map) | pilule «Lyon» (localisation en-tête) | B implémenté : onTapGesture { rechercheVisible = true } → sheet SnapRechercheCarteVue (TextField + liste de lieux filtrée) |
+# | Snapchat | Carte (Snap Map) | chips Souvenirs / Tendance / Footsteps / Visité | B implémenté : @State filtreCarteActif + onTapGesture bascule actif/inactif, style chip dynamique (noir si actif) |
+# | Snapchat | Caméra | cercle déclencheur (stroke blanc, aucun handler) | B implémenté : onTapGesture → flash blanc bref (withAnimation 0.1s) + sheet SnapEnvoiSnapVue (aperçu photo fictive + liste amis à sélectionner) |
+# **SNAPCHAT : B=3 / C=0 (4 SKIP déjà traités vague 2)**
+# ---
+# ## Vérifications d'équilibre
+# | Fichier | { } | ( ) |
+# |---|---|---|
+# | MessengerApp.swift | 333 = 333 ✓ | 1275 = 1275 ✓ |
+# | InstagramApp.swift | 224 = 224 ✓ | 1004 = 1004 ✓ |
+# | SnapchatApp.swift | 164 = 164 ✓ | 810 = 810 ✓ |
+# --- vague3-silex.md ---
+# # Vague 3 — Lot silex (communication) — 27/08/2026
+# ## Trace des litiges traités
+# | app | écran | élément | décision |
+# |-----|-------|---------|----------|
+# | WhatsApp | ConversationVue | icône micro (barre de saisie) | B implémenté : `.onTapGesture { micErreurVisible = true }` → alert ErreurLambda("reseau") |
+# | WhatsApp | ConversationVue | bouton contextMenu « Répondre » | SAUTÉ — déjà fait vague 2 (citation fonctionnelle) |
+# | WhatsApp | ConversationVue | bouton contextMenu « Transférer » | B implémenté : ouvre `TransfertContactVue` (sheet sélection parmi DonneesWA.fiches, envoi via EnvoisJoueur) |
+# | WhatsApp | ConversationVue | bouton contextMenu « Supprimer » | B implémenté : `envois.supprimer(nomContact, texte:)` retire le msgJoueur du fil avec animation |
+# | WhatsApp | ConversationVue | BulleVideo | B implémenté : `.onTapGesture { videoErreurVisible = true }` → alert ErreurLambda("reseau") |
+# | WhatsApp | ActusVue | ligne statut Chloé | B implémenté : `.onTapGesture { statutChloeVisible = true }` → `VisualiseurContenuVue(titre: "Chloé", emoji: "🤍", teinte: 0xE17BB2)` |
+# | WhatsApp | VousVue | icône qrcode | B implémenté : `.onTapGesture { qrVisible = true }` → sheet `WAQRCodeVue` (QR factice + numéro Sarah) |
+# | WhatsApp | VousVue | icône plus.circle | B implémenté : `.onTapGesture { plusErreurVisible = true }` → alert ErreurLambda("creation.indisponible") |
+# | WhatsApp | ArchiveesVue | lignes conversations archivées | B implémenté : chaque ligne devient `NavigationLink(destination: ConversationVue(nomContact: c.0))` |
+# | WhatsApp | SousReglageVue | ligne .destructif « Supprimer le compte » | B implémenté : `.onTapGesture` → `confirmationDestructif = true` → confirmationDialog destructif (aucun effet réel) |
+# | Téléphone | TelRecentsVue | tap ligne entière | SAUTÉ — déjà fait vague 2 (onTapGesture → AppelTelVue présent) |
+# | Téléphone | TelFicheVue | segment « Messages vocaux » | B implémenté : bascule `ongletVocaux` → liste des MessageVocal filtrés depuis DonneesTel.messagerie |
+# | Téléphone | TelFicheVue | champ Notes | B implémenté : tap → `notesEnEdition = true` → TextField inline éditable |
+# | Téléphone | TelMessagerieVue | barre scrubber | C assumé : scrubbing AVAudioPlayer.currentTime sans test → risque de crash ; frustration faible |
+# | Messages | MsgSuppressionsVue | lignes conversations supprimées | SAUTÉ — déjà fait (convLecture + navigationDestination fonctionnels) |
+# ## Fichiers modifiés
+# - `WhatsAppConversations.swift` : +micErreurVisible, +videoErreurVisible, +transfertVisible/Texte, menuPourTexte Copier/Transférer/Supprimer wirés, BulleVideo tap, statut Chloé (ActusVue), nouveau struct `TransfertContactVue`
+# - `WhatsAppEcrans.swift` : VousVue qrcode + plus.circle, ArchiveesVue NavigationLink, nouveau struct `WAQRCodeVue`
+# - `TelephoneApp.swift` : TelFicheVue segment Messages vocaux (toggle ongletVocaux), Notes (TextField inline)
+# - `AudioEtAppels.swift` : SousReglageVue `.destructif` → confirmationDestructif + confirmationDialog
+# --- vague3-vector.md ---
+# # Vague 3 — Trace lot 7 (tierces2 + coque)
+# | app | écran | élément | décision |
+# |---|---|---|---|
+# | Facebook | Fil | icône `plus.circle.fill` en-tête | B implémenté : feuille FbComposeurVue (champ texte + bouton Publier, post ajouté en tête du fil en @State local) |
+# | Facebook | Fil — Stories | carte « Créer une story » (bouton +) | SAUTÉ : stories traitées vagues 1-2 (exclusion explicite CONSIGNES-VAGUE3) |
+# | Facebook | Fil — Stories | vignettes stories amies (Chloé, Inès, Léa) | SAUTÉ : stories traitées vagues 1-2 (déjà onTapGesture → VisualiseurContenuVue en place) |
+# | Facebook | Reels | icône caméra en-tête (créer un Reel) | B implémenté : sheet FbFeuilleSimpleVue « Créer un Reel » |
+# | Facebook | Groupes | icône `plus` en-tête (créer un groupe) | B implémenté : sheet FbFeuilleSimpleVue « Créer un groupe » |
+# | Facebook | Notifications | ligne de notification tapable (corps) | B implémenté : onTapGesture → fullScreenCover FbFilVue |
+# | Facebook | Menu | icône engrenage en-tête (réglages) | B implémenté : sheet FbFeuilleSimpleVue « Réglages et confidentialité » |
+# | Facebook | Menu | bloc profil Sarah (photo + « Voir votre profil ») | B implémenté : sheet FbProfilVue (avatar + nom + stats amis/publications) |
+# | X | Explore | ligne tendance (corps tapable) | B implémenté : onTapGesture → fullScreenCover XPostDetailVue du post correspondant |
+# | ChatGPT | Accueil | toggle Chat/Work — onglet « Work » inerte | B implémenté : bascule @State modeWork, fond pill + message d'accueil changent |
+# | Spotify | Accueil | chips de filtre (Musique, Podcasts, Livres audio) | B implémenté : @State chipSelectionne, tuilesFiltrees filtre la grille « Lancer la lecture » |
+# | Spotify | Lecteur | lien « Afficher les paroles » | B implémenté : onTapGesture → sheet SpotParolesVue (paroles complètes fictives de Air Max) |
+# | Spotify | Lecteur | barre de progression (scrubbing) | SAUTÉ : DragGesture déjà implémenté en vague précédente (ligne 241-244 du fichier source) |
+# | YouTube | Lecteur | bouton play overlay sur la miniature (faux play) | C assumé : image fixe = simulation assumée, play décoratif cohérent (SAUTE per consignes) |
+# | YouTube | Lecteur | section Commentaires (bloc entier tapable) | B implémenté : onTapGesture → sheet YtCommentairesVue (liste + champ envoi) |
+# | YouTube | Shorts | icône caméra en-tête (créer un Short) | B implémenté : sheet YtCreerShortVue |
+# | Coque | Verrouillage | carte notif WhatsApp (Marc) | B implémenté : onTapGesture → deverrouille + fullScreenCover ConversationVue Marc ❤️ |
+# | Coque | Verrouillage | carte notif Téléphone (Chloé — 2 appels manqués) | B implémenté : onTapGesture → deverrouille + fullScreenCover TelFicheVue Chloé |
+# | Coque | Accueil — Pilule Recherche | pilule « Recherche » | SAUTÉ : Spotlight = vague dédiée (exclusion explicite consignes) |
+# | Coque | Accueil — Grille apps | icône « Musique » | SAUTÉ : placeholder assumé (exclusion explicite consignes) |
+# ## Vérifications d'équilibre accolades/parenthèses
+# | fichier | `{` | `}` | diff | `(` | `)` | diff |
+# |---|---|---|---|---|---|---|
+# | /agent/workspace/FacebookApp.swift | 199 | 199 | 0 | 957 | 957 | 0 |
+# | /agent/workspace/sources/XApp.swift | 144 | 144 | 0 | 592 | 592 | 0 |
+# | /agent/workspace/sources/ChatGPTApp.swift | 92 | 92 | 0 | 384 | 384 | 0 |
+# | /agent/workspace/sources/SpotifyApp.swift | 132 | 132 | 0 | 693 | 693 | 0 |
+# | /agent/workspace/sources/YouTubeApp.swift | 173 | 173 | 0 | 772 | 772 | 0 |
+# | /agent/workspace/repo/LPProto.swift | 407 | 407 | 0 | 1086 | 1086 | 0 |
 # VAGUE 2 (27/08 ~00h30) — arbitrés lot 1 implémentés :
 #   Téléphone : tap ligne Récents = appel réel (AppelTelVue), info.circle -> fiche (NavigationLink)
 #   Banque : Paiement sans contact + Paiements en ligne = vraies bascules session, chevrons retirés

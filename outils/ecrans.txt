@@ -162,3 +162,17 @@ messenger.parametres
 messenger.invitations
 messenger.archive
 messenger.nouveau
+instagram#0
+instagram#1
+instagram#2
+instagram#3
+instagram.story
+instagram.profilprive
+instagram.dm
+instagram.activite
+snapchat#0
+snapchat#1
+snapchat#2
+snapchat#3
+snapchat#4
+snapchat.conv

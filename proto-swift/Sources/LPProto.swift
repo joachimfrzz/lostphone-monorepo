@@ -52,6 +52,8 @@ struct EcranCapture: View {
         case "fichiers": ecransFichiers()
         case "sante": ecransSante()
         case "messenger": ecransMessenger()
+        case "instagram": ecransInstagram()
+        case "snapchat": ecransSnapchat()
         case "cartes": ecransCartes()
         default: VerrouillageView()
         }
@@ -96,6 +98,25 @@ struct EcranCapture: View {
         case "messenger.archive": MsgrArchiveVue()
         case "messenger.nouveau": MsgrNouvelleDiscussionVue()
         default: MessengerVue()
+        }
+    }
+
+    @ViewBuilder
+    private func ecransInstagram() -> some View {
+        switch cle {
+        case "instagram.story": InstaStoryVue(compte: DonneesInsta.comptes[0])
+        case "instagram.profilprive": InstaProfilTiersVue(compte: DonneesInsta.comptes[3])
+        case "instagram.dm": InstaDMVue()
+        case "instagram.activite": InstaActiviteVue()
+        default: InstagramVue()
+        }
+    }
+
+    @ViewBuilder
+    private func ecransSnapchat() -> some View {
+        switch cle {
+        case "snapchat.conv": SnapConversationVue(ami: DonneesSnap.amis[0])
+        default: SnapchatVue()
         }
     }
 
@@ -621,6 +642,8 @@ struct AccueilView: View {
     @State private var cartesOuvertes = false
     @State private var santeOuverte = false
     @State private var messengerOuvert = false
+    @State private var instagramOuvert = false
+    @State private var snapchatOuvert = false
     @ObservedObject private var routeur = Routeur.partage
 
     private let apps: [(String, Color, String, Color)] = [
@@ -642,6 +665,8 @@ struct AccueilView: View {
         ("Fichiers", .white, "folder.fill", Color(hex: 0x0A84FF)),
         ("Dictaphone", Color(hex: 0x1C1C1E), "waveform", Color(hex: 0xFF3B30)),
         ("Messenger", Color(hex: 0x0084FF), "bolt.horizontal.circle.fill", .white),
+        ("Instagram", Color(hex: 0xE1306C), "camera.circle", .white),
+        ("Snapchat", Color(hex: 0xFFFC00), "bubble.left.fill", .black),
     ]
 
     private func fermerToutesLesApps() {
@@ -652,6 +677,7 @@ struct AccueilView: View {
         calendrierOuvert = false; localiserOuvert = false; mailOuvert = false
         plansOuverts = false; safariOuvert = false
         fichiersOuverts = false; cartesOuvertes = false; santeOuverte = false; messengerOuvert = false
+        instagramOuvert = false; snapchatOuvert = false
     }
 
     private func actionPour(_ nom: String) -> (() -> Void)? {
@@ -672,6 +698,8 @@ struct AccueilView: View {
         case "Cartes": return { cartesOuvertes = true }
         case "Santé": return { santeOuverte = true }
         case "Messenger": return { messengerOuvert = true }
+        case "Instagram": return { instagramOuvert = true }
+        case "Snapchat": return { snapchatOuvert = true }
         default: return nil
         }
     }
@@ -770,6 +798,8 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $cartesOuvertes) { CartesVueWallet() }
         .fullScreenCover(isPresented: $santeOuverte) { SanteVue() }
         .fullScreenCover(isPresented: $messengerOuvert) { MessengerVue() }
+        .fullScreenCover(isPresented: $instagramOuvert) { InstagramVue() }
+        .fullScreenCover(isPresented: $snapchatOuvert) { SnapchatVue() }
         .onChange(of: routeur.demande) { _, _ in
             // Navigation inter-apps : fermer l'app courante puis ouvrir la cible (P3)
             fermerToutesLesApps()

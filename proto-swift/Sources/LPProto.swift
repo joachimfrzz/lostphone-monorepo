@@ -54,6 +54,11 @@ struct EcranCapture: View {
         case "messenger": ecransMessenger()
         case "instagram": ecransInstagram()
         case "snapchat": ecransSnapchat()
+        case "facebook": FacebookVue()
+        case "x": ecransX()
+        case "chatgpt": ChatGPTVue()
+        case "spotify": SpotifyVue()
+        case "youtube": ecransYt()
         case "cartes": ecransCartes()
         default: VerrouillageView()
         }
@@ -117,6 +122,24 @@ struct EcranCapture: View {
         switch cle {
         case "snapchat.conv": SnapConversationVue(ami: DonneesSnap.amis[0])
         default: SnapchatVue()
+        }
+    }
+
+    @ViewBuilder
+    private func ecransX() -> some View {
+        switch cle {
+        case "x.post": XPostDetailVue(post: DonneesX.posts[0])
+        case "x.composer": XComposerVue()
+        default: XVue()
+        }
+    }
+
+    @ViewBuilder
+    private func ecransYt() -> some View {
+        switch cle {
+        case "youtube.video": YtLecteurVue(video: DonneesYt.videos[0])
+        case "youtube.notifications": YtNotificationsVue()
+        default: YouTubeVue()
         }
     }
 
@@ -644,6 +667,11 @@ struct AccueilView: View {
     @State private var messengerOuvert = false
     @State private var instagramOuvert = false
     @State private var snapchatOuvert = false
+    @State private var facebookOuvert = false
+    @State private var xOuvert = false
+    @State private var chatgptOuvert = false
+    @State private var spotifyOuvert = false
+    @State private var youtubeOuvert = false
     @ObservedObject private var routeur = Routeur.partage
 
     private let apps: [(String, Color, String, Color)] = [
@@ -667,6 +695,11 @@ struct AccueilView: View {
         ("Messenger", Color(hex: 0x0084FF), "bolt.horizontal.circle.fill", .white),
         ("Instagram", Color(hex: 0xE1306C), "camera.circle", .white),
         ("Snapchat", Color(hex: 0xFFFC00), "bubble.left.fill", .black),
+        ("Facebook", Color(hex: 0x0866FF), "f.circle.fill", .white),
+        ("X", .black, "xmark", .white),
+        ("ChatGPT", .white, "circle.hexagongrid.fill", .black),
+        ("Spotify", .black, "circle.circle.fill", Color(hex: 0x1ED760)),
+        ("YouTube", .white, "play.rectangle.fill", Color(hex: 0xFF0000)),
     ]
 
     private func fermerToutesLesApps() {
@@ -678,6 +711,8 @@ struct AccueilView: View {
         plansOuverts = false; safariOuvert = false
         fichiersOuverts = false; cartesOuvertes = false; santeOuverte = false; messengerOuvert = false
         instagramOuvert = false; snapchatOuvert = false
+        facebookOuvert = false; xOuvert = false; chatgptOuvert = false
+        spotifyOuvert = false; youtubeOuvert = false
     }
 
     private func actionPour(_ nom: String) -> (() -> Void)? {
@@ -700,6 +735,11 @@ struct AccueilView: View {
         case "Messenger": return { messengerOuvert = true }
         case "Instagram": return { instagramOuvert = true }
         case "Snapchat": return { snapchatOuvert = true }
+        case "Facebook": return { facebookOuvert = true }
+        case "X": return { xOuvert = true }
+        case "ChatGPT": return { chatgptOuvert = true }
+        case "Spotify": return { spotifyOuvert = true }
+        case "YouTube": return { youtubeOuvert = true }
         default: return nil
         }
     }
@@ -800,6 +840,11 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $messengerOuvert) { MessengerVue() }
         .fullScreenCover(isPresented: $instagramOuvert) { InstagramVue() }
         .fullScreenCover(isPresented: $snapchatOuvert) { SnapchatVue() }
+        .fullScreenCover(isPresented: $facebookOuvert) { FacebookVue() }
+        .fullScreenCover(isPresented: $xOuvert) { XVue() }
+        .fullScreenCover(isPresented: $chatgptOuvert) { ChatGPTVue() }
+        .fullScreenCover(isPresented: $spotifyOuvert) { SpotifyVue() }
+        .fullScreenCover(isPresented: $youtubeOuvert) { YouTubeVue() }
         .onChange(of: routeur.demande) { _, _ in
             // Navigation inter-apps : fermer l'app courante puis ouvrir la cible (P3)
             fermerToutesLesApps()

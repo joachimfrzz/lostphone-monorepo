@@ -19,15 +19,19 @@ struct VisualiseurContenuVue: View {
 
     var body: some View {
         ZStack {
-            Group {
-                if let cle = imageCle, let img = ChargeurPhoto.image(cle) {
-                    Image(uiImage: img).resizable().scaledToFill()
-                } else {
-                    LinearGradient(colors: [Color(hex: teinte), Color(hex: teinte).opacity(0.45)],
-                                   startPoint: .top, endPoint: .bottom)
-                }
-            }
-            .ignoresSafeArea()
+            Color.clear
+                .overlay(
+                    Group {
+                        if let cle = imageCle, let img = ChargeurPhoto.image(cle) {
+                            Image(uiImage: img).resizable().scaledToFill()
+                        } else {
+                            LinearGradient(colors: [Color(hex: teinte), Color(hex: teinte).opacity(0.45)],
+                                           startPoint: .top, endPoint: .bottom)
+                        }
+                    }
+                )
+                .clipped()
+                .ignoresSafeArea()
             if imageCle == nil, let e = emoji {
                 Text(e).font(.system(size: 110))
             }

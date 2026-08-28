@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-28T21:00:00+02:00",
+  "date_derniere_maj": "2026-08-28T21:05:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -133,7 +133,8 @@
    "notion_organisation": "Notion N'EST PAS la source de vérité. Usage : suivi d'avancement, documentation de certaines décisions, bugs, idées, préparation des futures histoires, informations de travail.",
    "architecture_multi_histoires": "Le projet est pensé dès le départ pour accueillir de nombreuses histoires. Aucune décision importante prise UNIQUEMENT pour les besoins du premier scénario.",
    "documentation": "Les choix importants sont expliqués et documentés. Une personne découvrant le projet des mois plus tard doit rapidement comprendre son fonctionnement, ses principes, ses décisions."
-  }
+  },
+  "adn_2026_08_28": "Complément D74 à l essence : « Un téléphone qui n est pas le tien, une histoire dont tu ignores les règles, et surtout quelque chose de suffisamment important à accomplir pour que tu aies envie d aller jusqu au bout. » Registre complet des possibilités du format : vision_elargie_2026_08_28 (D74)."
  },
  "canon_game_design_consolide": {
   "note": "Règles de design actées, issues des arbitrages et validations (compléments au canon_vision).",
@@ -1593,15 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-28 (~21h00)",
-  "dernier_evenement": "Joachim a transmis la « Vision élargie de Lost Phone » (checklist 25 points + ADN une phrase) — consignée verbatim dans vision_elargie_2026_08_28 avec l analyse de l agent (déjà-canon / nouveautés / 5 signalements dont la tension D11). En attente de son arbitrage (-> D74). PC inaccessible ce soir : session 1b Réglages reportée.",
+  "date": "2026-08-28 (~21h05)",
+  "dernier_evenement": "D74 ACTÉE : vision élargie promue au canon (arbitrage A — D11 maintenue, genres extrêmes en exceptions assumées ; conditions attachées : téléphone trompeur sous D13, multi-téléphones en capacité future P03, objectif désirable = exigence d écriture, fausse fin en jurisprudence D27). 74 décisions.",
   "en_attente": [
-   "Joachim : trancher les signalements de la vision élargie (surtout la tension D11 : cœur réaliste maintenu ou amendé) -> D74",
-   "Joachim (quand PC accessible) : rituel Demarrer-LostPhone.cmd + moniteur + nouvelle URL tunnel -> session 1b Réglages",
-   "Agent : dès arbitrage, promouvoir la vision élargie en D74 et mettre à jour canon_vision/registre"
+   "Joachim (quand PC accessible) : rituel Demarrer-LostPhone.cmd + moniteur tablette + nouvelle URL tunnel -> session 1b Réglages",
+   "Agent : dès l URL reçue, relancer session1b_driver.py, livrer fiche Réglages (dossier de référence D72), puis diff P5"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-28 21h00 — vision élargie consignée, arbitrage attendu. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-28 21h05 — D74 consignée et poussée. Reprise = session 1b Réglages. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -1989,6 +1989,19 @@
    "titre": "Esprit critique proactif + demarrage de la phase d analyse reporte au prochain compte Hyperagent",
    "date": "2026-08-28",
    "contenu": "1) ESPRIT CRITIQUE PROACTIF (demande explicite de Joachim) : ses demandes ne sont PAS des limites rigides. Si l agent identifie mieux — faiblesse, incoherence, manque, idee a pousser plus loin, solution complementaire — il doit le SIGNALER spontanement, a tout moment du projet. Toute idee pertinente est bienvenue si elle ameliore le realisme, la coherence ou la qualite de Lost Phone. Ne pas se contenter d executer. 2) DEMARRAGE REPORTE : la phase d analyse de l iPhone ne commence QUE sur le prochain compte Hyperagent de Joachim. Raison pratique : il n accede a Hyperagent que depuis son telephone, or le telephone doit etre branche au PC pendant les sessions SideTap — il ne pourrait ni suivre ni communiquer. D ici la : preparation et cadrage uniquement. 3) ETAT SAUVEGARDE AVANT MIGRATION : session 1 partielle poussee dans references/session1-2026-08-28/ (7 ecrans coque OK en PNG base64 .b64/.partN + XML + DECODER.py + README ; Reglages A REFAIRE — captures prises sur la sous-page VPN par erreur ; XML de 02/03 et 05/06 identiques, a reprendre). Scripts dans tools/ : session1_driver.py, session1b_driver.py (correctif to_root), phone_monitor.py (moniteur tablette v2 VALIDE par Joachim : relais MJPEG 9100 sur 0.0.0.0:8781, fluide ; regle pare-feu 8781 deja creee sur le PC). REPRISE SUR LE NOUVEAU COMPTE : rituel Demarrer-LostPhone.cmd + moniteur tablette (python phone_monitor.py, Bureau) + relancer session1b_driver.py avec la nouvelle URL tunnel, puis produire la fiche Reglages (dossier de reference, cf. D72)."
+  },
+  "D74": {
+   "titre": "Vision élargie de Lost Phone actée : un format, des possibilités, un ADN motivé",
+   "date": "2026-08-28",
+   "contenu": "DÉCISION UTILISATEUR (arbitrage « A » 21h00, consignée par l agent avec invitation à correction). La checklist « Vision élargie » (25 points, verbatim dans vision_elargie_2026_08_28) est PROMUE AU CANON comme registre de possibilités du format — pas une formule obligatoire (son dernier point a valeur de méta-règle, dans l esprit de P7). ADN promu : « Un téléphone qui n est pas le tien, une histoire dont tu ignores les règles, et surtout quelque chose de suffisamment important à accomplir pour que tu aies envie d aller jusqu au bout. » — il complète l essence existante en y ajoutant la MOTIVATION.",
+   "arbitrage_D11": "OPTION A retenue : D11 est MAINTENUE — le cœur d identité reste réaliste-à-mystère ; horreur/paranormal/extraterrestres/SF/espace sont admis comme EXCEPTIONS ASSUMÉES (choix éditorial délibéré, jamais la norme du catalogue). La « liberté énorme de thèmes » se lit à l intérieur de ce cadre.",
+   "conditions_attachees": [
+    "Téléphone trompeur SOUS D13 : toute information falsifiée sur l appareil doit être démasquable par recoupement interne (le joueur est déjoué, jamais piégé).",
+    "Plusieurs téléphones / points de vue : capacité FUTURE déclarée du socle — rien n est construit avant qu une histoire concrète l exige (P03, règle de trois).",
+    "« Un véritable objectif » = exigence d ÉCRITURE (l objectif doit être désirable), pas une interdiction des enquêtes contemplatives — E1 Sofian et le pôle investigation pure restent valides.",
+    "Fausse fin : compatible D20 ; la friction avec D27 (« issues découvertes 1 sur N » au catalogue) sera tranchée en jurisprudence à la première histoire concernée."
+   ],
+   "nouveautes_nommees": "Propriétaire actif/manipulateur ; téléphone volontairement destiné au joueur ; contenu falsifié (sous D13) ; course contre un antagoniste ; mystères secondaires facultatifs ; multi-téléphones (futur) ; fausse fin ; détournement des codes de la série ; transformation de prémisses d autres œuvres (jamais de copie, R7)."
   }
  },
  "point_de_reprise_migration": {
@@ -2091,7 +2104,7 @@
   "fileId_D15": "cmtd84kps00y007adercuvqh8"
  },
  "vision_elargie_2026_08_28": {
-  "statut": "PROPOSITION UTILISATEUR EN ATTENTE D ARBITRAGE FINAL (transmise le 2026-08-28 ~20h53, fil cmtd7jaaf00ut07ad74zya8pi). Signalements de l agent soumis ; deviendra D74 une fois les points tranches par Joachim.",
+  "statut": "PROMUE AU CANON le 2026-08-28 21h05 via D74 (arbitrage A : D11 maintenue, genres extrêmes = exceptions assumées ; 4 conditions attachées). Checklist et analyse conservées ci-dessous pour historique.",
   "adn_une_phrase": "Un téléphone qui n est pas le tien, une histoire dont tu ignores les règles, et surtout quelque chose de suffisamment important à accomplir pour que tu aies envie d aller jusqu au bout.",
   "checklist_verbatim": [
    "Lost Phone = un format, pas seulement une enquête — Le point de départ reste le téléphone d un inconnu, mais ce téléphone peut ouvrir sur des histoires extrêmement différentes.",

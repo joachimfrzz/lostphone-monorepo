@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-28T21:40:00+02:00",
+  "date_derniere_maj": "2026-08-28T23:00:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,15 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-28 (~21h40)",
-  "dernier_evenement": "D76 ACTÉE : chantier Coque v2 (refonte de l UI de base contre l iPhone réel — verrouillage, accueil, CC, notifs, multitâche, animations via flux MJPEG). Session 1c insérée après la 1b. Liste des apps par vagues transmise (validation formelle en attente : sort de FaceTime vague C à re-arbitrer vs D48). 76 décisions.",
+  "date": "2026-08-28 (~23h00)",
+  "dernier_evenement": "Sessions programmées DEMAIN MATIN (29/08) : 1b Réglages puis 1c Coque v2. Méthode de compréhension explicitée à Joachim et actée : double source PNG (vision réelle) + arbre UI XML (types/libellés/frames/états), comportements non testés marqués [INFÉRÉ — non vérifié] dans les fiches, jamais présentés comme des faits (leçon D70).",
   "en_attente": [
-   "Joachim (quand PC accessible) : rituel + moniteur + URL tunnel -> session 1b Réglages puis 1c Coque v2",
-   "Agent : écrire checklist fermée + driver de la session 1c coque (gestes + enregistrement MJPEG) avant la session",
-   "À re-arbitrer plus tard : FaceTime (vague C / feuille de route) vs D48 qui l avait écartée"
+   "Demain matin (29/08) — Joachim : rituel Demarrer-LostPhone.cmd + moniteur tablette + URL tunnel WDA (+ 2e tunnel 9100 pour le flux viewer, session 1c)",
+   "Agent : session 1b Réglages (checklist 10 lignes) -> fiche + diff P5 ; puis checklist 1c Coque v2 à soumettre avant exécution"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-28 21h40 — D76 gravée. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-28 23h00 — rendez-vous demain matin. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",

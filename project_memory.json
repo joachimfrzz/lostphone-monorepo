@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-28T19:30:00+02:00",
+  "date_derniere_maj": "2026-08-28T20:50:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1593,16 +1593,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-28 (~19h30)",
-  "dernier_evenement": "PASSATION V3 accomplie sur le nouveau compte (thread cmtd7jaaf00ut07ad74zya8pi) : GitHub connecté, project_memory.json lu en entier depuis le repo, rôle adopté, résumé d embauche validé (GO 19h25). Réparation de format D19 effectuée. Outillage en recréation : skill pilote-codemagic-lostphone (carte émise, jeton à coller par Joachim), mémoires utiles (cartes émises).",
+  "date": "2026-08-28 (~20h50)",
+  "dernier_evenement": "Outillage nouveau compte COMPLET : GitHub ✓, skill Codemagic ✓ (jeton validé, APP_ID corrigé 6a8f6734…, historique builds conforme), mémoires ✓, D15+push ✓. Anomalie A8 consignée (inversion APP_ID du 27/08).",
   "en_attente": [
-   "Joachim : valider la carte de la skill pilote-codemagic-lostphone + coller le jeton CODEMAGIC_API_TOKEN",
-   "Joachim : valider les cartes mémoires (préférence une-action-par-réponse ; piège scaledToFill)",
    "Joachim : rituel Demarrer-LostPhone.cmd + moniteur tablette + NOUVELLE URL tunnel trycloudflare -> session 1b Réglages",
    "Agent : dès l URL reçue, relancer session1b_driver.py (correctif to_root), livrer zip references + fiche Réglages (dossier de référence D72), puis diff P5"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-28 19h30 — passation V3 faite ; reprise session 1b Réglages dès réception de l URL tunnel. Rappel : re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-28 20h50 — outillage reconstruit à 100%. Prochaine étape : session 1b Réglages (URL tunnel attendue). Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -1945,7 +1943,7 @@
     "doctrine_peuplement": "Le peuplement des comptes de test est un PRÉREQUIS piloté par le registre des écrans (pas un bonus) : pour chaque écran/composant à capturer, créer le contenu minimal qui le fait exister (vocal WhatsApp, groupe, feed Instagram via 20 abonnements, etc.). Le contenu côté serveur des comptes persiste entre sessions ; états temporels (Souvenirs, historiques longs) = fallback vidéos D67. Un device DÉDIÉ persistant (type iRemotech) supprime la friction de re-login à chaque session.",
     "statut": "EN COURS : compte TestMu créé + skill API en place (roue de secours). Prochaine étape : Apple ID jetable (Joachim) puis choix POC (essai gratuit BrowserStack/pCloudy vs mois iRemotech) et vérification approfondie iRemotech.",
     "verdict_poc_27_08": "POC BrowserStack exécutée en autonomie complète (login scripté via navigateur furtif sandbox + skill credentials, session iPhone 11 réel lancée, boot streamé observé). PROUVÉ : la chaîne agent→cloud iPhone fonctionne. LIMITE : essai gratuit 2 min/session boot inclus (~90s) = inutilisable pour explorer ; iPhone 16/17 réservés aux payants. DÉCISION JOACHIM 15h53 : GO iRemotech (50$/mois sans engagement, device dédié persistant) — achat différé. Doctrine : connexion Apple ID jetable UNE fois (un seul SMS 2FA), peuplement une fois, tout persiste.",
-    "correctif_codemagic": "APP_ID lostphone-monorepo compte 2 corrigé : 6a80d5e4a5a38a5cf29053f5 (l ancien 6a8f6734... était faux, 404). Dernier build : 26/08 21h16 UTC. Le correctif compil de 23h08 et l offset 230 du 27/08 matin n ont JAMAIS été buildés — build de jugement Swift ~236 EN ATTENTE du GO Joachim (D65)."
+    "correctif_codemagic": "APP_ID lostphone-monorepo compte 2 corrigé : 6a80d5e4a5a38a5cf29053f5 (l ancien 6a8f6734... était faux, 404). Dernier build : 26/08 21h16 UTC. Le correctif compil de 23h08 et l offset 230 du 27/08 matin n ont JAMAIS été buildés — build de jugement Swift ~236 EN ATTENTE du GO Joachim (D65). [CORRECTION 2026-08-28 20h50 (vérifiée avec le jeton actif) : le VRAI APP_ID du compte Codemagic 2 est 6a8f67340674263dd88340ad (GET /apps ne liste que lui ; 6a80d5e4a5a38a5cf29053f5 renvoie 404). La note correctif_codemagic du 27/08 avait INVERSÉ les deux valeurs. Vérification builds : 6a8fe522 (#5 finished, TestFlight ~235) + 4 échecs signature + 6a8f720d (miroir vague 3) = conforme à la mémoire.]"
    },
    "amendement_2026_08_27_soir": {
     "date": "2026-08-27 soir",
@@ -2031,6 +2029,11 @@
    "A5_references_perdues": "serieref v1-v12 non archivées dans le repo (liens SwissTransfer expirés). Le canal filebin.net (2026-08-23) a une rétention ~6 jours : tout lien transmis avant le 2026-08-20 est mort. Risque R9 actif : les références de mesure ne sont pas versionnées, seules celles poussées dans le repo survivent.",
    "A6_dette_ouverte": "Restes listés à la passation et non traités : câblage BulleImage->p45, révision juridique LCL (D40), captures simulateur en français (-AppleLanguages '(fr)') + neutralisation du popup notifications Santé, Informations de test App Store Connect non remplies (échec cosmétique récurrent des builds 229/230).",
    "A7_tete_repo_perimee": "RÉSOLU 2026-08-26 : etat_technique.tete_repo disait bed65dbb ; la vraie tête est 2ccde546. Champ corrigé, ancienne valeur conservée en note."
+  },
+  "releve_2026_08_28": {
+   "auteur": "Agent (passation V3)",
+   "A8_app_id_inverse": "CORRECTION 2026-08-28 20h50 (vérifiée avec le jeton actif) : le VRAI APP_ID du compte Codemagic 2 est 6a8f67340674263dd88340ad (GET /apps ne liste que lui ; 6a80d5e4a5a38a5cf29053f5 renvoie 404). La note correctif_codemagic du 27/08 avait INVERSÉ les deux valeurs. Vérification builds : 6a8fe522 (#5 finished, TestFlight ~235) + 4 échecs signature + 6a8f720d (miroir vague 3) = conforme à la mémoire. Les mentions 6a80d5e4 dans D65.etat et point_de_reprise_migration_v2 sont donc OBSOLÈTES pour le compte 2.",
+   "A9_D19_reparee": "RÉSOLU : l entrée D19 de journal_decisions était corrompue (texte en tableau de caractères) — réparée à l identique le 2026-08-28 (note_reparation dans D19)."
   }
  },
  "memoire_fil_courant": {
@@ -2080,5 +2083,10 @@
    "statut": "Lecture intégrale depuis le repo ✓, rôle adopté ✓, résumé d embauche validé (GO) ✓, réparation D19 ✓. Outillage : GitHub ✓ ; skill Codemagic + mémoires en cartes à valider ; SideTap côté PC intact (rien à refaire).",
    "verifications_faites": "github__get_file_contents OK (SHA d099cc9869e592ffb80782f4b7c7686e48847a87) ; 35 sections lues à 100%."
   }
+ },
+ "codemagic_compte2_verification_2026_08_28": {
+  "date": "2026-08-28 20h50",
+  "statut": "Skill pilote-codemagic-lostphone recréée et VALIDÉE (skillId cmtdb1hj002d607ad2ypydf98, jeton collé par Joachim, test lecture seule OK, garde-fou --GO-JOACHIM codé). APP_ID corrigé : 6a8f67340674263dd88340ad. Aucun build déclenché.",
+  "fileId_D15": "cmtd84kps00y007adercuvqh8"
  }
 }

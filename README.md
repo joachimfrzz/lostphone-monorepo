@@ -1,15 +1,1 @@
-# Lost Phone — monorepo
-
-Jeu narratif d'investigation sur smartphone simulé. Repo **privé** (D40 : rien de public avant révision juridique).
-
-| Zone | Contenu |
-|---|---|
-| `moteur/` | Prototype Flutter du jalon-duel D49 (verrouillage, accueil, WhatsApp/« Marc ») |
-| `histoires/coches-bleues/` | Tranche verticale : format d'histoire (YAML) + conception |
-| `docs/` | Socle documentaire + ops (dont `docs/ops-canal-testflight.md`) |
-| `liste-apps.yaml` | Les ~68 applications du chantier design (D47/D48) |
-| `marques.yaml` | Couche d'assets de marque (doctrine D40) |
-| `outils/` | Outillage (dont restauration des binaires : `decode-binaires.sh`) |
-
-**Canal de build** : `codemagic.yaml` → workflow `duel-flutter-testflight` → TestFlight (`com.lostphone.game`).
-**Source de vérité projet** : `project_memory.json` (maintenu dans le thread Hyperagent).
+IyBMb3N0IFBob25lIOKAlCBtb25vcmVwbwoKSmV1IG5hcnJhdGlmIGQnaW52ZXN0aWdhdGlvbiBzdXIgc21hcnRwaG9uZSBzaW11bMOpLiBSZXBvICoqcHJpdsOpKiogKEQ0MCA6IHJpZW4gZGUgcHVibGljIGF2YW50IHLDqXZpc2lvbiBqdXJpZGlxdWUpLgoKPiAqKk5vdXZlbCBhZ2VudCAvIG5vdXZlYXUgY29tcHRlIEh5cGVyYWdlbnQgPyBMaXJlIGBQQVNTQVRJT04ubWRgIGVuIHByZW1pZXIuKioKCnwgWm9uZSB8IENvbnRlbnUgfAp8LS0tfC0tLXwKfCBgbW90ZXVyL2AgfCBQcm90b3R5cGUgRmx1dHRlciBkdSBqYWxvbi1kdWVsIEQ0OSAodmVycm91aWxsYWdlLCBhY2N1ZWlsLCBXaGF0c0FwcC/CqyBNYXJjIMK7KSB8CnwgYGhpc3RvaXJlcy9jb2NoZXMtYmxldWVzL2AgfCBUcmFuY2hlIHZlcnRpY2FsZSA6IGZvcm1hdCBkJ2hpc3RvaXJlIChZQU1MKSArIGNvbmNlcHRpb24gfAp8IGBkb2NzL2AgfCBTb2NsZSBkb2N1bWVudGFpcmUgKyBvcHMgKGRvbnQgYGRvY3Mvb3BzLWNhbmFsLXRlc3RmbGlnaHQubWRgKSB8CnwgYGxpc3RlLWFwcHMueWFtbGAgfCBMZXMgfjY4IGFwcGxpY2F0aW9ucyBkdSBjaGFudGllciBkZXNpZ24gKEQ0Ny9ENDgpIHwKfCBgbWFycXVlcy55YW1sYCB8IENvdWNoZSBkJ2Fzc2V0cyBkZSBtYXJxdWUgKGRvY3RyaW5lIEQ0MCkgfAp8IGBvdXRpbHMvYCB8IE91dGlsbGFnZSAoZG9udCByZXN0YXVyYXRpb24gZGVzIGJpbmFpcmVzIDogYGRlY29kZS1iaW5haXJlcy5zaGApIHwKfCBgcHJvamVjdF9tZW1vcnkuanNvbmAgfCAqKlNvdXJjZSBkZSB2w6lyaXTDqSBwcm9qZXQqKiDigJQgbcOpbW9pcmUgdml2YW50ZSBjb21wbMOodGUgKEQxNSksIHJlLXBvdXNzw6llIGljaSDDoCBjaGFxdWUgbWlzZSDDoCBqb3VyIHwKfCBgUEFTU0FUSU9OLm1kYCB8IE1vZGUgZCdlbXBsb2kgZGUgcmVwcmlzZSBwb3VyIHRvdXQgbm91dmVsIGFnZW50IHwKCioqQ2FuYWwgZGUgYnVpbGQqKiA6IGBjb2RlbWFnaWMueWFtbGAg4oaSIHdvcmtmbG93IGBkdWVsLWZsdXR0ZXItdGVzdGZsaWdodGAg4oaSIFRlc3RGbGlnaHQgKGBjb20ubG9zdHBob25lLmdhbWVgKS4KKipSw6lnaW1lIGRlIHLDqWbDqXJlbmNlcyBENzEqKiA6IGwnYWdlbnQgcGlsb3RlIGwnaVBob25lIHLDqWVsIGRlIEpvYWNoaW0gdmlhIFNpZGVUYXAvV0RBICh2b2lyIFBBU1NBVElPTi5tZCBldCBENzEpLgo=

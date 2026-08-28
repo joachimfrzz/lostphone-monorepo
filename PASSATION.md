@@ -1,1 +1,66 @@
-IyBQQVNTQVRJT04g4oCUIExvc3QgUGhvbmUgKGxpcmUgZW4gcHJlbWllciBwYXIgdG91dCBub3V2ZWwgYWdlbnQpCgo+IENlIHJlcG8gY29udGllbnQgVE9VVCBjZSBxdSdpbCBmYXV0IHBvdXIgcmVwcmVuZHJlIGxlIHByb2pldCBzYW5zIHBlcnRlLAo+IHkgY29tcHJpcyBhcHLDqHMgdW4gY2hhbmdlbWVudCBkZSBjb21wdGUgSHlwZXJhZ2VudC4gRGVybmnDqHJlIHBhc3NhdGlvbiBwcsOpcGFyw6llIGxlIDIwMjYtMDgtMjguCgojIyBRdWkgdHUgZXMKTGUgcGFydGVuYWlyZSBkZSByw6lmbGV4aW9uIGNyaXRpcXVlIGV0IGQnZXjDqWN1dGlvbiBkZSBKb2FjaGltIHN1ciAqKkxvc3QgUGhvbmUqKgooamV1IG5hcnJhdGlmIGQnaW52ZXN0aWdhdGlvbiBzdXIgc21hcnRwaG9uZSBzaW11bMOpKS4gVG9uIHLDtGxlIGTDqXRhaWxsw6ksIGxlIGNvbnRyYXQKZGUgY29sbGFib3JhdGlvbiBldCBsZSBjYWxpYnJhZ2UgZGUgY29tbXVuaWNhdGlvbiBzb250IGRhbnMgYHByb2plY3RfbWVtb3J5Lmpzb25gCuKGkiBzZWN0aW9uIGBhbW9yY2FnZV9ub3V2ZWxfYWdlbnRgLiBSw6hnbGUgZCdvciBkZSBjb21tdW5pY2F0aW9uIDogdGVybWluZXIgY2hhcXVlCnLDqXBvbnNlIHBhciBMQSBzZXVsZSBhY3Rpb24gY29uY3LDqHRlIHF1aSBpbmNvbWJlIMOgIEpvYWNoaW0gKHVuZSDDqXRhcGUgw6AgbGEgZm9pcywKY2hlbWluIGV4YWN0KSwgc8OpcGFyw6llIGRlIGNlIHF1ZSB0dSBmYWlzIGRlIHRvbiBjw7R0w6kuCgojIyBEw6ltYXJyYWdlIGVuIDQgw6l0YXBlcwoxLiAqKkxpcyBgcHJvamVjdF9tZW1vcnkuanNvbmAqKiAocmFjaW5lIGRlIGNlIHJlcG8sIH40NDAgS28pLiBPcmRyZSBkZSBsZWN0dXJlIHV0aWxlIDoKICAgYGFtb3JjYWdlX25vdXZlbF9hZ2VudGAg4oaSIGBldGF0X2NvbnZlcnNhdGlvbmAg4oaSIGBwb2ludF9kZV9yZXByaXNlX21pZ3JhdGlvbl92M2AKICAg4oaSIGBkZWNpc2lvbnNgIChzdXJ0b3V0IEQ3MCBldCBENzEpIOKGkiBgZmV1aWxsZV9kZV9yb3V0ZV8yMDI2XzA4XzI4YCDihpIgbGUgcmVzdGUuCiAgIFMnaWwgZXN0IHRyb3AgZ3JvcyBwb3VyIHVuIHNldWwgYXBwZWwgOiB0w6lsw6ljaGFyZ2UtbGUgZW4gbG9jYWwgKHJhdykgZXQgbGlzLWxlIHBhciBzZWN0aW9ucy4KMi4gKipSw6lzdW1lIGwnw6l0YXQgZHUgcHJvamV0IMOgIEpvYWNoaW0qKiBldCBjZSBxdSdpbCBmYXV0IHJlY3LDqWVyIChsaXN0ZSBjaS1kZXNzb3VzKSDigJQgYydlc3QgdG9uIHRlc3QgZCdlbWJhdWNoZS4KMy4gKipBcHBsaXF1ZSBEMTUqKiA6IGNlIGZpY2hpZXIgZXN0IGxhIG3DqW1vaXJlIHZpdmFudGUg4oCUIG1ldHMtbGUgw6Agam91ciDDoCBjaGFxdWUgZMOpY2lzaW9uL2F2YW5jw6llLAogICBFVCByZS1wb3Vzc2UtbGUgZGFucyBjZSByZXBvIMOgIGNoYXF1ZSBtaXNlIMOgIGpvdXIgKGNvbW1pdCkuCjQuIFJlcHJlbmRzIGxlIHRyYXZhaWwgbMOgIG/DuSBgZXRhdF9jb252ZXJzYXRpb25gIHMnZXN0IGFycsOqdMOpLgoKIyMgw4AgcmVjcsOpZXIgc3VyIHVuIG5vdXZlYXUgY29tcHRlIEh5cGVyYWdlbnQgKHJpZW4gZCdhdXRyZSBuJ2VzdCBwZXJkdSkKLSBJbnTDqWdyYXRpb24gKipHaXRIdWIqKiBjb25uZWN0w6llICh0dSBsaXMgY2UgZmljaGllciwgZG9uYyBjJ2VzdCBmYWl0IOKclCkKLSBDb21ww6l0ZW5jZSAqKnBpbG90ZS1jb2RlbWFnaWMtbG9zdHBob25lKiogOiBBUEkgQ29kZW1hZ2ljLCBjcmVkZW50aWFsIGBDT0RFTUFHSUNfQVBJX1RPS0VOYAogIChKb2FjaGltIGwnYSkuIEFwcCBpZCA6IHZvaXIgYGV0YXRfdGVjaG5pcXVlYCAvIGNvbW1lbnRhaXJlcyBkdSBzY3JpcHQgZGFucyBgcHJvamVjdF9tZW1vcnkuanNvbmAuCi0gKE9wdGlvbm5lbCwgcGxhbnMgQikgKipwaWxvdGUtdGVzdG11LWxvc3RwaG9uZSoqIGV0ICoqcGlsb3RlLWJyb3dzZXJzdGFjay1sb3N0cGhvbmUqKiDigJQgc2Now6ltYXMKICBkZSBjcmVkZW50aWFscyBkYW5zIGBwb2ludF9kZV9yZXByaXNlX21pZ3JhdGlvbl92M2AuCi0gTcOpbW9pcmVzIDogbGEgcHLDqWbDqXJlbmNlIGRlIGNvbW11bmljYXRpb24gZGUgSm9hY2hpbSAoY2ktZGVzc3VzKSArIGxlIHBpw6hnZSBTd2lmdFVJCiAgYHNjYWxlZFRvRmlsbGAg4oaSIHBhdHRlcm4gYENvbG9yLmNsZWFyLm92ZXJsYXkoaW1hZ2UpLmNsaXBwZWQoKS5pZ25vcmVzU2FmZUFyZWEoKWAuCgojIyBMZSByw6lnaW1lIEQ3MSBlbiBicmVmIChjYXB0dXJlIGRlIHLDqWbDqXJlbmNlcyBzdXIgbCdpUGhvbmUgUsOJRUwgZGUgSm9hY2hpbSkKLSAqKlNpZGVUYXAqKiAoZ2l0aHViLmNvbS91Y3NhbmRtYW4vU2lkZVRhcCkgdG91cm5lIHN1ciBsZSBQQyBXaW5kb3dzIGRlIEpvYWNoaW0sCiAgV2ViRHJpdmVyQWdlbnQgc2lnbsOpIHN1ciBzb24gaVBob25lIChBcHBsZSBJRCBqZXRhYmxlKSwgZMOpasOgIGluc3RhbGzDqSDigJQgUklFTiDDoCByZWZhaXJlIGPDtHTDqSBQQy4KLSAqKlJpdHVlbCBkZSBzZXNzaW9uKiogKGPDtHTDqSBKb2FjaGltKSA6IGlQaG9uZSBicmFuY2jDqSBVU0IgKyBkw6l2ZXJyb3VpbGzDqSArIGFwcCBXZWJEcml2ZXJBZ2VudAogIG91dmVydGUgdW5lIGZvaXMsIHB1aXMgZG91YmxlLWNsaWMgYERlbWFycmVyLUxvc3RQaG9uZS5jbWRgIChCdXJlYXUpIOKGkiBpbCB0ZSBkb25uZSBsJ1VSTAogIGBodHRwczovL+KApi50cnljbG91ZGZsYXJlLmNvbWAgKGNoYW5nZSDDoCBjaGFxdWUgZm9pcykuCi0gKipUb2kqKiA6IHR1IHBpbG90ZXMgcGFyIEhUVFAgdmlhIGNldHRlIFVSTCAoV0RBIDogYC9zdGF0dXNgLCBgL3NjcmVlbnNob3RgLCBgL3NvdXJjZWAsCiAgc2Vzc2lvbnMgVzNDLCDDqWzDqW1lbnRzIHBhciBwcmVkaWNhdGUpLiBDYXB0dXJlIHN5c3TDqW1hdGlxdWUgOiAqKlBORyArIFhNTCBwYXIgw6ljcmFuKiosCiAgbGl2csOpZXMgZW4gemlwICsgam91cm5hbCwgcG91c3PDqWVzIGRhbnMgYHJlZmVyZW5jZXMvYC4KLSAqKkNIQVJURSBERSBQSUxPVEFHRSBPQkxJR0FUT0lSRSoqIChkw6l0YWlsIGRhbnMgRDcxKSA6IGxlY3R1cmUgc2V1bGUgOyBqYW1haXMgZCdlbnZvaS9hcHBlbC8KICBwYWllbWVudC9zdXBwcmVzc2lvbiA7IHBhcyBkZSBjb252ZXJzYXRpb24gbm9uIGx1ZSA7IHBhcyBkZSBzdG9yeSB2dWUgOyBwYXMgZGUgc2Fpc2llIGRhbnMgdW4KICBjaGFtcCBkJ2Vudm9pIDsgY2hhdCBTbmFwY2hhdCBpbnRlcmRpdCA7IE1hIEJhbnF1ZSBpbnRlcmRpdGUgOyBTVE9QID0gSm9hY2hpbSBkw6licmFuY2hlIGxlIGPDomJsZS4KLSAqKlBsYW4gZW4gNCB2YWd1ZXMqKiAoQSB6w6lyby1yaXNxdWUg4oaSIEQgaWRlbnRpdMOpIHLDqWVsbGUpIGV0IHByb3RvY29sZSBkZSBzZXNzaW9uIDogdm9pciBENzEuCi0gRMOpcGFubmFnZXMgY29ubnVzIChjZXJ0aWZpY2F0IEFwcGxlLCBlbmNvZGFnZSBXaW5kb3dzIEZSLCBQeXRob24gMy4xMiwgb3BlbnNzbOKApikgOgogIEQ3MSDihpIgYHNldHVwX3BpZWdlc19yZXNvbHVzYC4KCiMjIMOJY2jDqWFuY2VzCi0gUmUtc2lnbmF0dXJlIFdEQSBoZWJkb21hZGFpcmUgOiBgZml4LWlucHV0YCAocHJvY2hhaW5lIDogMjAyNi0wOS0wNCkuCi0gU2Vzc2lvbiAxIChjb3F1ZSArIFLDqWdsYWdlcykgOiBjaGVja2xpc3QgcHLDqnRlIGRhbnMgRDcxLCBleMOpY3V0ZXIgYXUgR08gZGUgSm9hY2hpbS4K
+# PASSATION — Lost Phone (lire en premier par tout nouvel agent)
+
+> Ce repo contient TOUT ce qu'il faut pour reprendre le projet sans perte,
+> y compris après un changement de compte Hyperagent. Dernière passation préparée le 2026-08-28 (soir, avant migration de compte).
+
+## Qui tu es
+Le partenaire de réflexion critique et d'exécution de Joachim sur **Lost Phone**
+(jeu narratif d'investigation sur smartphone simulé). Ton rôle détaillé, le contrat
+de collaboration et le calibrage de communication sont dans `project_memory.json`
+→ section `amorcage_nouvel_agent`. Règle d'or de communication : terminer chaque
+réponse par LA seule action concrète qui incombe à Joachim (une étape à la fois,
+chemin exact), séparée de ce que tu fais de ton côté.
+
+## Démarrage en 4 étapes
+1. **Lis `project_memory.json`** (racine de ce repo, ~440 Ko). Ordre de lecture utile :
+   `amorcage_nouvel_agent` → `etat_conversation` → `point_de_reprise_migration_v3`
+   → `decisions` (surtout D70 et D71) → `feuille_de_route_2026_08_28` → le reste.
+   S'il est trop gros pour un seul appel : télécharge-le en local (raw) et lis-le par sections.
+2. **Résume l'état du projet à Joachim** et ce qu'il faut recréer (liste ci-dessous) — c'est ton test d'embauche.
+3. **Applique D15** : ce fichier est la mémoire vivante — mets-le à jour à chaque décision/avancée,
+   ET re-pousse-le dans ce repo à chaque mise à jour (commit).
+4. Reprends le travail là où `etat_conversation` s'est arrêté.
+
+## À recréer sur un nouveau compte Hyperagent (rien d'autre n'est perdu)
+- Intégration **GitHub** connectée (tu lis ce fichier, donc c'est fait ✔)
+- Compétence **pilote-codemagic-lostphone** : API Codemagic, credential `CODEMAGIC_API_TOKEN`
+  (Joachim l'a). App id : voir `etat_technique` / commentaires du script dans `project_memory.json`.
+- (Optionnel, plans B) **pilote-testmu-lostphone** et **pilote-browserstack-lostphone** — schémas
+  de credentials dans `point_de_reprise_migration_v3`.
+- Mémoires : la préférence de communication de Joachim (ci-dessus) + le piège SwiftUI
+  `scaledToFill` → pattern `Color.clear.overlay(image).clipped().ignoresSafeArea()`.
+
+## Le régime D71 en bref (capture de références sur l'iPhone RÉEL de Joachim)
+- **SideTap** (github.com/ucsandman/SideTap) tourne sur le PC Windows de Joachim,
+  WebDriverAgent signé sur son iPhone (Apple ID jetable), déjà installé — RIEN à refaire côté PC.
+- **Rituel de session** (côté Joachim) : iPhone branché USB + déverrouillé + app WebDriverAgent
+  ouverte une fois, puis double-clic `Demarrer-LostPhone.cmd` (Bureau) → il te donne l'URL
+  `https://….trycloudflare.com` (change à chaque fois).
+- **Toi** : tu pilotes par HTTP via cette URL (WDA : `/status`, `/screenshot`, `/source`,
+  sessions W3C, éléments par predicate). Capture systématique : **PNG + XML par écran**,
+  livrées en zip + journal, poussées dans `references/`.
+- **CHARTE DE PILOTAGE OBLIGATOIRE** (détail dans D71) : lecture seule ; jamais d'envoi/appel/
+  paiement/suppression ; pas de conversation non lue ; pas de story vue ; pas de saisie dans un
+  champ d'envoi ; chat Snapchat interdit ; Ma Banque interdite ; STOP = Joachim débranche le câble.
+- **Plan en 4 vagues** (A zéro-risque → D identité réelle) et protocole de session : voir D71.
+- Dépannages connus (certificat Apple, encodage Windows FR, Python 3.12, openssl…) :
+  D71 → `setup_pieges_resolus`.
+
+## État au moment de la passation (2026-08-28 soir)
+- **Cadre d'analyse D72** (3 principes : fidélité au vrai iPhone, compréhension réelle
+  avec dossier de référence par app, séparation stricte des conséquences réelles) et
+  **D73** (esprit critique proactif ; l'analyse ne reprend QUE sur le nouveau compte) : à lire en premier.
+- **Session 1 partielle** : coque OK (7 écrans), sauvée dans `references/session1-2026-08-28/`
+  (PNG en base64 — reconstituer avec `python3 DECODER.py`). Réglages À REFAIRE avec
+  `tools/session1b_driver.py` (correctif retour-racine inclus ; mettre à jour l'URL tunnel en tête de script).
+- **Moniteur tablette VALIDÉ** : `tools/phone_monitor.py` sur le PC (port 8781, règle pare-feu déjà créée),
+  Joachim le lance avec `python phone_monitor.py` et surveille sur `http://192.168.1.25:8781`.
+  Il doit être actif pendant TOUTE session de pilotage.
+- **Rituel complet d'une session** : iPhone branché+déverrouillé, app WebDriverAgent ouverte une fois,
+  `Demarrer-LostPhone.cmd`, moniteur tablette lancé, Joachim donne l'URL tunnel → l'agent annonce
+  l'objectif de la session (D72) puis exécute, et livre le dossier de référence.
+
+## Échéances
+- Re-signature WDA hebdomadaire : `fix-input` (prochaine : 2026-09-04).
+- Reprise : terminer la Session 1 (Réglages depuis la racine + reprendre 4 XML défectueux
+  de la coque : 02/03 et 05/06 identiques), puis fiche Réglages, puis suite de la vague A.

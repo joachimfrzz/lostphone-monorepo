@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-28T20:50:00+02:00",
+  "date_derniere_maj": "2026-08-28T21:00:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1593,14 +1593,15 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-28 (~20h50)",
-  "dernier_evenement": "Outillage nouveau compte COMPLET : GitHub ✓, skill Codemagic ✓ (jeton validé, APP_ID corrigé 6a8f6734…, historique builds conforme), mémoires ✓, D15+push ✓. Anomalie A8 consignée (inversion APP_ID du 27/08).",
+  "date": "2026-08-28 (~21h00)",
+  "dernier_evenement": "Joachim a transmis la « Vision élargie de Lost Phone » (checklist 25 points + ADN une phrase) — consignée verbatim dans vision_elargie_2026_08_28 avec l analyse de l agent (déjà-canon / nouveautés / 5 signalements dont la tension D11). En attente de son arbitrage (-> D74). PC inaccessible ce soir : session 1b Réglages reportée.",
   "en_attente": [
-   "Joachim : rituel Demarrer-LostPhone.cmd + moniteur tablette + NOUVELLE URL tunnel trycloudflare -> session 1b Réglages",
-   "Agent : dès l URL reçue, relancer session1b_driver.py (correctif to_root), livrer zip references + fiche Réglages (dossier de référence D72), puis diff P5"
+   "Joachim : trancher les signalements de la vision élargie (surtout la tension D11 : cœur réaliste maintenu ou amendé) -> D74",
+   "Joachim (quand PC accessible) : rituel Demarrer-LostPhone.cmd + moniteur + nouvelle URL tunnel -> session 1b Réglages",
+   "Agent : dès arbitrage, promouvoir la vision élargie en D74 et mettre à jour canon_vision/registre"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-28 20h50 — outillage reconstruit à 100%. Prochaine étape : session 1b Réglages (URL tunnel attendue). Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-28 21h00 — vision élargie consignée, arbitrage attendu. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2088,5 +2089,47 @@
   "date": "2026-08-28 20h50",
   "statut": "Skill pilote-codemagic-lostphone recréée et VALIDÉE (skillId cmtdb1hj002d607ad2ypydf98, jeton collé par Joachim, test lecture seule OK, garde-fou --GO-JOACHIM codé). APP_ID corrigé : 6a8f67340674263dd88340ad. Aucun build déclenché.",
   "fileId_D15": "cmtd84kps00y007adercuvqh8"
+ },
+ "vision_elargie_2026_08_28": {
+  "statut": "PROPOSITION UTILISATEUR EN ATTENTE D ARBITRAGE FINAL (transmise le 2026-08-28 ~20h53, fil cmtd7jaaf00ut07ad74zya8pi). Signalements de l agent soumis ; deviendra D74 une fois les points tranches par Joachim.",
+  "adn_une_phrase": "Un téléphone qui n est pas le tien, une histoire dont tu ignores les règles, et surtout quelque chose de suffisamment important à accomplir pour que tu aies envie d aller jusqu au bout.",
+  "checklist_verbatim": [
+   "Lost Phone = un format, pas seulement une enquête — Le point de départ reste le téléphone d un inconnu, mais ce téléphone peut ouvrir sur des histoires extrêmement différentes.",
+   "Un véritable objectif — Chaque histoire doit donner au joueur une raison forte d agir : sauver quelqu un, empêcher une catastrophe, retrouver quelqu un, stopper un événement, innocenter une personne, etc. Simplement « découvrir un secret » ne suffit pas forcément.",
+   "Énorme liberté de thèmes — Crime, disparition, espionnage, mafia, géopolitique, catastrophe, survie, horreur, paranormal, extraterrestres, science-fiction, IA, conspiration, justice, célébrité, relations, aventure, espace, comédie, drame…",
+   "Mélange des genres — Une même histoire peut commencer comme une disparition classique et évoluer vers de l espionnage, de l horreur, de la SF, etc.",
+   "Nature de l histoire inconnue au départ — Le joueur ne doit pas forcément savoir dans quel genre d histoire il vient de tomber.",
+   "Joueur = lui-même par défaut — Le joueur reste généralement une personne lambda qui entre en possession du téléphone, plutôt que d incarner artificiellement un personnage prédéfini.",
+   "Origines différentes du téléphone — Trouvé, reçu, confié, envoyé, volontairement abandonné… Il n est pas forcément simplement ramassé dans la rue.",
+   "Téléphone volontairement destiné au joueur — Certaines histoires peuvent révéler que sa découverte n était absolument pas un hasard.",
+   "Propriétaire potentiellement actif — Le propriétaire peut être vivant, contacter le joueur, mentir, demander de l aide ou même le manipuler.",
+   "Joueur acteur et pas seulement observateur — Selon l histoire, il peut répondre, décider, aider, choisir un camp, se faire passer pour le propriétaire, etc.",
+   "Objectif évolutif — L objectif apparent peut être accompli ou bouleversé en cours de partie et révéler un objectif beaucoup plus important.",
+   "Choix de camp — Certaines histoires peuvent permettre au joueur de décider qui aider, avec éventuellement un changement complet de son objectif.",
+   "Monde vivant — Des événements peuvent continuer à se produire pendant la partie ; le téléphone et les personnages ne sont pas forcément figés au moment où l histoire commence.",
+   "Personnages capables de mentir — Un message ou un témoignage représente ce qu un personnage affirme, pas nécessairement la vérité.",
+   "Téléphone potentiellement trompeur — Certaines informations présentes sur l appareil peuvent elles-mêmes avoir été falsifiées ou manipulées.",
+   "Course contre quelqu un — Le joueur peut poursuivre un objectif qu un autre personnage cherche également à atteindre avant lui.",
+   "Plusieurs chemins et issues — Les décisions peuvent réellement changer le déroulement, la réussite de l objectif et la fin.",
+   "Mystères secondaires cachés — Une histoire principale peut contenir des affaires ou secrets totalement facultatifs pour récompenser les joueurs qui fouillent vraiment.",
+   "Plusieurs téléphones / points de vue — Certaines histoires peuvent exceptionnellement donner accès à plusieurs appareils et donc plusieurs versions des mêmes événements.",
+   "Histoire pouvant reprendre après sa « fin » — Une histoire peut exceptionnellement surprendre le joueur avec un nouvel événement après ce qu il croyait être sa conclusion.",
+   "Jouer avec les habitudes du joueur — À mesure que Lost Phone développe ses propres codes, certaines histoires peuvent volontairement détourner les attentes créées par les précédentes.",
+   "Inspiration films/séries/romans/jeux — S inspirer ponctuellement de prémisses ou mécaniques narratives particulièrement fortes, notamment d œuvres centrées sur les téléphones, mais pas uniquement.",
+   "Transformer des histoires non liées au téléphone — Une excellente prémisse provenant d un autre type d histoire peut être repensée pour que le téléphone devienne l intermédiaire principal avec les événements, sans simplement copier l œuvre.",
+   "Histoires autonomes — Pas besoin d imposer un univers partagé ou des personnages récurrents entre les différents Lost Phone.",
+   "Aucune de ces idées n est une règle absolue — C est probablement le point le plus important : tout ceci définit des possibilités, pas une formule obligatoire. Une histoire peut utiliser trois de ces idées, dix, aucune, ou inventer quelque chose de complètement nouveau si le résultat est meilleur."
+  ],
+  "analyse_agent": {
+   "deja_canon": "Objectif variable/révélé progressivement, origines multiples, joueur lambda (D08), monde vivant (D10), fausses pistes/personnages non-oracles (D13/D14), multi-chemins/fins (D09), histoires autonomes (D26), tons larges (D11), méta-règle P7.",
+   "nouveautes": "Propriétaire actif/manipulateur ; téléphone volontairement destiné au joueur ; contenu du téléphone falsifié ; course contre un antagoniste ; mystères secondaires facultatifs ; plusieurs téléphones/points de vue ; fausse fin ; détournement des codes de la série ; transformation de prémisses d autres œuvres.",
+   "signalements": [
+    "[TENSION D11] La liberté thématique énorme (horreur/paranormal/extraterrestres/SF/espace) tire contre « cœur réaliste-mystère, surnaturel rare et volontairement exceptionnel » (D11). Deux lectures : (a) cœur réaliste maintenu, ces genres restent l exception assumée ; (b) amendement de D11, liberté totale sans cœur privilégié. À trancher par Joachim.",
+    "[RISQUE fair-play] « Téléphone trompeur » à inscrire SOUS D13 : toute falsification doit être démasquable par recoupement interne, sinon piège et non déjouement. Condition attachée proposée.",
+    "[RISQUE socle] « Plusieurs téléphones » = seule idée coûteuse pour le moteur (bascule d appareil, double état). P03 : capacité future déclarée, rien à construire avant qu une histoire concrète l exige.",
+    "[QUESTION] « Découvrir un secret ne suffit pas forcément » lu comme exigence d écriture (objectif désirable), pas interdiction des enquêtes contemplatives (protège E1 Sofian). À confirmer.",
+    "[REMARQUE] Fausse fin : compatible D20 ; friction mineure avec D27 (« issues découvertes 1 sur N » peut éventer la surprise) — jurisprudence le moment venu."
+   ]
+  }
  }
 }

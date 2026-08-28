@@ -1,0 +1,24 @@
+session WDA: 5A50E80E-8D47-4881-8C4C-1F89F09DFBAA
+écran: 402x874 points
+— COQUE —
+  [capture] coque/02-accueil-page1 (png+xml)
+  [capture] coque/03-accueil-page2 (png+xml)
+  [capture] coque/04-page-suivante-ou-bibliotheque (png+xml)
+  [capture] coque/04b-bibliotheque-apps (png+xml)
+  [capture] coque/05-centre-de-controle (png+xml)
+  [capture] coque/06-centre-notifications (png+xml)
+  [capture] coque/07-multitache (png+xml)
+— RÉGLAGES —
+  [capture] reglages/08-racine-haut (png+xml)
+  [capture] reglages/08b-racine-scroll1 (png+xml)
+  [capture] reglages/08c-racine-scroll2 (png+xml)
+  [tap ÉCHEC] Wi-Fi: HTTP Error 404: Not Found
+  [tap ÉCHEC] Bluetooth: HTTP Error 404: Not Found
+  [tap ÉCHEC] Général: HTTP Error 404: Not Found
+  [tap ÉCHEC] Luminosité: HTTP Error 404: Not Found
+  [tap ÉCHEC] Fond d'écran: HTTP Error 404: Not Found
+  [tap ÉCHEC] Batterie: HTTP Error 404: Not Found
+  [tap ÉCHEC] Confidentialité: HTTP Error 404: Not Found
+  [tap ÉCHEC] Notifications: HTTP Error 404: Not Found
+  [tap ÉCHEC] Sons: HTTP Error 404: Not Found
+— FIN : retour accueil —

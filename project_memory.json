@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-28T21:05:00+02:00",
+  "date_derniere_maj": "2026-08-28T21:20:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-28 (~21h05)",
-  "dernier_evenement": "D74 ACTÉE : vision élargie promue au canon (arbitrage A — D11 maintenue, genres extrêmes en exceptions assumées ; conditions attachées : téléphone trompeur sous D13, multi-téléphones en capacité future P03, objectif désirable = exigence d écriture, fausse fin en jurisprudence D27). 74 décisions.",
+  "date": "2026-08-28 (~21h20)",
+  "dernier_evenement": "D75 ACTÉE (protocole de session zéro-exploration-inutile, amendements Joachim : arrêt = checklist terminée, reprise ciblée par ligne) + plan des sessions 1b->vague D. Driver v2 et checklist 1b écrits et poussés. 75 décisions.",
   "en_attente": [
-   "Joachim (quand PC accessible) : rituel Demarrer-LostPhone.cmd + moniteur tablette + nouvelle URL tunnel -> session 1b Réglages",
-   "Agent : dès l URL reçue, relancer session1b_driver.py, livrer fiche Réglages (dossier de référence D72), puis diff P5"
+   "Joachim (quand PC accessible) : rituel Demarrer-LostPhone.cmd + moniteur tablette + nouvelle URL tunnel -> l agent lance : python3 tools/session1b_driver.py <URL>",
+   "Agent : exécuter la session 1b (checklist fermée 10 lignes), livrer fiche Réglages + zip references/, puis diff P5 ReglagesApp"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-28 21h05 — D74 consignée et poussée. Reprise = session 1b Réglages. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-28 21h20 — D75 gravée, session 1b prête à lancer. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2002,6 +2002,13 @@
     "Fausse fin : compatible D20 ; la friction avec D27 (« issues découvertes 1 sur N » au catalogue) sera tranchée en jurisprudence à la première histoire concernée."
    ],
    "nouveautes_nommees": "Propriétaire actif/manipulateur ; téléphone volontairement destiné au joueur ; contenu falsifié (sous D13) ; course contre un antagoniste ; mystères secondaires facultatifs ; multi-téléphones (futur) ; fausse fin ; détournement des codes de la série ; transformation de prémisses d autres œuvres (jamais de copie, R7)."
+  },
+  "D75": {
+   "titre": "Protocole de session « zéro exploration inutile » + plan des sessions",
+   "date": "2026-08-28",
+   "contenu": "DÉCISION UTILISATEUR (21h10-21h16, amendements intégrés). Toute session SideTap obéit à : (1) UNE SESSION = UN BUT DE PRODUCTION — on capture un écran uniquement parce qu il sert un diff P5 d une app construite ou la construction de la prochaine app du funnel, jamais « pour voir » ; (2) CHECKLIST FERMÉE écrite et validée par Joachim AVANT la session, chaque ligne = écran/geste précis + ce qu on cherche + ce que ça changera dans notre app (prolonge D72-2) ; (3) SCRIPT ÉCRIT À L AVANCE, un passage visé — avec REPRISE CIBLÉE (amendement Joachim) : une ligne ratée (popup, mauvais état, capture floue) se rejoue INDIVIDUELLEMENT (flag --ligne N du driver), jamais en exploration libre ; (4) HORS-CHECKLIST INTERDIT : un écran imprévu est noté dans la liste « imprévus » de la checklist (candidat pour une session future), jamais exploré en séance ; (5) DURÉE : cible indicative 45-60 min — PAS un critère d arrêt (amendement Joachim) : l arrêt = checklist terminée, sauf problème technique ou fatigue ; (6) LIVRABLE FIXE : PNG+XML -> references/ du repo + fiche par app (carte de navigation, observations, implications Lost Phone, D72) + liste d écarts P5 -> correctifs -> run miroir.",
+   "plan_sessions": "1b Réglages (~12 écrans, diff P5) ; 2 Horloge+Calculatrice+Météo ; 3 Notes+Rappels+Dictaphone ; 4 Photos+Calendrier ; 5 Fichiers+Wallet+App Store ; 6 Plans+Safari (fin cercle 1) ; 7+ vague B (Mail, YouTube, Spotify, ChatGPT, LinkedIn nav privée, Uber, Uber Eats, PayPal — construction directe) ; ensuite vagues C (comptes B sociaux) puis D (identité réelle, doctrine stricte). Coque déjà capturée (session 1), on ne la refait pas. Charte v2 lecture seule inchangée.",
+   "outillage": "tools/session1b_driver.py REÉCRIT en v2 D75 : checklist en données (lignes 10-19), chaque ligne autonome (relance app + to_root), --ligne N / --lignes a,b,c pour la reprise ciblée, fermer_popup() avant chaque capture, garde anti-capture-vide (<20 Ko), liste des lignes à rejouer en fin de run, URL tunnel en argument. Checklist : tools/session1b-checklist.md."
   }
  },
  "point_de_reprise_migration": {

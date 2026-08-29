@@ -31,37 +31,18 @@ def empreinte(src):
 n, derniere, debut, erreurs = 0, None, time.time(), 0
 dernier_changement, noirs = time.time(), 0
 journal = []
-print(f"ÉCOUTE PASSIVE démarrée ({MINUTES:.0f} min max) — CLAP DE FIN : verrouille le téléphone (ou 90 s immobile).", flush=True)
+print(f"ÉCOUTE PASSIVE démarrée ({MINUTES:.0f} min max) — FIN DE SESSION : Calculatrice -> tape 7777.", flush=True)
 while time.time() - debut < MINUTES * 60:
     t0 = time.time()
     try:
-        # clap de fin 1 : écran verrouillé/noir
-        try:
-            png_probe = base64.b64decode(req("/screenshot", t=25)["value"])
-            im = Image.open(io.BytesIO(png_probe)).convert("L").resize((10, 22))
-            if sum(im.getdata()) / 220 < 12:
-                # écran noir : vrai verrouillage OU surface protégée (Apple Pay...) — l'arbre tranche
-                try:
-                    probe_src = req("/source?format=xml")["value"]
-                    riche = probe_src.count("label=") > 15
-                except Exception:
-                    riche = False
-                if riche:
-                    noirs = 0  # page protégée : on continue (le XML, lui, est capturé)
-                else:
-                    noirs += 1
-                    if noirs >= 2 and n > 0:
-                        print("CLAP DE FIN détecté (téléphone verrouillé) — arrêt.", flush=True)
-                        break
-            else:
-                noirs = 0
-        except Exception:
-            pass
-        # clap de fin 2 : immobilité prolongée
-        if n > 0 and time.time() - dernier_changement > 90:
-            print("90 s sans changement — arrêt automatique.", flush=True)
-            break
+        # CLAP DE FIN v3 : Calculatrice affichant 7777 (signal explicite de Joachim)
+        # (les arrêts sur écran noir / immobilité sont SUPPRIMÉS : faux positifs en mode sombre)
         src = req("/source?format=xml")["value"]
+        import re as _re
+        if _re.search(r'label="7[\s\u202f\u00a0]?777', src):
+            open(os.path.join(OUT, "_stop_demande"), "w").write("code 7777")
+            print("CODE 7777 reçu — fin de session demandée par Joachim.", flush=True)
+            break
         e = empreinte(src)
         if e != derniere:
             dernier_changement = time.time()

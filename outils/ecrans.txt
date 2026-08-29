@@ -221,3 +221,7 @@ divers2.mail.envoi
 divers2.dicta.suppressions
 coque2.controle
 coque2.notifs
+reglages2.general
+reglages2.infos
+reglages2.notifications
+reglages2.sons

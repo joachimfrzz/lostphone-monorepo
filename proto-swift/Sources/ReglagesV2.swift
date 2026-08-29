@@ -14,6 +14,10 @@ struct ReglagesV2Capture: View {
         case "reglages2.racine": ReglagesV2RacineVue()
         case "reglages2.luminosite": NavigationStack { LuminositeV2Vue() }
         case "reglages2.batterie": NavigationStack { BatterieV2Vue() }
+        case "reglages2.general": NavigationStack { GeneralV2Vue() }
+        case "reglages2.infos": NavigationStack { InformationsV2Vue() }
+        case "reglages2.notifications": NavigationStack { NotificationsV2Vue() }
+        case "reglages2.sons": NavigationStack { SonsV2Vue() }
         default: ReglagesV2RacineVue()
         }
     }
@@ -26,7 +30,13 @@ struct ReglagesV2RacineVue: View {
             List {
                 Section {
                     HStack(spacing: 14) {
-                        Color.clear.overlay(Image("p04").resizable().scaledToFill())
+                        Group {
+                            if let ui = UIImage(named: "p04") {
+                                Color.clear.overlay(Image(uiImage: ui).resizable().scaledToFill())
+                            } else {
+                                Circle().fill(Color(white: 0.4)).overlay(Text("SL").font(.system(size: 22, weight: .medium)).foregroundStyle(.white))
+                            }
+                        }
                             .frame(width: 58, height: 58).clipShape(Circle())
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Sarah Levasseur").font(.system(size: 20))
@@ -230,6 +240,215 @@ struct BatterieV2Vue: View {
             }
         }
         .navigationTitle("Batterie")
+        .navigationBarTitleDisplayMode(.inline)
+        .preferredColorScheme(.dark)
+    }
+}
+
+// ============================================================
+// LOT 2 — Général, Informations, Notifications, Sons (contenus extraits des XML S2)
+// ============================================================
+
+// MARK: - Général v2 (fusion racine crawler + page S2)
+struct GeneralV2Vue: View {
+    var body: some View {
+        List {
+            Section {
+                LigneSimpleRV2(nom: "Informations")
+                LigneSimpleRV2(nom: "Mise à jour logicielle")
+            }
+            Section {
+                LigneSimpleRV2(nom: "Stockage de l'iPhone")
+                LigneSimpleRV2(nom: "Actualiser en arrière-plan")
+            }
+            Section {
+                LigneSimpleRV2(nom: "AirDrop")
+                LigneSimpleRV2(nom: "AirPlay et Continuité")
+                LigneSimpleRV2(nom: "Image dans l'image")
+            }
+            Section {
+                LigneSimpleRV2(nom: "Clavier")
+                LigneSimpleRV2(nom: "Date et heure")
+                LigneSimpleRV2(nom: "Dictionnaires")
+                LigneSimpleRV2(nom: "Langue et région")
+                LigneSimpleRV2(nom: "Polices")
+                LigneSimpleRV2(nom: "Remplissage auto. et mots de passe")
+                LigneSimpleRV2(nom: "Capture d'écran")
+                LigneSimpleRV2(nom: "Fournisseur TV")
+            }
+            Section {
+                LigneSimpleRV2(nom: "VPN et gestion de l'appareil")
+            }
+            Section {
+                LigneSimpleRV2(nom: "Mentions légales et certifications")
+            }
+            Section {
+                LigneSimpleRV2(nom: "Transférer ou réinitialiser l'iPhone")
+                HStack { Spacer(); Text("Éteindre").foregroundStyle(.blue); Spacer() }
+            }
+        }
+        .navigationTitle("Général")
+        .navigationBarTitleDisplayMode(.inline)
+        .preferredColorScheme(.dark)
+    }
+}
+
+struct LigneSimpleRV2: View {
+    let nom: String
+    var valeur: String? = nil
+    var body: some View {
+        HStack {
+            Text(nom).font(.system(size: 17))
+            Spacer()
+            if let v = valeur { Text(v).font(.system(size: 17)).foregroundStyle(.secondary) }
+            Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5))
+        }
+    }
+}
+
+// MARK: - Informations v2 (39 lignes réelles, données Sarah)
+struct InformationsV2Vue: View {
+    let lignes: [(String, String)] = [
+        ("Nom", "iPhone de Sarah"),
+        ("Version d'iOS", "26.6.1"),
+        ("Nom du modèle", "iPhone 16"),
+        ("N° du modèle", "MYED3F/A"),
+        ("Numéro de série", "KX7P2Q0RD4"),
+        ("Garantie limitée", "Expiration le 03/11/2026")
+    ]
+    let medias: [(String, String)] = [
+        ("Morceaux", "127"), ("Vidéos", "58"), ("Photos", "1 243"), ("Apps", "31")
+    ]
+    let stockage: [(String, String)] = [
+        ("Capacité", "128 Go"), ("Disponible", "41,7 Go")
+    ]
+    let reseau: [(String, String)] = [
+        ("Réseau", "Free"), ("Wi-Fi", "Bbox-A47F2C"), ("Bluetooth", "58:2F:40:AA:19:C3")
+    ]
+    var body: some View {
+        List {
+            Section { ForEach(lignes, id: \.0) { l in LigneInfoV2(l) } }
+            Section { ForEach(medias, id: \.0) { l in LigneInfoV2(l) } }
+            Section { ForEach(stockage, id: \.0) { l in LigneInfoV2(l) } }
+            Section { ForEach(reseau, id: \.0) { l in LigneInfoV2(l) } }
+        }
+        .navigationTitle("Informations")
+        .navigationBarTitleDisplayMode(.inline)
+        .preferredColorScheme(.dark)
+    }
+}
+
+struct LigneInfoV2: View {
+    let l: (String, String)
+    init(_ l: (String, String)) { self.l = l }
+    var body: some View {
+        HStack { Text(l.0).font(.system(size: 17)); Spacer(); Text(l.1).font(.system(size: 17)).foregroundStyle(.secondary) }
+    }
+}
+
+// MARK: - Notifications v2 (réf S2 : styles + réglages iOS 26 + liste d'apps)
+struct NotificationsV2Vue: View {
+    let apps: [(String, String, Color, String)] = [
+        ("WhatsApp", "phone.fill", Color(red: 0.14, green: 0.83, blue: 0.4), "Bannières, Sons, Pastilles"),
+        ("Ma Banque", "building.columns.fill", .white, "Bannières, Sons"),
+        ("Mail", "envelope.fill", .blue, "Pastilles"),
+        ("Messages", "message.fill", .green, "Bannières, Sons, Pastilles"),
+        ("Messenger", "bubble.left.and.bubble.right.fill", .blue, "Désactivées")
+    ]
+    var body: some View {
+        List {
+            Section(header: Text("AFFICHAGE (ÉCRAN VERROUILLÉ)")) {
+                HStack(spacing: 30) {
+                    Spacer()
+                    VStack(spacing: 6) {
+                        RoundedRectangle(cornerRadius: 8).fill(Color(white: 0.2)).frame(width: 56, height: 100)
+                            .overlay(Circle().fill(.white.opacity(0.6)).frame(width: 16, height: 16).offset(y: 34))
+                        Text("Nombre").font(.system(size: 13))
+                        Image(systemName: "circle").foregroundStyle(.secondary)
+                    }
+                    VStack(spacing: 6) {
+                        RoundedRectangle(cornerRadius: 8).fill(Color(white: 0.2)).frame(width: 56, height: 100)
+                            .overlay(VStack(spacing: 3) {
+                                RoundedRectangle(cornerRadius: 2).fill(.white.opacity(0.6)).frame(width: 40, height: 9)
+                                RoundedRectangle(cornerRadius: 2).fill(.white.opacity(0.6)).frame(width: 40, height: 9)
+                            }.offset(y: 28))
+                        Text("Liste").font(.system(size: 13))
+                        Image(systemName: "checkmark.circle.fill").foregroundStyle(.blue)
+                    }
+                    Spacer()
+                }.padding(.vertical, 6)
+            }
+            Section {
+                LigneSimpleRV2(nom: "Résumé programmé", valeur: "Non")
+                LigneSimpleRV2(nom: "Afficher les aperçus", valeur: "Si déverrouillé")
+                LigneSimpleRV2(nom: "Partage d'écran", valeur: "Notif. désactivées")
+            }
+            Section {
+                LigneSimpleRV2(nom: "Prioriser les notifications", valeur: "Activé")
+                LigneSimpleRV2(nom: "Résumer les notifications", valeur: "Non")
+                LigneSimpleRV2(nom: "Annoncer les notifications", valeur: "Activé")
+            }
+            Section {
+                LigneSimpleRV2(nom: "Suggestions de Siri")
+            }
+            Section(header: Text("STYLE DE NOTIFICATION")) {
+                ForEach(apps, id: \.0) { a in
+                    HStack(spacing: 12) {
+                        RoundedRectangle(cornerRadius: 7)
+                            .fill(a.2 == .white ? Color.white : a.2)
+                            .frame(width: 30, height: 30)
+                            .overlay(Image(systemName: a.1).font(.system(size: 14)).foregroundStyle(a.2 == .white ? Color.black : .white))
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(a.0).font(.system(size: 16))
+                            Text(a.3).font(.system(size: 12)).foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5))
+                    }
+                }
+            }
+        }
+        .navigationTitle("Notifications")
+        .navigationBarTitleDisplayMode(.inline)
+        .preferredColorScheme(.dark)
+    }
+}
+
+// MARK: - Sons et vibrations v2 (réf S2 : Reflet, Note, Gouttelette...)
+struct SonsV2Vue: View {
+    @State private var barre = true
+    @State private var boutons = true
+    @State private var silence = false
+    var body: some View {
+        List {
+            Section(header: Text("MODE SILENCE")) {
+                Toggle("Mode Silence", isOn: $silence)
+                Toggle("Afficher dans la barre d'état", isOn: $barre)
+            }
+            Section {
+                LigneSimpleRV2(nom: "Entrée", valeur: "Micro de l'iPhone")
+            }
+            Section(header: Text("VOLUME (SONNERIE ET ALERTES)")) {
+                HStack(spacing: 10) {
+                    Image(systemName: "speaker.fill").foregroundStyle(.secondary)
+                    Slider(value: .constant(0.55))
+                    Image(systemName: "speaker.wave.3.fill").foregroundStyle(.secondary)
+                }
+                Toggle("Utiliser les boutons", isOn: $boutons)
+            }
+            Section {
+                LigneSimpleRV2(nom: "Vibrations", valeur: "Vibrer en mode Silence")
+            }
+            Section(header: Text("SONS ET SÉQUENCES DE VIBRATION")) {
+                LigneSimpleRV2(nom: "Sonnerie", valeur: "Reflet")
+                LigneSimpleRV2(nom: "Son SMS", valeur: "Note")
+                LigneSimpleRV2(nom: "Nouv. message vocal", valeur: "Gouttelette")
+                LigneSimpleRV2(nom: "Alertes de calendrier", valeur: "Accord")
+                LigneSimpleRV2(nom: "Alertes de rappel", valeur: "Carillon")
+                LigneSimpleRV2(nom: "AirDrop", valeur: "Impulsion")
+            }
+        }
+        .navigationTitle("Sons et vibrations")
         .navigationBarTitleDisplayMode(.inline)
         .preferredColorScheme(.dark)
     }

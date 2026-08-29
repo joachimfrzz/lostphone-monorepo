@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T19:25:00+02:00",
+  "date_derniere_maj": "2026-08-29T19:35:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~19h25)",
-  "dernier_evenement": "JOUR 1 : 5 SESSIONS CLÔTURÉES (S1-S5). 2690 états vidéo + 670 XML au total. Reliquat : blocs CC dépliés (1 pose). Prochaines : S6 (Météo/Dictaphone/compléments) ou diffs P5.",
+  "date": "2026-08-29 (~19h35)",
+  "dernier_evenement": "D80 ACTÉE : refonte entière écran par écran contre les références D78 (infra+données+composants médias conservés, clause de sûreté). 5 sessions livrées, 7 restantes. L agent peut démarrer la refonte coque+Réglages.",
   "en_attente": [
-   "S6 au choix de Joachim",
-   "Agent : diffs P5 + cartographie-narrative.md (5 fiches à consolider)"
+   "Agent : démarrer la refonte (coque D76 d abord) contre les fiches S1/S2",
+   "Joachim : prochaines sessions S6-S12 quand il veut ; reliquat CC 15 s"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 19h25. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 19h35. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2032,6 +2032,12 @@
    "titre": "Plan de campagne d analyse : 12 sessions, rituel carre, registre, carnet parallele, tout-filmer, cartographie narrative",
    "date": "2026-08-29",
    "contenu": "DÉCISION UTILISATEUR (16h36, « GO plan » implicite avec 3 compléments). (1) CAMPAGNE : 12 sessions planifiées couvrant coque + cercles 1-2 (S1 coque D76, S2 Réglages, S3 Téléphone/Contacts/Messages, S4 Safari/Mail, S5 Photos/Calendrier/Notes/Rappels, S6 Météo/Dictaphone/compléments, S7 Plans/Localiser, S8 Fichiers/Wallet/Santé, S9 WhatsApp, S10 sociales comptes B, S11 LinkedIn/Tinder/ChatGPT/Spotify/YouTube, S12 Uber/UberEats/PayPal/AppStore+FaceTime à trancher) ; cercle 3 (~34) à la demande d une histoire (D48). RITUEL PAR SESSION : AVANT = checklist fermée publiée et validée ; DÉBUT = tunnel + enregistrement écran + « GO <app> » -> écoute passive ; PENDANT = 1 s pages neuves, naturel ailleurs ; FIN = SwissTransfer ; CLÔTURE = fusion -> fiche -> vérification exhaustivité -> passe 2 -> push -> diff P5 -> correctifs -> miroir -> registre coché. (2) REGISTRE : campagne-analyse.yaml à la racine du repo, statuts a_faire->capturee->fiche->diffee->corrigee->validee_device. (3) CARNET DE SESSION (demande Joachim) : second fil Hyperagent amorcé par tools/prompt-carnet.txt — canal parallèle pendant les sessions, digest rapporté au fil principal (pas d agent délégué disponible sur ce compte). (4) TOUT FILMER, ÉPURER APRÈS (demande Joachim) : capture exhaustive sans jugement d utilité ; à la construction, liste « candidats à l épure » proposée par l agent, CHAQUE retrait = arbitrage explicite de Joachim, très peu de retraits attendus ; une fonction inutile mais designante peut rester. (5) CARTOGRAPHIE NARRATIVE (demande Joachim) : chaque fiche comporte une section « Possibilités narratives repérées » + consolidation dans cartographie-narrative.md — le vivier où les histoires piocheront (esprit D74 appliqué au vrai téléphone)."
+  },
+  "D80": {
+   "titre": "REFONTE ENTIÈRE des apps construites, dirigée par les références D78",
+   "date": "2026-08-29",
+   "contenu": "DÉCISION (proposée par Joachim 19h28 « refonte entière plutôt que diff », périmètre arbitré par l agent sur délégation — « je sais pas me décider » — consignée avec invitation à correction). Les apps déjà construites ne sont plus corrigées par diffs : CHAQUE ÉCRAN est RECONSTRUIT contre les références exhaustives de la campagne (fiches + XML + vidéos). CONSERVÉS (argument décisif : l infrastructure ne produit aucun pixel — la table rase n achèterait zéro fidélité) : (1) l infra partagée (Routeur, BarreHome, lecteurs audio/vidéo, magasins, FeuillePartage), (2) les jeux de données Sarah (69 photos, conversations, LCL, mémos — remplaçables D59), (3) les 14 composants médias (à re-skinner). CLAUSE DE SÛRETÉ : toute pièce conservée prise en défaut par une référence est refaite sans débat au moment où on la rencontre. ORDRE : au fil des sessions livrées (coque D76 + Réglages + TCM + Safari/Mail + PCNR disponibles dès maintenant). Le verdict reste le device (TestFlight sur GO).",
+   "remplace": "Les passes de diff P5 par app (phase 1 de la feuille de route du 28/08) — absorbées par la refonte."
   }
  },
  "point_de_reprise_migration": {

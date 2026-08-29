@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T18:10:00+02:00",
+  "date_derniere_maj": "2026-08-29T18:25:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~18h10)",
-  "dernier_evenement": "S2 RÉGLAGES CLÔTURÉE (85 pages, fiche v2, 1 seule pose en reliquat). Jour 1 de campagne : S1 coque + S2 Réglages complètes. Prochaines : S3 (Téléphone/Contacts/Messages) ou diff P5 coque+Réglages.",
+  "date": "2026-08-29 (~18h25)",
+  "dernier_evenement": "JOUR 1 DE CAMPAGNE TERMINÉ : S1 coque + S2 Réglages + S3 Téléphone/Contacts/Messages CLÔTURÉES (méthode D78 rodée, clap de fin = message « fini »). Registre : 3/12 sessions. Reliquats : Partage de connexion + blocs CC (2 poses).",
   "en_attente": [
-   "Prochaine session au choix de Joachim (S3) ou travail agent seul (diff P5, cartographie-narrative.md)",
-   "Reliquat passe 2 : Partage de connexion (1 pose) + blocs CC dépliés (S1)"
+   "Prochaine session (S4 Safari/Mail) au choix de Joachim",
+   "Agent : diff P5 coque/Réglages/TCM + cartographie-narrative.md à initialiser"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 18h10. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 18h25. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2213,5 +2213,11 @@
   "lecon": "Le code 7777 est tombé dans le CREUX entre deux tranches d écoute -> à corriger : vérifier le flag/code au DÉMARRAGE de chaque tranche aussi, et raccourcir le creux (relance immédiate).",
   "archive": "references/s2-reglages-2026-08-29/s2.b64.part* (XML seuls — les pixels sont dans la vidéo)",
   "cloture": "CLÔTURÉE 2026-08-29 18h10 : vidéo 18 min -> 843 états ; exhaustivité vérifiée par recoupement 3 sources = 85 pages couvertes ; il ne manque QUE Partage de connexion (passe 2 : 1 pose). Fiche v2 au repo (references/s2-reglages-2026-08-29/FICHE-REGLAGES-V2.md). Vidéo : SwissTransfer 2b68a5a8 (30 j)."
+ },
+ "session_S3_tcm": {
+  "date": "2026-08-29 18h07-18h16 (méthode D78)",
+  "bilan": "S3 CLÔTURÉE : vidéo 7min11 -> 335 états + 32 XML. Téléphone (Récents/Favoris/Contacts/fiche/Messagerie vocale+lecteur), Contacts (Listes), Messages (conversations, Suppressions récentes, Indésirables). Fiche v1 au repo. Vidéo SwissTransfer 84b76d27 (30 j).",
+  "rituel_final": "CLAP DE FIN DÉFINITIF : le message « fini » de Joachim dans le fil (coupe l écoute sans perte — écriture incrémentale). Le code 7777 est abandonné. Seule règle : ne pas écrire PENDANT la navigation.",
+  "or_narratif": "Suppressions récentes de Messages = mécanique native de l or effacé-récupérable (P66-P68/D58) ; Indésirables = canal du phishing ; Listes de contacts = tri social ; fiches d appel = texture des relations."
  }
 }

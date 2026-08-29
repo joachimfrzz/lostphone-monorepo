@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T13:35:00+02:00",
+  "date_derniere_maj": "2026-08-29T14:15:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~13h35)",
-  "dernier_evenement": "D77 ACTÉE. Session sans surveillance LANCÉE sur GO (Joachim déjeune) : crawler exhaustif sur la file zéro-risque (Réglages d abord). STOP = débrancher le câble.",
+  "date": "2026-08-29 (~14h15)",
+  "dernier_evenement": "Session crawler déjeuner : 35 écrans engrangés (Réglages 32 + Horloge 3), 2 correctifs de sécurité majeurs codés et validés (garde anti-dérive, blacklist Enregistrer), TUNNEL MORT en cours de route (530, PC injoignable). Archive poussée au repo. Frontière persistée.",
   "en_attente": [
-   "Agent : dérouler la file zéro-risque + rapport de couverture au retour de Joachim",
-   "Plus tard sous surveillance : sociales (comptes B), Messages/WhatsApp/Téléphone, Mail, Wallet, Santé, Localiser, Safari"
+   "Joachim (au retour) : vérifier le PC (coupure Kernel-Power probable) puis relancer le rituel + nouvelle URL tunnel",
+   "Agent : reprendre le crawl Réglages (frontière 291) puis la file zéro-risque"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 13h35 — crawler en cours. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 14h15 — moisson sécurisée. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2176,5 +2176,16 @@
    "Le compteur de cellules XML ne marche pas sur la racine SwiftUI iOS 26 (0 Cell) — vérifier par libellés attendus."
   ],
   "confidentialite": "Nom, SSID, compteurs Confidentialité du vrai iPhone présents dans les références = mesure UNIQUEMENT (règle constante)."
+ },
+ "session_crawler_2026_08_29": {
+  "date": "2026-08-29 13h40-14h10 (session sans surveillance, GO Joachim)",
+  "bilan": "Crawler D77 v1 en production. RÉGLAGES : 32 écrans visités en profondeur (racine complète, Batterie, Général, Accessibilité, Appareil photo 23 lignes, Apple Intelligence, Bouton Action, Centre de contrôle, Écran d accueil, En veille, Fond d écran, Luminosité, Recherche, Notifications, Sons, Concentration, Temps d écran, Face ID, Confidentialité 33 lignes, Game Center, iCloud, sous-arbre Compte Apple) + 91 éléments écartés avec raison + FRONTIÈRE 291 écrans persistée (_etat_crawler.json dans l archive — reprise exacte possible). HORLOGE : 3 écrans (racine Alarmes, Modifier, feuille Ajouter) puis TUNNEL MORT (530 — PC injoignable, cause probable : coupure Kernel-Power connue ou fenêtre fermée).",
+  "incidents_et_correctifs": [
+   "INCIDENT (signalé par Joachim) : le crawler a tapé une bannière de notification et changé d app sans le détecter. CORRECTIF CODÉ : garde anti-dérive — après chaque tap et avant chaque capture, vérification wda/activeAppInfo ; si bundle != cible -> journal + retour accueil + relance. VALIDÉ en conditions réelles au run 2 (dérive springboard interceptée). Parade complémentaire : mode Concentration activé par Joachim pendant les sessions.",
+   "TROU DE BLACKLIST détecté à Horloge : Enregistrer/Valider/Confirmer n étaient pas bloqués (risque : créer une vraie alarme). CORRIGÉ avant tout dégât (vérifié : aucun Enregistrer tapé).",
+   "Le protocole de captures en tâche de fond ne survit pas entre les tours -> exécuter les runs en avant-plan par tranches de 9 min."
+  ],
+  "archive": "references/crawl-2026-08-29/crawl1.tar.b64.part00-08 (tar 17,7 Mo, sha256 865a0297358209fa, JPEG q85 pleine résolution + XML complets + états crawler). Décodage : cat parts | base64 -d | tar xf -",
+  "reprise": "Relancer le rituel (harness + tunnel), puis : python3 tools/crawler_sidetap.py <URL> com.apple.Preferences crawl-reglages 9 — reprend à la frontière 291. Puis Horloge/Calculatrice/Météo/Plans/Calendrier (états neufs)."
  }
 }

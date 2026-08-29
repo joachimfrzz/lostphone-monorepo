@@ -34,6 +34,7 @@ BLACKLIST = re.compile(
     r"supprim|réinitialis|reinitialis|effacer|déconnect|deconnect|éteindre|eteindre|"
     r"payer|paiement|acheter|achat|apple\s?pay|commander|"
     r"envoyer|publier|poster|partager|partage|airdrop|"
+    r"enregistrer|sauvegarder|valider|confirmer|terminé|termine|"
     r"transférer ou réinitialiser|restaurer|mettre à jour|mettre a jour|installer|"
     r"appeler|facetime|urgence|sos|"
     r"mode avion", re.I)
@@ -68,9 +69,30 @@ def find(pred):
         return None
 
 
+def app_active():
+    try:
+        return req("GET", f"/session/{SID}/wda/activeAppInfo")["value"].get("bundleId", "")
+    except Exception:
+        return ""
+
+
+def garde_app(contexte=""):
+    """GARDE ANTI-DÉRIVE : si on n'est plus dans l'app cible (notification tapée,
+    lien externe...), retour accueil + relance de l'app cible, incident journalisé."""
+    b = app_active()
+    if b and b != BUNDLE:
+        print(f"  [!! DÉRIVE] app active = {b} ({contexte}) -> retour {BUNDLE}", flush=True)
+        etat["ecartes"][f"INCIDENT dérive {time.strftime('%H:%M:%S')}"] = f"tap parti dans {b} ({contexte})"
+        req("POST", "/wda/homescreen", {}); time.sleep(1.0)
+        req("POST", f"/session/{SID}/wda/apps/launch", {"bundleId": BUNDLE}); time.sleep(2.0)
+        return False
+    return True
+
+
 def tap(eid):
     req("POST", f"/session/{SID}/element/{eid}/click", {})
     time.sleep(1.5)
+    garde_app("après tap")
 
 
 def swipe(y1, y2, d=0.45):
@@ -130,6 +152,8 @@ def lignes_navigation(src):
 
 
 def capturer(nom, src=None):
+    if not garde_app("avant capture"):
+        raise RuntimeError("dérive hors app — capture annulée")
     src = src or source()
     shot = req("GET", "/screenshot")
     png = base64.b64decode(shot["value"])

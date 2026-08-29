@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T18:45:00+02:00",
+  "date_derniere_maj": "2026-08-29T19:25:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~18h45)",
-  "dernier_evenement": "JOUR 1 : 4 SESSIONS CLÔTURÉES (S1 coque, S2 Réglages, S3 Tél/Contacts/Messages, S4 Safari/Mail). Méthode D78 rodée, clap de fin = message. Reliquat restant : blocs CC dépliés (1 pose). Prochaine : S5 Photos/Calendrier/Notes/Rappels.",
+  "date": "2026-08-29 (~19h25)",
+  "dernier_evenement": "JOUR 1 : 5 SESSIONS CLÔTURÉES (S1-S5). 2690 états vidéo + 670 XML au total. Reliquat : blocs CC dépliés (1 pose). Prochaines : S6 (Météo/Dictaphone/compléments) ou diffs P5.",
   "en_attente": [
-   "S5 au choix de Joachim",
-   "Agent : diffs P5 (coque/Réglages/TCM/Safari/Mail) + cartographie-narrative.md"
+   "S6 au choix de Joachim",
+   "Agent : diffs P5 + cartographie-narrative.md (5 fiches à consolider)"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 18h45. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 19h25. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2224,5 +2224,10 @@
   "date": "2026-08-29 18h25-18h33 (méthode D78)",
   "bilan": "S4 CLÔTURÉE : vidéo 7min42 -> 384 états + 94 XML. Safari (sidebar, groupes d onglets, favoris, complétion), Mail complet (Réception Gmail, conversation, brouillons, envoyés, BOÎTE D ENVOI, indésirables, corbeille, sélection multiple, fiche contact). Reliquat Partage de connexion coché. Vidéo SwissTransfer 949a2459 (30 j). Fiche v1 au repo.",
   "or_narratif": "Boîte d envoi = le mail jamais parti ; groupes d onglets = organisation mentale/secrets ; complétion de recherche = l historique qui affleure ; multi-comptes Mail = compartimentation."
+ },
+ "session_S5_pcnr": {
+  "date": "2026-08-29 18h56-19h13 (méthode D78)",
+  "bilan": "S5 CLÔTURÉE : vidéo 17min28 -> 902 états + 200 XML. Photos (phototèque/Collections/recherche/Personnes/albums/types/plein écran/ÉDITEUR AJUSTER), Calendrier (mois/jour/recherche/CRÉATION EKEventEditView), Notes (listes/éditeur), Rappels (listes/Courses/saisie rapide). Vidéo SwissTransfer e0224105 (30 j). Fiche v1 au repo.",
+  "or_narratif": "Éditeur photo = la retouche comme acte narratif ; Personnes = visages nommés/non nommés ; champs de création d événement ; saisie rapide = pensée brute."
  }
 }

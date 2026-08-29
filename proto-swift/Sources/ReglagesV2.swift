@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // ============================================================
 // RÉGLAGES V2 (D80 — refonte contre FICHE-REGLAGES-V2, 85 pages réf. S2/1b/crawler)
@@ -37,7 +38,7 @@ struct ReglagesV2RacineVue: View {
                 Section {
                     LigneRV2(icone: "airplane", fond: .orange, nom: "Mode Avion", toggle: true)
                     LigneRV2(icone: "wifi", fond: .blue, nom: "Wi-Fi", valeur: "Bbox-A47F2C")
-                    LigneRV2(icone: "logo.bluetooth" , fond: .blue, nom: "Bluetooth", valeur: "Oui", sfFallback: "wave.3.right")
+                    LigneRV2(icone: "wave.3.right", fond: .blue, nom: "Bluetooth", valeur: "Oui")
                     LigneRV2(icone: "antenna.radiowaves.left.and.right", fond: .green, nom: "Données cellulaires")
                     LigneRV2(icone: "personalhotspot", fond: .green, nom: "Partage de connexion", valeur: "Non")
                     LigneRV2(icone: "battery.100", fond: .green, nom: "Batterie")
@@ -85,14 +86,13 @@ struct LigneRV2: View {
     let icone: String; let fond: Color; let nom: String
     var valeur: String? = nil
     var toggle: Bool = false
-    var sfFallback: String? = nil
     @State private var actif = false
     var body: some View {
         HStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 7)
                 .fill(fond)
                 .frame(width: 30, height: 30)
-                .overlay(Image(systemName: UIImage(systemName: icone) != nil ? icone : (sfFallback ?? "questionmark"))
+                .overlay(Image(systemName: icone)
                     .font(.system(size: 15, weight: .semibold)).foregroundStyle(.white))
             Text(nom).font(.system(size: 17))
             Spacer()
@@ -104,7 +104,7 @@ struct LigneRV2: View {
                 }
                 Image(systemName: "chevron.forward")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Color(uiColor: .tertiaryLabel))
+                    .foregroundStyle(.secondary.opacity(0.5))
             }
         }
     }
@@ -132,13 +132,13 @@ struct LuminositeV2Vue: View {
                     Text("Liquid Glass")
                     Spacer()
                     Text("Transparent").foregroundStyle(.secondary)
-                    Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(uiColor: .tertiaryLabel))
+                    Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5))
                 }
             } footer: {
                 Text("Définir l'apparence des boutons, barres de navigation et commandes.")
             }
             Section {
-                HStack { Text("Taille du texte"); Spacer(); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(uiColor: .tertiaryLabel)) }
+                HStack { Text("Taille du texte"); Spacer(); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5)) }
                 Toggle("Texte en gras", isOn: .constant(false))
             }
             Section("LUMINOSITÉ") {
@@ -152,7 +152,7 @@ struct LuminositeV2Vue: View {
                 Text("L'affichage de l'iPhone s'adapte automatiquement aux conditions d'éclairage ambiant.")
             }
             Section {
-                HStack { Text("Night Shift"); Spacer(); Text("Non").foregroundStyle(.secondary); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(uiColor: .tertiaryLabel)) }
+                HStack { Text("Night Shift"); Spacer(); Text("Non").foregroundStyle(.secondary); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5)) }
             }
         }
         .navigationTitle("Luminosité et affichage")
@@ -197,7 +197,7 @@ struct BatterieV2Vue: View {
                     Text("Niveau de la batterie : 38 %")
                     Spacer()
                 }
-                HStack { Text("Limite de 100 %"); Spacer(); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(uiColor: .tertiaryLabel)) }
+                HStack { Text("Limite de 100 %"); Spacer(); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5)) }
                 HStack { Text("Mode économie d'énergie"); Spacer(); Toggle("", isOn: .constant(false)).labelsHidden() }
             }
             Section("DERNIÈRES 24 HEURES") {
@@ -228,7 +228,7 @@ struct BatterieV2Vue: View {
                 }
             }
             Section {
-                HStack { Text("État de santé de la batterie"); Spacer(); Text("91 %").foregroundStyle(.secondary); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(uiColor: .tertiaryLabel)) }
+                HStack { Text("État de santé de la batterie"); Spacer(); Text("91 %").foregroundStyle(.secondary); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5)) }
             }
         }
         .navigationTitle("Batterie")

@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T23:15:00+02:00",
+  "date_derniere_maj": "2026-08-30T00:20:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1595,14 +1595,14 @@
  },
  "etat_conversation": {
   "date": "2026-08-29 (~21h30, clôture du jour)",
-  "dernier_evenement": "Soirée J1 TERMINÉE : refonte D80 lancée pour de bon — COQUE V2 (6 écrans, lots 1+2, builds verts) + RÉGLAGES V2 lot 1 (racine/Luminosité-LiquidGlass/Batterie-utilisation, build vert après 2 fix de compil). 9 écrans v2 au total, tous vérifiés à l image. Demain : sessions S7+ (Joachim) et suite refonte (Réglages lot 2, TCM, Safari/Mail...).",
+  "dernier_evenement": "RAPPORT S1 RENDU (protocole builds S1->S6, référence = sessions du 29/08). Coque v2 complète 8 écrans + 5 transversaux, tous verts. En attente : validation du rapport puis Build S2 (Réglages, ~85 pages à couvrir par lots).",
   "en_attente": [
    "DEMAIN (Joachim) : sessions S7-S12 (S7 Plans/Localiser -> S8 Fichiers/Wallet/Santé -> S9 WhatsApp -> S10 sociales comptes B -> S11 -> S12) + reliquat CC en dernier. Rituel : Demarrer-LostPhone.cmd -> URL -> GO Sx -> naviguer -> « fini » -> lien SwissTransfer.",
    "Agent (ce soir/entre les sessions) : refonte coque D80 contre fiches S1 (verrouillage+piles, bibliothèque, Spotlight, multitâche), puis Réglages.",
    "RAPPEL : re-signature WDA (fix-input) avant le 2026-09-04."
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 23h15. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-30 00h20. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2244,7 +2244,7 @@
  },
  "refonte_coque_v2": {
   "date": "2026-08-29 soir (D80, lot 1 autonome)",
-  "statut": "LOTS 1+2 CONSTRUITS ET VÉRIFIÉS AU MIROIR (2 builds verts du premier coup : 6a9334d7 et 6a933c17). 6 écrans coque2 : verrouillage replié/déplié, bibliothèque, ACCUEIL (widgets Météo+Photos, grille, pilule, dock), SPOTLIGHT (suggestions Siri), MULTITÂCHE (cartes + étiquette Handoff « iPad de Sarah » = or narratif D79). Écart corrigé : widget Photos vide (asset p15 hors catalogue -> FondEcran, commit à suivre). Restent lot 3 : centre de contrôle (après reliquat), animations mesurées vidéo, vraies icônes d apps (chantier assets connu).",
+  "statut": "BUILD S1 TERMINÉ (nuit 29-30/08) : COQUE V2 COMPLÈTE — 8 écrans construits et vérifiés au miroir (verrouillage replié/déplié, accueil, bibliothèque, Spotlight, multitâche, CENTRE DE CONTRÔLE réf e001, CENTRE DE NOTIFICATIONS). Builds verts 6a9334d7/6a933c17/6a9351833. Lot transversal divers2 aussi vert (Suppressions récentes Messages+Dictaphone, Indésirables, Contacts Listes, Mail Boîte d envoi).",
   "spec": "references/s1-coque-2026-08-29/SPEC-COQUE-V2.md (mesures XML exactes). Restent (lot 2) : accueil v2, Spotlight, multitâche, centre de contrôle (après reliquat), animations mesurées sur vidéo S1.",
   "commit": "3997590a"
  },
@@ -2256,5 +2256,18 @@
    "Assets images : catalogue (FondEcran, AvatarMarc) vs Ressources/ (pellicule pXX via ChargeurPhoto) — Image(\"p04\") ne marche PAS pour la pellicule.",
    "Récupération des logs d erreur Codemagic : GET /builds/{id} -> buildActions[].‗id du step failed -> GET /builds/{id}/step/{stepId} avec x-auth-token -> grep error:. À ajouter à la doc de la skill."
   ]
+ },
+ "rapport_S1": {
+  "date": "2026-08-30 ~00h15",
+  "livre": "Coque v2 8/8 écrans + 5 écrans-signatures transversaux. Tous compilés et vérifiés à l image.",
+  "ecarts_assumes": [
+   "ICÔNES D APPS : symboles SF approximatifs partout — chantier assets dédié REQUIS avant tout jugement de ressemblance (signalé en préambule, prioritaire)",
+   "Centre de contrôle : fond trop CLAIR (le réel floute le fond sombre du wallpaper ; le mien floute la photo claire) — assombrissement à ajouter au polish",
+   "Pilule Concentration : libellé tronqué (Concen-…) — largeur à ajuster",
+   "Effet de pile du verrouillage replié : cartes arrière trop discrètes",
+   "Animations : non traitées dans les builds statiques (mesure sur vidéos 60fps à la passe de finition)",
+   "Emojis : tofu simulateur (verdict sur device)"
+  ],
+  "quota": "~10 builds miroir aujourd hui (~250 min/500 gratuites). Les 5 builds de session restants tiennent si pas trop de correctifs."
  }
 }

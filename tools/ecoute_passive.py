@@ -40,10 +40,19 @@ while time.time() - debut < MINUTES * 60:
             png_probe = base64.b64decode(req("/screenshot", t=25)["value"])
             im = Image.open(io.BytesIO(png_probe)).convert("L").resize((10, 22))
             if sum(im.getdata()) / 220 < 12:
-                noirs += 1
-                if noirs >= 2 and n > 0:
-                    print("CLAP DE FIN détecté (téléphone verrouillé) — arrêt.", flush=True)
-                    break
+                # écran noir : vrai verrouillage OU surface protégée (Apple Pay...) — l'arbre tranche
+                try:
+                    probe_src = req("/source?format=xml")["value"]
+                    riche = probe_src.count("label=") > 15
+                except Exception:
+                    riche = False
+                if riche:
+                    noirs = 0  # page protégée : on continue (le XML, lui, est capturé)
+                else:
+                    noirs += 1
+                    if noirs >= 2 and n > 0:
+                        print("CLAP DE FIN détecté (téléphone verrouillé) — arrêt.", flush=True)
+                        break
             else:
                 noirs = 0
         except Exception:

@@ -141,15 +141,13 @@ struct LuminositeV2Vue: View {
                 HStack { Text("Taille du texte"); Spacer(); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5)) }
                 Toggle("Texte en gras", isOn: .constant(false))
             }
-            Section(header: Text("LUMINOSITÉ")) {
+            Section(header: Text("LUMINOSITÉ"), footer: Text("L'affichage de l'iPhone s'adapte automatiquement aux conditions d'éclairage ambiant.")) {
                 HStack(spacing: 10) {
                     Image(systemName: "sun.min.fill").foregroundStyle(.secondary)
                     Slider(value: $luminosite)
                     Image(systemName: "sun.max.fill").foregroundStyle(.secondary)
                 }
                 Toggle("True Tone", isOn: $trueTone)
-            } footer: {
-                Text("L'affichage de l'iPhone s'adapte automatiquement aux conditions d'éclairage ambiant.")
             }
             Section {
                 HStack { Text("Night Shift"); Spacer(); Text("Non").foregroundStyle(.secondary); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5)) }

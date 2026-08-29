@@ -29,14 +29,33 @@ def empreinte(src):
 
 
 n, derniere, debut, erreurs = 0, None, time.time(), 0
+dernier_changement, noirs = time.time(), 0
 journal = []
-print(f"ÉCOUTE PASSIVE démarrée ({MINUTES:.0f} min) — navigue, je n'interviens pas.", flush=True)
+print(f"ÉCOUTE PASSIVE démarrée ({MINUTES:.0f} min max) — CLAP DE FIN : verrouille le téléphone (ou 90 s immobile).", flush=True)
 while time.time() - debut < MINUTES * 60:
     t0 = time.time()
     try:
+        # clap de fin 1 : écran verrouillé/noir
+        try:
+            png_probe = base64.b64decode(req("/screenshot", t=25)["value"])
+            im = Image.open(io.BytesIO(png_probe)).convert("L").resize((10, 22))
+            if sum(im.getdata()) / 220 < 12:
+                noirs += 1
+                if noirs >= 2 and n > 0:
+                    print("CLAP DE FIN détecté (téléphone verrouillé) — arrêt.", flush=True)
+                    break
+            else:
+                noirs = 0
+        except Exception:
+            pass
+        # clap de fin 2 : immobilité prolongée
+        if n > 0 and time.time() - dernier_changement > 90:
+            print("90 s sans changement — arrêt automatique.", flush=True)
+            break
         src = req("/source?format=xml")["value"]
         e = empreinte(src)
         if e != derniere:
+            dernier_changement = time.time()
             derniere = e
             n += 1
             ts = time.strftime("%H%M%S")

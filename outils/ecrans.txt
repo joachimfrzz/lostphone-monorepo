@@ -205,3 +205,6 @@ youtube.notifications
 snapchat.story
 facebook.story
 instagram.dmconv
+coque2.verrouillage
+coque2.verrouillage.depliee
+coque2.bibliotheque

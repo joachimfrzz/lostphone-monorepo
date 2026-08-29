@@ -14,6 +14,9 @@ struct CoqueV2Capture: View {
         case "coque2.verrouillage": VerrouillageV2View(depliee: false)
         case "coque2.verrouillage.depliee": VerrouillageV2View(depliee: true)
         case "coque2.bibliotheque": BibliothequeV2View()
+        case "coque2.accueil": AccueilV2View()
+        case "coque2.spotlight": SpotlightV2View()
+        case "coque2.multitache": MultitacheV2View()
         default: VerrouillageV2View(depliee: false)
         }
     }
@@ -225,5 +228,223 @@ struct IconeBiblio: View {
             .overlay(Image(systemName: app.2)
                 .font(.system(size: 30))
                 .foregroundStyle(app.1 == .white ? .black : .white))
+    }
+}
+
+// ============================================================
+// LOT 2 — Accueil v2, Spotlight v2, Multitâche v2 (réf vidéo S1)
+// ============================================================
+
+// MARK: - Accueil v2 (réf : widgets moyens Météo+Photos, grille 4 col, pilule Recherche, dock 4, points de page)
+struct AccueilV2View: View {
+    let apps: [(String, Color, String)] = [
+        ("FaceTime", .green, "video.fill"), ("Calendrier", .white, "calendar"),
+        ("Photos", .white, "photo.on.rectangle.angled"), ("Appareil photo", .gray, "camera.fill"),
+        ("Mail", .blue, "envelope.fill"), ("Notes", .yellow, "note.text"),
+        ("Rappels", .white, "checklist"), ("Horloge", .black, "clock.fill"),
+        ("TV", .black, "play.tv.fill"), ("Podcasts", .purple, "waveform.circle.fill"),
+        ("App Store", .blue, "square.stack.3d.up.fill"), ("Plans", .green, "map.fill"),
+        ("Santé", .white, "heart.fill"), ("Cartes", .black, "wallet.pass.fill"),
+        ("Réglages", .gray, "gearshape.fill"), ("ChatGPT", .black, "circle.hexagongrid.fill")
+    ]
+    var body: some View {
+        ZStack {
+            Color.clear.overlay(
+                Image("FondEcran").resizable().scaledToFill()
+            ).clipped().ignoresSafeArea()
+            Color.black.opacity(0.18).ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                // Widgets moyens : Météo (gauche) + pile Photos (droite)
+                HStack(spacing: 24) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "location.fill").font(.system(size: 11))
+                            Text("Lyon").font(.system(size: 14, weight: .semibold))
+                        }
+                        Text("24°").font(.system(size: 40, weight: .light))
+                        Spacer(minLength: 0)
+                        HStack(spacing: 4) {
+                            Image(systemName: "sun.max.fill").font(.system(size: 12)).foregroundStyle(.yellow)
+                            Text("Ensoleillé").font(.system(size: 12, weight: .medium))
+                        }
+                        Text("↑29° ↓18°").font(.system(size: 12, weight: .medium)).opacity(0.85)
+                    }
+                    .foregroundStyle(.white)
+                    .padding(14)
+                    .frame(width: 160, height: 160, alignment: .topLeading)
+                    .background(LinearGradient(colors: [Color(red: 0.25, green: 0.5, blue: 0.85), Color(red: 0.15, green: 0.3, blue: 0.6)], startPoint: .top, endPoint: .bottom))
+                    .clipShape(RoundedRectangle(cornerRadius: 24))
+
+                    Color.clear.overlay(
+                        Image("p15").resizable().scaledToFill()
+                    )
+                    .frame(width: 160, height: 160)
+                    .clipShape(RoundedRectangle(cornerRadius: 24))
+                    .overlay(alignment: .bottomLeading) {
+                        Text("Festival 2025").font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.white).padding(10)
+                    }
+                }
+                .padding(.top, 24)
+
+                // Grille 4 colonnes
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 22) {
+                    ForEach(apps, id: \.0) { app in
+                        VStack(spacing: 5) {
+                            IconeAccueilV2(app)
+                            Text(app.0).font(.system(size: 12)).foregroundStyle(.white)
+                                .lineLimit(1).shadow(radius: 2)
+                        }
+                    }
+                }
+                .padding(.horizontal, 22)
+                .padding(.top, 26)
+
+                Spacer()
+
+                // Points de page + pilule Recherche
+                HStack(spacing: 8) {
+                    Circle().fill(.white).frame(width: 7, height: 7)
+                    Circle().fill(.white.opacity(0.4)).frame(width: 7, height: 7)
+                    Circle().fill(.white.opacity(0.4)).frame(width: 7, height: 7)
+                }
+                HStack(spacing: 6) {
+                    Image(systemName: "magnifyingglass").font(.system(size: 13, weight: .semibold))
+                    Text("Recherche").font(.system(size: 14, weight: .medium))
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 16).padding(.vertical, 8)
+                .background(.ultraThinMaterial, in: Capsule())
+                .padding(.top, 10)
+
+                // Dock
+                HStack(spacing: 26) {
+                    IconeAccueilV2(("Téléphone", .green, "phone.fill"))
+                    IconeAccueilV2(("Messages", .green, "message.fill"))
+                    IconeAccueilV2(("Safari", .white, "safari.fill"))
+                    IconeAccueilV2(("Musique", .red, "music.note"))
+                }
+                .padding(.vertical, 16)
+                .padding(.horizontal, 24)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 36))
+                .padding(.top, 12)
+                .padding(.bottom, 10)
+            }
+        }
+    }
+}
+
+struct IconeAccueilV2: View {
+    let app: (String, Color, String)
+    init(_ app: (String, Color, String)) { self.app = app }
+    var body: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .fill(app.1 == .white ? Color.white : app.1)
+            .frame(width: 64, height: 64)
+            .overlay(Image(systemName: app.2)
+                .font(.system(size: 28))
+                .foregroundStyle(app.1 == .white ? Color.black : .white))
+            .shadow(color: .black.opacity(0.25), radius: 4, y: 2)
+    }
+}
+
+// MARK: - Spotlight v2 (réf S1 : fond flouté, 8 suggestions Siri, champ + clavier système au focus)
+struct SpotlightV2View: View {
+    let suggestions: [(String, Color, String)] = [
+        ("WhatsApp", Color(red: 0.14, green: 0.83, blue: 0.4), "phone.fill"),
+        ("ChatGPT", .black, "circle.hexagongrid.fill"),
+        ("Photos", .white, "photo.on.rectangle.angled"), ("Mail", .blue, "envelope.fill"),
+        ("Ma Banque", .white, "building.columns.fill"), ("Notes", .yellow, "note.text"),
+        ("Plans", .green, "map.fill"), ("Météo", .cyan, "cloud.sun.fill")
+    ]
+    var body: some View {
+        ZStack {
+            Color.clear.overlay(Image("FondEcran").resizable().scaledToFill()).clipped()
+                .ignoresSafeArea()
+                .overlay(.thinMaterial)
+            VStack(spacing: 18) {
+                Text("Suggestions de Siri")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 24).padding(.top, 60)
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 18) {
+                    ForEach(suggestions, id: \.0) { app in
+                        VStack(spacing: 5) {
+                            IconeAccueilV2(app)
+                            Text(app.0).font(.system(size: 11)).lineLimit(1)
+                        }
+                    }
+                }
+                .padding(.horizontal, 22)
+                Spacer()
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                    Text("Recherche").font(.system(size: 17)).foregroundStyle(.secondary)
+                    Spacer()
+                    Image(systemName: "mic.fill").foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 14).padding(.vertical, 11)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
+                .padding(.horizontal, 14)
+                .padding(.bottom, 16)
+            }
+        }
+    }
+}
+
+// MARK: - Multitâche v2 (réf S1 : cartes réduites, nom+icône au-dessus, étiquette Handoff dessous)
+struct MultitacheV2View: View {
+    var body: some View {
+        ZStack {
+            Color.clear.overlay(Image("FondEcran").resizable().scaledToFill()).clipped()
+                .ignoresSafeArea()
+                .overlay(.ultraThinMaterial)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 22) {
+                    CarteMultitache(nom: "WhatsApp", teinte: Color(red: 0.14, green: 0.83, blue: 0.4), symbole: "phone.fill", handoff: nil) {
+                        AnyView(Rectangle().fill(Color(red: 0.04, green: 0.09, blue: 0.09)))
+                    }
+                    CarteMultitache(nom: "Safari", teinte: .white, symbole: "safari.fill", handoff: "De « iPad de Sarah »") {
+                        AnyView(Rectangle().fill(.white))
+                    }
+                    CarteMultitache(nom: "Ma Banque", teinte: .white, symbole: "building.columns.fill", handoff: nil) {
+                        AnyView(Rectangle().fill(Color(red: 0.95, green: 0.96, blue: 0.98)))
+                    }
+                }
+                .padding(.horizontal, 40)
+                .padding(.top, 120)
+            }
+        }
+    }
+}
+
+struct CarteMultitache<Contenu: View>: View {
+    let nom: String; let teinte: Color; let symbole: String; let handoff: String?
+    @ViewBuilder let contenu: () -> Contenu
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(teinte == .white ? Color.white : teinte)
+                    .frame(width: 30, height: 30)
+                    .overlay(Image(systemName: symbole).font(.system(size: 14)).foregroundStyle(teinte == .white ? Color.black : .white))
+                Text(nom).font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+            }
+            contenu()
+                .frame(width: 250, height: 540)
+                .clipShape(RoundedRectangle(cornerRadius: 32))
+            if let h = handoff {
+                HStack(spacing: 5) {
+                    Image(systemName: "ipad").font(.system(size: 11))
+                    Text(h).font(.system(size: 12, weight: .medium))
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 10).padding(.vertical, 5)
+                .background(.ultraThinMaterial, in: Capsule())
+                .frame(maxWidth: .infinity, alignment: .center)
+            }
+        }
     }
 }

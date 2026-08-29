@@ -208,3 +208,6 @@ instagram.dmconv
 coque2.verrouillage
 coque2.verrouillage.depliee
 coque2.bibliotheque
+coque2.accueil
+coque2.spotlight
+coque2.multitache

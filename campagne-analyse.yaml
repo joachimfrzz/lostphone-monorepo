@@ -1,7 +1,7 @@
 # Campagne d analyse D78/D79 — registre d avancement (1 ligne par app)
 # statuts : a_faire -> capturee -> fiche -> diffee -> corrigee -> validee_device | (n/a = pas d app construite a diffee)
 format_version: 1
-coque: {statut: capturee_partiel, note: "7 ecrans session 1 + crawl ; refonte D76 -> session S1"}
+coque: {statut: fiche, note: "S1 close : 226 etats video + 66 XML, fiche v1 ; refonte D80 a lancer"}
 sessions_planifiees:
   S1: [coque]
   S2: [Reglages]
@@ -16,18 +16,18 @@ sessions_planifiees:
   S11: [LinkedIn, Tinder, ChatGPT, Spotify, YouTube]
   S12: [Uber, UberEats, PayPal, AppStore, FaceTime_a_trancher]
 cercle1:
-  Reglages: {statut: capturee_partiel, note: "53 ecrans crawler + 16 session 1b ; completer en S2"}
-  Telephone: {statut: a_faire}
-  Messages: {statut: a_faire}
-  Contacts: {statut: a_faire}
-  Mail: {statut: a_faire}
-  Safari: {statut: a_faire}
-  Photos: {statut: a_faire}
-  Calendrier: {statut: a_faire}
-  Notes: {statut: a_faire}
-  Rappels: {statut: a_faire}
-  Horloge: {statut: capturee, note: "racine+onglets+editeur 29/08"}
-  Calculatrice: {statut: capturee_partiel, note: "racine+historique+menu modes 29/08"}
+  Reglages: {statut: fiche, note: "S2 close : 85 pages, fiche v2"}
+  Telephone: {statut: fiche, note: "S3"}
+  Messages: {statut: fiche, note: "S3"}
+  Contacts: {statut: fiche, note: "S3"}
+  Mail: {statut: fiche, note: "S4"}
+  Safari: {statut: fiche, note: "S4"}
+  Photos: {statut: fiche, note: "S5"}
+  Calendrier: {statut: fiche, note: "S5"}
+  Notes: {statut: fiche, note: "S5"}
+  Rappels: {statut: fiche, note: "S5"}
+  Horloge: {statut: fiche, note: "S6 complements"}
+  Calculatrice: {statut: fiche, note: "S6 (Notes mathematiques)"}
   Localiser: {statut: a_faire}
   Plans: {statut: a_faire}
   WhatsApp: {statut: a_faire, note: "S9, non-lus geres par Joachim"}
@@ -41,8 +41,8 @@ cercle2:
   X: {statut: a_faire, note: "compte B"}
   LinkedIn: {statut: a_faire}
   Sante: {statut: a_faire, note: "structure seule (aucune donnee reelle)"}
-  Meteo: {statut: capturee_partiel, note: "racine+liste crawler 29/08"}
-  Dictaphone: {statut: a_faire}
+  Meteo: {statut: fiche, note: "S6 complet"}
+  Dictaphone: {statut: fiche, note: "S6"}
   Fichiers: {statut: a_faire}
   Wallet: {statut: a_faire}
   Tinder: {statut: a_faire, note: "presence de l app a confirmer"}

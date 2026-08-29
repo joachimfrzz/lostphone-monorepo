@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T21:05:00+02:00",
+  "date_derniere_maj": "2026-08-29T21:30:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,15 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~21h05)",
-  "dernier_evenement": "6 SESSIONS CLÔTURÉES (S1-S6). Cumul : 3229 états vidéo + 833 XML + 6 fiches. Restent S7-S12 + reliquat CC (en dernier, décision Joachim). Refonte D80 prête à démarrer (coque d abord).",
+  "date": "2026-08-29 (~21h30, clôture du jour)",
+  "dernier_evenement": "FIN DU JOUR 1 DE CAMPAGNE — bilan : passation V3 + outillage reconstruit le matin ; méthode D78 forgée en 4 itérations ; 6 SESSIONS DE CAPTURE CLÔTURÉES (S1 coque, S2 Réglages 85 pages, S3 Tél/Contacts/Messages, S4 Safari/Mail, S5 Photos/Calendrier/Notes/Rappels, S6 Météo/Dictaphone/compléments) = 3229 états vidéo + 833 XML + 6 fiches + cartographie narrative lancée ; décisions D74-D80 (vision élargie, protocoles, refonte entière).",
   "en_attente": [
-   "S7 (Plans/Localiser) au choix de Joachim",
-   "Agent : refonte coque D80"
+   "DEMAIN (Joachim) : sessions S7-S12 (S7 Plans/Localiser -> S8 Fichiers/Wallet/Santé -> S9 WhatsApp -> S10 sociales comptes B -> S11 -> S12) + reliquat CC en dernier. Rituel : Demarrer-LostPhone.cmd -> URL -> GO Sx -> naviguer -> « fini » -> lien SwissTransfer.",
+   "Agent (ce soir/entre les sessions) : refonte coque D80 contre fiches S1 (verrouillage+piles, bibliothèque, Spotlight, multitâche), puis Réglages.",
+   "RAPPEL : re-signature WDA (fix-input) avant le 2026-09-04."
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 21h05. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 21h30 — à demain pour S7+."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",

@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T13:20:00+02:00",
+  "date_derniere_maj": "2026-08-29T13:35:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~13h20)",
-  "dernier_evenement": "SESSION 1B RÉGLAGES TERMINÉE ET VÉRIFIÉE (16 écrans, archive + fiche poussées au repo). Leçons de pilotage intégrées au protocole (vérification de navigation systématique, labels exacts, pose post-swipe).",
+  "date": "2026-08-29 (~13h35)",
+  "dernier_evenement": "D77 ACTÉE. Session sans surveillance LANCÉE sur GO (Joachim déjeune) : crawler exhaustif sur la file zéro-risque (Réglages d abord). STOP = débrancher le câble.",
   "en_attente": [
-   "Agent : diff P5 ReglagesApp contre la fiche (correctifs -> run miroir) ; checklist 1c Coque v2 à soumettre à Joachim",
-   "Joachim : tunnel encore actif ? -> on peut enchaîner la session 1c Coque (avec 2e tunnel 9100 pour le flux animations) ou s arrêter là"
+   "Agent : dérouler la file zéro-risque + rapport de couverture au retour de Joachim",
+   "Plus tard sous surveillance : sociales (comptes B), Messages/WhatsApp/Téléphone, Mail, Wallet, Santé, Localiser, Safari"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 13h20 — session 1b livrée. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 13h35 — crawler en cours. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2015,6 +2015,12 @@
    "date": "2026-08-28",
    "contenu": "DÉCISION UTILISATEUR (21h38) : « niveau UI/UX de base de l iPhone en lui-même, je veux qu on le refasse (accueil, notifs, control center, etc.) ». La coque actuelle (construite en août avant le régime SideTap, jugée dans le 9,8 global) est RECONSTRUITE contre l iPhone réel de Joachim (D72 : fidélité maximale = SON téléphone). PÉRIMÈTRE : verrouillage (déverrouillage par Joachim, le code ne transite jamais), accueil (toutes pages, dock, widgets, bibliothèque + catégories, Spotlight), centre de contrôle (replié + groupes dépliés — RÈGLE STRICTE : jamais de tap sur un toggle, appui long de dépliage uniquement ; un tap Wi-Fi = réglage durable interdit charte), centre de notifications (piles, notification dépliée), multitâche. INTERDIT : mode jiggle (risque de déplacer les icônes). ANIMATIONS : enregistrement du flux MJPEG du viewer SideTap (~34 fps) PENDANT les gestes scriptés (ouvertures, retour accueil, swipes) = vidéos de transitions sans effort utilisateur ; fallback D67 (enregistrements 60 fps de Joachim) pour le reste. LIVRABLE : dossier de référence coque (carte + mesures + timings) -> reconstruction LPProto (verrouillage, accueil, notifs, CC, multitâche, transitions) -> boucle miroir -> jugement TestFlight. ORDRE : session 1c juste après Réglages (1b), le plan D75 se décale d un cran.",
    "note": "Amende l hypothèse « coque déjà capturée, on ne la refait pas » du plan D75 : les 7 écrans de la session 1 restent des références valides mais insuffisantes (statiques, un seul état)."
+  },
+  "D77": {
+   "titre": "Doctrine de capture définitive : crawler exhaustif SideTap + garde-fous à deux niveaux",
+   "date": "2026-08-29",
+   "contenu": "DÉCISION UTILISATEUR (13h22-13h33, construite en dialogue). OBJECTIF PRIME : qualité maximale, le plus de détails possible — le temps de l agent est secondaire, celui de Joachim aussi (« même si j en ai, c est pas grave »). OUTIL PRINCIPAL : CRAWLER EXHAUSTIF piloté par l arbre UI (tools/crawler_sidetap.py) — l arbre XML de chaque écran fournit la liste COMPLÈTE de ses lignes ; BFS borné (profondeur 3), chaque élément VISITÉ ou ÉCARTÉ AVEC RAISON, frontière persistée (reprise), couverture VÉRIFIABLE en fin de session (fini le « je crois que j ai tout vu »). Répond au constat Instagram : construire depuis vidéo = deviner le rôle des boutons ; le crawler presse le bouton, voit l effet, connaît le libellé exact -> clones fidèles ET cliquables. GARDE-FOUS À DEUX NIVEAUX (recalibrage Joachim « liberté maximale ») : NOYAU DUR partout = jamais paiement/achat (Apple Pay, stores, commandes), jamais envoi social (message/post/like/story visibles — libre sur les comptes B), jamais PARTAGER/AirDrop (précision Joachim 13h33 : la feuille de partage des apps anodines peut envoyer à de vraies personnes), jamais destruction irréversible des données de Joachim (supprimer/réinitialiser/effacer/déconnexion Apple), jamais ce qui coupe la liaison (toggles Wi-Fi/données/avion/VPN), pas de saisie dans un champ d envoi vers un vrai contact (indicateur en train d écrire). TOUT LE RESTE LIBRE : menus, flux complets, composition sans envoi, champs de recherche, toggle réversible remis en place (journalisé). MODES COMPLÉMENTAIRES : vidéo 60 fps de Joachim (D67) pour animations/transitions ; ses doigts pour les zones sensibles ; scripté ciblé pour les reprises (--ligne). SESSIONS SANS SURVEILLANCE : autorisées UNIQUEMENT sur les apps zéro risque (liste actée 13h33 : Réglages, Horloge, Calculatrice, Météo, Plans, Calendrier, Notes/Rappels/Dictaphone/Fichiers en lecture, App Store parcours, SNCF parcours) ; les sociales et tout ce qui touche comptes/messageries = au dernier moment, sous surveillance de Joachim. Amende partiellement la charte D71 (qui reste le cadre par défaut hors crawler).",
+   "remplace": "L option « vidéo d abord » (proposée puis écartée le même jour) : Joachim a corrigé la fonction objectif — exhaustivité > vitesse. Sa crainte fondatrice : « j ai l impression que tu loupes des trucs » -> la couverture par énumération d arbre rend le « rien de loupé » vérifiable."
   }
  },
  "point_de_reprise_migration": {

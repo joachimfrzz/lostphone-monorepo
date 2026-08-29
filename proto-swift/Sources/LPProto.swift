@@ -58,6 +58,7 @@ struct EcranCapture: View {
         case "x": ecransX()
         case "coque2": CoqueV2Capture(cle: cle)
         case "reglages2": ReglagesV2Capture(cle: cle)
+        case "divers2": DiversV2Capture(cle: cle)
         case "chatgpt": ChatGPTVue()
         case "spotify": SpotifyVue()
         case "youtube": ecransYt()

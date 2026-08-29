@@ -214,3 +214,8 @@ coque2.multitache
 reglages2.racine
 reglages2.luminosite
 reglages2.batterie
+divers2.msg.suppressions
+divers2.msg.indesirables
+divers2.contacts.listes
+divers2.mail.envoi
+divers2.dicta.suppressions

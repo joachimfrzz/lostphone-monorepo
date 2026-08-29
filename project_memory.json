@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T14:15:00+02:00",
+  "date_derniere_maj": "2026-08-29T16:30:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~14h15)",
-  "dernier_evenement": "Session crawler déjeuner : 35 écrans engrangés (Réglages 32 + Horloge 3), 2 correctifs de sécurité majeurs codés et validés (garde anti-dérive, blacklist Enregistrer), TUNNEL MORT en cours de route (530, PC injoignable). Archive poussée au repo. Frontière persistée.",
+  "date": "2026-08-29 (~16h30)",
+  "dernier_evenement": "D78 ACTÉE : méthode définitive = Joachim navigue physiquement + enregistrement écran 60fps, agent en écoute passive XML/JPEG (ecoute_passive.py écrit). Crawler rétrogradé en outil résiduel. Prêt pour le premier essai réel.",
   "en_attente": [
-   "Joachim (au retour) : vérifier le PC (coupure Kernel-Power probable) puis relancer le rituel + nouvelle URL tunnel",
-   "Agent : reprendre le crawl Réglages (frontière 291) puis la file zéro-risque"
+   "Joachim : lancer l enregistrement d écran natif puis dire « je commence » et naviguer (Réglages ou coque, checklist D75) pendant que l agent écoute",
+   "Agent : fusion vidéo+XML, fiche, vérification d exhaustivité, liste passe 2"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 14h15 — moisson sécurisée. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 16h30 — D78 gravée. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2021,6 +2021,12 @@
    "date": "2026-08-29",
    "contenu": "DÉCISION UTILISATEUR (13h22-13h33, construite en dialogue). OBJECTIF PRIME : qualité maximale, le plus de détails possible — le temps de l agent est secondaire, celui de Joachim aussi (« même si j en ai, c est pas grave »). OUTIL PRINCIPAL : CRAWLER EXHAUSTIF piloté par l arbre UI (tools/crawler_sidetap.py) — l arbre XML de chaque écran fournit la liste COMPLÈTE de ses lignes ; BFS borné (profondeur 3), chaque élément VISITÉ ou ÉCARTÉ AVEC RAISON, frontière persistée (reprise), couverture VÉRIFIABLE en fin de session (fini le « je crois que j ai tout vu »). Répond au constat Instagram : construire depuis vidéo = deviner le rôle des boutons ; le crawler presse le bouton, voit l effet, connaît le libellé exact -> clones fidèles ET cliquables. GARDE-FOUS À DEUX NIVEAUX (recalibrage Joachim « liberté maximale ») : NOYAU DUR partout = jamais paiement/achat (Apple Pay, stores, commandes), jamais envoi social (message/post/like/story visibles — libre sur les comptes B), jamais PARTAGER/AirDrop (précision Joachim 13h33 : la feuille de partage des apps anodines peut envoyer à de vraies personnes), jamais destruction irréversible des données de Joachim (supprimer/réinitialiser/effacer/déconnexion Apple), jamais ce qui coupe la liaison (toggles Wi-Fi/données/avion/VPN), pas de saisie dans un champ d envoi vers un vrai contact (indicateur en train d écrire). TOUT LE RESTE LIBRE : menus, flux complets, composition sans envoi, champs de recherche, toggle réversible remis en place (journalisé). MODES COMPLÉMENTAIRES : vidéo 60 fps de Joachim (D67) pour animations/transitions ; ses doigts pour les zones sensibles ; scripté ciblé pour les reprises (--ligne). SESSIONS SANS SURVEILLANCE : autorisées UNIQUEMENT sur les apps zéro risque (liste actée 13h33 : Réglages, Horloge, Calculatrice, Météo, Plans, Calendrier, Notes/Rappels/Dictaphone/Fichiers en lecture, App Store parcours, SNCF parcours) ; les sociales et tout ce qui touche comptes/messageries = au dernier moment, sous surveillance de Joachim. Amende partiellement la charte D71 (qui reste le cadre par défaut hors crawler).",
    "remplace": "L option « vidéo d abord » (proposée puis écartée le même jour) : Joachim a corrigé la fonction objectif — exhaustivité > vitesse. Sa crainte fondatrice : « j ai l impression que tu loupes des trucs » -> la couverture par énumération d arbre rend le « rien de loupé » vérifiable."
+  },
+  "D78": {
+   "titre": "Méthode de capture DÉFINITIVE : « toi aux doigts, moi à l écoute » (enregistreur passif)",
+   "date": "2026-08-29",
+   "contenu": "DÉCISION UTILISATEUR (16h19-16h23) après constat partagé : le crawler agent-piloté (D77) navigue mal (mouvements répétés, menus, feuilles orphelines) — REMPLACÉ comme mode principal. FAIT TECHNIQUE CLEF : WDA lit l écran (XML + capture) même quand JOACHIM touche physiquement le téléphone — le contrôle par l agent n a jamais été nécessaire pour obtenir la structure. MÉTHODE : (1) Joachim navigue PHYSIQUEMENT en suivant la checklist fermée D75 et DÉMONTRE les comportements des boutons ; il lance en parallèle l enregistrement d écran natif 60 fps (couche pixels + animations) ; (2) l agent fait tourner l ENREGISTREUR PASSIF (tools/ecoute_passive.py) : lecture de l arbre XML ~1x/s + JPEG à chaque changement d écran, AUCUNE commande envoyée — zéro geste agent, zéro risque ; (3) RÈGLE DE RYTHME (clarifiée 16h23) : ~1 s de pause UNIQUEMENT sur une page jamais vue ; gestes/toggles/scrolls/messages = vitesse naturelle (la vidéo couvre, le XML d un seul état suffit pour un interrupteur) ; (4) APRÈS : fusion vidéo+XML -> fiche de référence ; VÉRIFICATION D EXHAUSTIVITÉ HORS-LIGNE (énumération des lignes de chaque XML vs écrans capturés -> liste des manquants) -> mini-passe 2 ciblée. La garantie du crawler sans le crawler. (5) Pilotage agent = résiduel : tenir un état, re-capturer en son absence (crawler/drivers conservés dans tools/). Les moissons crawler déjà faites (Réglages 53 écrans etc.) restent des références valides.",
+   "statut": "ACTÉE (« Moi ça me va ») — premier essai réel à faire sur Réglages ou la coque."
   }
  },
  "point_de_reprise_migration": {

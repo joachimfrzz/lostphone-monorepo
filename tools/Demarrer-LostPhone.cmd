@@ -5,10 +5,10 @@ echo  LOST PHONE - Rituel de demarrage
 echo  Prerequis : iPhone branche USB, deverrouille,
 echo  app WebDriverAgent ouverte une fois.
 echo ============================================
-set PYTHONUTF8=1
+set "PYTHONUTF8=1"
 
 echo [1/2] Demarrage du harness SideTap...
-start "SideTap harness" cmd /k "set PYTHONUTF8=1 && %LOCALAPPDATA%\SideTap\app\phone-harness.cmd up"
+start "SideTap harness" cmd /k ""%LOCALAPPDATA%\SideTap\app\phone-harness.cmd" up"
 
 echo    Attente 25 s que le harness soit pret...
 timeout /t 25 /nobreak >nul

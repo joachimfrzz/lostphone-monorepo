@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T17:10:00+02:00",
+  "date_derniere_maj": "2026-08-29T17:20:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~17h10)",
-  "dernier_evenement": "S1 coque livrée : fiche v1 + planches au repo. Méthode D78 validée en réel (la vidéo a tout sauvé malgré le tunnel mort). Passe 2 XML (~3 min) définie. Prochaines : passe 2 S1 + S2 Réglages.",
+  "date": "2026-08-29 (~17h20)",
+  "dernier_evenement": "S1 COQUE COMPLÈTE (vidéo 226 états + XML 66 états). Fiche v1 au repo. Prochaine : S2 Réglages (compléments) puis diff P5 coque D76.",
   "en_attente": [
-   "Joachim : relancer Demarrer-LostPhone.cmd -> nouvelle URL + passe 2 S1 (10 poses de 2 s, liste dans la fiche)",
-   "Agent : diff P5 coque (chantier D76) à partir de la fiche ; cartographie-narrative.md à initialiser"
+   "Session suivante au choix de Joachim (S2 Réglages ou pause)",
+   "Agent : diff P5 coque D76 + cartographie-narrative.md"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 17h10. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 17h20. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2204,6 +2204,7 @@
   "bilan": "S1 COQUE RÉUSSIE côté vidéo : 4min40 @60fps -> 560 frames -> 226 états distincts. Couverture checklist 9/9 (verrouillage riche : piles/dépliage/compteur 32 notifications ; ~8 pages d accueil ; bibliothèque + recherche alphabétique ; Spotlight ; CC ; centre notifs ; multitâche avec étiquettes Handoff « De l iPad de Joachim » ; animations). COUCHE XML ABSENTE : le tunnel était mort au GO (530) -> passe 2 de ~3 min listée dans la fiche. Vidéo : SwissTransfer ea31d300-5bfc-4cf8-b847-a37bb97ed326 (30 j) + frames locales s1-ecrans/.",
   "fiche": "references/s1-coque-2026-08-29/FICHE-COQUE-V1.md (+ planches contact en tar.b64, sha 7b2669fefb54a0fd)",
   "or_narratif": "Compteur de notifications du verrouillage ; badges extrêmes (Mail 53775) ; étiquette Handoff = existence d un autre appareil hors-champ ; suggestions Siri = habitudes ; widget météo géolocalisé ; pile Photos = casting passif. Versé à la cartographie D79.",
-  "confidentialite": "Contenus perso visibles dans le switcher/ChatGPT/Telegram = mesure uniquement."
+  "confidentialite": "Contenus perso visibles dans le switcher/ChatGPT/Telegram = mesure uniquement.",
+  "passe2": "FAITE 2026-08-29 17h01-17h16 : 66 états XML+JPG capturés (verrouillage, accueil, bibliothèque, Spotlight, + Messages en bonus) sur 3 passages. LEÇON PLATEFORME : un message de Joachim pendant l écoute interrompt l outil MAIS les fichiers déjà écrits persistent (écriture incrémentale) — aucune perte. Règle pratique : pendant une écoute, ne rien écrire dans le fil avant la fin. Archive : references/s1-coque-2026-08-29/s1p2.b64.part* "
  }
 }

@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T19:35:00+02:00",
+  "date_derniere_maj": "2026-08-29T21:05:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~19h35)",
-  "dernier_evenement": "D80 ACTÉE : refonte entière écran par écran contre les références D78 (infra+données+composants médias conservés, clause de sûreté). 5 sessions livrées, 7 restantes. L agent peut démarrer la refonte coque+Réglages.",
+  "date": "2026-08-29 (~21h05)",
+  "dernier_evenement": "6 SESSIONS CLÔTURÉES (S1-S6). Cumul : 3229 états vidéo + 833 XML + 6 fiches. Restent S7-S12 + reliquat CC (en dernier, décision Joachim). Refonte D80 prête à démarrer (coque d abord).",
   "en_attente": [
-   "Agent : démarrer la refonte (coque D76 d abord) contre les fiches S1/S2",
-   "Joachim : prochaines sessions S6-S12 quand il veut ; reliquat CC 15 s"
+   "S7 (Plans/Localiser) au choix de Joachim",
+   "Agent : refonte coque D80"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 19h35. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 21h05. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2235,5 +2235,10 @@
   "date": "2026-08-29 18h56-19h13 (méthode D78)",
   "bilan": "S5 CLÔTURÉE : vidéo 17min28 -> 902 états + 200 XML. Photos (phototèque/Collections/recherche/Personnes/albums/types/plein écran/ÉDITEUR AJUSTER), Calendrier (mois/jour/recherche/CRÉATION EKEventEditView), Notes (listes/éditeur), Rappels (listes/Courses/saisie rapide). Vidéo SwissTransfer e0224105 (30 j). Fiche v1 au repo.",
   "or_narratif": "Éditeur photo = la retouche comme acte narratif ; Personnes = visages nommés/non nommés ; champs de création d événement ; saisie rapide = pensée brute."
+ },
+ "session_S6": {
+  "date": "2026-08-29 20h07-20h21 (méthode D78)",
+  "bilan": "S6 CLÔTURÉE : vidéo 13min35 -> 539 états + 163 XML. Météo à fond, Dictaphone (avec Suppressions récentes), compléments Horloge (minuteur en marche) et Calculatrice (Notes mathématiques iOS 26). Vidéo SwissTransfer fbba2ebd (30 j). Note : les ERR context-canceled de cloudflared = timeouts bénins de mon polling sur les gros arbres (Météo) — consigné pour ne plus inquiéter.",
+  "or_narratif": "3e corbeille récupérable du système (Dictaphone) — motif transversal de l or effacé ; titres de mémos ; minuteur en marche."
  }
 }

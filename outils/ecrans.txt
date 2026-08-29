@@ -225,3 +225,6 @@ reglages2.general
 reglages2.infos
 reglages2.notifications
 reglages2.sons
+tcm2.messagerie
+tcm2.msg.liste
+tcm2.msg.conv

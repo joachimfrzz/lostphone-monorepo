@@ -2104,7 +2104,8 @@
    "contexte": "Fil de passation V3 (nouveau compte). Fichier lu depuis le repo GitHub (plus de pièce jointe nécessaire).",
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
-  }
+  },
+  "derniere_action": "Rapport S2 consigné. Suite : câblage tcm2 (TcmV2.swift + case LPProto + 3 clés ecrans.txt) puis build S3."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2250,7 +2251,7 @@
  },
  "refonte_reglages_v2": {
   "date": "2026-08-29 soir (D80, lot 1)",
-  "statut": "LOT 1 CONSTRUIT ET VÉRIFIÉ : ReglagesV2.swift (racine ordre exact iOS 26.6 avec Batterie/VPN dans le groupe connectivité + En veille/Bouton Action/Recherche, Luminosité avec LIQUID GLASS, Batterie avec Utilisation par app + Limite 100% + État de santé 91%). Build vert 6a9344f9 après 2 échecs de compil instructifs. Racine vérifiée à l image : quasi conforme au réel (pilule Recherche flottante incluse). Écart : avatar photo Sarah (asset p04 = Ressources, pas catalogue — reprendre le branchement ChargeurPhoto de l ancienne ReglagesApp au lot 2).",
+  "statut": "TERMINÉ — 7/7 écrans compilés (build 6a935fadbcb942c285e942ca run #12 VERT) et vérifiés à l'image le 2026-08-30 ~01h",
   "lecons_compil": [
    "Section(\"TITRE\") { } peut mal résoudre la surcharge -> TOUJOURS Section(header: Text(...)) ; avec footer -> init explicite Section(header:footer:content:).",
    "Assets images : catalogue (FondEcran, AvatarMarc) vs Ressources/ (pellicule pXX via ChargeurPhoto) — Image(\"p04\") ne marche PAS pour la pellicule.",
@@ -2269,5 +2270,15 @@
    "Emojis : tofu simulateur (verdict sur device)"
   ],
   "quota": "~10 builds miroir aujourd hui (~250 min/500 gratuites). Les 5 builds de session restants tiennent si pas trop de correctifs."
+ },
+ "rapport_S2": {
+  "date": "2026-08-30 ~01h00",
+  "livre": "Réglages v2 7/7 écrans (racine, luminosité, batterie, général, informations, notifications, sons). Build vert run #12, captures vérifiées visuellement : racine (ordre iOS 26.6 exact, avatar repli initiales SL fonctionnel, VPN Déconnecté, Recherche), Notifications (Nombre/Liste avec coche, Prioriser/Résumer/Annoncer iOS 26), Informations (iPhone de Sarah, iOS 26.6.1, iPhone 16, MYED3F/A, KX7P2Q0RD4, 127 morceaux / 58 vidéos / 1243 photos / 31 apps, 128 Go / 41,7 Go).",
+  "ecarts_assumes": [
+   "Avatar : initiales SL en repli car p04 (pellicule Ressources/) non résolu par UIImage(named:) dans ce build — à retenter au chantier assets (mécanisme de repli conforme iOS)",
+   "Icônes de rangées Réglages : SF Symbols approximatifs (même chantier icônes que S1)",
+   "Vignettes Nombre/Liste : simplifiées (rectangles gris) vs miniatures d'écran réelles"
+  ],
+  "problemes_build": "2 échecs de compilation en amont (Section overload, header+footer) corrigés avant ce rapport — méthode consignée dans etat_technique.lecons_swiftui"
  }
 }

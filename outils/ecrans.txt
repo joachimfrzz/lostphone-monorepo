@@ -211,3 +211,6 @@ coque2.bibliotheque
 coque2.accueil
 coque2.spotlight
 coque2.multitache
+reglages2.racine
+reglages2.luminosite
+reglages2.batterie

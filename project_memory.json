@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T17:58:00+02:00",
+  "date_derniere_maj": "2026-08-29T18:10:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~17h58)",
-  "dernier_evenement": "S2 Réglages : couche XML complète (278 états, 65 pages). En attente du lien vidéo SwissTransfer pour clôturer (fiche + exhaustivité).",
+  "date": "2026-08-29 (~18h10)",
+  "dernier_evenement": "S2 RÉGLAGES CLÔTURÉE (85 pages, fiche v2, 1 seule pose en reliquat). Jour 1 de campagne : S1 coque + S2 Réglages complètes. Prochaines : S3 (Téléphone/Contacts/Messages) ou diff P5 coque+Réglages.",
   "en_attente": [
-   "Joachim : lien SwissTransfer de la vidéo S2",
-   "Agent : clôture S2 (fiche Réglages v2, fusion avec la fiche 1b et les moissons crawler) puis diff P5"
+   "Prochaine session au choix de Joachim (S3) ou travail agent seul (diff P5, cartographie-narrative.md)",
+   "Reliquat passe 2 : Partage de connexion (1 pose) + blocs CC dépliés (S1)"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 17h58. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 18h10. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2211,6 +2211,7 @@
   "date": "2026-08-29 17h34-17h52 (méthode D78, reprise de zéro sur demande)",
   "bilan": "278 états XML+JPG, 65 pages distinctes (racine, Compte Apple profond : Infos perso/Connexion et sécurité/Abonnements/iCloud+/Paiement/Historique d achats, Batterie+Utilisation par app, Stockage, Temps d écran, Bluetooth, Wi-Fi, Cartes et Apple Pay, Face ID, Accessibilité, Général, fiches iPhone/iPad...). Vidéo 60fps côté Joachim (lien attendu). Anciennes moissons partielles 17h20-17h32 (60 états) conservées en local.",
   "lecon": "Le code 7777 est tombé dans le CREUX entre deux tranches d écoute -> à corriger : vérifier le flag/code au DÉMARRAGE de chaque tranche aussi, et raccourcir le creux (relance immédiate).",
-  "archive": "references/s2-reglages-2026-08-29/s2.b64.part* (XML seuls — les pixels sont dans la vidéo)"
+  "archive": "references/s2-reglages-2026-08-29/s2.b64.part* (XML seuls — les pixels sont dans la vidéo)",
+  "cloture": "CLÔTURÉE 2026-08-29 18h10 : vidéo 18 min -> 843 états ; exhaustivité vérifiée par recoupement 3 sources = 85 pages couvertes ; il ne manque QUE Partage de connexion (passe 2 : 1 pose). Fiche v2 au repo (references/s2-reglages-2026-08-29/FICHE-REGLAGES-V2.md). Vidéo : SwissTransfer 2b68a5a8 (30 j)."
  }
 }

@@ -219,3 +219,5 @@ divers2.msg.indesirables
 divers2.contacts.listes
 divers2.mail.envoi
 divers2.dicta.suppressions
+coque2.controle
+coque2.notifs

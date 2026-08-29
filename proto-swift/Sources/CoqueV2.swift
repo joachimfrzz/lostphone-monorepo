@@ -17,6 +17,8 @@ struct CoqueV2Capture: View {
         case "coque2.accueil": AccueilV2View()
         case "coque2.spotlight": SpotlightV2View()
         case "coque2.multitache": MultitacheV2View()
+        case "coque2.controle": CentreControleV2View()
+        case "coque2.notifs": CentreNotifsV2View()
         default: VerrouillageV2View(depliee: false)
         }
     }
@@ -446,5 +448,219 @@ struct CarteMultitache<Contenu: View>: View {
                 .frame(maxWidth: .infinity, alignment: .center)
             }
         }
+    }
+}
+
+// ============================================================
+// LOT 3 — Centre de contrôle v2 + Centre de notifications v2 (réf e001 S1)
+// ============================================================
+
+// MARK: - Centre de contrôle v2
+struct CentreControleV2View: View {
+    var body: some View {
+        ZStack {
+            Color.clear.overlay(Image("FondEcran").resizable().scaledToFill()).clipped()
+                .ignoresSafeArea()
+                .overlay(.ultraThinMaterial)
+            VStack(spacing: 14) {
+                // barre haute : + à gauche, power à droite, app d'origine au centre
+                HStack {
+                    Image(systemName: "plus").font(.system(size: 22, weight: .medium)).foregroundStyle(.white)
+                    Spacer()
+                    Image(systemName: "power").font(.system(size: 20, weight: .medium)).foregroundStyle(.white)
+                }
+                .padding(.horizontal, 24).padding(.top, 14)
+                HStack(spacing: 6) {
+                    Image(systemName: "location.circle.fill").font(.system(size: 20)).foregroundStyle(.blue)
+                    Text("Météo").font(.system(size: 17, weight: .medium)).foregroundStyle(.white)
+                    Image(systemName: "chevron.forward").font(.system(size: 13, weight: .semibold)).foregroundStyle(.white.opacity(0.6))
+                }
+                HStack(spacing: 8) {
+                    Image(systemName: "cellularbars").font(.system(size: 15)).foregroundStyle(.white)
+                    Text("Free Appels Wi-Fi").font(.system(size: 16, weight: .medium)).foregroundStyle(.white)
+                    Image(systemName: "wifi").font(.system(size: 15)).foregroundStyle(.white)
+                    Spacer()
+                    Image(systemName: "alarm.fill").font(.system(size: 13)).foregroundStyle(.white)
+                    Text("100 %").font(.system(size: 16, weight: .medium)).foregroundStyle(.white)
+                    Image(systemName: "battery.100.bolt").font(.system(size: 17)).foregroundStyle(.green)
+                }
+                .padding(.horizontal, 26)
+
+                // rangée 1 : bloc connectivité + bloc média
+                HStack(spacing: 14) {
+                    VStack(spacing: 14) {
+                        HStack(spacing: 18) {
+                            RondCC(symbole: "airplane", actif: false)
+                            RondCC(symbole: "wave.3.right.circle", actif: false)
+                        }
+                        HStack(spacing: 10) {
+                            Circle().fill(.blue).frame(width: 56, height: 56)
+                                .overlay(Image(systemName: "wifi").font(.system(size: 24)).foregroundStyle(.white))
+                            VStack(spacing: 8) {
+                                HStack(spacing: 8) {
+                                    Circle().fill(.green).frame(width: 26, height: 26)
+                                        .overlay(Image(systemName: "cellularbars").font(.system(size: 12)).foregroundStyle(.white))
+                                    Circle().fill(.blue).frame(width: 26, height: 26)
+                                        .overlay(Image(systemName: "personalhotspot").font(.system(size: 11)).foregroundStyle(.white))
+                                }
+                                HStack(spacing: 8) {
+                                    Circle().fill(.red).frame(width: 26, height: 26)
+                                        .overlay(Image(systemName: "link.circle").font(.system(size: 12)).foregroundStyle(.white))
+                                    Circle().fill(.red).frame(width: 26, height: 26)
+                                        .overlay(Image(systemName: "globe").font(.system(size: 12)).foregroundStyle(.white))
+                                }
+                            }
+                        }
+                    }
+                    .padding(16)
+                    .frame(maxWidth: .infinity, minHeight: 170)
+                    .background(.white.opacity(0.16), in: RoundedRectangle(cornerRadius: 34))
+
+                    VStack(spacing: 10) {
+                        HStack {
+                            RoundedRectangle(cornerRadius: 10).fill(.white.opacity(0.2)).frame(width: 54, height: 54)
+                            Spacer()
+                            Image(systemName: "airplay.audio").font(.system(size: 20)).foregroundStyle(.white)
+                        }
+                        Text("À l'arrêt").font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        HStack(spacing: 26) {
+                            Image(systemName: "backward.fill")
+                            Image(systemName: "play.fill").font(.system(size: 26))
+                            Image(systemName: "forward.fill")
+                        }
+                        .font(.system(size: 18)).foregroundStyle(.white)
+                    }
+                    .padding(16)
+                    .frame(maxWidth: .infinity, minHeight: 170)
+                    .background(.white.opacity(0.16), in: RoundedRectangle(cornerRadius: 34))
+                }
+                .padding(.horizontal, 20)
+
+                // rangée 2 : verrou rotation + silence + curseurs
+                HStack(spacing: 14) {
+                    VStack(spacing: 14) {
+                        HStack(spacing: 14) {
+                            Circle().fill(.white.opacity(0.85)).frame(width: 62, height: 62)
+                                .overlay(Image(systemName: "lock.rotation").font(.system(size: 24)).foregroundStyle(.red))
+                            Circle().fill(.white.opacity(0.85)).frame(width: 62, height: 62)
+                                .overlay(Image(systemName: "bell.slash.fill").font(.system(size: 24)).foregroundStyle(.red))
+                        }
+                        HStack(spacing: 8) {
+                            Circle().fill(.white.opacity(0.25)).frame(width: 30, height: 30)
+                                .overlay(Image(systemName: "person.fill").font(.system(size: 13)).foregroundStyle(.white))
+                            Text("Concen-\ntration").font(.system(size: 14, weight: .medium)).foregroundStyle(.white).lineLimit(2)
+                            Image(systemName: "chevron.up.chevron.down").font(.system(size: 11)).foregroundStyle(.white.opacity(0.7))
+                        }
+                        .padding(.horizontal, 14).padding(.vertical, 10)
+                        .background(.white.opacity(0.16), in: Capsule())
+                    }
+                    CurseurCC(symbole: "sun.max.fill", niveau: 0.28)
+                    CurseurCC(symbole: "speaker.wave.2.fill", niveau: 0.22)
+                }
+                .padding(.horizontal, 20)
+
+                // rangée 3 : Maison + torch/minuteur/calculatrice/caméra
+                HStack(spacing: 14) {
+                    VStack(spacing: 8) {
+                        Image(systemName: "house").font(.system(size: 34)).foregroundStyle(.white)
+                        Text("Aucun domicile\nconfiguré").font(.system(size: 15, weight: .medium))
+                            .foregroundStyle(.white).multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 150)
+                    .background(.white.opacity(0.16), in: RoundedRectangle(cornerRadius: 34))
+                    VStack(spacing: 14) {
+                        HStack(spacing: 14) {
+                            RondCC(symbole: "flashlight.off.fill", actif: false)
+                            RondCC(symbole: "timer", actif: false)
+                        }
+                        HStack(spacing: 14) {
+                            RondCC(symbole: "plus.slash.minus", actif: false)
+                            RondCC(symbole: "camera.fill", actif: false)
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+
+                // rangée 4 : enregistrement (actif) / recopie / batterie / QR, puis musique / shazam
+                HStack(spacing: 14) {
+                    Circle().fill(.white.opacity(0.85)).frame(width: 62, height: 62)
+                        .overlay(Image(systemName: "record.circle").font(.system(size: 26)).foregroundStyle(.red))
+                    RondCC(symbole: "rectangle.on.rectangle", actif: false)
+                    RondCC(symbole: "battery.25", actif: false)
+                    RondCC(symbole: "qrcode.viewfinder", actif: false)
+                }
+                HStack(spacing: 14) {
+                    RondCC(symbole: "music.note", actif: false)
+                    RondCC(symbole: "shazam.logo", actif: false)
+                    Spacer().frame(width: 62)
+                    Spacer().frame(width: 62)
+                }
+                Spacer()
+            }
+        }
+        .statusBarHidden()
+    }
+}
+
+struct RondCC: View {
+    let symbole: String; let actif: Bool
+    var body: some View {
+        Circle().fill(actif ? Color.blue : Color.white.opacity(0.16))
+            .frame(width: 62, height: 62)
+            .overlay(Image(systemName: symbole).font(.system(size: 24)).foregroundStyle(.white))
+    }
+}
+
+struct CurseurCC: View {
+    let symbole: String; let niveau: Double
+    var body: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .bottom) {
+                RoundedRectangle(cornerRadius: 40).fill(.white.opacity(0.16))
+                RoundedRectangle(cornerRadius: 0).fill(.white.opacity(0.92))
+                    .frame(height: geo.size.height * niveau)
+                Image(systemName: symbole)
+                    .font(.system(size: 20))
+                    .foregroundStyle(symbole.contains("sun") ? .yellow : .cyan)
+                    .padding(.bottom, 20)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 40))
+        }
+        .frame(width: 82, height: 240)
+    }
+}
+
+// MARK: - Centre de notifications v2 (réf S1 : liste sur fond flouté, piles par app)
+struct CentreNotifsV2View: View {
+    var body: some View {
+        ZStack {
+            Color.clear.overlay(Image("FondEcran").resizable().scaledToFill()).clipped()
+                .ignoresSafeArea()
+                .overlay(Color.black.opacity(0.35))
+            VStack(spacing: 10) {
+                Text("19:47")
+                    .font(.system(size: 60, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                    .padding(.top, 60)
+                Spacer()
+                NotifV2(app: "WhatsApp", symbole: "message.fill", teinte: Color(red: 0.14, green: 0.83, blue: 0.4),
+                        titre: "Marc ❤️", corps: "Tu me manques déjà… tu as pu passer à la banque ?", quand: "il y a 2 h")
+                ZStack {
+                    NotifV2(app: "", symbole: "", teinte: .clear, titre: "", corps: "", quand: "", squelette: true)
+                        .scaleEffect(0.95).offset(y: 10).opacity(0.7)
+                    NotifV2(app: "WhatsApp", symbole: "message.fill", teinte: Color(red: 0.14, green: 0.83, blue: 0.4),
+                            titre: "Chloé", corps: "Rappelle-moi AVANT d'y aller. Promets-le moi.", quand: "il y a 4 h")
+                }
+                NotifV2(app: "Mail", symbole: "envelope.fill", teinte: .blue,
+                        titre: "LCL — Votre rendez-vous", corps: "Confirmation de votre rendez-vous du lundi 17 août à 11 h 30, agence Lyon Bellecour.", quand: "hier")
+                Text("3 notifications plus anciennes")
+                    .font(.system(size: 14, weight: .semibold)).foregroundStyle(.white.opacity(0.9))
+                    .padding(.vertical, 8).padding(.horizontal, 16)
+                    .background(.white.opacity(0.18), in: Capsule())
+                    .padding(.bottom, 100)
+            }
+        }
+        .statusBarHidden()
     }
 }

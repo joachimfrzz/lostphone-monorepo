@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T16:30:00+02:00",
+  "date_derniere_maj": "2026-08-29T16:45:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1594,14 +1594,14 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~16h30)",
-  "dernier_evenement": "D78 ACTÉE : méthode définitive = Joachim navigue physiquement + enregistrement écran 60fps, agent en écoute passive XML/JPEG (ecoute_passive.py écrit). Crawler rétrogradé en outil résiduel. Prêt pour le premier essai réel.",
+  "date": "2026-08-29 (~16h45)",
+  "dernier_evenement": "D79 ACTÉE : campagne 12 sessions + rituel + registre campagne-analyse.yaml + carnet de session parallèle + doctrine tout-filmer-épurer-après + cartographie narrative. Prêt à démarrer S1 (coque) sur GO.",
   "en_attente": [
-   "Joachim : lancer l enregistrement d écran natif puis dire « je commence » et naviguer (Réglages ou coque, checklist D75) pendant que l agent écoute",
-   "Agent : fusion vidéo+XML, fiche, vérification d exhaustivité, liste passe 2"
+   "Joachim : ouvrir le fil Carnet (coller tools/prompt-carnet.txt) — optionnel ; puis « GO S1 » avec enregistrement écran lancé",
+   "Agent : checklist S1 coque à publier au GO"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 16h30 — D78 gravée. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 16h45. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2027,6 +2027,11 @@
    "date": "2026-08-29",
    "contenu": "DÉCISION UTILISATEUR (16h19-16h23) après constat partagé : le crawler agent-piloté (D77) navigue mal (mouvements répétés, menus, feuilles orphelines) — REMPLACÉ comme mode principal. FAIT TECHNIQUE CLEF : WDA lit l écran (XML + capture) même quand JOACHIM touche physiquement le téléphone — le contrôle par l agent n a jamais été nécessaire pour obtenir la structure. MÉTHODE : (1) Joachim navigue PHYSIQUEMENT en suivant la checklist fermée D75 et DÉMONTRE les comportements des boutons ; il lance en parallèle l enregistrement d écran natif 60 fps (couche pixels + animations) ; (2) l agent fait tourner l ENREGISTREUR PASSIF (tools/ecoute_passive.py) : lecture de l arbre XML ~1x/s + JPEG à chaque changement d écran, AUCUNE commande envoyée — zéro geste agent, zéro risque ; (3) RÈGLE DE RYTHME (clarifiée 16h23) : ~1 s de pause UNIQUEMENT sur une page jamais vue ; gestes/toggles/scrolls/messages = vitesse naturelle (la vidéo couvre, le XML d un seul état suffit pour un interrupteur) ; (4) APRÈS : fusion vidéo+XML -> fiche de référence ; VÉRIFICATION D EXHAUSTIVITÉ HORS-LIGNE (énumération des lignes de chaque XML vs écrans capturés -> liste des manquants) -> mini-passe 2 ciblée. La garantie du crawler sans le crawler. (5) Pilotage agent = résiduel : tenir un état, re-capturer en son absence (crawler/drivers conservés dans tools/). Les moissons crawler déjà faites (Réglages 53 écrans etc.) restent des références valides.",
    "statut": "ACTÉE (« Moi ça me va ») — premier essai réel à faire sur Réglages ou la coque."
+  },
+  "D79": {
+   "titre": "Plan de campagne d analyse : 12 sessions, rituel carre, registre, carnet parallele, tout-filmer, cartographie narrative",
+   "date": "2026-08-29",
+   "contenu": "DÉCISION UTILISATEUR (16h36, « GO plan » implicite avec 3 compléments). (1) CAMPAGNE : 12 sessions planifiées couvrant coque + cercles 1-2 (S1 coque D76, S2 Réglages, S3 Téléphone/Contacts/Messages, S4 Safari/Mail, S5 Photos/Calendrier/Notes/Rappels, S6 Météo/Dictaphone/compléments, S7 Plans/Localiser, S8 Fichiers/Wallet/Santé, S9 WhatsApp, S10 sociales comptes B, S11 LinkedIn/Tinder/ChatGPT/Spotify/YouTube, S12 Uber/UberEats/PayPal/AppStore+FaceTime à trancher) ; cercle 3 (~34) à la demande d une histoire (D48). RITUEL PAR SESSION : AVANT = checklist fermée publiée et validée ; DÉBUT = tunnel + enregistrement écran + « GO <app> » -> écoute passive ; PENDANT = 1 s pages neuves, naturel ailleurs ; FIN = SwissTransfer ; CLÔTURE = fusion -> fiche -> vérification exhaustivité -> passe 2 -> push -> diff P5 -> correctifs -> miroir -> registre coché. (2) REGISTRE : campagne-analyse.yaml à la racine du repo, statuts a_faire->capturee->fiche->diffee->corrigee->validee_device. (3) CARNET DE SESSION (demande Joachim) : second fil Hyperagent amorcé par tools/prompt-carnet.txt — canal parallèle pendant les sessions, digest rapporté au fil principal (pas d agent délégué disponible sur ce compte). (4) TOUT FILMER, ÉPURER APRÈS (demande Joachim) : capture exhaustive sans jugement d utilité ; à la construction, liste « candidats à l épure » proposée par l agent, CHAQUE retrait = arbitrage explicite de Joachim, très peu de retraits attendus ; une fonction inutile mais designante peut rester. (5) CARTOGRAPHIE NARRATIVE (demande Joachim) : chaque fiche comporte une section « Possibilités narratives repérées » + consolidation dans cartographie-narrative.md — le vivier où les histoires piocheront (esprit D74 appliqué au vrai téléphone)."
   }
  },
  "point_de_reprise_migration": {

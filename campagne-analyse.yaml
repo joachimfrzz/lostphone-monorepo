@@ -1,0 +1,55 @@
+# Campagne d analyse D78/D79 — registre d avancement (1 ligne par app)
+# statuts : a_faire -> capturee -> fiche -> diffee -> corrigee -> validee_device | (n/a = pas d app construite a diffee)
+format_version: 1
+coque: {statut: capturee_partiel, note: "7 ecrans session 1 + crawl ; refonte D76 -> session S1"}
+sessions_planifiees:
+  S1: [coque]
+  S2: [Reglages]
+  S3: [Telephone, Contacts, Messages]
+  S4: [Safari, Mail]
+  S5: [Photos, Calendrier, Notes, Rappels]
+  S6: [Meteo, Dictaphone, Horloge_complement, Calculatrice_complement]
+  S7: [Plans, Localiser]
+  S8: [Fichiers, Wallet, Sante]
+  S9: [WhatsApp]
+  S10: [Instagram, Messenger, Snapchat, Facebook, X]   # comptes B
+  S11: [LinkedIn, Tinder, ChatGPT, Spotify, YouTube]
+  S12: [Uber, UberEats, PayPal, AppStore, FaceTime_a_trancher]
+cercle1:
+  Reglages: {statut: capturee_partiel, note: "53 ecrans crawler + 16 session 1b ; completer en S2"}
+  Telephone: {statut: a_faire}
+  Messages: {statut: a_faire}
+  Contacts: {statut: a_faire}
+  Mail: {statut: a_faire}
+  Safari: {statut: a_faire}
+  Photos: {statut: a_faire}
+  Calendrier: {statut: a_faire}
+  Notes: {statut: a_faire}
+  Rappels: {statut: a_faire}
+  Horloge: {statut: capturee, note: "racine+onglets+editeur 29/08"}
+  Calculatrice: {statut: capturee_partiel, note: "racine+historique+menu modes 29/08"}
+  Localiser: {statut: a_faire}
+  Plans: {statut: a_faire}
+  WhatsApp: {statut: a_faire, note: "S9, non-lus geres par Joachim"}
+  MaBanque: {statut: n_a, note: "fictive, jamais via telephone (zone interdite)"}
+cercle2:
+  Messenger: {statut: a_faire, note: "compte B"}
+  FaceTime: {statut: a_trancher, note: "D48 l avait ecartee vs feuille de route/D71 — re-arbitrage requis"}
+  Instagram: {statut: a_faire, note: "compte B"}
+  Snapchat: {statut: a_faire, note: "compte B"}
+  Facebook: {statut: a_faire, note: "compte B"}
+  X: {statut: a_faire, note: "compte B"}
+  LinkedIn: {statut: a_faire}
+  Sante: {statut: a_faire, note: "structure seule (aucune donnee reelle)"}
+  Meteo: {statut: capturee_partiel, note: "racine+liste crawler 29/08"}
+  Dictaphone: {statut: a_faire}
+  Fichiers: {statut: a_faire}
+  Wallet: {statut: a_faire}
+  Tinder: {statut: a_faire, note: "presence de l app a confirmer"}
+  ChatGPT: {statut: a_faire}
+  Spotify: {statut: a_faire}
+  YouTube: {statut: a_faire}
+  Uber: {statut: a_faire}
+  UberEats: {statut: a_faire}
+  PayPal: {statut: a_faire}
+cercle3_a_la_demande: [Telegram, Signal, Discord, Gemini, Grok, Hinge, Bumble, Netflix, PrimeVideo, DisneyPlus, TikTok, AppleMusic, GoogleDrive, Dropbox, iCloud, Gmail, Bolt, Heetch, SNCFConnect, Waze, Airbnb, Booking, Flighty, Deliveroo, Coinbase, Revolut, Wise, Amazon, Vinted, Leboncoin, AliExpress, Shazam, Strava, Maison, AppStore]

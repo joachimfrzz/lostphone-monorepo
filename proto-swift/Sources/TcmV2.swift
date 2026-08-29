@@ -53,7 +53,7 @@ struct MessagerieV2Vue: View {
         }
         .navigationTitle("Messagerie")
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) { Text("Modifier").foregroundStyle(.blue) }
+            ToolbarItem(placement: .topBarLeading) { Text("Modifier").foregroundStyle(.blue).fixedSize() }
             ToolbarItem(placement: .topBarTrailing) { Text("Annonce").foregroundStyle(.blue) }
         }
         .preferredColorScheme(.dark)
@@ -95,7 +95,7 @@ struct MessagesListeV2Vue: View {
         }
         .navigationTitle("Messages")
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) { Text("Modifier").foregroundStyle(.blue) }
+            ToolbarItem(placement: .topBarLeading) { Text("Modifier").foregroundStyle(.blue).fixedSize() }
             ToolbarItem(placement: .topBarTrailing) { Image(systemName: "square.and.pencil").foregroundStyle(.blue) }
         }
         .preferredColorScheme(.dark)
@@ -108,10 +108,10 @@ struct MessagesConvV2Vue: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(spacing: 8) {
-                    Text("iMessage  Chiffré")
-                        .font(.system(size: 12)).foregroundStyle(.secondary)
-                        .padding(.top, 14)
                     Text("ven. 14 août à 19:02")
+                        .font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
+                        .padding(.top, 14)
+                    Text("iMessage  Chiffré")
                         .font(.system(size: 12)).foregroundStyle(.secondary)
                     BulleMsgV2(texte: "Coucou ma chérie, tu viens toujours dimanche ?", envoye: false)
                     BulleMsgV2(texte: "Oui maman, promis 🙂", envoye: true)
@@ -154,7 +154,7 @@ struct BulleMsgV2: View {
                 .font(.system(size: 16.5))
                 .foregroundStyle(.white)
                 .padding(.horizontal, 14).padding(.vertical, 8)
-                .background(envoye ? Color.green : Color(white: 0.22), in: RoundedRectangle(cornerRadius: 18))
+                .background(envoye ? Color.blue : Color(white: 0.22), in: RoundedRectangle(cornerRadius: 18))
             if !envoye { Spacer(minLength: 60) }
         }
         .padding(.horizontal, 14)

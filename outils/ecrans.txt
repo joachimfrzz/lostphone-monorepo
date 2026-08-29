@@ -228,3 +228,10 @@ reglages2.sons
 tcm2.messagerie
 tcm2.msg.liste
 tcm2.msg.conv
+sm2.safari.demarrage
+sm2.safari.onglets
+sm2.safari.privee
+sm2.mail.boites
+sm2.mail.reception
+sm2.mail.lecture
+sm2.mail.redaction

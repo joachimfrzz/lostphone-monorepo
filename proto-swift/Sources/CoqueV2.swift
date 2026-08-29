@@ -277,7 +277,7 @@ struct AccueilV2View: View {
                     .clipShape(RoundedRectangle(cornerRadius: 24))
 
                     Color.clear.overlay(
-                        Image("p15").resizable().scaledToFill()
+                        Image("FondEcran").resizable().scaledToFill()
                     )
                     .frame(width: 160, height: 160)
                     .clipShape(RoundedRectangle(cornerRadius: 24))

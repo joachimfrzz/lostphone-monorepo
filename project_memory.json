@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-29T22:05:00+02:00",
+  "date_derniere_maj": "2026-08-29T22:40:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1595,14 +1595,14 @@
  },
  "etat_conversation": {
   "date": "2026-08-29 (~21h30, clôture du jour)",
-  "dernier_evenement": "Soir J1 : travail autonome livré — cartographie-narrative.md + SPEC-COQUE-V2 + registre à jour + REFONTE COQUE LOT 1 (VerrouillageV2/BibliothequeV2) compilée et vérifiée au miroir du premier coup. Demain : sessions S7+ (Joachim) et lot 2 coque (agent).",
+  "dernier_evenement": "Soir J1 étendu : REFONTE COQUE LOTS 1+2 LIVRÉS ET VÉRIFIÉS (6 écrans, 2 builds verts du 1er coup). Prêt pour jugement TestFlight quand Joachim voudra (sur son GO). Demain : sessions S7+ et lot 3.",
   "en_attente": [
    "DEMAIN (Joachim) : sessions S7-S12 (S7 Plans/Localiser -> S8 Fichiers/Wallet/Santé -> S9 WhatsApp -> S10 sociales comptes B -> S11 -> S12) + reliquat CC en dernier. Rituel : Demarrer-LostPhone.cmd -> URL -> GO Sx -> naviguer -> « fini » -> lien SwissTransfer.",
    "Agent (ce soir/entre les sessions) : refonte coque D80 contre fiches S1 (verrouillage+piles, bibliothèque, Spotlight, multitâche), puis Réglages.",
    "RAPPEL : re-signature WDA (fix-input) avant le 2026-09-04."
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-29 22h05. Re-signature WDA due le 2026-09-04."
+  "derniere_maj": "2026-08-29 22h40. Re-signature WDA due le 2026-09-04."
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2244,7 +2244,7 @@
  },
  "refonte_coque_v2": {
   "date": "2026-08-29 soir (D80, lot 1 autonome)",
-  "statut": "LOT 1 CONSTRUIT ET VÉRIFIÉ AU MIROIR : CoqueV2.swift (VerrouillageV2 replié/déplié + BibliothequeV2), famille coque2 branchée au registre (210 clés), COMPILE DU PREMIER COUP (run miroir 6a9334d7, 23 min, build #4 compte 2). Rendu verrouillage vérifié à l image : date au-dessus horloge SF Rounded 96, notification Marc + compteur « 3 notifications », lampe/caméra, indicateur. Écarts connus à affiner au jugement : effet de pile replié discret, emoji tofu (artefact simulateur).",
+  "statut": "LOTS 1+2 CONSTRUITS ET VÉRIFIÉS AU MIROIR (2 builds verts du premier coup : 6a9334d7 et 6a933c17). 6 écrans coque2 : verrouillage replié/déplié, bibliothèque, ACCUEIL (widgets Météo+Photos, grille, pilule, dock), SPOTLIGHT (suggestions Siri), MULTITÂCHE (cartes + étiquette Handoff « iPad de Sarah » = or narratif D79). Écart corrigé : widget Photos vide (asset p15 hors catalogue -> FondEcran, commit à suivre). Restent lot 3 : centre de contrôle (après reliquat), animations mesurées vidéo, vraies icônes d apps (chantier assets connu).",
   "spec": "references/s1-coque-2026-08-29/SPEC-COQUE-V2.md (mesures XML exactes). Restent (lot 2) : accueil v2, Spotlight, multitâche, centre de contrôle (après reliquat), animations mesurées sur vidéo S1.",
   "commit": "3997590a"
  }

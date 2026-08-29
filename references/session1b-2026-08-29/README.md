@@ -1,0 +1,1 @@
+Session 1b Reglages 2026-08-29 — 16 ecrans PNG 1206x2622 + XML. Decodage : cat session1b.tar.b64.part* | base64 -d > session1b.tar && tar xf session1b.tar. sha256 tar : 236738422eced158... Journal : voir project_memory.session_1b_reglages.

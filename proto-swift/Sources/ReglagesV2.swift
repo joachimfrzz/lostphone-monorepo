@@ -118,7 +118,7 @@ struct LuminositeV2Vue: View {
     @State private var luminosite = 0.62
     var body: some View {
         List {
-            Section("APPARENCE") {
+            Section(header: Text("APPARENCE")) {
                 HStack(spacing: 30) {
                     Spacer()
                     ApparenceChoix(nom: "Claire", sombre: false, choisie: false)
@@ -141,7 +141,7 @@ struct LuminositeV2Vue: View {
                 HStack { Text("Taille du texte"); Spacer(); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5)) }
                 Toggle("Texte en gras", isOn: .constant(false))
             }
-            Section("LUMINOSITÉ") {
+            Section(header: Text("LUMINOSITÉ")) {
                 HStack(spacing: 10) {
                     Image(systemName: "sun.min.fill").foregroundStyle(.secondary)
                     Slider(value: $luminosite)
@@ -200,7 +200,7 @@ struct BatterieV2Vue: View {
                 HStack { Text("Limite de 100 %"); Spacer(); Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5)) }
                 HStack { Text("Mode économie d'énergie"); Spacer(); Toggle("", isOn: .constant(false)).labelsHidden() }
             }
-            Section("DERNIÈRES 24 HEURES") {
+            Section(header: Text("DERNIÈRES 24 HEURES")) {
                 // graphique en barres simple (24 barres)
                 HStack(alignment: .bottom, spacing: 3) {
                     ForEach(0..<24, id: \.self) { h in
@@ -212,7 +212,7 @@ struct BatterieV2Vue: View {
                 .frame(height: 80)
                 .padding(.vertical, 6)
             }
-            Section("UTILISATION DE LA BATTERIE PAR APP") {
+            Section(header: Text("UTILISATION DE LA BATTERIE PAR APP")) {
                 ForEach(usages, id: \.0) { u in
                     HStack(spacing: 12) {
                         RoundedRectangle(cornerRadius: 7).fill(Color(white: 0.25))

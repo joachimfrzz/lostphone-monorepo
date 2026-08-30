@@ -91,6 +91,10 @@ struct MessagesListeV2Vue: View {
                     }
                 }
                 .padding(.vertical, 2)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if c.0 == "Maman" { NavV2.partage.pousser("tcm2.msg.conv") }
+                }
             }
         }
         .navigationTitle("Messages")

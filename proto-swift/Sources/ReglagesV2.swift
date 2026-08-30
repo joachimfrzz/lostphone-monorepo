@@ -97,6 +97,13 @@ struct LigneRV2: View {
     var valeur: String? = nil
     var toggle: Bool = false
     @State private var actif = false
+    static let routes: [String: String] = [
+        "Batterie": "reglages2.batterie",
+        "Général": "reglages2.general",
+        "Luminosité et affichage": "reglages2.luminosite",
+        "Notifications": "reglages2.notifications",
+        "Sons et vibrations": "reglages2.sons"
+    ]
     var body: some View {
         HStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 7)
@@ -116,6 +123,10 @@ struct LigneRV2: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(.secondary.opacity(0.5))
             }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            if let cle = LigneRV2.routes[nom] { NavV2.partage.pousser(cle) }
         }
     }
 }
@@ -302,6 +313,10 @@ struct LigneSimpleRV2: View {
             Spacer()
             if let v = valeur { Text(v).font(.system(size: 17)).foregroundStyle(.secondary) }
             Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5))
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            if nom == "Informations" { NavV2.partage.pousser("reglages2.infos") }
         }
     }
 }

@@ -74,6 +74,8 @@ struct PhotothequeV2Vue: View {
                         ZStack(alignment: .bottomLeading) {
                             TuilePhotoV2(nom: "p" + String(format: "%02d", (i % 15) + 1), teinte: teintes[i % teintes.count])
                                 .frame(height: 128)
+                                .contentShape(Rectangle())
+                                .onTapGesture { NavV2.partage.pousser("pcnr2.photos.detail") }
                             if i == 9 {
                                 HStack(spacing: 3) {
                                     Image(systemName: "video.fill").font(.system(size: 10))
@@ -99,6 +101,8 @@ struct PhotothequeV2Vue: View {
                     Text("Collections").font(.system(size: 10))
                 }
                 .foregroundStyle(.secondary)
+                .contentShape(Rectangle())
+                .onTapGesture { NavV2.partage.pousser("pcnr2.photos.collections") }
                 Spacer()
                 VStack(spacing: 3) {
                     Image(systemName: "magnifyingglass").font(.system(size: 20))
@@ -171,6 +175,8 @@ struct CollectionsPhotosV2Vue: View {
                     Text("Photothèque").font(.system(size: 10))
                 }
                 .foregroundStyle(.secondary)
+                .contentShape(Rectangle())
+                .onTapGesture { NavV2.partage.retour() }
                 Spacer()
                 VStack(spacing: 3) {
                     Image(systemName: "square.stack").font(.system(size: 20))
@@ -287,6 +293,10 @@ struct CalMoisV2Vue: View {
                                         .frame(width: 34, height: 34).background(Color.red, in: Circle())
                                 } else {
                                     Text(String(j)).font(.system(size: 17)).frame(width: 34, height: 34)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            if [17, 20, 27].contains(j) { NavV2.partage.pousser("pcnr2.cal.jour") }
+                                        }
                                 }
                                 Circle().fill([17, 20, 27].contains(j) ? Color.secondary : Color.clear).frame(width: 5, height: 5)
                             }
@@ -429,6 +439,10 @@ struct LigneDossierNotesV2: View {
             Text(compte).font(.system(size: 16)).foregroundStyle(.secondary)
             Image(systemName: "chevron.forward").font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5))
         }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            if nom != "Suppressions récentes" { NavV2.partage.pousser("pcnr2.notes.liste") }
+        }
     }
 }
 
@@ -561,6 +575,10 @@ struct LigneListeRappelsV2: View {
             Image(systemName: "chevron.forward").font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5))
         }
         .padding(.horizontal, 14).padding(.vertical, 10)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            if nom == "Courses" { NavV2.partage.pousser("pcnr2.rappels.liste") }
+        }
     }
 }
 

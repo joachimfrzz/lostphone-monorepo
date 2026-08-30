@@ -121,6 +121,8 @@ struct MeteoAccueilV2Vue: View {
                     }
                     Spacer()
                     Image(systemName: "list.bullet").font(.system(size: 19))
+                        .contentShape(Rectangle())
+                        .onTapGesture { NavV2.partage.pousser("mhdc2.meteo.lieux") }
                 }
                 .foregroundStyle(.white)
                 .padding(.horizontal, 24).padding(.vertical, 10)
@@ -154,6 +156,8 @@ struct MeteoLieuxV2Vue: View {
             ScrollView {
                 VStack(spacing: 10) {
                     CarteLieuMeteoV2(titre: "Ma position", sousTitre: "Domicile · Lyon", temp: "27°", cond: "Ensoleillé", minmax: "↑ 30°  ↓ 15°")
+                        .contentShape(Rectangle())
+                        .onTapGesture { NavV2.partage.retour() }
                     CarteLieuMeteoV2(titre: "Mâcon", sousTitre: "20:08", temp: "26°", cond: "Ensoleillé", minmax: "↑ 28°  ↓ 14°")
                     CarteLieuMeteoV2(titre: "Annecy", sousTitre: "20:08", temp: "24°", cond: "Ciel plutôt dégagé", minmax: "↑ 27°  ↓ 13°")
                     Text("En savoir plus sur les données météo et les données de plans")
@@ -254,8 +258,12 @@ struct HorlogeAlarmesV2Vue: View {
                 VStack(spacing: 3) { Image(systemName: "alarm.fill").font(.system(size: 20)); Text("Alarmes").font(.system(size: 10)) }.foregroundStyle(.orange)
                 Spacer()
                 VStack(spacing: 3) { Image(systemName: "stopwatch.fill").font(.system(size: 20)); Text("Chronomètre").font(.system(size: 10)) }.foregroundStyle(.secondary)
+                    .contentShape(Rectangle())
+                    .onTapGesture { NavV2.partage.remplacer("mhdc2.horloge.chrono") }
                 Spacer()
                 VStack(spacing: 3) { Image(systemName: "timer").font(.system(size: 20)); Text("Minuteurs").font(.system(size: 10)) }.foregroundStyle(.secondary)
+                    .contentShape(Rectangle())
+                    .onTapGesture { NavV2.partage.remplacer("mhdc2.horloge.minuteurs") }
             }
             .padding(.horizontal, 28).padding(.top, 8).padding(.bottom, 4)
         }
@@ -311,8 +319,12 @@ struct HorlogeMinuteursV2Vue: View {
                 VStack(spacing: 3) { Image(systemName: "globe").font(.system(size: 20)); Text("Horloges").font(.system(size: 10)) }.foregroundStyle(.secondary)
                 Spacer()
                 VStack(spacing: 3) { Image(systemName: "alarm.fill").font(.system(size: 20)); Text("Alarmes").font(.system(size: 10)) }.foregroundStyle(.secondary)
+                    .contentShape(Rectangle())
+                    .onTapGesture { NavV2.partage.remplacer("mhdc2.horloge.alarmes") }
                 Spacer()
                 VStack(spacing: 3) { Image(systemName: "stopwatch.fill").font(.system(size: 20)); Text("Chronomètre").font(.system(size: 10)) }.foregroundStyle(.secondary)
+                    .contentShape(Rectangle())
+                    .onTapGesture { NavV2.partage.remplacer("mhdc2.horloge.chrono") }
                 Spacer()
                 VStack(spacing: 3) { Image(systemName: "timer").font(.system(size: 20)); Text("Minuteurs").font(.system(size: 10)) }.foregroundStyle(.orange)
             }
@@ -350,10 +362,14 @@ struct HorlogeChronoV2Vue: View {
                 VStack(spacing: 3) { Image(systemName: "globe").font(.system(size: 20)); Text("Horloges").font(.system(size: 10)) }.foregroundStyle(.secondary)
                 Spacer()
                 VStack(spacing: 3) { Image(systemName: "alarm.fill").font(.system(size: 20)); Text("Alarmes").font(.system(size: 10)) }.foregroundStyle(.secondary)
+                    .contentShape(Rectangle())
+                    .onTapGesture { NavV2.partage.remplacer("mhdc2.horloge.alarmes") }
                 Spacer()
                 VStack(spacing: 3) { Image(systemName: "stopwatch.fill").font(.system(size: 20)); Text("Chronomètre").font(.system(size: 10)) }.foregroundStyle(.orange)
                 Spacer()
                 VStack(spacing: 3) { Image(systemName: "timer").font(.system(size: 20)); Text("Minuteurs").font(.system(size: 10)) }.foregroundStyle(.secondary)
+                    .contentShape(Rectangle())
+                    .onTapGesture { NavV2.partage.remplacer("mhdc2.horloge.minuteurs") }
             }
             .padding(.horizontal, 28).padding(.top, 8).padding(.bottom, 4)
         }
@@ -458,6 +474,8 @@ struct CalcElementaireV2Vue: View {
                 Image(systemName: "list.bullet").font(.system(size: 18)).foregroundStyle(.orange)
                 Spacer()
                 Image(systemName: "slider.horizontal.3").font(.system(size: 18)).foregroundStyle(.orange)
+                    .contentShape(Rectangle())
+                    .onTapGesture { NavV2.partage.pousser("mhdc2.calc.modes") }
             }
             .padding(.horizontal, 22).padding(.top, 10)
             Spacer()
@@ -521,6 +539,8 @@ struct CalcModesV2Vue: View {
                     Image(systemName: "checkmark").font(.system(size: 14, weight: .semibold))
                 }
                 .padding(.horizontal, 14).padding(.vertical, 11)
+                .contentShape(Rectangle())
+                .onTapGesture { NavV2.partage.retour() }
                 Divider()
                 HStack {
                     Text("Scientifique").font(.system(size: 16))

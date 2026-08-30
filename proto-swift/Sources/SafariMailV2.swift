@@ -242,6 +242,11 @@ struct LigneBoiteV2: View {
             if !compte.isEmpty { Text(compte).font(.system(size: 16)).foregroundStyle(.secondary) }
             Image(systemName: "chevron.forward").font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary.opacity(0.5))
         }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            if nom == "Réception" { NavV2.partage.pousser("sm2.mail.reception") }
+            if nom == "Boîte d'envoi" { NavV2.partage.pousser("divers2.mail.envoi") }
+        }
     }
 }
 
@@ -272,6 +277,10 @@ struct MailReceptionV2Vue: View {
                     }
                 }
                 .padding(.vertical, 2)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if m.0 == "Agence Bellecour" { NavV2.partage.pousser("sm2.mail.lecture") }
+                }
             }
         }
         .listStyle(.plain)
@@ -297,6 +306,7 @@ struct MailReceptionV2Vue: View {
                 }
                 Spacer()
                 Image(systemName: "square.and.pencil").font(.system(size: 20)).foregroundStyle(.blue)
+                    .onTapGesture { NavV2.partage.pousser("sm2.mail.redaction") }
             }
             .padding(.horizontal, 18).padding(.vertical, 6)
         }
@@ -383,7 +393,7 @@ struct MailRedactionV2Vue: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Annuler").font(.system(size: 17)).foregroundStyle(.blue)
+                Text("Annuler").font(.system(size: 17)).foregroundStyle(.blue).onTapGesture { NavV2.partage.retour() }
                 Spacer()
                 Text("Nouveau message").font(.system(size: 17, weight: .semibold))
                 Spacer()

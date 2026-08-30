@@ -2143,7 +2143,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Coque v3 VALIDÉE par Joachim (« c'est parfait », 18h02). Campagne D84 étape 2 : fiche de vérification Messages envoyée, attente de sa liste de retours. Quota Codemagic ~495/500 : le prochain build risque de refuser — nouveau compte à prévoir."
+  "derniere_action": "Étape 2 Messages : lot de 6 corrections du retour Joachim 18h13 poussé (nouvelles discussions dans la liste au 1er envoi, envoi à un numéro non répertorié, aperçu = dernier message + remontée en tête, balayage réel cloche/supprimer→Récemment supprimées, nouvelles discussions contact en iMessage bleu, tapback appui long). Build en cours si quota le permet."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2548,5 +2548,15 @@
     "icônes redessinées PROPRES : Facebook, X, Mail, Messenger (les découpes contaminées sont mortes)"
    ]
   }
+ },
+ "campagne_verification": {
+  "etape2_messages_retours": [
+   "1 nouvelle discussion absente de la liste — CORRIGÉ (enregistrement au 1er message)",
+   "2 envoi à un numéro non répertorié impossible — CORRIGÉ (ligne Envoyer à «num»)",
+   "3 aperçu de liste figé — CORRIGÉ (dernier envoi + tri activité, date 19:47)",
+   "4 balayage inopérant et ouvrait la conversation — CORRIGÉ (LigneConvBalayable, cloche+corbeille, suppression récupérable)",
+   "5 bulle verte pour nouvelle discussion contact — CORRIGÉ (iMessage bleu ; numéro brut reste SMS vert comme iOS)",
+   "6 appui long sans effet — CORRIGÉ (tapback ❤️👍👎😂‼️❓)"
+  ]
  }
 }

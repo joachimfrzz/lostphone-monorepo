@@ -159,15 +159,38 @@ enum DonneesMsg {
 final class EnvoisMsg: ObservableObject {
     static let partage = EnvoisMsg()
     @Published var parConv: [String: [String]] = [:]   // nom → textes envoyés par le joueur
+    @Published var nouvelles: [ConvMsg] = []           // conversations créées par le joueur (v2 étape 2)
+    @Published var ordreActivite: [String] = []        // noms, du plus récent au plus ancien
+
+    // Aperçu du dernier envoi (pour la liste des conversations)
+    func dernierApercu(_ nom: String) -> String? {
+        guard let t = parConv[nom]?.last else { return nil }
+        if t.hasPrefix("\u{1}img:") { return "Photo" }
+        if t.hasPrefix("\u{1}stk:") { return String(t.dropFirst(5)) }
+        return t
+    }
+    private func toucher(_ nom: String) {
+        ordreActivite.removeAll { $0 == nom }
+        ordreActivite.insert(nom, at: 0)
+    }
+    // Une conversation créée par le joueur n'apparaît dans la liste qu'au 1er message (comme iOS)
+    func enregistrer(_ conv: ConvMsg) {
+        guard !DonneesMsg.convs.contains(where: { $0.nom == conv.nom }),
+              !nouvelles.contains(where: { $0.nom == conv.nom }) else { return }
+        nouvelles.insert(conv, at: 0)
+    }
     func envoyer(_ texte: String, a nom: String) {
         parConv[nom, default: []].append(texte)
+        toucher(nom)
     }
     // Phase C (D62) : photos et autocollants réellement envoyables — marqueurs internes
     func envoyerImage(_ nomFichier: String, a nom: String) {
         parConv[nom, default: []].append("\u{1}img:" + nomFichier)
+        toucher(nom)
     }
     func envoyerAutocollant(_ emoji: String, a nom: String) {
         parConv[nom, default: []].append("\u{1}stk:" + emoji)
+        toucher(nom)
     }
 }
 
@@ -177,9 +200,25 @@ final class MagasinMsg: ObservableObject {
     @Published var recuperees: [ConvMsg] = []
     @Published var indesirables: [ConvMsg] = []
     @Published var signalees: Set<String> = []
+    @Published var masquees: Set<String> = []          // supprimées par balayage (v2 étape 2)
+    @Published var alertesMasquees: Set<String> = []   // cloche barrée (balayage)
+
+    // Balayage → Supprimer : la conversation part dans « Récemment supprimées » (récupérable)
+    func supprimerParBalayage(_ conv: ConvMsg) {
+        masquees.insert(conv.nom)
+        recuperees.removeAll { $0.nom == conv.nom }
+        let nb = conv.elements.count
+        supprimees.insert(ConvSupprimee(jours: "30 jours", nbMessages: "\(nb) message\(nb > 1 ? "s" : "")", conv: conv), at: 0)
+    }
+    func basculerAlertes(_ nom: String) {
+        if alertesMasquees.contains(nom) { alertesMasquees.remove(nom) }
+        else { alertesMasquees.insert(nom) }
+    }
 
     func toutRecuperer() {
-        recuperees.append(contentsOf: supprimees.map { $0.conv })
+        let noms = supprimees.map { $0.conv.nom }
+        masquees.subtract(noms)
+        recuperees.append(contentsOf: supprimees.map { $0.conv }.filter { c in !DonneesMsg.convs.contains(where: { $0.nom == c.nom }) })
         supprimees.removeAll()
     }
     func supprimer(_ ids: Set<String>) {
@@ -201,6 +240,7 @@ enum FiltreMsg: String {
 struct MessagesVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinMsg.partage
+    @ObservedObject private var envois = EnvoisMsg.partage
     @State private var filtre: FiltreMsg = .messages
     @State private var menuFiltres = false
     @State private var menuModifier = false
@@ -211,7 +251,32 @@ struct MessagesVue: View {
     @State private var filtrageVisible = false
 
     private var convs: [ConvMsg] {
-        let toutes = magasin.recuperees + DonneesMsg.convs.filter { !magasin.signalees.contains($0.nom) }
+        // v2 étape 2 : nouvelles conversations du joueur + récupérées + base,
+        // sans doublons, sans masquées/signalées, aperçu = dernier envoi,
+        // et remontée en tête des conversations actives.
+        var vues = Set<String>()
+        var toutes: [ConvMsg] = []
+        for c in envois.nouvelles + magasin.recuperees + DonneesMsg.convs {
+            guard !vues.contains(c.nom) else { continue }
+            vues.insert(c.nom)
+            guard !magasin.signalees.contains(c.nom), !magasin.masquees.contains(c.nom) else { continue }
+            if let a = envois.dernierApercu(c.nom) {
+                toutes.append(ConvMsg(nom: c.nom, numero: c.numero, service: c.service,
+                                      bleu: c.bleu, inconnu: c.inconnu,
+                                      apercu: a, date: "19:47", elements: c.elements))
+            } else {
+                toutes.append(c)
+            }
+        }
+        // tri STABLE : activité du joueur d'abord (ordre d'activité), puis ordre de base
+        let rang: [String: Int] = Dictionary(uniqueKeysWithValues: envois.ordreActivite.enumerated().map { ($1, $0) })
+        var indexees = Array(toutes.enumerated())
+        indexees.sort { a, b in
+            let ra = rang[a.element.nom] ?? Int.max
+            let rb = rang[b.element.nom] ?? Int.max
+            return ra == rb ? a.offset < b.offset : ra < rb
+        }
+        toutes = indexees.map { $0.element }
         guard !recherche.isEmpty else { return toutes }
         return toutes.filter {
             $0.nom.localizedCaseInsensitiveContains(recherche)
@@ -330,9 +395,7 @@ struct MessagesVue: View {
                                     }
                                 LigneConvMsg(conv: conv)
                             } else {
-                                NavigationLink { MsgConvVue(conv: conv) } label: {
-                                    LigneConvMsg(conv: conv)
-                                }.buttonStyle(.plain)
+                                LigneConvBalayable(conv: conv)
                             }
                         }
                         // Mini-lignes de séparation entre conversations (référence IMG_3486)
@@ -387,8 +450,90 @@ struct LigneMenuMsg: View {
     }
 }
 
+// v2 étape 2 — rangée avec actions de balayage réelles (cloche / supprimer),
+// sans conflit avec le défilement vertical ni l'ouverture de la conversation.
+struct LigneConvBalayable: View {
+    let conv: ConvMsg
+    @ObservedObject private var magasin = MagasinMsg.partage
+    @State private var decalage: CGFloat = 0
+    @State private var ouvert = false
+    @State private var navigation = false
+
+    private let largeurActions: CGFloat = 148
+
+    var body: some View {
+        ZStack(alignment: .trailing) {
+            // Actions révélées par le balayage
+            HStack(spacing: 0) {
+                Spacer()
+                boutonAction(symbole: magasin.alertesMasquees.contains(conv.nom) ? "bell.fill" : "bell.slash.fill",
+                             fond: Color(hex: 0x5856D6)) {
+                    Haptique.leger()
+                    magasin.basculerAlertes(conv.nom)
+                    fermer()
+                }
+                boutonAction(symbole: "trash.fill", fond: Color(hex: 0xFF3B30)) {
+                    Haptique.leger()
+                    withAnimation(.easeOut(duration: 0.22)) {
+                        magasin.supprimerParBalayage(conv)
+                    }
+                }
+            }
+
+            LigneConvMsg(conv: conv, cloche: magasin.alertesMasquees.contains(conv.nom))
+                .background(msgFond)
+                .offset(x: decalage)
+                .onTapGesture {
+                    if ouvert { fermer() }
+                    else { Haptique.leger(); navigation = true }
+                }
+        }
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 20)
+                .onChanged { v in
+                    // uniquement un geste franchement horizontal
+                    guard abs(v.translation.width) > abs(v.translation.height) else { return }
+                    let base: CGFloat = ouvert ? -largeurActions : 0
+                    decalage = min(0, max(-largeurActions - 30, base + v.translation.width))
+                }
+                .onEnded { v in
+                    guard abs(v.translation.width) > abs(v.translation.height) else {
+                        withAnimation(.spring(duration: 0.3)) { decalage = ouvert ? -largeurActions : 0 }
+                        return
+                    }
+                    if decalage < -largeurActions * 0.45 {
+                        withAnimation(.spring(duration: 0.3)) { decalage = -largeurActions }
+                        ouvert = true
+                    } else {
+                        fermer()
+                    }
+                }
+        )
+        .background(
+            NavigationLink(isActive: $navigation) { MsgConvVue(conv: conv) } label: { EmptyView() }
+                .opacity(0)
+        )
+    }
+
+    private func fermer() {
+        withAnimation(.spring(duration: 0.3)) { decalage = 0 }
+        ouvert = false
+    }
+
+    private func boutonAction(symbole: String, fond: Color, action: @escaping () -> Void) -> some View {
+        Image(systemName: symbole)
+            .font(.system(size: 19)).foregroundStyle(.white)
+            .frame(width: 74).frame(maxHeight: .infinity)
+            .background(fond)
+            .contentShape(Rectangle())
+            .onTapGesture { action() }
+    }
+}
+
 struct LigneConvMsg: View {
     let conv: ConvMsg
+    var cloche: Bool = false
     var body: some View {
         HStack(spacing: 12) {
             AvatarMsg(nom: conv.nom, taille: 45)
@@ -397,6 +542,10 @@ struct LigneConvMsg: View {
                     Text(conv.nom).font(.system(size: 16, weight: .semibold)).foregroundStyle(msgTexte)
                         .lineLimit(1)
                     Spacer()
+                    if cloche {
+                        Image(systemName: "bell.slash.fill").font(.system(size: 12))
+                            .foregroundStyle(msgTexte2.opacity(0.8))
+                    }
                     Text(conv.date).font(.system(size: 14)).foregroundStyle(msgTexte2)
                     Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(msgTexte2.opacity(0.7))
@@ -543,6 +692,7 @@ struct MsgConvVue: View {
                                     let t = saisie.trimmingCharacters(in: .whitespaces)
                                     guard !t.isEmpty else { return }
                                     Haptique.leger()
+                                    envois.enregistrer(conv)   // une nouvelle discussion entre dans la liste au 1er message
                                     envois.envoyer(t, a: conv.nom)
                                     saisie = ""
                                 }
@@ -695,6 +845,11 @@ struct BulleMsgTexte: View {
     let recu: Bool
     let couleur: Color
     let tag: String?
+    // v2 étape 2 — tapback iOS : appui long → barre de réactions, réaction collée à la bulle
+    @State private var reaction: String? = nil
+    @State private var choixVisible = false
+    private let tapbacks = ["❤️", "👍", "👎", "😂", "‼️", "❓"]
+
     var body: some View {
         VStack(alignment: recu ? .leading : .trailing, spacing: 2) {
             HStack {
@@ -704,8 +859,47 @@ struct BulleMsgTexte: View {
                     .foregroundStyle(recu ? msgTexte : .white)
                     .padding(.horizontal, 13).padding(.vertical, 8)
                     .background(couleur, in: RoundedRectangle(cornerRadius: 19))
+                    .overlay(alignment: recu ? .topTrailing : .topLeading) {
+                        if let r = reaction {
+                            Text(r).font(.system(size: 15))
+                                .padding(6)
+                                .background(Color(hex: 0x2A2A2E), in: Circle())
+                                .overlay(Circle().stroke(msgFond, lineWidth: 2))
+                                .offset(x: recu ? 12 : -12, y: -14)
+                                .transition(.scale.combined(with: .opacity))
+                        }
+                    }
+                    .overlay(alignment: recu ? .topLeading : .topTrailing) {
+                        if choixVisible {
+                            HStack(spacing: 10) {
+                                ForEach(tapbacks, id: \.self) { t in
+                                    Text(t).font(.system(size: 22))
+                                        .onTapGesture {
+                                            Haptique.leger()
+                                            withAnimation(.spring(duration: 0.28)) {
+                                                reaction = (reaction == t) ? nil : t
+                                                choixVisible = false
+                                            }
+                                        }
+                                }
+                            }
+                            .padding(.horizontal, 14).padding(.vertical, 9)
+                            .background(Color(hex: 0x2A2A2E), in: Capsule())
+                            .offset(y: -46)
+                            .transition(.scale(scale: 0.85, anchor: recu ? .bottomLeading : .bottomTrailing).combined(with: .opacity))
+                            .zIndex(10)
+                        }
+                    }
+                    .onLongPressGesture(minimumDuration: 0.35) {
+                        Haptique.leger()
+                        withAnimation(.spring(duration: 0.28)) { choixVisible = true }
+                    }
+                    .onTapGesture {
+                        if choixVisible { withAnimation(.easeOut(duration: 0.15)) { choixVisible = false } }
+                    }
                 if recu { Spacer(minLength: 70) }
             }
+            .padding(.top, reaction != nil ? 10 : 0)
             if let tag {
                 Text(tag).font(.system(size: 10.5)).foregroundStyle(msgTexte2)
                     .padding(.trailing, 4)
@@ -1118,6 +1312,15 @@ struct NouveauMessageVue: View {
         return DonneesTel.contacts.filter { $0.0.localizedCaseInsensitiveContains(destinataire) }
     }
 
+    // v2 étape 2 : un numéro tapé directement est envoyable (SMS vert, comme iOS)
+    private var numeroLibre: String? {
+        let brut = destinataire.trimmingCharacters(in: .whitespaces)
+        let chiffres = brut.filter { $0.isNumber }
+        guard chiffres.count >= 6, brut.allSatisfy({ $0.isNumber || " +().-".contains($0) }) else { return nil }
+        guard !DonneesTel.contacts.contains(where: { $0.1.filter { $0.isNumber } == chiffres }) else { return nil }
+        return brut
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -1147,8 +1350,38 @@ struct NouveauMessageVue: View {
                             Haptique.leger()
                             if let existante = DonneesMsg.convs.first(where: { $0.nom == s.0 }) {
                                 convOuverte = existante
+                            } else if let deja = EnvoisMsg.partage.nouvelles.first(where: { $0.nom == s.0 }) {
+                                convOuverte = deja
                             } else {
+                                // Nouvelle discussion avec un CONTACT : iMessage bleu (retour Joachim 30/08)
                                 convOuverte = ConvMsg(nom: s.0, numero: s.1,
+                                                      service: "iMessage", bleu: true,
+                                                      inconnu: false, apercu: "", date: "", elements: [])
+                            }
+                        }
+                    }
+
+                    // v2 étape 2 : numéro pas encore répertorié → envoyable en SMS
+                    if let num = numeroLibre {
+                        HStack(spacing: 12) {
+                            Image(systemName: "message.fill")
+                                .font(.system(size: 17)).foregroundStyle(msgVert)
+                                .frame(width: 40, height: 40)
+                                .background(Color(hex: 0x2A2A2E), in: Circle())
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text("Envoyer à « \(num) »").font(.system(size: 16, weight: .medium)).foregroundStyle(msgTexte)
+                                Text("Message texte · SMS").font(.system(size: 13.5)).foregroundStyle(msgTexte2)
+                            }
+                            Spacer()
+                        }
+                        .padding(.horizontal, 16).padding(.vertical, 8)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            Haptique.leger()
+                            if let deja = EnvoisMsg.partage.nouvelles.first(where: { $0.nom == num }) {
+                                convOuverte = deja
+                            } else {
+                                convOuverte = ConvMsg(nom: num, numero: num,
                                                       service: "Message texte · SMS", bleu: false,
                                                       inconnu: false, apercu: "", date: "", elements: [])
                             }

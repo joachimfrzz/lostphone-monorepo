@@ -2106,7 +2106,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Intégration v2 phase 1 livrée + build TestFlight publié (12:41). En attente : test device de Joachim, puis phase 2 ou sessions S7+."
+  "derniere_action": "Phase 2 livrée + build TestFlight 12:56 publié. En attente : test device Joachim."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2437,5 +2437,29 @@
   "build_testflight": "6a940754f339519dbb26f917 VERT publié 12:41 (série 2xx suivant). Commit 9d030122.",
   "phase2": "Câblage tactile réel écran par écran (les rangées/boutons ouvrent le bon écran), gestes complets, animations — après S7-S12.",
   "note_navigation": "La navigation par balayage horizontal est un échafaudage provisoire assumé pour tester la refonte sur device — PAS le comportement iOS final."
+ },
+ "integration_v2_phase2": {
+  "date": "2026-08-30 12:56",
+  "livre": "Navigation tactile RÉELLE (commit c5d304f8, build TestFlight 6a940b34 VERT publié 12:56) : pile d'écrans par app avec transitions iOS (poussée latérale, ouverture d'app en zoom, déverrouillage par translation) ; retour = balayage depuis le bord gauche OU toucher la zone retour haut-gauche ; volets Centre de contrôle (tirer depuis le haut-droit) et centre de notifications (haut-gauche), fermeture en glissant vers le haut ; barre home = retour accueil.",
+  "touchers_cables": {
+   "Réglages": "racine → Batterie/Général/Luminosité/Notifications/Sons ; Général → Informations",
+   "Mail": "Boîtes → Réception / Boîte d'envoi ; rangée Agence Bellecour → lecture ; Rédiger → rédaction ; Annuler → retour",
+   "Messages": "rangée Maman → conversation",
+   "Photos": "tuile → détail ; onglets Photothèque ↔ Collections",
+   "Notes": "dossiers → liste",
+   "Rappels": "Courses → liste",
+   "Calendrier": "jours à évènement (17/20/27) → vue jour",
+   "Horloge": "onglets Alarmes/Minuteurs/Chronomètre inter-navigables",
+   "Météo": "icône liste → lieux ; carte Ma position → retour",
+   "Calculatrice": "bouton modes → menu ; Élémentaire → retour"
+  },
+  "restes_phase_3": [
+   "touchers exhaustifs (chaque rangée ouvre SON contenu, pas un écran unique)",
+   "multitâche par home-swipe maintenu",
+   "Spotlight par glisser-bas au centre de l'accueil",
+   "bibliothèque d'apps par balayage gauche",
+   "animations fines mesurées sur les vidéos 60fps",
+   "apps sans v2 : FaceTime/TV/Podcasts/App Store/Plans/Santé/Cartes/ChatGPT/Musique/Appareil photo"
+  ]
  }
 }

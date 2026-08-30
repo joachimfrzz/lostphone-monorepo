@@ -480,9 +480,8 @@ struct CentreControleV2View: View {
         ZStack {
             Color.clear.overlay(Image("FondEcran").resizable().scaledToFill()).clipped()
                 .ignoresSafeArea()
-                .overlay(.ultraThinMaterial.opacity(0.0))
-                .overlay(Color.black.opacity(0.35).ignoresSafeArea())
-                .overlay(.thinMaterial.opacity(0.92))
+                .blur(radius: 26)
+                .overlay(Color.black.opacity(0.52).ignoresSafeArea())
                 .environment(\.colorScheme, .dark)
             VStack(spacing: 14) {
                 // barre haute : + à gauche, power à droite, app d'origine au centre

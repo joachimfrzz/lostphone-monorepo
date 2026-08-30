@@ -379,7 +379,7 @@ struct EcranCapture: View {
     private func ecransTelephone() -> some View {
         switch cle {
         case "telephone": TelephoneVue()
-        case "telephone.fiche": NavigationStack { TelFicheVue(nom: "Chloé") }
+        case "telephone.fiche": NavigationStack { TelFicheVue(nom: "Chloé") }.coquilleSarah(claire: true)
         case "telephone.appel": NavigationStack { AppelTelVue(destinataire: "Chloé", numero: "06 24 81 05 77") }
         default: VerrouillageView()
         }
@@ -412,6 +412,54 @@ struct CaptureSafari: View {
 // ============================================================ BARRE HOME FICTIVE (correctif P1, 20/08)
 // Le jeu simule un iPhone moderne sur TOUT appareil (D47) : la barre home est LA NÔTRE.
 // Zone de geste au-dessus du bord système -> aucun conflit avec le Centre de contrôle des iPhone à bouton.
+// ============================================================
+// D85 — Les barres système du jeu sont celles de SARAH, pas celles
+// du joueur : la vraie barre d'état et le vrai indicateur home iOS
+// sont masqués partout, et le jeu dessine les siens. Heure figée
+// 19:47 (cohérente avec le verrouillage et les notifications).
+// Ne JAMAIS dessiner ces éléments sans masquer les vrais (doublons).
+// ============================================================
+struct BarreSarah: View {
+    var claire: Bool = false   // true = texte noir (apps à fond clair)
+    var body: some View {
+        HStack {
+            Text("19:47")
+                .font(.system(size: 16, weight: .semibold))
+            Spacer()
+            HStack(spacing: 7) {
+                Image(systemName: "cellularbars").font(.system(size: 14))
+                Image(systemName: "wifi").font(.system(size: 14))
+                Image(systemName: "battery.100percent").font(.system(size: 16))
+            }
+        }
+        .foregroundStyle(claire ? Color.black : Color.white)
+        .padding(.leading, 39).padding(.trailing, 27)
+        .padding(.top, 21)
+        .allowsHitTesting(false)
+    }
+}
+
+struct CoquilleSarah: ViewModifier {
+    var claire: Bool = false
+    func body(content: Content) -> some View {
+        content
+            .statusBarHidden(true)
+            .persistentSystemOverlays(.hidden)
+            .defersSystemGestures(on: .bottom)
+            .overlay(alignment: .top) {
+                BarreSarah(claire: claire)
+                    .ignoresSafeArea(edges: .top)
+            }
+    }
+}
+
+extension View {
+    // À appliquer sur la racine de CHAQUE app présentée en fullScreenCover.
+    func coquilleSarah(claire: Bool = false) -> some View {
+        modifier(CoquilleSarah(claire: claire))
+    }
+}
+
 struct BarreHome: View {
     let action: () -> Void
     var sombre: Bool = false
@@ -561,17 +609,27 @@ struct VerrouillageView: View {
 
                 if !sortie {
                     ecranVerrouille
+                        .overlay(alignment: .bottom) {
+                            // Indicateur home de Sarah (le vrai est masqué — D85)
+                            Capsule().fill(Color.white.opacity(0.92))
+                                .frame(width: 140, height: 5)
+                                .padding(.bottom, 9)
+                                .ignoresSafeArea(edges: .bottom)
+                                .allowsHitTesting(false)
+                        }
                         .statusBarHidden(true)
+                        .persistentSystemOverlays(.hidden)
+                        .defersSystemGestures(on: .bottom)
                         .offset(y: deverrouille ? -geo.size.height : min(0, -glisse))
                         .animation(deverrouille ? .easeIn(duration: 0.38) : nil, value: deverrouille)
                 }
             }
         }
         .fullScreenCover(isPresented: $whatsappNotifOuvert) {
-            NavigationStack { ConversationVue(nomContact: "Marc ❤️") }
+            NavigationStack { ConversationVue(nomContact: "Marc ❤️") }.coquilleSarah()
         }
         .fullScreenCover(isPresented: $telephoneNotifOuvert) {
-            NavigationStack { TelFicheVue(nom: "Chloé") }
+            NavigationStack { TelFicheVue(nom: "Chloé") }.coquilleSarah(claire: true)
         }
     }
 
@@ -743,11 +801,6 @@ struct AccueilView: View {
     @State private var spotifyOuvert = false
     @State private var youtubeOuvert = false
     @State private var page = 0
-    // Zoom d'ouverture depuis l'icône (geste signature iOS)
-    @State private var zoomNom: String? = nil
-    @State private var zoomCadre: CGRect = .zero
-    @State private var zoomPlein = false
-    @State private var zoomFondu: Double = 1
     @ObservedObject private var routeur = Routeur.partage
 
     // Page 1 : les apps « système » (ordre inspiré du réel) — Page 2 : le reste
@@ -829,25 +882,9 @@ struct AccueilView: View {
         }
     }
 
-    // Ouverture avec zoom depuis l'icône (0,32 s), puis présentation sans animation
+    // Ouverture d'app : slide up natif du fullScreenCover, rien d'autre (retour Joachim 30/08)
     private func lancer(_ nom: String, depuis cadre: CGRect) {
-        guard let action = actionPour(nom) else { return }
-        zoomNom = nom
-        zoomCadre = cadre
-        zoomPlein = false
-        zoomFondu = 1
-        withAnimation(.easeOut(duration: 0.34)) { zoomPlein = true }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
-            var tx = Transaction()
-            tx.disablesAnimations = true
-            withTransaction(tx) { action() }
-            withAnimation(.easeOut(duration: 0.18)) { zoomFondu = 0 }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
-            zoomNom = nil
-            zoomPlein = false
-            zoomFondu = 1
-        }
+        actionPour(nom)?()
     }
 
     private func grille(_ apps: [(String, Color, String, Color)]) -> some View {
@@ -978,61 +1015,54 @@ struct AccueilView: View {
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 38))
                 .padding(.horizontal, 10).padding(.top, 12).padding(.bottom, 4)
             }
-            .scaleEffect(zoomNom != nil ? 0.94 : 1.0)
-            .animation(.easeOut(duration: 0.34), value: zoomNom != nil)
-
-            // ---- Zoom d'ouverture : l'app grandit depuis son icône ----
-            if let nom = zoomNom {
-                RoundedRectangle(cornerRadius: zoomPlein ? 42 : 14.5)
-                    .fill(Color.black)
-                    .overlay(
-                        Group {
-                            if let ui = chargerPellicule("ic-" + AppIcone.cleAsset(nom)) {
-                                Image(uiImage: ui).resizable().scaledToFill()
-                                    .opacity(zoomPlein ? 0 : 1)
-                            }
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: zoomPlein ? 42 : 14.5))
-                    )
-                    .frame(width: zoomPlein ? geo.size.width : zoomCadre.width,
-                           height: zoomPlein ? geo.size.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom : zoomCadre.height)
-                    .position(zoomPlein
-                              ? CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
-                              : CGPoint(x: zoomCadre.midX, y: zoomCadre.midY))
-                    .opacity(zoomFondu)
-                    .ignoresSafeArea()
-                    .allowsHitTesting(false)
+            // Indicateur home de Sarah (le vrai est masqué — D85)
+            VStack {
+                Spacer()
+                Capsule().fill(Color.white.opacity(0.92))
+                    .frame(width: 140, height: 5)
+                    .padding(.bottom, 9)
             }
+            .ignoresSafeArea(edges: .bottom)
+
+            // Barre d'état de Sarah (la vraie est masquée — D85)
+            VStack {
+                BarreSarah(claire: false)
+                Spacer()
+            }
+            .ignoresSafeArea(edges: .top)
         }
         }
-        .fullScreenCover(isPresented: $whatsappOuvert) { WhatsAppListeView() }
-        .fullScreenCover(isPresented: $telephoneOuvert) { TelephoneVue() }
-        .fullScreenCover(isPresented: $messagesOuvert) { MessagesVue() }
-        .fullScreenCover(isPresented: $reglagesOuvert) { ReglagesVue() }
-        .fullScreenCover(isPresented: $photosOuvert) { PhotosVue() }
-        .fullScreenCover(isPresented: $horlogeOuverte) { HorlogeVue() }
-        .fullScreenCover(isPresented: $calculatriceOuverte) { CalculatriceVue() }
-        .fullScreenCover(isPresented: $meteoOuverte) { MeteoVue() }
-        .fullScreenCover(isPresented: $notesOuvertes) { NotesVue() }
-        .fullScreenCover(isPresented: $rappelsOuverts) { RappelsVue() }
-        .fullScreenCover(isPresented: $dictaphoneOuvert) { DictaphoneVue() }
-        .fullScreenCover(isPresented: $banqueOuverte) { MaBanqueVue() }
-        .fullScreenCover(isPresented: $calendrierOuvert) { CalendrierVue() }
-        .fullScreenCover(isPresented: $localiserOuvert) { LocaliserVue() }
-        .fullScreenCover(isPresented: $mailOuvert) { MailVue() }
-        .fullScreenCover(isPresented: $plansOuverts) { PlansVue() }
-        .fullScreenCover(isPresented: $safariOuvert) { SafariVue() }
-        .fullScreenCover(isPresented: $fichiersOuverts) { FichiersVue() }
-        .fullScreenCover(isPresented: $cartesOuvertes) { CartesVueWallet() }
-        .fullScreenCover(isPresented: $santeOuverte) { SanteVue() }
-        .fullScreenCover(isPresented: $messengerOuvert) { MessengerVue() }
-        .fullScreenCover(isPresented: $instagramOuvert) { InstagramVue() }
-        .fullScreenCover(isPresented: $snapchatOuvert) { SnapchatVue() }
-        .fullScreenCover(isPresented: $facebookOuvert) { FacebookVue() }
-        .fullScreenCover(isPresented: $xOuvert) { XVue() }
-        .fullScreenCover(isPresented: $chatgptOuvert) { ChatGPTVue() }
-        .fullScreenCover(isPresented: $spotifyOuvert) { SpotifyVue() }
-        .fullScreenCover(isPresented: $youtubeOuvert) { YouTubeVue() }
+        .statusBarHidden(true)
+        .persistentSystemOverlays(.hidden)
+        .defersSystemGestures(on: .bottom)
+        .fullScreenCover(isPresented: $whatsappOuvert) { WhatsAppListeView().coquilleSarah() }
+        .fullScreenCover(isPresented: $telephoneOuvert) { TelephoneVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $messagesOuvert) { MessagesVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $reglagesOuvert) { ReglagesVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $photosOuvert) { PhotosVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $horlogeOuverte) { HorlogeVue().coquilleSarah() }
+        .fullScreenCover(isPresented: $calculatriceOuverte) { CalculatriceVue().coquilleSarah() }
+        .fullScreenCover(isPresented: $meteoOuverte) { MeteoVue().coquilleSarah() }
+        .fullScreenCover(isPresented: $notesOuvertes) { NotesVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $rappelsOuverts) { RappelsVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $dictaphoneOuvert) { DictaphoneVue().coquilleSarah() }
+        .fullScreenCover(isPresented: $banqueOuverte) { MaBanqueVue().coquilleSarah() }
+        .fullScreenCover(isPresented: $calendrierOuvert) { CalendrierVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $localiserOuvert) { LocaliserVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $mailOuvert) { MailVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $plansOuverts) { PlansVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $safariOuvert) { SafariVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $fichiersOuverts) { FichiersVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $cartesOuvertes) { CartesVueWallet().coquilleSarah() }
+        .fullScreenCover(isPresented: $santeOuverte) { SanteVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $messengerOuvert) { MessengerVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $instagramOuvert) { InstagramVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $snapchatOuvert) { SnapchatVue().coquilleSarah() }
+        .fullScreenCover(isPresented: $facebookOuvert) { FacebookVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $xOuvert) { XVue().coquilleSarah() }
+        .fullScreenCover(isPresented: $chatgptOuvert) { ChatGPTVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $spotifyOuvert) { SpotifyVue().coquilleSarah() }
+        .fullScreenCover(isPresented: $youtubeOuvert) { YouTubeVue().coquilleSarah(claire: true) }
         .onChange(of: routeur.demande) { _, _ in
             // Navigation inter-apps : fermer l'app courante puis ouvrir la cible (P3)
             fermerToutesLesApps()
@@ -1062,7 +1092,9 @@ struct AppIcone: View {
     @State private var alerteVisible = false
     @State private var cadre: CGRect = .zero
 
-    // Vraies icônes Apple (bundle) — repli SF pour celles qu'on n'a pas encore
+    // Vraies icônes (pack5 : officielles simulateur + Wikimedia, carrés pleins
+    // SANS alpha — l'unique rognage est fait ici en squircle continu).
+    // Repli SF pour : Calculatrice, Dictaphone, Ma Banque (fictive), Musique dock.
     static let assets: [String: String] = [
         "Horloge": "horloge", "Calendrier": "calendrier", "Photos": "photos",
         "Plans": "plans", "Notes": "notes", "Rappels": "rappels",
@@ -1072,7 +1104,9 @@ struct AppIcone: View {
         "Instagram": "instagram", "Facebook": "facebook", "X": "x",
         "TV": "tv", "Podcasts": "podcasts", "Contacts": "contacts",
         "FaceTime": "facetime", "Téléphone": "telephone", "Messages": "messages",
-        "Safari": "safari",
+        "Safari": "safari", "Météo": "meteo", "Localiser": "localiser",
+        "WhatsApp": "whatsapp", "Snapchat": "snapchat", "Spotify": "spotify",
+        "YouTube": "youtube", "Telegram": "telegram",
     ]
     static func cleAsset(_ nom: String) -> String { assets[nom] ?? "" }
 
@@ -1087,9 +1121,9 @@ struct AppIcone: View {
                 if let ui = vraieIcone {
                     Image(uiImage: ui).resizable().scaledToFill()
                         .frame(width: 62, height: 62)
-                        .clipShape(RoundedRectangle(cornerRadius: 14.5))
+                        .clipShape(RoundedRectangle(cornerRadius: 14.5, style: .continuous))
                 } else {
-                    RoundedRectangle(cornerRadius: 14.5)
+                    RoundedRectangle(cornerRadius: 14.5, style: .continuous)
                         .fill(fond)
                         .frame(width: 62, height: 62)
                         .overlay(Image(systemName: symbole).font(.system(size: 27)).foregroundStyle(teinte))

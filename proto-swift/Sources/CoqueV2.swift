@@ -177,7 +177,6 @@ struct BibliothequeV2View: View {
             Color.clear.overlay(Image("FondEcran").resizable().scaledToFill()).clipped()
                 .ignoresSafeArea()
                 .overlay(.ultraThinMaterial)
-                .overlay(Color.black.opacity(0.45).ignoresSafeArea())
             VStack(spacing: 14) {
                 // Pilule de recherche (réf : "Bibliothèque d'apps" centré, loupe à gauche)
                 HStack(spacing: 8) {
@@ -404,7 +403,6 @@ struct MultitacheV2View: View {
             Color.clear.overlay(Image("FondEcran").resizable().scaledToFill()).clipped()
                 .ignoresSafeArea()
                 .overlay(.ultraThinMaterial)
-                .overlay(Color.black.opacity(0.45).ignoresSafeArea())
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 22) {
                     CarteMultitache(nom: "WhatsApp", teinte: Color(red: 0.14, green: 0.83, blue: 0.4), symbole: "phone.fill", handoff: nil) {
@@ -463,8 +461,10 @@ struct CentreControleV2View: View {
         ZStack {
             Color.clear.overlay(Image("FondEcran").resizable().scaledToFill()).clipped()
                 .ignoresSafeArea()
-                .overlay(.ultraThinMaterial)
-                .overlay(Color.black.opacity(0.45).ignoresSafeArea())
+                .overlay(.ultraThinMaterial.opacity(0.0))
+                .overlay(Color.black.opacity(0.35).ignoresSafeArea())
+                .overlay(.thinMaterial.opacity(0.92))
+                .environment(\.colorScheme, .dark)
             VStack(spacing: 14) {
                 // barre haute : + à gauche, power à droite, app d'origine au centre
                 HStack {

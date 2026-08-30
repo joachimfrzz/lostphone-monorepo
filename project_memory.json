@@ -1418,7 +1418,7 @@
    "testflight_prerequis": "codemagic.yaml exige l'intégration App Store Connect nommée EXACTEMENT « Codemagic » (integrations: app_store_connect: Codemagic). SUR LE COMPTE 2 ELLE N'EXISTE PAS ENCORE -> duel-swift-testflight échouera à la signature tant que Joachim n'a pas ajouté sa clé API ASC (.p8) sous ce nom : codemagic.io -> Teams/Personal -> Integrations -> Developer Portal (App Store Connect) -> Add key -> name: Codemagic.",
    "verifie": "3 runs miroir OK sur le compte 2 dans la nuit. Aucun build Flutter parasite malgré le trigger push du YAML (webhook non actif)."
   },
-  "quota_codemagic": "~430/500 min gratuites après builds #15 et #16 (2026-08-30 ~10h). Reste ~2-3 builds miroir ce mois — ATTENTION quota."
+  "quota_codemagic": "~455/500 min gratuites après build #17 (2026-08-30 ~10h40). UN build miroir restant en sécurité."
  },
  "artefacts_existants": {
   "document_projet_hyperagent": {
@@ -2106,7 +2106,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Refonte D80 S1→S6 COMPLÈTE : 47 écrans v2 en 6 familles (coque2 8, divers2 5, reglages2 7, tcm2 3, sm2 7, pcnr2 9, mhdc2 8), 16 builds miroir. Prochains chantiers : ICÔNES d'apps (n°1 fidélité), assets pellicule non résolus dans le bundle miroir, polish (CC fond, footer Boîtes, glyphe calc), animations depuis vidéos 60fps, sessions S7-S12."
+  "derniere_action": "Polish groupé livré (build #17 vert) : pellicule .jpg résolue (cause racine UIImage extension), vraies photos dans Photothèque + avatar Réglages, glyphe calc, pilule Concentration. Raffinement CC (matériau sombre) poussé, à vérifier au prochain build. Quota serré : 1 build restant."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2357,5 +2357,18 @@
   "statut": "TERMINÉ (build #16 vert, vérifié)",
   "fichier": "proto-swift/Sources/MhdcV2.swift",
   "cles_count": 8
+ },
+ "rapport_polish_2026_08_30": {
+  "date": "2026-08-30 ~10h45",
+  "cause_racine_assets": "TROUVÉE SANS BUILD : les tars pellicule s'extraient bien dans proto-swift/Ressources/ et project.yml les inclut bien (buildPhase: resources). Le coupable était UIImage(named:) qui ne résout QUE les .png sans extension — nos fichiers sont des .jpg. Fix : chargerPellicule() qui essaie nom, nom.jpg, nom.jpeg, nom.png (défini dans PcnrV2.swift, utilisé par TuilePhotoV2 et l'avatar Réglages).",
+  "verifie_build_17": [
+   "Photothèque : VRAIES photos Sarah affichées (fête, selfies mère/fille, quais de Lyon, cerisiers) — transformation majeure de la ressemblance",
+   "Avatar Réglages : vraie photo p04 dans le cercle (plus d'initiales SL)",
+   "Glyphe calculatrice bas-gauche : glyphe dessiné (rectangle+points), plus de tofu",
+   "Pilule Concentration : libellé complet sur une ligne",
+   "Footer Boîtes Mail : fond opacifié"
+  ],
+  "pousse_non_verifie": "CC : matériau passé en mode sombre + voile noir 0,35 (le vrai CC iOS a un matériau sombre quel que soit le fond) ; voile 0,45 RETIRÉ de Bibliothèque et Multitâche (en vrai iOS ces vues reflètent la teinte du fond d'écran). À vérifier au prochain build utile — pas de build dédié pour préserver le quota.",
+  "quota": "~455/500 min après build #17. UN SEUL build miroir restant en sécurité ce mois."
  }
 }

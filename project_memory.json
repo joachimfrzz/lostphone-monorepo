@@ -1417,7 +1417,8 @@
    "bascule": "Compte Codemagic 2 créé par Joachim (déblocage du 402). NOUVEL APP_ID=6a8f67340674263dd88340ad (lostphone-monorepo). Jeton stocké transitoirement dans /tmp/cm_token du sandbox (transmis dans le fil — peut être régénéré à tout moment) ; à coller dans le credential de la skill (brouillon de mise à jour de skill émis, carte en attente). api.py local basculé (env d'abord, /tmp en secours).",
    "testflight_prerequis": "codemagic.yaml exige l'intégration App Store Connect nommée EXACTEMENT « Codemagic » (integrations: app_store_connect: Codemagic). SUR LE COMPTE 2 ELLE N'EXISTE PAS ENCORE -> duel-swift-testflight échouera à la signature tant que Joachim n'a pas ajouté sa clé API ASC (.p8) sous ce nom : codemagic.io -> Teams/Personal -> Integrations -> Developer Portal (App Store Connect) -> Add key -> name: Codemagic.",
    "verifie": "3 runs miroir OK sur le compte 2 dans la nuit. Aucun build Flutter parasite malgré le trigger push du YAML (webhook non actif)."
-  }
+  },
+  "quota_codemagic": "~325/500 min gratuites après builds #13 et #14 (2026-08-30). Reste ~7 builds miroir."
  },
  "artefacts_existants": {
   "document_projet_hyperagent": {
@@ -2105,7 +2106,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Rapport S2 consigné. Suite : câblage tcm2 (TcmV2.swift + case LPProto + 3 clés ecrans.txt) puis build S3."
+  "derniere_action": "Nuit du 29→30/08 : S2+S3+S4 livrés et vérifiés (rapports rapport_S2/S3/S4). Prochain : S5 (Photos/Calendrier/Notes/Rappels v2) puis S6 (Météo/Dictaphone/Horloge/Calculatrice v2) sur go de Joachim."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2280,5 +2281,52 @@
    "Vignettes Nombre/Liste : simplifiées (rectangles gris) vs miniatures d'écran réelles"
   ],
   "problemes_build": "2 échecs de compilation en amont (Section overload, header+footer) corrigés avant ce rapport — méthode consignée dans etat_technique.lecons_swiftui"
+ },
+ "rapport_S3": {
+  "date": "2026-08-30 ~01h40",
+  "livre": "TCM v2 (Téléphone/Messages) 3/3 écrans : Messagerie vocale visuelle (Agence Bellecour 00:25, transcriptions, ⓘ, Modifier/Annonce), Messages liste (épinglés Maman/Chloé, phishing SecuriBQE, code 38200), conversation (« iMessage  Chiffré », « Distribué », champ « Message texte • RCS »). Build vert run #13, captures vérifiées.",
+  "correctifs_post_verif": [
+   "Bulles envoyées rendues en VERT alors que la référence XML (conv +33 6 59 61 88 90) dit « Votre iMessage … Distribué » → passées en BLEU iMessage",
+   "« Modifier » tronqué en « M… » dans les toolbars Liquid Glass → fixedSize() ajouté",
+   "Ordre séparateurs conv : date d'abord, puis « iMessage  Chiffré »"
+  ],
+  "note": "Ces 3 correctifs sont embarqués dans le build S4 (économie de quota — pas de re-build S3 dédié).",
+  "ecarts_assumes": [
+   "Emojis en tofu simulateur (🍖/⚠️ → carrés) — verdict sur device, déjà consigné S1",
+   "Avatars contacts : silhouette SF générique (chantier assets)"
+  ]
+ },
+ "refonte_tcm_v2": {
+  "statut": "TERMINÉ — correctifs vérifiés à l'image dans build #14 (bulles bleues, fixedSize, ordre séparateurs)",
+  "fichier": "proto-swift/Sources/TcmV2.swift",
+  "cles": [
+   "tcm2.messagerie",
+   "tcm2.msg.liste",
+   "tcm2.msg.conv"
+  ]
+ },
+ "rapport_S4": {
+  "date": "2026-08-30 ~02h10",
+  "livre": "Safari/Mail v2 7/7 écrans (famille sm2) : Safari démarrage (Favoris 8 + Liste de lecture + barre d'adresse basse iOS 26), grille onglets « Personnel » 4 onglets, navigation privée ; Mail Boîtes (arborescence Gmail réelle : Réception 1208, Boîte d'envoi 1, Brouillons 12, Indésirables 7, Tous les e-mails 3641, [Gmail], Important 84, Suivis), Réception (6 mails Sarah dont Agence Bellecour non lu, « MÀJ à l'instant / 1 message non envoyé »), lecture (bouton Résumer iOS 26, barre Archiver/Déplacer/Répondre/Rédiger), rédaction (À/Cc,Cci De/Objet). Build vert run #14, captures vérifiées (boîtes, démarrage, réception). Correctifs S3 embarqués CONFIRMÉS à l'image : bulles envoyées bleues iMessage, « Modifier » non tronqué, ordre date → « iMessage Chiffré ».",
+  "donnees": "Structure copiée des XML réels (compteurs, libellés « MÀJ à l'instant », « 1 message non envoyé », arborescence Gmail) mais TOUT le contenu re-écrit en données Sarah — les mails réels de Joachim (Prévifrance, comptes perso) ne rentrent jamais dans le jeu (doctrine mesure-uniquement).",
+  "ecarts_assumes": [
+   "Favicons des favoris Safari : lettres colorées sur tuile (chantier assets, comme les icônes d'apps)",
+   "Vignettes d'onglets : placeholder safari + domaine (les vraies vignettes seraient des rendus de pages web)",
+   "Footer Boîtes : « MÀJ à l'instant » chevauche légèrement la dernière rangée (fond du safeAreaInset à opacifier — micro-polish)",
+   "Emoji 🎉 en tofu simulateur (connu)"
+  ]
+ },
+ "refonte_safari_mail_v2": {
+  "statut": "TERMINÉ (build #14 vert, vérifié)",
+  "fichier": "proto-swift/Sources/SafariMailV2.swift",
+  "cles": [
+   "sm2.safari.demarrage",
+   "sm2.safari.onglets",
+   "sm2.safari.privee",
+   "sm2.mail.boites",
+   "sm2.mail.reception",
+   "sm2.mail.lecture",
+   "sm2.mail.redaction"
+  ]
  }
 }

@@ -2132,7 +2132,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "D82 lot 1 livré et publié (16:06). Attente test device Joachim sur Messages/WhatsApp/Dictaphone."
+  "derniere_action": "Coque pixel-perfect livrée (build 17:08). Attente verdict device, puis tour app par app."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2513,5 +2513,18 @@
    "« Remplacement impossible » Dictaphone conservé (rare)"
   ],
   "lecon": "Piège SwiftUI supplémentaire : expression arithmétique inline complexe dans .frame() → « unable to type-check in reasonable time ». Toujours sortir le calcul dans une fonction."
+ },
+ "coque_pixel_perfect_2026_08_30": {
+  "date": "2026-08-30 17:08",
+  "livre": "Coque v1 corrigée aux mesures S1 (commit 2f9c578e, build TestFlight 6a944649 VERT publié 17:08).",
+  "verrouillage": "Barre d'état (Free + indicateurs), cadenas 15pt au ras du haut, date 22pt y≈72, horloge 96pt SF arrondi y≈89 (cadre mesuré h=144), notifs inchangées (matériau ✓), lampe/appareil repositionnés (y≈748), indicateur accueil 144×5 y=861. DND ABSENT à dessein : la pilule de la référence venait du mode Concentration activé pour la capture — pas un état du téléphone de Sarah.",
+  "accueil": "2 pages (TabView) : page 1 = widgets Météo+Calendrier 169×192 (évènement Agence Bellecour 11:30 dans le widget) + 16 apps système en grille mesurée (colonnes fixes 62pt, espacement 31 ≈ x28/120/213/306, pas 100) ; page 2 = Mail/Musique/sociales/WhatsApp. Vraies icônes Apple sur ~19 apps (repli SF pour les autres). Pilule Recherche 100×31. Dock pleine largeur (Téléphone/Messages/Safari/Mail). Barre d'état 19:47. L'accueil ne scrolle plus verticalement (c'était le bug du widget qui chevauchait la barre d'état).",
+  "animations": "Déverrouillage iOS : l'écran verrouillé suit le doigt puis TRANSLATE vers le haut (0,38s easeIn) en révélant l'accueil qui se pose en dézoomant (1,12→1,0, 0,42s easeOut). Ouverture d'app : ZOOM DEPUIS L'ICÔNE touchée (rectangle qui grandit de l'icône au plein écran, 0,32s), présentation ensuite sans animation. Fermeture d'app : encore la glissade par défaut (zoom inverse = reste).",
+  "restes": [
+   "Fermeture d'app en zoom inverse vers l'icône",
+   "Icônes manquantes : Météo, Calculatrice, Localiser, Ma Banque, Dictaphone, Snapchat/Spotify/YouTube/WhatsApp propres",
+   "Vignettes widgets à raffiner vs photo réelle",
+   "Vérif device par Joachim"
+  ]
  }
 }

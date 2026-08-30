@@ -2328,5 +2328,20 @@
    "sm2.mail.lecture",
    "sm2.mail.redaction"
   ]
+ },
+ "rapport_S5": {
+  "date": "2026-08-30 ~09h35",
+  "livre": "Photos/Calendrier/Notes/Rappels v2 9/9 écrans (famille pcnr2) : Photothèque (compteur 1 243 éléments, Trier et filtrer + Sélect., badge vidéo 0:35, onglets Photothèque/Collections/Recherche), Collections (Souvenirs, Types de média, Plan 868 photos), détail photo ; Calendrier mois août 2026 (grille exacte — le 1er tombe bien samedi, 29 en pastille rouge, points d'évènements) + jour (évènements Agence Bellecour 11:30 / Kiné 17:30) ; Notes dossiers + liste (sections Épinglées/Aujourd'hui/7 jours, note verrouillée « Codes ») ; Rappels accueil (cartes Aujourd'hui/Programmés/Tous/Avec drapeau/Terminés + Mes listes avec pastille carotte Courses et Suppressions récentes 15) + liste Courses à sections. Build vert run #15, captures vérifiées (photothèque, rappels accueil, calendrier mois).",
+  "donnees": "Structure des XML réels (compteurs, libellés, arborescence) ; contenu 100 % Sarah — les notes/alarmes/mémos réels de Joachim ne rentrent pas dans le jeu.",
+  "ecarts_assumes": [
+   "TUILES PHOTOS : les assets pellicule (p01-p15, Ressources/) ne se résolvent toujours pas via UIImage(named:) dans le build miroir → dégradés colorés en repli. C'est LE point qui casse la ressemblance de Photos — à régler au chantier assets (probable : fichiers non copiés dans le bundle du workflow miroir)",
+   "Souvenirs : tuiles en dégradé (même cause)",
+   "Vignettes du plan : placeholder carte"
+  ]
+ },
+ "refonte_pcnr_v2": {
+  "statut": "TERMINÉ (build #15 vert, vérifié)",
+  "fichier": "proto-swift/Sources/PcnrV2.swift",
+  "cles_count": 9
  }
 }

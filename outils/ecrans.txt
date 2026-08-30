@@ -244,3 +244,11 @@ pcnr2.notes.dossiers
 pcnr2.notes.liste
 pcnr2.rappels.accueil
 pcnr2.rappels.liste
+mhdc2.meteo.accueil
+mhdc2.meteo.lieux
+mhdc2.horloge.alarmes
+mhdc2.horloge.minuteurs
+mhdc2.horloge.chrono
+mhdc2.dicta.liste
+mhdc2.calc.elementaire
+mhdc2.calc.modes

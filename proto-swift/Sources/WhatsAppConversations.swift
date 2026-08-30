@@ -204,8 +204,10 @@ struct ConversationVue: View {
     @State private var citation: String? = nil
     @State private var transfertVisible = false
     @State private var transfertTexte = ""
-    @State private var micErreurVisible = false
-    @State private var videoErreurVisible = false
+    @State private var enregistrement = false
+    @State private var debutEnreg: Date? = nil
+    @State private var toastMic: String? = nil
+    @State private var tempsEnreg = 0
 
     // Le fil = données d'histoire + envois persistants du joueur (observés en direct,
     // plus d'instantané figé : la vue pré-créée par la liste reste toujours à jour)
@@ -302,9 +304,27 @@ struct ConversationVue: View {
                 .background(waSaisie, in: Capsule())
                 if saisie.trimmingCharacters(in: .whitespaces).isEmpty {
                     Image(systemName: "camera").font(.system(size: 21)).foregroundStyle(waTexte)
-                    Image(systemName: "mic").font(.system(size: 21)).foregroundStyle(waTexte)
+                    Image(systemName: enregistrement ? "mic.fill" : "mic")
+                        .font(.system(size: 21)).foregroundStyle(enregistrement ? Color.red : waTexte)
                         .contentShape(Rectangle())
-                        .onTapGesture { micErreurVisible = true }
+                        .onTapGesture {
+                            // Comportement WhatsApp réel : un tap court affiche le rappel du geste
+                            toastMic = "Maintenez pour enregistrer, relâchez pour envoyer"
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) { toastMic = nil }
+                        }
+                        .onLongPressGesture(minimumDuration: 0.35, pressing: { presse in
+                            if presse {
+                                enregistrement = true
+                                debutEnreg = Date()
+                            } else if enregistrement {
+                                enregistrement = false
+                                let d = max(1, Int(Date().timeIntervalSince(debutEnreg ?? Date())))
+                                let duree = String(format: "0:%02d", min(d, 59))
+                                let heure = { let f = DateFormatter(); f.dateFormat = "HH:mm"; return f.string(from: Date()) }()
+                                envois.ajouter(nomContact, .vocal(true, duree, heure))
+                                Haptique.leger()
+                            }
+                        }, perform: {})
                 } else {
                     Button(action: envoyer) {
                         Circle().fill(waVertVif).frame(width: 34, height: 34)
@@ -321,15 +341,33 @@ struct ConversationVue: View {
             // Règle 16/08 : soit l'appel fait partie de l'histoire, soit personne ne décroche.
             AppelVue(nom: nomContact)
         }
-        .alert(ErreurLambda.reponse("reseau"), isPresented: $micErreurVisible) {
-            Button("OK", role: .cancel) {}
+        .overlay(alignment: .bottom) {
+            if enregistrement || toastMic != nil {
+                HStack(spacing: 8) {
+                    if enregistrement {
+                        Circle().fill(.red).frame(width: 9, height: 9)
+                        Text(chronoEnreg).font(.system(size: 15, weight: .medium)).monospacedDigit().foregroundStyle(waTexte)
+                        Text("Relâchez pour envoyer").font(.system(size: 14)).foregroundStyle(waTexte2)
+                    } else if let t = toastMic {
+                        Text(t).font(.system(size: 14)).foregroundStyle(waTexte)
+                    }
+                }
+                .padding(.horizontal, 16).padding(.vertical, 10)
+                .background(Color(hex: 0x2A2A2E), in: Capsule())
+                .padding(.bottom, 64)
+                .transition(.opacity)
+            }
         }
-        .alert(ErreurLambda.reponse("reseau"), isPresented: $videoErreurVisible) {
-            Button("OK", role: .cancel) {}
-        }
+        .animation(.easeOut(duration: 0.2), value: enregistrement)
+        .animation(.easeOut(duration: 0.2), value: toastMic)
         .sheet(isPresented: $transfertVisible) {
             TransfertContactVue(texte: transfertTexte, nomSource: nomContact)
         }
+    }
+
+    private var chronoEnreg: String {
+        let d = Int(Date().timeIntervalSince(debutEnreg ?? Date()))
+        return String(format: "0:%02d", max(0, min(d, 59)))
     }
 
     private func envoyer() {
@@ -398,7 +436,7 @@ struct ConversationVue: View {
         case .video(let r, let d, let h):
             BulleVideo(recu: r, duree: d, heure: h)
                 .contentShape(Rectangle())
-                .onTapGesture { videoErreurVisible = true }
+                .onTapGesture { appelVisible = true }
         case .gif(let r, let h): BulleGIF(recu: r, heure: h)
         case .document(let r, let n, let det, let h): BulleDocument(recu: r, nom: n, details: det, heure: h)
         case .musique(let r, let t, let d, let h): BulleMusique(recu: r, titre: t, duree: d, heure: h)

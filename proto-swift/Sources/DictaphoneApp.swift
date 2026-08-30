@@ -85,7 +85,7 @@ final class LecteurMemo: NSObject, ObservableObject, AVAudioPlayerDelegate {
 struct DictaphoneVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinMemos.partage
-    @State private var enregAlerte = false
+    @State private var enregVisible = false
     // Miroir lot 1 : la vraie app s'ouvre sur la liste, les dossiers sont l'écran de retour
     @State private var chemin: [String] = ["tous"]
 
@@ -123,7 +123,7 @@ struct DictaphoneVue: View {
                 }
 
                 // Bouton d'enregistrement
-                Button { enregAlerte = true } label: {
+                Button { enregVisible = true } label: {
                     Circle().fill(Color(hex: 0xFF3B30)).frame(width: 54, height: 54)
                         .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 3).frame(width: 66, height: 66))
                 }
@@ -139,11 +139,8 @@ struct DictaphoneVue: View {
                     Text("Modifier").foregroundStyle(Color(hex: 0x0A84FF))
                 }
             }
-            // D56 : réponse déterministe de type matériel, propre à ce bouton
-            .alert("Enregistrement impossible", isPresented: $enregAlerte) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text("Le micro est utilisé par une autre app.")
+            .sheet(isPresented: $enregVisible) {
+                EnregistrementDictaVue().presentationDetents([.height(280)])
             }
         }
         .preferredColorScheme(.dark)
@@ -181,7 +178,7 @@ struct ListeMemosVue: View {
     @State private var nouveauNom = ""
     @State private var transcriptionVisible: MemoVocal? = nil
     @State private var partageVisible = false
-    @State private var enregAlerteListe = false
+    @State private var enregListeVisible = false
     @State private var remplacerAlerte = false
     @State private var selectionActive = false
     @State private var selectionIds: Set<UUID> = []
@@ -340,16 +337,14 @@ struct ListeMemosVue: View {
         }
         .overlay(alignment: .bottom) {
             // Miroir lot 1bis : le bouton d'enregistrement vit AUSSI sur la liste (référence f001)
-            Button { enregAlerteListe = true } label: {
+            Button { enregListeVisible = true } label: {
                 Circle().fill(Color(hex: 0xFF3B30)).frame(width: 54, height: 54)
                     .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 3).frame(width: 66, height: 66))
             }
             .padding(.bottom, 26)
         }
-        .alert("Enregistrement impossible", isPresented: $enregAlerteListe) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("Le micro est utilisé par une autre app.")
+        .sheet(isPresented: $enregListeVisible) {
+            EnregistrementDictaVue().presentationDetents([.height(280)])
         }
         .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Mémo vocal") }
         .alert("Renommer", isPresented: Binding(get: { renommageId != nil }, set: { if !$0 { renommageId = nil } })) {
@@ -393,4 +388,70 @@ struct ListeMemosVue: View {
 extension MemoVocal: Hashable {
     static func == (a: MemoVocal, b: MemoVocal) -> Bool { a.id == b.id }
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
+}
+
+
+// ============================================================ D82 — ENREGISTREMENT RÉEL
+// L'enregistrement tourne (chrono + onde animée) et crée un vrai mémo dans la liste.
+struct EnregistrementDictaVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var magasin = MagasinMemos.partage
+    @State private var debut = Date()
+    @State private var tics = 0
+    private let minuteur = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
+    private var chrono: String {
+        let t = Int(Date().timeIntervalSince(debut))
+        return String(format: "%d:%02d,%02d", t/60, t%60, Int(Date().timeIntervalSince(debut)*100)%100/10*10/10)
+    }
+    var body: some View {
+        VStack(spacing: 0) {
+            Capsule().fill(Color(white: 0.35)).frame(width: 36, height: 5).padding(.top, 8)
+            HStack {
+                Text("Nouvel enregistrement \(numeroSuivant)")
+                    .font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                Spacer()
+            }
+            .padding(.horizontal, 18).padding(.top, 18)
+            HStack {
+                Text(chrono).font(.system(size: 15)).monospacedDigit().foregroundStyle(.secondary)
+                Spacer()
+            }
+            .padding(.horizontal, 18).padding(.top, 2)
+            // onde animée
+            HStack(spacing: 2.5) {
+                ForEach(0..<48, id: \.self) { i in
+                    Capsule().fill(Color.red)
+                        .frame(width: 2.5, height: CGFloat(6 + (17 * ((i * 7 + tics * 3) % 13)) / 13))
+                }
+            }
+            .frame(height: 46)
+            .padding(.top, 26)
+            .onReceive(minuteur) { _ in tics += 1 }
+            Spacer()
+            Button {
+                let t = max(1, Int(Date().timeIntervalSince(debut)))
+                let duree = String(format: "%d:%02d", t/60, t%60)
+                let f = DateFormatter(); f.dateFormat = "d MMM yyyy"; f.locale = Locale(identifier: "fr_FR")
+                magasin.memos.insert(MemoVocal(titre: "Nouvel enregistrement \(numeroSuivant)",
+                                               dateTexte: f.string(from: Date()), duree: duree,
+                                               fichier: "", transcription: "Transcription non disponible"),
+                                     at: 0)
+                dismiss()
+            } label: {
+                Circle().stroke(Color(white: 0.45), lineWidth: 3).frame(width: 64, height: 64)
+                    .overlay(RoundedRectangle(cornerRadius: 6).fill(.red).frame(width: 26, height: 26))
+            }
+            .padding(.bottom, 28)
+        }
+        .frame(maxWidth: .infinity)
+        .background(Color(hex: 0x1C1C1E))
+        .preferredColorScheme(.dark)
+    }
+    private var numeroSuivant: Int {
+        let nums = magasin.memos.compactMap { m -> Int? in
+            guard m.titre.hasPrefix("Nouvel enregistrement ") else { return nil }
+            return Int(m.titre.replacingOccurrences(of: "Nouvel enregistrement ", with: ""))
+        }
+        return (nums.max() ?? 14) + 1
+    }
 }

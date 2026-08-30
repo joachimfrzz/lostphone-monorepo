@@ -446,6 +446,9 @@ struct MsgConvVue: View {
     @State private var photosPickerVisible = false
     @State private var autocollantsVisibles = false
     @State private var erreurVisible = false
+    @State private var cameraVisible = false
+    @State private var programmerVisible = false
+    @State private var toastProgramme: String? = nil
     @State private var erreurTexte = ""
     @State private var confirmationSignaler = false
     @State private var appelVideo = false
@@ -575,9 +578,10 @@ struct MsgConvVue: View {
                             switch String(parts[0]) {
                             case "Photos": photosPickerVisible = true
                             case "Autocollants": autocollantsVisibles = true
+                            case "Appareil photo": cameraVisible = true          // D82 : le viseur s'ouvre vraiment
+                            case "Envoyer plus tard": programmerVisible = true   // D82 : la programmation marche
                             default:
-                                let cles = ["Appareil photo": "camera", "Sondages": "sondage",
-                                            "Envoyer plus tard": "programmation", "Genmoji": "intelligence",
+                                let cles = ["Sondages": "sondage", "Genmoji": "intelligence",
                                             "Image Playground": "playground"]
                                 erreurTexte = ErreurLambda.reponse(cles[String(parts[0])] ?? "generique")
                                 erreurVisible = true
@@ -608,6 +612,33 @@ struct MsgConvVue: View {
                 autocollantsVisibles = false
             }
         }
+        .fullScreenCover(isPresented: $cameraVisible) {
+            ViseurCameraVue { nomFichier in
+                if let nf = nomFichier { envois.envoyerImage(nf, a: conv.nom) }
+                cameraVisible = false
+            }
+        }
+        .sheet(isPresented: $programmerVisible) {
+            EnvoyerPlusTardVue { horaire in
+                programmerVisible = false
+                if let h = horaire {
+                    toastProgramme = "Message programmé — \(h)"
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.6) { toastProgramme = nil }
+                }
+            }
+            .presentationDetents([.height(320)])
+        }
+        .overlay(alignment: .top) {
+            if let t = toastProgramme {
+                Text(t)
+                    .font(.system(size: 14, weight: .medium)).foregroundStyle(.white)
+                    .padding(.horizontal, 16).padding(.vertical, 10)
+                    .background(.ultraThinMaterial, in: Capsule())
+                    .padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .animation(.easeOut(duration: 0.25), value: toastProgramme)
         .fullScreenCover(isPresented: $appelVideo) {
             AppelTelVue(destinataire: conv.nom, numero: conv.numero)
         }
@@ -1263,6 +1294,97 @@ struct SelecteurAutocollants: View {
         }
         .background(Color(hex: 0x1C1C1E))
         .presentationDetents([.height(300)])
+        .preferredColorScheme(.dark)
+    }
+}
+
+// ============================================================ D82 — VISEUR CAMÉRA (réel-mock)
+// Le viseur s'ouvre, l'obturateur claque, la photo « prise » (sombre — l'iPhone
+// est en main dans la pénombre) part vraiment dans la conversation.
+struct ViseurCameraVue: View {
+    let terminer: (String?) -> Void
+    @State private var flash = false
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            RadialGradient(colors: [Color(white: 0.10), .black], center: .center, startRadius: 40, endRadius: 420)
+                .ignoresSafeArea()
+            if flash { Color.white.ignoresSafeArea().transition(.opacity) }
+            VStack {
+                HStack {
+                    Button { terminer(nil) } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                            .padding(10).background(Color.white.opacity(0.15), in: Circle())
+                    }
+                    Spacer()
+                    Image(systemName: "bolt.slash.fill")
+                        .font(.system(size: 16)).foregroundStyle(.white.opacity(0.8))
+                }
+                .padding(.horizontal, 18).padding(.top, 14)
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button {
+                        withAnimation(.easeOut(duration: 0.08)) { flash = true }
+                        Haptique.leger()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                            withAnimation(.easeIn(duration: 0.15)) { flash = false }
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            terminer("photo-sombre")
+                        }
+                    } label: {
+                        Circle().stroke(.white, lineWidth: 4).frame(width: 76, height: 76)
+                            .overlay(Circle().fill(.white).frame(width: 62, height: 62))
+                    }
+                    Spacer()
+                }
+                .padding(.bottom, 36)
+            }
+        }
+        .statusBarHidden()
+    }
+}
+
+// ============================================================ D82 — ENVOYER PLUS TARD (réel)
+struct EnvoyerPlusTardVue: View {
+    let terminer: (String?) -> Void
+    @State private var choix = "Ce soir, 21:00"
+    private let options = ["Ce soir, 21:00", "Demain, 9:00", "Demain, 18:00"]
+    var body: some View {
+        VStack(spacing: 0) {
+            Capsule().fill(Color(white: 0.35)).frame(width: 36, height: 5).padding(.top, 8)
+            Text("Envoyer plus tard").font(.system(size: 17, weight: .semibold)).padding(.top, 14)
+            VStack(spacing: 0) {
+                ForEach(options, id: \.self) { o in
+                    HStack {
+                        Text(o).font(.system(size: 16))
+                        Spacer()
+                        if choix == o { Image(systemName: "checkmark").font(.system(size: 14, weight: .semibold)).foregroundStyle(.blue) }
+                    }
+                    .padding(.horizontal, 16).padding(.vertical, 12)
+                    .contentShape(Rectangle())
+                    .onTapGesture { choix = o }
+                    if o != options.last { Divider().padding(.leading, 16) }
+                }
+            }
+            .background(Color(white: 0.12), in: RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal, 16).padding(.top, 14)
+            Button {
+                terminer(choix)
+            } label: {
+                Text("Programmer").font(.system(size: 17, weight: .semibold))
+                    .frame(maxWidth: .infinity).padding(.vertical, 13)
+                    .background(Color.blue, in: RoundedRectangle(cornerRadius: 13))
+                    .foregroundStyle(.white)
+            }
+            .padding(.horizontal, 16).padding(.top, 14)
+            Button("Annuler") { terminer(nil) }
+                .font(.system(size: 16)).foregroundStyle(.blue)
+                .padding(.top, 10)
+            Spacer()
+        }
         .preferredColorScheme(.dark)
     }
 }

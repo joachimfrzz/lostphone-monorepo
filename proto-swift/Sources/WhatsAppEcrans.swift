@@ -140,7 +140,6 @@ struct ActionRonde: View {
 // ============================================================ ONGLET VOUS (profil de Sarah)
 struct VousVue: View {
     @State private var qrVisible = false
-    @State private var plusErreurVisible = false
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -158,9 +157,6 @@ struct VousVue: View {
             }
             .padding(.horizontal, 16).padding(.top, 8)
             .sheet(isPresented: $qrVisible) { WAQRCodeVue() }
-            .alert(ErreurLambda.reponse("creation.indisponible"), isPresented: $plusErreurVisible) {
-                Button("OK", role: .cancel) {}
-            }
 
             ScrollView {
                 VStack(spacing: 0) {
@@ -173,8 +169,6 @@ struct VousVue: View {
                     HStack(spacing: 6) {
                         Text("Sarah").font(.system(size: 30, weight: .bold)).foregroundStyle(waTexte)
                         Image(systemName: "plus.circle").font(.system(size: 18)).foregroundStyle(waVertDoux)
-                            .contentShape(Rectangle())
-                            .onTapGesture { plusErreurVisible = true }
                     }
                     .padding(.top, 12).padding(.bottom, 20)
 
@@ -377,6 +371,7 @@ struct BoutonInfo: View {
     let symbole: String
     let nom: String
     var contact: String = ""
+    @State private var rechercheVisible = false
     @State private var appelVisible = false
     @State private var alerteVisible = false
     var body: some View {
@@ -388,13 +383,17 @@ struct BoutonInfo: View {
         .background(Color(hex: 0x161717), in: RoundedRectangle(cornerRadius: 12))
         .contentShape(Rectangle())
         .onTapGesture {
-            if nom == "Audio" || nom == "Vidéo" { appelVisible = true } else { alerteVisible = true }
+            if nom == "Audio" || nom == "Vidéo" { appelVisible = true }
+            else if nom == "Rechercher" { rechercheVisible = true }   // D82 : la recherche cherche vraiment
+            else { alerteVisible = true }
         }
         .fullScreenCover(isPresented: $appelVisible) {
             AppelVue(nom: contact) // sonne sans réponse (règle 16/08)
         }
-        .alert(ErreurLambda.reponse(nom == "Rechercher" ? "recherche.conv" : "generique"),
-               isPresented: $alerteVisible) {
+        .sheet(isPresented: $rechercheVisible) {
+            RechercheConvWAVue(contact: contact)
+        }
+        .alert(ErreurLambda.reponse("generique"), isPresented: $alerteVisible) {
             Button("OK", role: .cancel) {}
         }
     }
@@ -568,6 +567,76 @@ struct WAQRCodeVue: View {
                 }
             }
         }
+        .preferredColorScheme(.dark)
+    }
+}
+
+
+// ============================================================ D82 — RECHERCHE RÉELLE DANS LA CONVERSATION
+struct RechercheConvWAVue: View {
+    let contact: String
+    @Environment(\.dismiss) private var dismiss
+    @State private var saisie = ""
+    private var resultats: [(String, String, Bool)] {
+        let elements = DonneesWA.conversation(contact) + (EnvoisJoueur.partage.parContact[contact] ?? [])
+        guard !saisie.trimmingCharacters(in: .whitespaces).isEmpty else { return [] }
+        var out: [(String, String, Bool)] = []
+        for el in elements {
+            switch el {
+            case .msg(let recu, let texte, let heure):
+                if texte.localizedCaseInsensitiveContains(saisie) { out.append((texte, heure, !recu)) }
+            case .msgJoueur(let texte, let heure):
+                if texte.localizedCaseInsensitiveContains(saisie) { out.append((texte, heure, true)) }
+            case .msgGroupe(_, _, let texte, let heure):
+                if texte.localizedCaseInsensitiveContains(saisie) { out.append((texte, heure, false)) }
+            default: break
+            }
+        }
+        return out.reversed()
+    }
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 10) {
+                HStack(spacing: 6) {
+                    Image(systemName: "magnifyingglass").font(.system(size: 14)).foregroundStyle(waTexte2)
+                    TextField("Rechercher", text: $saisie)
+                        .font(.system(size: 16)).foregroundStyle(waTexte)
+                }
+                .padding(.horizontal, 12).padding(.vertical, 8)
+                .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 10))
+                Button("OK") { dismiss() }
+                    .font(.system(size: 16)).foregroundStyle(waVertDoux)
+            }
+            .padding(.horizontal, 14).padding(.top, 14).padding(.bottom, 8)
+            if saisie.isEmpty {
+                Spacer()
+                Text("Recherchez dans la conversation avec \(contact)")
+                    .font(.system(size: 14)).foregroundStyle(waTexte2)
+                Spacer()
+            } else if resultats.isEmpty {
+                Spacer()
+                Text("Aucun résultat pour « \(saisie) »")
+                    .font(.system(size: 14)).foregroundStyle(waTexte2)
+                Spacer()
+            } else {
+                List {
+                    ForEach(Array(resultats.enumerated()), id: \.offset) { _, r in
+                        VStack(alignment: .leading, spacing: 3) {
+                            HStack {
+                                Text(r.2 ? "Vous" : contact).font(.system(size: 13, weight: .semibold)).foregroundStyle(waVertDoux)
+                                Spacer()
+                                Text(r.1).font(.system(size: 12)).foregroundStyle(waTexte2)
+                            }
+                            Text(r.0).font(.system(size: 15)).foregroundStyle(waTexte).lineLimit(3)
+                        }
+                        .listRowBackground(Color(hex: 0x121212))
+                    }
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+            }
+        }
+        .background(Color(hex: 0x0B0B0B))
         .preferredColorScheme(.dark)
     }
 }

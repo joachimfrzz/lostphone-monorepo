@@ -2053,6 +2053,19 @@
     "Le pipeline miroir reste l'outil de vérification STATIQUE ; il ne valide jamais la sensation — seul le test device la valide"
    ],
    "statut_v2": "Les 47 écrans v2 et IntegrationV2 restent dans le code (mode capture uniquement) comme référence visuelle et réservoir de composants."
+  },
+  "D82": {
+   "date": "2026-08-30",
+   "titre": "Zéro bouton menteur : A (faire marcher) > B (message crédible iOS, avec parcimonie) > C (retirer, avec accord)",
+   "regles": [
+    "Priorité A : rendre l'action réelle quand c'est raisonnable (recherche qui cherche, favori qui s'ajoute, viseur qui prend une photo)",
+    "B accepté UNIQUEMENT si le vrai iOS afficherait ce message (AirDrop désactivé, Apple Intelligence non dispo, code requis) — et avec parcimonie",
+    "Anti-répétition : la même excuse ne s'affiche jamais 2× en 5 min de jeu",
+    "Budget : ~1 excuse réseau/indisponible max par app ; au-delà → A ou C",
+    "C (retrait de bouton) validé par Joachim — il a validé la liste du 30/08 en bloc (confiance donnée), C appliqué : création groupe/communauté WhatsApp",
+    "Interdits définitifs : « pour le moment », « Réessayez plus tard »"
+   ],
+   "arbitrage_30_08": "Joachim valide les 16 recos en bloc : A=1,3,5,6,7,8,10,14 ; B=2,4,9,12,13,15,16 ; C=11. Exécution en tour complet de toutes les apps existantes, puis build + son test."
   }
  },
  "point_de_reprise_migration": {
@@ -2119,7 +2132,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "D81 actée : retour v1 comme jeu, captures = charte de correction. Entrée device rebasculée sur VerrouillageView v1. Prochain : lot de correction n°1 (app au choix de Joachim) avec boucle courte."
+  "derniere_action": "D82 validée en bloc. Exécution du tour complet anti-frustration sur la v1."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",

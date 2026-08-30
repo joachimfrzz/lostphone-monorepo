@@ -450,7 +450,7 @@ struct CalcElementaireV2Vue: View {
         [("7", Color(white: 0.2), .white), ("8", Color(white: 0.2), .white), ("9", Color(white: 0.2), .white), ("×", .orange, .white)],
         [("4", Color(white: 0.2), .white), ("5", Color(white: 0.2), .white), ("6", Color(white: 0.2), .white), ("−", .orange, .white)],
         [("1", Color(white: 0.2), .white), ("2", Color(white: 0.2), .white), ("3", Color(white: 0.2), .white), ("+", .orange, .white)],
-        [("🧮", Color(white: 0.2), .white), ("0", Color(white: 0.2), .white), (",", Color(white: 0.2), .white), ("=", .orange, .white)]
+        [("CALCICONE", Color(white: 0.2), .white), ("0", Color(white: 0.2), .white), (",", Color(white: 0.2), .white), ("=", .orange, .white)]
     ]
     var body: some View {
         VStack(spacing: 0) {
@@ -474,7 +474,30 @@ struct CalcElementaireV2Vue: View {
                             let b = rangées[r][c]
                             Circle().fill(b.1)
                                 .frame(width: 82, height: 82)
-                                .overlay(Text(b.0).font(.system(size: b.0.count > 1 ? 26 : 34, weight: .medium)).foregroundStyle(b.2))
+                                .overlay(
+                                    Group {
+                                        if b.0 == "CALCICONE" {
+                                            RoundedRectangle(cornerRadius: 4)
+                                                .stroke(Color.white, lineWidth: 2.2)
+                                                .frame(width: 24, height: 32)
+                                                .overlay(
+                                                    VStack(spacing: 4) {
+                                                        RoundedRectangle(cornerRadius: 1).fill(.white).frame(width: 14, height: 4)
+                                                        HStack(spacing: 4) {
+                                                            Circle().fill(.white).frame(width: 3.5, height: 3.5)
+                                                            Circle().fill(.white).frame(width: 3.5, height: 3.5)
+                                                        }
+                                                        HStack(spacing: 4) {
+                                                            Circle().fill(.white).frame(width: 3.5, height: 3.5)
+                                                            Circle().fill(.white).frame(width: 3.5, height: 3.5)
+                                                        }
+                                                    }
+                                                )
+                                        } else {
+                                            Text(b.0).font(.system(size: b.0.count > 1 ? 26 : 34, weight: .medium)).foregroundStyle(b.2)
+                                        }
+                                    }
+                                )
                         }
                     }
                 }

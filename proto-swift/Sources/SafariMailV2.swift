@@ -226,6 +226,7 @@ struct MailBoitesV2Vue: View {
                 Image(systemName: "square.and.pencil").font(.system(size: 20)).foregroundStyle(.blue)
             }
             .padding(.horizontal, 18).padding(.vertical, 8)
+            .background(.black.opacity(0.92))
         }
         .preferredColorScheme(.dark)
     }

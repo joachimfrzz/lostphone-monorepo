@@ -31,7 +31,7 @@ struct ReglagesV2RacineVue: View {
                 Section {
                     HStack(spacing: 14) {
                         Group {
-                            if let ui = UIImage(named: "p04") {
+                            if let ui = chargerPellicule("p04") {
                                 Color.clear.overlay(Image(uiImage: ui).resizable().scaledToFill())
                             } else {
                                 Circle().fill(Color(white: 0.4)).overlay(Text("SL").font(.system(size: 22, weight: .medium)).foregroundStyle(.white))

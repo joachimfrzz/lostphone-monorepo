@@ -177,6 +177,7 @@ struct BibliothequeV2View: View {
             Color.clear.overlay(Image("FondEcran").resizable().scaledToFill()).clipped()
                 .ignoresSafeArea()
                 .overlay(.ultraThinMaterial)
+                .overlay(Color.black.opacity(0.45).ignoresSafeArea())
             VStack(spacing: 14) {
                 // Pilule de recherche (réf : "Bibliothèque d'apps" centré, loupe à gauche)
                 HStack(spacing: 8) {
@@ -403,6 +404,7 @@ struct MultitacheV2View: View {
             Color.clear.overlay(Image("FondEcran").resizable().scaledToFill()).clipped()
                 .ignoresSafeArea()
                 .overlay(.ultraThinMaterial)
+                .overlay(Color.black.opacity(0.45).ignoresSafeArea())
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 22) {
                     CarteMultitache(nom: "WhatsApp", teinte: Color(red: 0.14, green: 0.83, blue: 0.4), symbole: "phone.fill", handoff: nil) {
@@ -462,6 +464,7 @@ struct CentreControleV2View: View {
             Color.clear.overlay(Image("FondEcran").resizable().scaledToFill()).clipped()
                 .ignoresSafeArea()
                 .overlay(.ultraThinMaterial)
+                .overlay(Color.black.opacity(0.45).ignoresSafeArea())
             VStack(spacing: 14) {
                 // barre haute : + à gauche, power à droite, app d'origine au centre
                 HStack {
@@ -549,7 +552,7 @@ struct CentreControleV2View: View {
                         HStack(spacing: 8) {
                             Circle().fill(.white.opacity(0.25)).frame(width: 30, height: 30)
                                 .overlay(Image(systemName: "person.fill").font(.system(size: 13)).foregroundStyle(.white))
-                            Text("Concen-\ntration").font(.system(size: 14, weight: .medium)).foregroundStyle(.white).lineLimit(2)
+                            Text("Concentration").font(.system(size: 13, weight: .medium)).foregroundStyle(.white).lineLimit(1).fixedSize()
                             Image(systemName: "chevron.up.chevron.down").font(.system(size: 11)).foregroundStyle(.white.opacity(0.7))
                         }
                         .padding(.horizontal, 14).padding(.vertical, 10)

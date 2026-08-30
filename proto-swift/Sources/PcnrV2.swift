@@ -1,5 +1,11 @@
 import SwiftUI
 
+// Chargeur pellicule : les fichiers Ressources/ sont des .jpg — UIImage(named:)
+// exige l'extension pour le non-PNG (cause des replis dégradés/initiales, S2/S5).
+func chargerPellicule(_ nom: String) -> UIImage? {
+    UIImage(named: nom) ?? UIImage(named: nom + ".jpg") ?? UIImage(named: nom + ".jpeg") ?? UIImage(named: nom + ".png")
+}
+
 // ============================================================
 // S5 V2 — PHOTOS / CALENDRIER / NOTES / RAPPELS (D80, réf XML S5 du 29/08)
 // Structure réelle mesurée : Photothèque (compteur d'éléments, Trier et
@@ -34,7 +40,7 @@ struct TuilePhotoV2: View {
     let teinte: Color
     var body: some View {
         GeometryReader { geo in
-            if let img = UIImage(named: nom) {
+            if let img = chargerPellicule(nom) {
                 Color.clear.overlay(Image(uiImage: img).resizable().scaledToFill()).clipped()
             } else {
                 LinearGradient(colors: [teinte.opacity(0.55), teinte.opacity(0.25)], startPoint: .topLeading, endPoint: .bottomTrailing)

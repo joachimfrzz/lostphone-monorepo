@@ -209,6 +209,78 @@ struct RondAppel: View {
     }
 }
 
+// ============================================================ v2 ÉTAPE 3 — APPEL VIDÉO (écran distinct)
+// Plein écran « caméra » : le retour caméra du joueur est sombre (téléphone en main
+// dans la pénombre — cohérent avec la photo du viseur), vignette PIP, contrôles vidéo.
+struct AppelVideoVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let nom: String
+    @State private var secondes = 0
+    @State private var statut = "appel vidéo…"
+    private let tic = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        ZStack {
+            // « Retour caméra » plein écran : pénombre granuleuse
+            Color.black.ignoresSafeArea()
+            RadialGradient(colors: [Color(white: 0.09), .black],
+                           center: .init(x: 0.42, y: 0.3), startRadius: 60, endRadius: 500)
+                .ignoresSafeArea()
+
+            VStack {
+                // Bandeau haut : nom + statut (comme le vrai appel vidéo WhatsApp)
+                VStack(spacing: 3) {
+                    Text("Chiffré de bout en bout")
+                        .font(.system(size: 12)).foregroundStyle(waTexte2)
+                    Text(nom).font(.system(size: 24, weight: .semibold)).foregroundStyle(waTexte)
+                    Text(statut).font(.system(size: 15)).foregroundStyle(waTexte2)
+                }
+                .padding(.top, 16)
+                Spacer()
+            }
+
+            // Vignette PIP (l'interlocuteur n'a pas décroché : avatar sur fond sombre)
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(Color(hex: 0x101614))
+                        .frame(width: 104, height: 150)
+                        .overlay(AvatarSilhouette(taille: 54, image: nom == "Marc ❤️" ? "AvatarMarc" : nil))
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.white.opacity(0.12), lineWidth: 1))
+                        .padding(.trailing, 16)
+                }
+                .padding(.bottom, 128)
+            }
+
+            // Contrôles vidéo (différents de l'appel audio : caméra + retourner)
+            VStack {
+                Spacer()
+                HStack(spacing: 22) {
+                    RondAppel(symbole: "arrow.triangle.2.circlepath.camera.fill")
+                    RondAppel(symbole: "video.fill", actif: true)
+                    RondAppel(symbole: "mic.slash.fill")
+                    Button {
+                        dismiss()
+                    } label: {
+                        Circle().fill(Color(hex: 0xE53935)).frame(width: 62, height: 62)
+                            .overlay(Image(systemName: "phone.down.fill")
+                                .font(.system(size: 22)).foregroundStyle(.white))
+                    }
+                }
+                .padding(.bottom, 40)
+            }
+        }
+        .onReceive(tic) { _ in
+            secondes += 1
+            if secondes >= 11 { dismiss() }
+            else if secondes >= 8 { statut = "Indisponible" }
+            else if secondes >= 2 { statut = "sonnerie…" }
+        }
+    }
+}
+
 enum Haptique {
     static func leger() {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
@@ -242,6 +314,25 @@ enum ContenuReglages {
                           .valeur("Son", "Note"),
                           .interrupteur("Pastilles", true),
                           .interrupteur("Notifications groupées", false)],
+        // v2 étape 3 : plus AUCUN écran de fiche contact ne tourne dans le vide
+        "Gérer le stockage": [.valeur("Taille de la discussion", "48,7 Mo"),
+                              .valeur("Photos", "31 éléments"),
+                              .valeur("Vidéos", "2 éléments"),
+                              .valeur("Messages vocaux", "6 éléments"),
+                              .destructif("Vider la discussion")],
+        "Verrouiller la discussion": [.valeur("Face ID", "Non configuré sur cet iPhone"),
+                                      .interrupteur("Masquer dans la liste des discussions", false)],
+        "Confidentialité avancée": [.interrupteur("Confirmations de lecture", true),
+                                    .valeur("Messages éphémères", "Désactivés"),
+                                    .interrupteur("Protection avancée de la discussion", false),
+                                    .interrupteur("Aperçus de liens", true)],
+        "Enregistrer (Photos)": [.valeur("Enregistrer dans Photos", "Par défaut"),
+                                 .interrupteur("Enregistrer les médias entrants", false)],
+        "Thème de la discussion": [.valeur("Thème", "Par défaut"),
+                                   .valeur("Fond d'écran", "Sombre")],
+        "Messages éphémères": [.valeur("Durée des nouveaux messages", "Désactivés"),
+                               .interrupteur("Appliquer aux nouvelles discussions", false)],
+        "Important": [.valeur("Messages importants", "Aucun")],
         "Compte": [.valeur("Adresse e-mail", "sar•••@icloud.com"),
                    .navigation("Changer de numéro"),
                    .navigation("Demander les infos de mon compte"),

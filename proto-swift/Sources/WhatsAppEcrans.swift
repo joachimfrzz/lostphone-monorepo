@@ -229,14 +229,22 @@ struct GroupeReglages: View {
     }
 }
 
-// ============================================================ ARCHIVÉES
+// ============================================================ ARCHIVÉES (v2 étape 3 : contenu réel + désarchivage)
 struct ArchiveesVue: View {
     @Environment(\.dismiss) private var dismiss
-    private let convs: [(String, String, String)] = [
+    @ObservedObject private var magasin = MagasinWA.partage
+    private let convsBase: [(String, String, String)] = [
         ("Yoga du mardi 🧘‍♀️", "Émilie : On reprend le 2 septembre !", "12/07/2026"),
         ("Copro Bât. B", "Vous : Merci pour l'info", "28/06/2026"),
         ("+33 7 55 10 92 33", "Votre code de livraison est le 4471", "13/06/2026"),
     ]
+    // + les discussions archivées par le joueur (balayage)
+    private var convs: [(String, String, String)] {
+        magasin.archiveesJoueur.map { nom in
+            let (a, h) = EnvoisJoueur.partage.dernierApercu(nom) ?? ("", "")
+            return (nom, a, h)
+        } + convsBase
+    }
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -278,6 +286,14 @@ struct ArchiveesVue: View {
                     }
                     .listRowBackground(waNoir)
                     .listRowSeparatorTint(Color(hex: 0x222222))
+                    // v2 étape 3 : désarchiver par balayage (réel pour les archivées du joueur)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        if magasin.archiveesJoueur.contains(c.0) {
+                            Button {
+                                withAnimation { magasin.desarchiver(c.0) }
+                            } label: { Label("Désarchiver", systemImage: "archivebox") }.tint(Color(hex: 0x1D6F4C))
+                        }
+                    }
                 }
             }
             .listStyle(.plain)
@@ -320,11 +336,41 @@ struct InfosContactVue: View {
                     }
                     .padding(.top, 16).padding(.horizontal, 16)
 
-                    GroupeReglages(lignes: [
-                        ("photo.on.rectangle", "Médias, liens et documents", ">"),
-                        ("externaldrive", "Gérer le stockage", ">"),
-                        ("star", "Important", ">"),
-                    ]).padding(.top, 20)
+                    // v2 étape 3 : « Médias, liens et documents » ouvre un écran RÉEL (contenu de la discussion)
+                    VStack(spacing: 0) {
+                        NavigationLink(destination: MediasLiensDocsVue(contact: nom)) {
+                            HStack(spacing: 14) {
+                                Image(systemName: "photo.on.rectangle").font(.system(size: 17)).foregroundStyle(waTexte).frame(width: 26)
+                                Text("Médias, liens et documents").font(.system(size: 17)).foregroundStyle(waTexte)
+                                Spacer()
+                                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(waTexte2)
+                            }
+                            .padding(.horizontal, 16).padding(.vertical, 13)
+                        }
+                        Divider().background(Color(hex: 0x2A2A2A)).padding(.leading, 56)
+                        NavigationLink(destination: SousReglageVue(titre: "Gérer le stockage")) {
+                            HStack(spacing: 14) {
+                                Image(systemName: "externaldrive").font(.system(size: 17)).foregroundStyle(waTexte).frame(width: 26)
+                                Text("Gérer le stockage").font(.system(size: 17)).foregroundStyle(waTexte)
+                                Spacer()
+                                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(waTexte2)
+                            }
+                            .padding(.horizontal, 16).padding(.vertical, 13)
+                        }
+                        Divider().background(Color(hex: 0x2A2A2A)).padding(.leading, 56)
+                        NavigationLink(destination: SousReglageVue(titre: "Important")) {
+                            HStack(spacing: 14) {
+                                Image(systemName: "star").font(.system(size: 17)).foregroundStyle(waTexte).frame(width: 26)
+                                Text("Important").font(.system(size: 17)).foregroundStyle(waTexte)
+                                Spacer()
+                                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(waTexte2)
+                            }
+                            .padding(.horizontal, 16).padding(.vertical, 13)
+                        }
+                    }
+                    .background(Color(hex: 0x161717), in: RoundedRectangle(cornerRadius: 14))
+                    .padding(.horizontal, 16).padding(.bottom, 18)
+                    .padding(.top, 20)
                     GroupeReglages(lignes: [
                         ("app.badge", "Notifications", ">"),
                         ("paintpalette", "Thème de la discussion", ">"),
@@ -408,6 +454,129 @@ struct LigneAction: View {
             Spacer()
         }
         .padding(.horizontal, 16).padding(.vertical, 13)
+    }
+}
+
+// ============================================================ v2 ÉTAPE 3 — MÉDIAS, LIENS ET DOCUMENTS (réel)
+struct MediasLiensDocsVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let contact: String
+    @State private var onglet = 0
+
+    private var elements: [ElementConv] {
+        DonneesWA.conversation(contact) + (EnvoisJoueur.partage.parContact[contact] ?? [])
+    }
+    private var medias: [(String?, String)] {   // (fichier joueur éventuel, heure)
+        var out: [(String?, String)] = []
+        for el in elements {
+            switch el {
+            case .image(_, let h): out.append((nil, h))
+            case .album(_, let n, let h): for _ in 0..<n { out.append((nil, h)) }
+            case .imageJoueur(let f, let h): out.append((f, h))
+            case .video(_, _, let h): out.append((nil, h))
+            default: break
+            }
+        }
+        return out
+    }
+    private var liens: [(String, String, String)] {
+        elements.compactMap { if case .lien(_, let t, let u, _, let h) = $0 { return (t, u, h) } else { return nil } }
+    }
+    private var docs: [(String, String, String)] {
+        elements.compactMap { if case .document(_, let n, let d, let h) = $0 { return (n, d, h) } else { return nil } }
+    }
+    private let colonnes = [GridItem(.flexible(), spacing: 2), GridItem(.flexible(), spacing: 2),
+                            GridItem(.flexible(), spacing: 2), GridItem(.flexible(), spacing: 2)]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ZStack {
+                HStack {
+                    Button { dismiss() } label: {
+                        Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold)).foregroundStyle(waTexte)
+                    }
+                    Spacer()
+                }
+                Text(contact).font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)
+            }
+            .padding(.horizontal, 16).padding(.vertical, 10)
+
+            Picker("", selection: $onglet) {
+                Text("Médias").tag(0)
+                Text("Liens").tag(1)
+                Text("Docs").tag(2)
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, 16).padding(.bottom, 10)
+
+            ScrollView {
+                switch onglet {
+                case 1:
+                    if liens.isEmpty { EtatVideMLD(texte: "Aucun lien") } else {
+                        VStack(spacing: 0) {
+                            ForEach(0..<liens.count, id: \.self) { i in
+                                HStack(spacing: 12) {
+                                    RoundedRectangle(cornerRadius: 8).fill(Color(hex: 0x1C242B))
+                                        .frame(width: 44, height: 44)
+                                        .overlay(Image(systemName: "link").font(.system(size: 17)).foregroundStyle(waTexte2))
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(liens[i].0).font(.system(size: 15.5)).foregroundStyle(waTexte).lineLimit(2)
+                                        Text(liens[i].1).font(.system(size: 13)).foregroundStyle(waVertDoux)
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.horizontal, 16).padding(.vertical, 9)
+                            }
+                        }
+                    }
+                case 2:
+                    if docs.isEmpty { EtatVideMLD(texte: "Aucun document") } else {
+                        VStack(spacing: 0) {
+                            ForEach(0..<docs.count, id: \.self) { i in
+                                HStack(spacing: 12) {
+                                    Image(systemName: "doc.fill").font(.system(size: 24)).foregroundStyle(Color(hex: 0xE05B5B))
+                                        .frame(width: 44, height: 44)
+                                        .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 8))
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(docs[i].0).font(.system(size: 15.5)).foregroundStyle(waTexte)
+                                        Text(docs[i].1).font(.system(size: 13)).foregroundStyle(waTexte2)
+                                    }
+                                    Spacer()
+                                }
+                                .padding(.horizontal, 16).padding(.vertical, 9)
+                            }
+                        }
+                    }
+                default:
+                    if medias.isEmpty { EtatVideMLD(texte: "Aucun média") } else {
+                        LazyVGrid(columns: colonnes, spacing: 2) {
+                            ForEach(0..<medias.count, id: \.self) { i in
+                                if let f = medias[i].0, let img = ChargeurPhoto.image(f) {
+                                    Image(uiImage: img).resizable().scaledToFill()
+                                        .frame(height: 96).clipped()
+                                } else {
+                                    Rectangle().fill(Color(hex: 0x1C242B)).frame(height: 96)
+                                        .overlay(Image(systemName: "photo").font(.system(size: 20)).foregroundStyle(waTexte2))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .background(waNoir.ignoresSafeArea())
+        .toolbar(.hidden, for: .navigationBar)
+        .preferredColorScheme(.dark)
+    }
+}
+
+struct EtatVideMLD: View {
+    let texte: String
+    var body: some View {
+        VStack {
+            Spacer(minLength: 160)
+            Text(texte).font(.system(size: 15)).foregroundStyle(waTexte2)
+        }
     }
 }
 

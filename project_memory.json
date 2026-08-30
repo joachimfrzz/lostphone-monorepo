@@ -2148,7 +2148,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Correctif aperçu de liste Messages (la ligne observe elle-même EnvoisMsg) poussé SANS build — sera groupé avec le lot WhatsApp (méthode pipeline D86). Attente : retours WhatsApp de Joachim + nouveau token Codemagic (annoncé mais pas encore transmis — à mettre dans la fiche du skill, pas dans le chat)."
+  "derniere_action": "Lot WhatsApp v2 étape 3 codé (14 retours Joachim 19h02) + correctif aperçu Messages, poussé, build TestFlight lancé. Décision prise sur le micro : CONSERVÉ avec chrono réparé (bulle vocale envoyée, pas de vrai audio) — à valider par Joachim."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2562,6 +2562,20 @@
    "4 balayage inopérant et ouvrait la conversation — CORRIGÉ (LigneConvBalayable, cloche+corbeille, suppression récupérable)",
    "5 bulle verte pour nouvelle discussion contact — CORRIGÉ (iMessage bleu ; numéro brut reste SMS vert comme iOS)",
    "6 appui long sans effet — CORRIGÉ (tapback ❤️👍👎😂‼️❓)"
+  ],
+  "etape3_whatsapp_lot1": [
+   "tri par récence (Les filles>Chloé>Marc>Maman>Thomas>Marie) + activité joueur en tête + épinglées",
+   "archivées : vraies conversations (Yoga/Copro/livreur) + archivées du joueur + désarchiver",
+   "menu + : Nouvelle discussion (picker contacts réel), Nouveau groupe (multi-sélection réelle), Nouvelle communauté (création réelle, visible dans l'onglet)",
+   "caméra liste : Prendre une photo (viseur réel) / Photothèque (pellicule) → choix du destinataire → la photo part vraiment",
+   "balayage Non lu : bascule réelle + libellé Lu/Non lu selon l'état, pastilles pilotées par MagasinWA, ouvrir une conv la marque lue, Tout marquer comme lu réel",
+   "balayage Archiver réel ; Plus → Épingler/Désépingler + Infos du contact ; mode Sélectionner des discussions réel (archivage groupé)",
+   "micro : chrono réparé (minuteur), conservé — décision à valider",
+   "appel vidéo : écran distinct AppelVideoVue (caméra sombre, PIP, contrôles vidéo) ; bulles d'appel vidéo → rappel vidéo",
+   "fiche contact : plus AUCUN chargement infini (catalogue ContenuReglages complété : stockage, verrouiller (Face ID non configuré), confidentialité avancée, enregistrer Photos, thème, éphémères, important) + écran Médias/Liens/Docs RÉEL depuis le contenu de la discussion",
+   "+ dans une discussion : Photos/Appareil photo/Contact réels (photo et fiche partent dans le fil), Document/Sondage en réponse D56",
+   "audio : s'arrête en quittant la conversation (onDisappear)",
+   "communautés : création réelle + liste des communautés créées"
   ]
  }
 }

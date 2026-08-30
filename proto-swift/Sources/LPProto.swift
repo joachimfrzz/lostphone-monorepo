@@ -1200,32 +1200,51 @@ struct WhatsAppListeView: View {
     @State private var menuPlus = false
     @State private var menuCamera = false
     @State private var menuPoints = false
+    @State private var nouvelleDiscussionVisible = false
+    @State private var nouveauGroupeVisible = false
+    @State private var nouvelleCommunauteVisible = false
+    @State private var viseurListeVisible = false
+    @State private var photosListeVisibles = false
+    @State private var photoAEnvoyer: PhotoAPartagerWA? = nil
+    @State private var nomConvOuverte: String? = nil
+    @State private var modeSelection = false
+    @State private var selectionWA = Set<String>()
     @ObservedObject private var envois = EnvoisJoueur.partage
+    @ObservedObject private var magasin = MagasinWA.partage
 
-    private let convs: [(String, String, String, String?, Bool)] = [
-        ("Marc ❤️", "17:41", "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges co…", "1", true),
-        ("Chloé", "19:33", "📞 Appel vocal manqué", "2", true),
-        ("Les filles 💃", "19:40", "Chloé : Julie appelle-moi stp", nil, false),
-        ("Thomas", "samedi", "🤙 Trop fort ce sticker 😂", nil, false),
-        ("Maman", "dimanche", "tu viens dimanche ??? bisous maman", nil, false),
-        ("Marie kiné", "vendredi", "✓✓ ok pour l'échange de créneaux jeudi 👍", nil, false),
+    // v2 étape 3 : ordre de base PAR RÉCENCE (aujourd'hui 19:40 > 19:33 > 17:41 > dim. > sam. > ven.)
+    private let convs: [(String, String, String, Bool)] = [
+        ("Les filles 💃", "19:40", "Chloé : Julie appelle-moi stp", false),
+        ("Chloé", "19:33", "📞 Appel vocal manqué", true),
+        ("Marc ❤️", "17:41", "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges co…", true),
+        ("Maman", "dimanche", "tu viens dimanche ??? bisous maman", false),
+        ("Thomas", "samedi", "🤙 Trop fort ce sticker 😂", false),
+        ("Marie kiné", "vendredi", "✓✓ ok pour l'échange de créneaux jeudi 👍", false),
     ]
 
-    // L'aperçu de la liste reflète le dernier message envoyé par le joueur (persistant)
-    private var convsVivantes: [(String, String, String, String?, Bool)] {
-        convs.map { c in
-            if let dernier = envois.parContact[c.0]?.last {
-                if case .msgJoueur(let t, let h) = dernier { return (c.0, h, "Vous : " + t, nil, c.4) }
-                if case .msg(_, let t, let h) = dernier { return (c.0, h, "Vous : " + t, nil, c.4) }
-            }
+    // Aperçu vivant + nouvelles discussions du joueur + tri (épinglées > activité > récence de base)
+    private var convsVivantes: [(String, String, String, Bool)] {
+        var toutes: [(String, String, String, Bool)] =
+            magasin.nouvelles.map { ($0, "", "", false) } + convs
+        toutes = toutes.map { c in
+            if let (apercu, heure) = envois.dernierApercu(c.0) { return (c.0, heure, apercu, c.3) }
             return c
         }
+        let rang = Dictionary(uniqueKeysWithValues: envois.ordreActivite.enumerated().map { ($1, $0) })
+        var indexees = Array(toutes.enumerated())
+        indexees.sort { a, b in
+            let pa = magasin.epinglees.contains(a.element.0), pb = magasin.epinglees.contains(b.element.0)
+            if pa != pb { return pa }
+            let ra = rang[a.element.0] ?? Int.max, rb = rang[b.element.0] ?? Int.max
+            return ra == rb ? a.offset < b.offset : ra < rb
+        }
+        return indexees.map { $0.element }.filter { !magasin.archiveesJoueur.contains($0.0) }
     }
 
     // D51-1 : les filtres et la recherche fonctionnent réellement
-    private var convsFiltrees: [(String, String, String, String?, Bool)] {
+    private var convsFiltrees: [(String, String, String, Bool)] {
         var r = convsVivantes
-        if filtre == 1 { r = r.filter { $0.4 } }
+        if filtre == 1 { r = r.filter { magasin.nonLues[$0.0] != nil } }
         if filtre == 2 { r = r.filter { $0.0 == "Marc ❤️" || $0.0 == "Chloé" } }
         if filtre == 3 { r = r.filter { $0.0 == "Les filles 💃" } }
         if !recherche.isEmpty {
@@ -1286,23 +1305,60 @@ struct WhatsAppListeView: View {
                 RondAction(symbole: "plus", fond: waVertVif, teinte: Color(hex: 0x062E1C), gras: true) { menuPlus = true }
             }
             .padding(.horizontal, 16).padding(.top, 8)
-            // D51-1 : menus natifs plausibles sur chaque bouton
+            // v2 étape 3 : les menus AGISSENT vraiment
             .confirmationDialog("", isPresented: $menuPlus, titleVisibility: .hidden) {
-                Button("Nouvelle discussion") {}
-                Button("Nouveau groupe") {}
-                Button("Nouvelle communauté") {}
+                Button("Nouvelle discussion") { nouvelleDiscussionVisible = true }
+                Button("Nouveau groupe") { nouveauGroupeVisible = true }
+                Button("Nouvelle communauté") { nouvelleCommunauteVisible = true }
                 Button("Annuler", role: .cancel) {}
             }
             .confirmationDialog("", isPresented: $menuPoints, titleVisibility: .hidden) {
-                Button("Sélectionner des discussions") {}
-                Button("Tout marquer comme lu") {}
-                Button("Réglages") {}
+                Button("Sélectionner des discussions") { modeSelection = true; selectionWA.removeAll() }
+                Button("Tout marquer comme lu") { magasin.nonLues.removeAll() }
+                Button("Réglages") { onglet = 4 }
                 Button("Annuler", role: .cancel) {}
             }
             .confirmationDialog("Appareil photo", isPresented: $menuCamera, titleVisibility: .visible) {
-                Button("Prendre une photo") {}
-                Button("Photothèque") {}
+                Button("Prendre une photo") { viseurListeVisible = true }
+                Button("Photothèque") { photosListeVisibles = true }
                 Button("Annuler", role: .cancel) {}
+            }
+            .sheet(isPresented: $nouvelleDiscussionVisible) {
+                NouvelleDiscussionWAVue { nom in
+                    nouvelleDiscussionVisible = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { nomConvOuverte = nom }
+                }
+            }
+            .sheet(isPresented: $nouveauGroupeVisible) {
+                NouveauGroupeWAVue { nom in
+                    nouveauGroupeVisible = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { nomConvOuverte = nom }
+                }
+            }
+            .sheet(isPresented: $nouvelleCommunauteVisible) { NouvelleCommunauteVue() }
+            .fullScreenCover(isPresented: $viseurListeVisible) {
+                ViseurCameraVue { nomFichier in
+                    viseurListeVisible = false
+                    if let nf = nomFichier { photoAEnvoyer = PhotoAPartagerWA(fichier: nf) }
+                }
+            }
+            .sheet(isPresented: $photosListeVisibles) {
+                SelecteurPhotosMsg { nomFichier in
+                    photosListeVisibles = false
+                    photoAEnvoyer = PhotoAPartagerWA(fichier: nomFichier)
+                }
+            }
+            .sheet(item: $photoAEnvoyer) { photo in
+                // La photo prise/choisie part RÉELLEMENT chez le contact choisi
+                PartageContactWAVue(nomSource: "") { nom in
+                    let f = DateFormatter(); f.dateFormat = "HH:mm"
+                    envois.ajouter(nom, .imageJoueur(photo.fichier, f.string(from: Date())))
+                    photoAEnvoyer = nil
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { nomConvOuverte = nom }
+                }
+            }
+            .navigationDestination(item: $nomConvOuverte) { nom in
+                ConversationVue(nomContact: nom)
             }
             HStack {
                 Text("Discussions").font(.system(size: 34, weight: .bold)).foregroundStyle(waTexte)
@@ -1350,23 +1406,105 @@ struct WhatsAppListeView: View {
             } else {
                 List {
                     ForEach(convsFiltrees, id: \.0) { c in
-                        NavigationLink(destination: ConversationVue(nomContact: c.0)) { LigneConv(c: c) }
-                        .listRowBackground(waNoir)
-                        .listRowSeparatorTint(Color(hex: 0x222222))
-                        // D51-1 : balayages natifs (réponse plausible, logique moteur plus tard)
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button { } label: { Label("Archiver", systemImage: "archivebox.fill") }.tint(Color(hex: 0x25303A))
-                            Button { } label: { Label("Plus", systemImage: "ellipsis") }.tint(Color(hex: 0x3A3A3C))
-                        }
-                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                            Button { } label: { Label("Non lu", systemImage: "message.badge.filled.fill") }.tint(Color(hex: 0x1D6F4C))
+                        if modeSelection {
+                            // v2 étape 3 : mode sélection réel (archivage groupé)
+                            HStack(spacing: 10) {
+                                Image(systemName: selectionWA.contains(c.0) ? "checkmark.circle.fill" : "circle")
+                                    .font(.system(size: 22))
+                                    .foregroundStyle(selectionWA.contains(c.0) ? waVertDoux : waTexte2)
+                                LigneConv(c: (c.0, c.1, c.2, nil, c.3))
+                            }
+                            .listRowBackground(waNoir)
+                            .listRowSeparatorTint(Color(hex: 0x222222))
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                if selectionWA.contains(c.0) { selectionWA.remove(c.0) } else { selectionWA.insert(c.0) }
+                            }
+                        } else {
+                            LigneConvWARangee(c: c)
                         }
                     }
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .padding(.bottom, 70)
+                .overlay(alignment: .bottom) {
+                    if modeSelection {
+                        HStack {
+                            Text("Archiver")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(selectionWA.isEmpty ? waTexte2 : waVertDoux)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    guard !selectionWA.isEmpty else { return }
+                                    withAnimation { for n in selectionWA { magasin.archiver(n) } }
+                                    selectionWA.removeAll(); modeSelection = false
+                                }
+                            Spacer()
+                            Text("\(selectionWA.count) sélectionnée\(selectionWA.count > 1 ? "s" : "")")
+                                .font(.system(size: 14)).foregroundStyle(waTexte2)
+                            Spacer()
+                            Text("Terminé")
+                                .font(.system(size: 16, weight: .semibold)).foregroundStyle(waVertDoux)
+                                .contentShape(Rectangle())
+                                .onTapGesture { modeSelection = false; selectionWA.removeAll() }
+                        }
+                        .padding(.horizontal, 20).padding(.vertical, 12)
+                        .background(waTabBar, in: Capsule())
+                        .padding(.horizontal, 14).padding(.bottom, 78)
+                    }
+                }
             }
+        }
+    }
+}
+
+// v2 étape 3 — identifiant de photo à partager (sheet(item:))
+struct PhotoAPartagerWA: Identifiable {
+    let id = UUID()
+    let fichier: String
+}
+
+// v2 étape 3 — rangée de discussion avec balayages RÉELS (non lu / archiver / plus)
+struct LigneConvWARangee: View {
+    let c: (String, String, String, Bool)
+    @ObservedObject private var magasin = MagasinWA.partage
+    @State private var menuPlusVisible = false
+    @State private var infosVisibles = false
+
+    private var estNonLue: Bool { magasin.nonLues[c.0] != nil }
+
+    var body: some View {
+        NavigationLink(destination: ConversationVue(nomContact: c.0)) {
+            LigneConv(c: (c.0, c.1, c.2, magasin.nonLues[c.0].flatMap { $0.isEmpty ? "•" : $0 }, c.3),
+                      epinglee: magasin.epinglees.contains(c.0))
+        }
+        .listRowBackground(waNoir)
+        .listRowSeparatorTint(Color(hex: 0x222222))
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button {
+                withAnimation { magasin.archiver(c.0) }
+            } label: { Label("Archiver", systemImage: "archivebox.fill") }.tint(Color(hex: 0x25303A))
+            Button { menuPlusVisible = true } label: { Label("Plus", systemImage: "ellipsis") }.tint(Color(hex: 0x3A3A3C))
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+            // v2 étape 3 : bascule réelle, libellé adapté à l'état actuel
+            Button {
+                magasin.basculerNonLue(c.0)
+            } label: {
+                Label(estNonLue ? "Lu" : "Non lu",
+                      systemImage: estNonLue ? "message.badge" : "message.badge.filled.fill")
+            }.tint(Color(hex: 0x1D6F4C))
+        }
+        .confirmationDialog(c.0, isPresented: $menuPlusVisible, titleVisibility: .visible) {
+            Button(magasin.epinglees.contains(c.0) ? "Désépingler" : "Épingler") {
+                magasin.basculerEpingle(c.0)
+            }
+            Button("Infos du contact") { infosVisibles = true }
+            Button("Annuler", role: .cancel) {}
+        }
+        .navigationDestination(isPresented: $infosVisibles) {
+            InfosContactVue(nom: c.0, numero: DonneesWA.fiches[c.0]?.numero ?? "")
         }
     }
 }
@@ -1488,6 +1626,7 @@ struct OngletFlottant: View {
 
 struct LigneConv: View {
     let c: (String, String, String, String?, Bool)
+    var epinglee: Bool = false
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             AvatarSilhouette(taille: 56, image: c.0 == "Marc ❤️" ? "AvatarMarc" : nil)
@@ -1501,6 +1640,10 @@ struct LigneConv: View {
                     Text(c.2).font(.system(size: 15)).foregroundStyle(waTexte2)
                         .lineLimit(2).multilineTextAlignment(.leading)
                     Spacer()
+                    if epinglee {
+                        Image(systemName: "pin.fill").font(.system(size: 12))
+                            .foregroundStyle(waTexte2).padding(.top, 6)
+                    }
                     if let p = c.3 {
                         Text(p).font(.system(size: 12, weight: .bold))
                             .foregroundStyle(Color(hex: 0x062E1C))
@@ -1512,6 +1655,135 @@ struct LigneConv: View {
             }
         }
         .padding(.vertical, 5)
+    }
+}
+
+// v2 étape 3 — nouvelle discussion : choisir un contact, la discussion s'ouvre vraiment
+struct NouvelleDiscussionWAVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let choisir: (String) -> Void
+    @State private var recherche = ""
+    private var noms: [String] {
+        var vus = Set<String>()
+        var out: [String] = []
+        for n in DonneesWA.fiches.keys.sorted() where n != "Les filles 💃" {
+            if vus.insert(n).inserted { out.append(n) }
+        }
+        for c in DonneesTel.contacts {
+            if vus.insert(c.0).inserted { out.append(c.0) }
+        }
+        guard !recherche.isEmpty else { return out }
+        return out.filter { $0.localizedCaseInsensitiveContains(recherche) }
+    }
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                waNoir.ignoresSafeArea()
+                VStack(spacing: 0) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "magnifyingglass").font(.system(size: 14)).foregroundStyle(waTexte2)
+                        TextField("", text: $recherche,
+                                  prompt: Text("Rechercher un nom ou un numéro").foregroundStyle(waTexte2))
+                            .font(.system(size: 16)).foregroundStyle(waTexte)
+                    }
+                    .padding(.horizontal, 12).padding(.vertical, 9)
+                    .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 10))
+                    .padding(.horizontal, 14).padding(.top, 10)
+                    List {
+                        ForEach(noms, id: \.self) { nom in
+                            HStack(spacing: 12) {
+                                AvatarSilhouette(taille: 44)
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(nom).font(.system(size: 17)).foregroundStyle(waTexte)
+                                    Text("Salut ! J'utilise WhatsApp.").font(.system(size: 13.5)).foregroundStyle(waTexte2)
+                                }
+                            }
+                            .listRowBackground(waNoir)
+                            .listRowSeparatorTint(Color(hex: 0x222222))
+                            .contentShape(Rectangle())
+                            .onTapGesture { Haptique.leger(); choisir(nom) }
+                        }
+                    }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                }
+            }
+            .navigationTitle("Nouvelle discussion")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annuler") { dismiss() }.foregroundStyle(waVertDoux)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+// v2 étape 3 — nouveau groupe : sélection multiple, le groupe se crée vraiment
+struct NouveauGroupeWAVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let creer: (String) -> Void
+    @State private var selection: [String] = []
+    @State private var nomGroupe = ""
+    private var noms: [String] {
+        DonneesWA.fiches.keys.sorted().filter { $0 != "Les filles 💃" } + ["Julie"]
+    }
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                waNoir.ignoresSafeArea()
+                VStack(spacing: 0) {
+                    TextField("", text: $nomGroupe,
+                              prompt: Text("Sujet du groupe (facultatif)").foregroundStyle(waTexte2))
+                        .font(.system(size: 16)).foregroundStyle(waTexte)
+                        .padding(.horizontal, 14).padding(.vertical, 10)
+                        .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 10))
+                        .padding(.horizontal, 14).padding(.top, 10)
+                    List {
+                        ForEach(noms, id: \.self) { nom in
+                            HStack(spacing: 12) {
+                                Image(systemName: selection.contains(nom) ? "checkmark.circle.fill" : "circle")
+                                    .font(.system(size: 22))
+                                    .foregroundStyle(selection.contains(nom) ? waVertDoux : waTexte2)
+                                AvatarSilhouette(taille: 40)
+                                Text(nom).font(.system(size: 17)).foregroundStyle(waTexte)
+                            }
+                            .listRowBackground(waNoir)
+                            .listRowSeparatorTint(Color(hex: 0x222222))
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                Haptique.leger()
+                                if let i = selection.firstIndex(of: nom) { selection.remove(at: i) }
+                                else { selection.append(nom) }
+                            }
+                        }
+                    }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                }
+            }
+            .navigationTitle("Nouveau groupe")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annuler") { dismiss() }.foregroundStyle(waVertDoux)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Créer") {
+                        guard !selection.isEmpty else { return }
+                        Haptique.leger()
+                        let nom = nomGroupe.trimmingCharacters(in: .whitespaces).isEmpty
+                            ? selection.prefix(3).joined(separator: ", ")
+                            : nomGroupe.trimmingCharacters(in: .whitespaces)
+                        MagasinWA.partage.enregistrerNouvelle(nom)
+                        creer(nom)
+                    }
+                    .foregroundStyle(selection.isEmpty ? waTexte2 : waVertDoux)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 

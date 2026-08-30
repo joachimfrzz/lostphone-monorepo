@@ -27,6 +27,7 @@ enum ElementConv {
     case sticker(Bool, String, String)
     case transfere(Bool, String, String)
     case supprime(Bool, String)
+    case imageJoueur(String, String)   // photo réellement envoyée par le joueur (fichier pellicule, heure)
 }
 
 struct FicheContact {
@@ -54,9 +55,36 @@ enum DonneesWA {
         case "Thomas": return thomas
         case "Maman": return maman
         case "Marie kiné": return marie
+        case "Yoga du mardi 🧘‍♀️": return yoga
+        case "Copro Bât. B": return copro
+        case "+33 7 55 10 92 33": return livreur
         default: return [.systeme("Les messages et les appels sont chiffrés de bout en bout.")]
         }
     }
+
+    // ——— Discussions archivées (v2 étape 3 : elles ont un vrai contenu)
+    static let yoga: [ElementConv] = [
+        .systeme("Les messages et les appels sont chiffrés de bout en bout."),
+        .jour("10 juillet"),
+        .msgGroupe("Émilie", 0x6EB1F7, "Dernière séance mardi avant la pause de l'été ! Pensez à vos tapis 🧘‍♀️", "18:02"),
+        .msg(false, "Je serai là ! Merci pour cette super année Émilie 🙏", "18:30"),
+        .jour("12 juillet"),
+        .msgGroupe("Émilie", 0x6EB1F7, "Merci à toutes pour cette belle saison. On reprend le 2 septembre !", "10:14"),
+    ]
+    static let copro: [ElementConv] = [
+        .systeme("Les messages et les appels sont chiffrés de bout en bout."),
+        .jour("26 juin"),
+        .msgGroupe("M. Perrin", 0xE1A95F, "Bonjour à tous, coupure d'eau prévue jeudi de 9h à 12h pour travaux sur la colonne.", "09:20"),
+        .msgGroupe("Mme Diallo", 0x8FD08F, "Merci pour l'info ! Les compteurs seront relevés aussi ?", "11:47"),
+        .jour("28 juin"),
+        .msg(false, "Merci pour l'info", "08:12"),
+    ]
+    static let livreur: [ElementConv] = [
+        .systeme("Les messages et les appels sont chiffrés de bout en bout."),
+        .jour("13 juin"),
+        .msg(true, "Bonjour, votre livreur est en route. Votre code de livraison est le 4471", "11:05"),
+        .msg(false, "Merci, je suis à la maison jusqu'à midi", "11:08"),
+    ]
 
     // ——— Le fil de l'arnaque (cœur de Coches bleues)
     static let marc: [ElementConv] = [
@@ -183,14 +211,59 @@ enum DonneesWA {
 final class EnvoisJoueur: ObservableObject {
     static let partage = EnvoisJoueur()
     @Published var parContact: [String: [ElementConv]] = [:]
+    @Published var ordreActivite: [String] = []   // v2 étape 3 : contacts par récence d'envoi
     func ajouter(_ contact: String, _ element: ElementConv) {
         parContact[contact, default: []].append(element)
+        ordreActivite.removeAll { $0 == contact }
+        ordreActivite.insert(contact, at: 0)
     }
     func supprimer(_ contact: String, texte: String) {
         parContact[contact]?.removeAll { el in
             if case .msgJoueur(let t, _) = el { return t == texte }
             return false
         }
+    }
+    // Aperçu du dernier envoi pour la liste des discussions
+    func dernierApercu(_ contact: String) -> (String, String)? {
+        guard let el = parContact[contact]?.last else { return nil }
+        switch el {
+        case .msgJoueur(let t, let h): return ("Vous : " + t, h)
+        case .msg(_, let t, let h): return ("Vous : " + t, h)
+        case .riche(_, let t, let h, _, _, _): return ("Vous : " + t, h)
+        case .vocal(_, let d, let h): return ("🎤 " + d, h)
+        case .imageJoueur(_, let h): return ("📷 Photo", h)
+        case .contactPartage(_, let n, let h): return ("👤 " + n, h)
+        case .transfere(_, let t, let h): return ("Vous : " + t, h)
+        default: return nil
+        }
+    }
+}
+
+// ============================================================ MAGASIN LISTE WA (v2 étape 3)
+// Non-lues, archivées, épinglées, nouvelles discussions et communautés créées par le joueur.
+final class MagasinWA: ObservableObject {
+    static let partage = MagasinWA()
+    @Published var nonLues: [String: String] = ["Marc ❤️": "1", "Chloé": "2"]
+    @Published var archiveesJoueur: [String] = []
+    @Published var epinglees: Set<String> = []
+    @Published var nouvelles: [String] = []       // discussions créées par le joueur (nom)
+    @Published var communautes: [String] = []     // communautés créées par le joueur
+
+    func marquerLue(_ nom: String) { nonLues.removeValue(forKey: nom) }
+    func basculerNonLue(_ nom: String) {
+        if nonLues[nom] != nil { nonLues.removeValue(forKey: nom) }
+        else { nonLues[nom] = "" }   // "" = pastille sans nombre (marquée à la main, comme WhatsApp)
+    }
+    func archiver(_ nom: String) {
+        if !archiveesJoueur.contains(nom) { archiveesJoueur.append(nom) }
+    }
+    func desarchiver(_ nom: String) { archiveesJoueur.removeAll { $0 == nom } }
+    func basculerEpingle(_ nom: String) {
+        if epinglees.contains(nom) { epinglees.remove(nom) } else { epinglees.insert(nom) }
+    }
+    func enregistrerNouvelle(_ nom: String) {
+        guard DonneesWA.fiches[nom] == nil || DonneesWA.conversation(nom).count <= 1 else { return }
+        if !nouvelles.contains(nom) { nouvelles.insert(nom, at: 0) }
     }
 }
 
@@ -201,6 +274,7 @@ struct ConversationVue: View {
     @ObservedObject private var envois = EnvoisJoueur.partage
     @State private var saisie = ""
     @State private var appelVisible = false
+    @State private var appelVideoActif = false
     @State private var citation: String? = nil
     @State private var transfertVisible = false
     @State private var transfertTexte = ""
@@ -208,6 +282,14 @@ struct ConversationVue: View {
     @State private var debutEnreg: Date? = nil
     @State private var toastMic: String? = nil
     @State private var tempsEnreg = 0
+    // v2 étape 3 : pièces jointes réelles
+    @State private var menuJoint = false
+    @State private var photosVisibles = false
+    @State private var viseurVisible = false
+    @State private var contactPartageVisible = false
+    @State private var erreurJointe = ""
+    @State private var erreurJointeVisible = false
+    private let ticEnreg = Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()
 
     // Le fil = données d'histoire + envois persistants du joueur (observés en direct,
     // plus d'instantané figé : la vue pré-créée par la liste reste toujours à jour)
@@ -248,7 +330,7 @@ struct ConversationVue: View {
                 HStack(spacing: 22) {
                     Image(systemName: "video").font(.system(size: 19))
                         .contentShape(Rectangle())
-                        .onTapGesture { appelVisible = true }
+                        .onTapGesture { appelVideoActif = true }   // v2 étape 3 : écran vidéo distinct
                     Image(systemName: "phone").font(.system(size: 17))
                         .contentShape(Rectangle())
                         .onTapGesture { appelVisible = true }
@@ -296,6 +378,8 @@ struct ConversationVue: View {
             // ——— Saisie FONCTIONNELLE : écrire envoie vraiment (heure réelle)
             HStack(spacing: 14) {
                 Image(systemName: "plus").font(.system(size: 24)).foregroundStyle(waTexte)
+                    .contentShape(Rectangle())
+                    .onTapGesture { Haptique.leger(); menuJoint = true }   // v2 étape 3 : pièces jointes réelles
                 HStack {
                     TextField("", text: $saisie).font(.system(size: 16.5)).foregroundStyle(waTexte)
                     Image(systemName: "theatermask.and.paintbrush").font(.system(size: 17)).foregroundStyle(waTexte2)
@@ -316,6 +400,7 @@ struct ConversationVue: View {
                             if presse {
                                 enregistrement = true
                                 debutEnreg = Date()
+                                tempsEnreg = 0
                             } else if enregistrement {
                                 enregistrement = false
                                 let d = max(1, Int(Date().timeIntervalSince(debutEnreg ?? Date())))
@@ -337,10 +422,52 @@ struct ConversationVue: View {
         }
         .background(waNoir)
         .toolbar(.hidden, for: .navigationBar)
+        .onAppear { MagasinWA.partage.marquerLue(nomContact) }          // ouvrir = lire (v2 étape 3)
+        .onDisappear { LecteurAudio.partage.arret() }                   // l'audio s'arrête en quittant l'écran
+        .onReceive(ticEnreg) { _ in
+            if enregistrement, let d = debutEnreg { tempsEnreg = Int(Date().timeIntervalSince(d)) }
+        }
         .fullScreenCover(isPresented: $appelVisible) {
             // Règle 16/08 : soit l'appel fait partie de l'histoire, soit personne ne décroche.
             AppelVue(nom: nomContact)
         }
+        .fullScreenCover(isPresented: $appelVideoActif) {
+            AppelVideoVue(nom: nomContact)
+        }
+        // ——— v2 étape 3 : menu pièces jointes (Photos / Appareil photo réels)
+        .confirmationDialog("", isPresented: $menuJoint, titleVisibility: .hidden) {
+            Button("Photos") { photosVisibles = true }
+            Button("Appareil photo") { viseurVisible = true }
+            Button("Document") {
+                erreurJointe = ErreurLambda.reponse("generique"); erreurJointeVisible = true
+            }
+            Button("Contact") { contactPartageVisible = true }
+            Button("Sondage") {
+                erreurJointe = ErreurLambda.reponse("sondage"); erreurJointeVisible = true
+            }
+            Button("Annuler", role: .cancel) {}
+        }
+        .sheet(isPresented: $photosVisibles) {
+            SelecteurPhotosMsg { nomFichier in
+                envois.ajouter(nomContact, .imageJoueur(nomFichier, heureActuelle()))
+                photosVisibles = false
+            }
+        }
+        .fullScreenCover(isPresented: $viseurVisible) {
+            ViseurCameraVue { nomFichier in
+                if let nf = nomFichier { envois.ajouter(nomContact, .imageJoueur(nf, heureActuelle())) }
+                viseurVisible = false
+            }
+        }
+        .sheet(isPresented: $contactPartageVisible) {
+            PartageContactWAVue(nomSource: nomContact) { nomChoisi in
+                envois.ajouter(nomContact, .contactPartage(false, nomChoisi, heureActuelle()))
+                contactPartageVisible = false
+            }
+        }
+        .alert("WhatsApp", isPresented: $erreurJointeVisible) {
+            Button("OK", role: .cancel) {}
+        } message: { Text(erreurJointe) }
         .overlay(alignment: .bottom) {
             if enregistrement || toastMic != nil {
                 HStack(spacing: 8) {
@@ -365,26 +492,29 @@ struct ConversationVue: View {
         }
     }
 
+    // v2 étape 3 : le chrono est piloté par l'état tempsEnreg (mis à jour par le minuteur)
     private var chronoEnreg: String {
-        let d = Int(Date().timeIntervalSince(debutEnreg ?? Date()))
-        return String(format: "0:%02d", max(0, min(d, 59)))
+        String(format: "0:%02d", max(0, min(tempsEnreg, 59)))
+    }
+
+    private func heureActuelle() -> String {
+        let f = DateFormatter(); f.dateFormat = "HH:mm"; return f.string(from: Date())
     }
 
     private func envoyer() {
         let t = saisie.trimmingCharacters(in: .whitespaces)
         guard !t.isEmpty else { return }
-        let df = DateFormatter()
-        df.dateFormat = "HH:mm"
         let element: ElementConv
         if let cit = citation {
             // D54 : envoi joueur avec citation — bulle riche, coche gris (non-distribuée)
-            element = .riche(false, t, df.string(from: Date()), "Moi", cit, nil)
+            element = .riche(false, t, heureActuelle(), "Moi", cit, nil)
         } else {
-            element = ElementConv.msgJoueur(t, df.string(from: Date()))
+            element = ElementConv.msgJoueur(t, heureActuelle())
         }
         withAnimation(.spring(duration: 0.3)) {
             envois.ajouter(nomContact, element)
         }
+        MagasinWA.partage.enregistrerNouvelle(nomContact)   // nouvelle discussion → entre dans la liste
         saisie = ""
         citation = nil
     }
@@ -430,7 +560,10 @@ struct ConversationVue: View {
         case .appel(let r, let s, let t, let st, let h, let rouge):
             BulleAppel(recu: r, symbole: s, titre: t, sousTitre: st, heure: h, rouge: rouge)
                 .contentShape(Rectangle())
-                .onTapGesture { appelVisible = true }
+                .onTapGesture {
+                    // v2 étape 3 : rappeler en vidéo si l'événement était un appel vidéo
+                    if s.contains("video") { appelVideoActif = true } else { appelVisible = true }
+                }
         case .image(let r, let h): BulleImage(recu: r, heure: h).contextMenu { menuPourTexte("📷 Photo") }
         case .album(let r, let n, let h): BulleAlbum(recu: r, total: n, heure: h)
         case .video(let r, let d, let h):
@@ -446,6 +579,7 @@ struct ConversationVue: View {
         case .sticker(let r, let e2, let h): BulleSticker(recu: r, emoji: e2, heure: h)
         case .transfere(let r, let t, let h): BulleTransferee(recu: r, texte: t, heure: h)
         case .supprime(let r, let h): BulleSupprimee(recu: r, heure: h)
+        case .imageJoueur(let f, let h): BulleImageJoueurWA(fichier: f, heure: h)
         }
     }
 
@@ -466,6 +600,71 @@ struct ConversationVue: View {
                 envois.supprimer(nomContact, texte: texte)
             }
         } label: { Label("Supprimer", systemImage: "trash") }
+    }
+}
+
+// ============================================================ v2 ÉTAPE 3 — PHOTO ENVOYÉE (pellicule réelle, style WA)
+struct BulleImageJoueurWA: View {
+    let fichier: String
+    let heure: String
+    var body: some View {
+        HStack {
+            Spacer(minLength: 60)
+            ZStack(alignment: .bottomTrailing) {
+                if let img = ChargeurPhoto.image(fichier) {
+                    Image(uiImage: img).resizable().scaledToFill()
+                        .frame(width: 216, height: 260)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                }
+                HStack(spacing: 3) {
+                    Text(heure).font(.system(size: 11)).foregroundStyle(.white.opacity(0.9))
+                    Image(systemName: "checkmark").font(.system(size: 9, weight: .bold)).foregroundStyle(.white.opacity(0.75))
+                }
+                .padding(.horizontal, 8).padding(.vertical, 4)
+                .background(Color.black.opacity(0.35), in: Capsule())
+                .padding(7)
+            }
+            .padding(3)
+            .background(waBulleEnvoi)
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+        }
+    }
+}
+
+// ============================================================ v2 ÉTAPE 3 — PARTAGER UN CONTACT
+struct PartageContactWAVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let nomSource: String
+    let choisir: (String) -> Void
+    private var noms: [String] { DonneesWA.fiches.keys.sorted().filter { $0 != nomSource } }
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                waNoir.ignoresSafeArea()
+                List {
+                    ForEach(noms, id: \.self) { nom in
+                        HStack(spacing: 12) {
+                            AvatarSilhouette(taille: 40)
+                            Text(nom).font(.system(size: 17)).foregroundStyle(waTexte)
+                        }
+                        .listRowBackground(waNoir)
+                        .listRowSeparatorTint(Color(hex: 0x222222))
+                        .contentShape(Rectangle())
+                        .onTapGesture { Haptique.leger(); choisir(nom) }
+                    }
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+            }
+            .navigationTitle("Partager un contact")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annuler") { dismiss() }.foregroundStyle(waVertDoux)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 
@@ -552,14 +751,18 @@ struct ActusVue: View {
     }
 }
 
-// ============================================================ ONGLET COMMUNAUTÉS
+// ============================================================ ONGLET COMMUNAUTÉS (v2 étape 3 : création réelle)
 struct CommunautesVue: View {
+    @ObservedObject private var magasin = MagasinWA.partage
+    @State private var creationVisible = false
     var body: some View {
         VStack(spacing: 0) {
             HStack {
                 RondAction(symbole: "ellipsis")
                 Spacer()
-                RondAction(symbole: "plus", fond: waVertVif, teinte: Color(hex: 0x062E1C), gras: true)
+                RondAction(symbole: "plus", fond: waVertVif, teinte: Color(hex: 0x062E1C), gras: true) {
+                    creationVisible = true
+                }
             }
             .padding(.horizontal, 16).padding(.top, 8)
             HStack {
@@ -567,22 +770,108 @@ struct CommunautesVue: View {
                 Spacer()
             }
             .padding(.horizontal, 20).padding(.top, 12)
-            Spacer()
-            Image(systemName: "person.3.fill").font(.system(size: 56)).foregroundStyle(waTexte2)
-            Text("Restez en contact avec une communauté")
-                .font(.system(size: 19, weight: .semibold)).foregroundStyle(waTexte)
-                .multilineTextAlignment(.center).padding(.horizontal, 40).padding(.top, 16)
-            Text("Les communautés rassemblent les membres dans des groupes par thème.")
-                .font(.system(size: 14.5)).foregroundStyle(waTexte2)
-                .multilineTextAlignment(.center).padding(.horizontal, 40).padding(.top, 6)
-            Text("Nouvelle communauté").font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Color(hex: 0x062E1C))
-                .padding(.horizontal, 22).padding(.vertical, 12)
-                .background(waVertVif, in: Capsule())
-                .padding(.top, 20)
-            Spacer()
-            Spacer()
+
+            if magasin.communautes.isEmpty {
+                Spacer()
+                Image(systemName: "person.3.fill").font(.system(size: 56)).foregroundStyle(waTexte2)
+                Text("Restez en contact avec une communauté")
+                    .font(.system(size: 19, weight: .semibold)).foregroundStyle(waTexte)
+                    .multilineTextAlignment(.center).padding(.horizontal, 40).padding(.top, 16)
+                Text("Les communautés rassemblent les membres dans des groupes par thème.")
+                    .font(.system(size: 14.5)).foregroundStyle(waTexte2)
+                    .multilineTextAlignment(.center).padding(.horizontal, 40).padding(.top, 6)
+                Text("Nouvelle communauté").font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Color(hex: 0x062E1C))
+                    .padding(.horizontal, 22).padding(.vertical, 12)
+                    .background(waVertVif, in: Capsule())
+                    .padding(.top, 20)
+                    .contentShape(Capsule())
+                    .onTapGesture { Haptique.leger(); creationVisible = true }
+                Spacer()
+                Spacer()
+            } else {
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(magasin.communautes, id: \.self) { c in
+                            HStack(spacing: 12) {
+                                RoundedRectangle(cornerRadius: 12).fill(Color(hex: 0x1C242B))
+                                    .frame(width: 52, height: 52)
+                                    .overlay(Image(systemName: "person.3.fill").font(.system(size: 20)).foregroundStyle(waTexte2))
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(c).font(.system(size: 17, weight: .semibold)).foregroundStyle(waTexte)
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "megaphone.fill").font(.system(size: 11)).foregroundStyle(waVertDoux)
+                                        Text("Annonces").font(.system(size: 14.5)).foregroundStyle(waTexte2)
+                                    }
+                                }
+                                Spacer()
+                            }
+                            .padding(14)
+                            .background(Color(hex: 0x161717), in: RoundedRectangle(cornerRadius: 14))
+                        }
+                        HStack(spacing: 10) {
+                            Image(systemName: "plus").font(.system(size: 15, weight: .semibold))
+                            Text("Nouvelle communauté").font(.system(size: 16, weight: .semibold))
+                        }
+                        .foregroundStyle(waVertDoux)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(14)
+                        .background(Color(hex: 0x161717), in: RoundedRectangle(cornerRadius: 14))
+                        .contentShape(Rectangle())
+                        .onTapGesture { Haptique.leger(); creationVisible = true }
+                        Spacer(minLength: 90)
+                    }
+                    .padding(.horizontal, 16).padding(.top, 16)
+                }
+            }
         }
+        .sheet(isPresented: $creationVisible) { NouvelleCommunauteVue() }
+    }
+}
+
+// v2 étape 3 — création de communauté (réelle, session)
+struct NouvelleCommunauteVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var nom = ""
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                waNoir.ignoresSafeArea()
+                VStack(spacing: 18) {
+                    RoundedRectangle(cornerRadius: 20).fill(Color(hex: 0x1C242B))
+                        .frame(width: 90, height: 90)
+                        .overlay(Image(systemName: "camera.fill").font(.system(size: 26)).foregroundStyle(waTexte2))
+                        .padding(.top, 26)
+                    TextField("", text: $nom,
+                              prompt: Text("Nom de la communauté").foregroundStyle(waTexte2))
+                        .font(.system(size: 17)).foregroundStyle(waTexte)
+                        .padding(.horizontal, 16).padding(.vertical, 12)
+                        .background(Color(hex: 0x161717), in: RoundedRectangle(cornerRadius: 12))
+                        .padding(.horizontal, 16)
+                    Text("Exemples : votre quartier, votre école, vos collègues.")
+                        .font(.system(size: 13.5)).foregroundStyle(waTexte2)
+                    Spacer()
+                }
+            }
+            .navigationTitle("Nouvelle communauté")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Annuler") { dismiss() }.foregroundStyle(waVertDoux)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Créer") {
+                        let n = nom.trimmingCharacters(in: .whitespaces)
+                        guard !n.isEmpty else { return }
+                        Haptique.leger()
+                        MagasinWA.partage.communautes.append(n)
+                        dismiss()
+                    }
+                    .foregroundStyle(nom.trimmingCharacters(in: .whitespaces).isEmpty ? waTexte2 : waVertDoux)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
     }
 }
 

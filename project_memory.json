@@ -2148,7 +2148,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Lot WhatsApp codé/poussé, build BLOQUÉ en attente de la clé App Store Connect nommée «Codemagic» dans le compte Codemagic 3 (action Joachim). Checklists Photos et Mail envoyées (2 d'avance, D86 amendé : builds groupés par session de 4-5 apps)."
+  "derniere_action": "Pause du 30/08 soir. Livré : GUIDE-VERIFICATION-COMPLET.md (grille universelle U1-U8 + fiche détaillée des 29 apps existantes + 9 futures apps décidées avec leurs angles narratifs) + lot Téléphone (17 corrections, audit D82 en avance de phase) poussé NON BUILDÉ. Build toujours bloqué : App Store Connect refuse de servir le .p8 (« erreur s'est produite ») — Joachim s'en occupe ce soir ; prochaine hypothèse à vérifier : clé avec rôle ADMIN requise pour créer les profils. À la reprise : (1) clé Admin dans Codemagic → build session 1 (Messages+WhatsApp+Téléphone), (2) listes Photos/Mail de Joachim → coder → build."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",

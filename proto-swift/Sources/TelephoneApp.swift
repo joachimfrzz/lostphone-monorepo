@@ -62,6 +62,23 @@ enum DonneesTel {
     ]
 }
 
+// ============================================================ MAGASIN TÉLÉPHONE (v2 étape 4 — audit D82)
+// Favoris réels, suppressions d'appels/vocaux (session), contacts ajoutés par le joueur.
+final class MagasinTel: ObservableObject {
+    static let partage = MagasinTel()
+    @Published var favoris: [String] = ["Maman", "Chloé", "Marc ❤️"]   // crédible : Sarah a des favoris
+    @Published var appelsSupprimes: Set<Int> = []      // index dans DonneesTel.recents
+    @Published var vocauxSupprimes: Set<String> = []   // fichiers
+    @Published var contactsAjoutes: [(String, String)] = []
+
+    var tousContacts: [(String, String)] {
+        (DonneesTel.contacts + contactsAjoutes).sorted { $0.0.localizedCaseInsensitiveCompare($1.0) == .orderedAscending }
+    }
+    func basculerFavori(_ nom: String) {
+        if let i = favoris.firstIndex(of: nom) { favoris.remove(at: i) } else { favoris.append(nom) }
+    }
+}
+
 // ============================================================ APP TÉLÉPHONE (5 onglets)
 struct TelephoneVue: View {
     @Environment(\.dismiss) private var dismiss
@@ -126,18 +143,30 @@ struct TelRecentsVue: View {
     @State private var appelVisible = false
     @State private var appelDestinataire = ""
     @State private var appelNumero = ""
+    @State private var recherche = ""
+    @State private var modeSelection = false
+    @State private var selection = Set<Int>()
+    @ObservedObject private var magasin = MagasinTel.partage
 
-    private var appels: [AppelRecent] {
-        filtreManques ? DonneesTel.recents.filter { $0.manque } : DonneesTel.recents
+    // v2 étape 4 : indices réels conservés pour suppression/sélection
+    private var appels: [(Int, AppelRecent)] {
+        var r = Array(DonneesTel.recents.enumerated()).filter { !magasin.appelsSupprimes.contains($0.offset) }
+        if filtreManques { r = r.filter { $0.element.manque } }
+        if !recherche.isEmpty {
+            r = r.filter { $0.element.nom.localizedCaseInsensitiveContains(recherche) }
+        }
+        return r.map { ($0.offset, $0.element) }
     }
 
     var body: some View {
         VStack(spacing: 0) {
             // Barre du haut : Modifier | Tous/Manqués | menu
             HStack {
-                Text("Modifier").font(.system(size: 16)).foregroundStyle(telTexte)
+                Text(modeSelection ? "Terminé" : "Modifier").font(.system(size: 16)).foregroundStyle(telTexte)
                     .padding(.horizontal, 12).padding(.vertical, 8)
                     .background(telChamp, in: Capsule())
+                    .contentShape(Capsule())
+                    .onTapGesture { Haptique.leger(); modeSelection.toggle() }
                 Spacer()
                 HStack(spacing: 0) {
                     Text("Tous").font(.system(size: 14, weight: .semibold))
@@ -159,7 +188,10 @@ struct TelRecentsVue: View {
                     .padding(9).background(telChamp, in: Circle())
                     .onTapGesture { menuVisible = true }
                     .confirmationDialog("", isPresented: $menuVisible, titleVisibility: .hidden) {
-                        Button("Effacer les appels récents", role: .destructive) {}
+                        // v2 étape 4 : effacement RÉEL (session) — le joueur détruit ses indices en connaissance de cause
+                        Button("Effacer les appels récents", role: .destructive) {
+                            withAnimation { magasin.appelsSupprimes.formUnion(0..<DonneesTel.recents.count) }
+                        }
                         Button("Annuler", role: .cancel) {}
                     }
             }
@@ -171,10 +203,12 @@ struct TelRecentsVue: View {
             }
             .padding(.horizontal, 20).padding(.top, 10)
 
+            // v2 étape 4 : vraie recherche (clavier réel, filtre en direct)
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass").foregroundStyle(telTexte2).font(.system(size: 16))
-                Text("Recherche").foregroundStyle(telTexte2).font(.system(size: 17))
-                Spacer()
+                TextField("", text: $recherche,
+                          prompt: Text("Recherche").foregroundStyle(telTexte2))
+                    .foregroundStyle(telTexte).font(.system(size: 17))
                 Image(systemName: "mic.fill").foregroundStyle(telTexte2).font(.system(size: 15))
             }
             .padding(.horizontal, 12).frame(height: 38)
@@ -182,9 +216,19 @@ struct TelRecentsVue: View {
             .padding(.horizontal, 16).padding(.top, 10)
 
             List {
-                ForEach(0..<appels.count, id: \.self) { i in
-                    let a = appels[i]
+                ForEach(appels, id: \.0) { paire in
+                    let indexReel = paire.0
+                    let a = paire.1
                     HStack(spacing: 12) {
+                        if modeSelection {
+                            Image(systemName: "minus.circle.fill").font(.system(size: 22))
+                                .foregroundStyle(telRouge)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    Haptique.leger()
+                                    withAnimation { _ = magasin.appelsSupprimes.insert(indexReel) }
+                                }
+                        }
                         // Miroir phase B : la réf montre des INITIALES rondes, pas des silhouettes
                         if a.nom == "Marc ❤️" {
                             AvatarSilhouette(taille: 42, image: "AvatarMarc")
@@ -219,6 +263,12 @@ struct TelRecentsVue: View {
                     }
                     .listRowBackground(telNoir)
                     .listRowSeparatorTint(Color(hex: 0x222222))
+                    // v2 étape 4 : balayage = suppression réelle (comme iOS)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            withAnimation { _ = magasin.appelsSupprimes.insert(indexReel) }
+                        } label: { Label("Supprimer", systemImage: "trash.fill") }
+                    }
                 }
             }
             .listStyle(.plain)
@@ -240,9 +290,11 @@ struct TelFicheVue: View {
     @State private var ongletVocaux = false
     @State private var notesTexte = ""
     @State private var notesEnEdition = false
+    @ObservedObject private var lecteurAudio = LecteurAudio.partage   // v2 étape 4 : lecture vocaux fiche
 
     private var numero: String {
-        DonneesTel.contacts.first(where: { $0.0 == nom })?.1 ?? "numéro masqué"
+        if nom == "Sarah Levasseur" { return "+33 6 99 01 47 23" }   // le numéro de Sarah (cohérent QR WhatsApp)
+        return MagasinTel.partage.tousContacts.first(where: { $0.0 == nom })?.1 ?? "numéro masqué"
     }
     private var initiales: String {
         let mots = nom.split(separator: " ")
@@ -262,9 +314,8 @@ struct TelFicheVue: View {
                                 .background(.ultraThinMaterial, in: Circle())
                         }
                         Spacer()
-                        Text("Modifier").font(.system(size: 15)).foregroundStyle(telTexte)
-                            .padding(.horizontal, 14).padding(.vertical, 9)
-                            .background(.ultraThinMaterial, in: Capsule())
+                        // v2 étape 4 : Modifier ouvre la vraie feuille de modification (session)
+                        BoutonModifierContact(nom: nom, numero: numero)
                     }
                     .padding(.horizontal, 16).padding(.top, 6)
 
@@ -322,6 +373,11 @@ struct TelFicheVue: View {
                             ForEach(vocaux, id: \.fichier) { v in
                                 VStack(alignment: .leading, spacing: 4) {
                                     HStack {
+                                        // v2 étape 4 : lecture réelle du vocal depuis la fiche
+                                        Button { LecteurAudio.partage.bascule(v.fichier) } label: {
+                                            Image(systemName: LecteurAudio.partage.fichierActif == v.fichier ? "pause.circle.fill" : "play.circle.fill")
+                                                .font(.system(size: 26)).foregroundStyle(telBleu)
+                                        }
                                         Text(v.date).font(.system(size: 13)).foregroundStyle(telTexte2)
                                         Spacer()
                                         Text(v.duree).font(.system(size: 13)).foregroundStyle(telTexte2)
@@ -348,6 +404,8 @@ struct TelFicheVue: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
                     .padding(.horizontal, 16).padding(.top, 10)
+                    .contentShape(Rectangle())
+                    .onTapGesture { Haptique.leger(); appelVisible = true }   // v2 étape 4 : la carte numéro appelle
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Notes").font(.system(size: 13)).foregroundStyle(telTexte2)
@@ -373,7 +431,7 @@ struct TelFicheVue: View {
                         HStack {
                             Text("Historique des appels").font(.system(size: 16)).foregroundStyle(telTexte)
                             Spacer()
-                            Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundStyle(telTexte2)
+                            // v2 étape 4 : chevron retiré (il ne menait nulle part — l'historique est dessous)
                         }
                         .padding(.horizontal, 14).padding(.top, 12)
                         let historique = DonneesTel.recents.filter { $0.nom == nom }.prefix(3)
@@ -517,9 +575,14 @@ struct LigneFiche: View {
     }
 }
 
-// ============================================================ FAVORIS (état vide réel)
+// ============================================================ FAVORIS (v2 étape 4 : réels — Sarah a des favoris)
 struct TelFavorisVue: View {
-    @State private var menuVisible = false
+    @ObservedObject private var magasin = MagasinTel.partage
+    @State private var pickerVisible = false
+    @State private var appelVisible = false
+    @State private var appelNom = ""
+    @State private var appelNumero = ""
+
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -530,35 +593,128 @@ struct TelFavorisVue: View {
             .overlay(alignment: .trailing) {
                 Image(systemName: "plus").font(.system(size: 17, weight: .semibold)).foregroundStyle(telTexte)
                     .padding(.trailing, 18)
-                    .onTapGesture { menuVisible = true }
-                    .confirmationDialog("Ajouter un favori", isPresented: $menuVisible, titleVisibility: .visible) {
-                        Button("Choisir un contact") {}
-                        Button("Annuler", role: .cancel) {}
-                    }
+                    .contentShape(Rectangle())
+                    .onTapGesture { Haptique.leger(); pickerVisible = true }
             }
             .padding(.vertical, 12)
-            Spacer()
-            Text("Aucun favori").font(.system(size: 16)).foregroundStyle(telTexte2)
-            Spacer()
+
+            if magasin.favoris.isEmpty {
+                Spacer()
+                Text("Aucun favori").font(.system(size: 16)).foregroundStyle(telTexte2)
+                Spacer()
+            } else {
+                List {
+                    ForEach(magasin.favoris, id: \.self) { nom in
+                        HStack(spacing: 12) {
+                            if nom == "Marc ❤️" {
+                                AvatarSilhouette(taille: 42, image: "AvatarMarc")
+                            } else {
+                                Circle().fill(Color(hex: 0x3A3A3C)).frame(width: 42, height: 42)
+                                    .overlay(Text(nom.split(separator: " ").prefix(2).compactMap { $0.first.map(String.init) }.joined().uppercased())
+                                        .font(.system(size: 16, weight: .semibold)).foregroundStyle(.white))
+                            }
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(nom).font(.system(size: 17)).foregroundStyle(telTexte)
+                                HStack(spacing: 4) {
+                                    Image(systemName: "phone.fill").font(.system(size: 11)).foregroundStyle(telTexte2)
+                                    Text("portable").font(.system(size: 14)).foregroundStyle(telTexte2)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                Haptique.leger()
+                                appelNom = nom
+                                appelNumero = DonneesTel.contacts.first(where: { $0.0 == nom })?.1 ?? ""
+                                appelVisible = true
+                            }
+                            NavigationLink(destination: TelFicheVue(nom: nom)) {
+                                Image(systemName: "info.circle").font(.system(size: 20)).foregroundStyle(telBleu)
+                            }
+                        }
+                        .listRowBackground(telNoir)
+                        .listRowSeparatorTint(Color(hex: 0x222222))
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                withAnimation { magasin.favoris.removeAll { $0 == nom } }
+                            } label: { Label("Supprimer", systemImage: "trash.fill") }
+                        }
+                    }
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .padding(.bottom, 70)
+            }
+        }
+        .sheet(isPresented: $pickerVisible) {
+            // Choisir un contact à ajouter aux favoris — réel
+            NavigationStack {
+                List {
+                    ForEach(magasin.tousContacts.filter { !magasin.favoris.contains($0.0) }, id: \.0) { c in
+                        HStack {
+                            Text(c.0).font(.system(size: 17)).foregroundStyle(telTexte)
+                            Spacer()
+                            Text(c.1).font(.system(size: 14)).foregroundStyle(telTexte2)
+                        }
+                        .listRowBackground(telNoir)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            Haptique.leger()
+                            magasin.favoris.append(c.0)
+                            pickerVisible = false
+                        }
+                    }
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(telNoir)
+                .navigationTitle("Ajouter un favori")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Annuler") { pickerVisible = false }.foregroundStyle(telBleu)
+                    }
+                }
+            }
+            .preferredColorScheme(.dark)
+        }
+        .fullScreenCover(isPresented: $appelVisible) {
+            AppelTelVue(destinataire: appelNom, numero: appelNumero)
         }
     }
 }
 
-// ============================================================ CONTACTS
+// ============================================================ CONTACTS (v2 étape 4 : recherche + ajout réels)
 struct TelContactsVue: View {
+    @ObservedObject private var magasin = MagasinTel.partage
+    @State private var recherche = ""
+    @State private var nouveauVisible = false
+    @State private var champNom = ""
+    @State private var champTel = ""
+
+    private var contacts: [(String, String)] {
+        guard !recherche.isEmpty else { return magasin.tousContacts }
+        return magasin.tousContacts.filter {
+            $0.0.localizedCaseInsensitiveContains(recherche) || $0.1.contains(recherche)
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             HStack {
                 Text("Contacts").font(.system(size: 34, weight: .bold)).foregroundStyle(telTexte)
                 Spacer()
                 Image(systemName: "plus").font(.system(size: 19)).foregroundStyle(telBleu)
+                    .contentShape(Rectangle())
+                    .onTapGesture { champNom = ""; champTel = ""; nouveauVisible = true }
             }
             .padding(.horizontal, 20).padding(.top, 14)
 
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass").foregroundStyle(telTexte2).font(.system(size: 16))
-                Text("Recherche").foregroundStyle(telTexte2).font(.system(size: 17))
-                Spacer()
+                TextField("", text: $recherche,
+                          prompt: Text("Recherche").foregroundStyle(telTexte2))
+                    .foregroundStyle(telTexte).font(.system(size: 17))
                 Image(systemName: "mic.fill").foregroundStyle(telTexte2).font(.system(size: 15))
             }
             .padding(.horizontal, 12).frame(height: 38)
@@ -566,21 +722,24 @@ struct TelContactsVue: View {
             .padding(.horizontal, 16).padding(.top, 8)
 
             List {
-                Section {
-                    HStack(spacing: 12) {
-                        ZStack {
-                            Circle().fill(Color(hex: 0x1D6F4C)).frame(width: 44, height: 44)
-                            Image(systemName: "person.fill").font(.system(size: 20)).foregroundStyle(Color(hex: 0x7BE0A2)).offset(y: 2)
+                if recherche.isEmpty {
+                    Section {
+                        NavigationLink(destination: TelFicheVue(nom: "Sarah Levasseur")) {
+                            HStack(spacing: 12) {
+                                ZStack {
+                                    Circle().fill(Color(hex: 0x1D6F4C)).frame(width: 44, height: 44)
+                                    Image(systemName: "person.fill").font(.system(size: 20)).foregroundStyle(Color(hex: 0x7BE0A2)).offset(y: 2)
+                                }
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text("Sarah Levasseur").font(.system(size: 17, weight: .semibold)).foregroundStyle(telTexte)
+                                    Text("Fiche de contact").font(.system(size: 13)).foregroundStyle(telTexte2)
+                                }
+                            }
                         }
-                        VStack(alignment: .leading, spacing: 1) {
-                            Text("Sarah Levasseur").font(.system(size: 17, weight: .semibold)).foregroundStyle(telTexte)
-                            Text("Fiche de contact").font(.system(size: 13)).foregroundStyle(telTexte2)
-                        }
+                        .listRowBackground(telNoir)
                     }
-                    .listRowBackground(telNoir)
                 }
-                ForEach(0..<DonneesTel.contacts.count, id: \.self) { i in
-                    let c = DonneesTel.contacts[i]
+                ForEach(contacts, id: \.0) { c in
                     NavigationLink(destination: TelFicheVue(nom: c.0)) {
                         Text(c.0).font(.system(size: 17)).foregroundStyle(telTexte)
                     }
@@ -591,6 +750,49 @@ struct TelContactsVue: View {
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .padding(.bottom, 70)
+        }
+        // v2 étape 4 : nouveau contact RÉEL (session) — apparaît dans la liste et devient appelable
+        .sheet(isPresented: $nouveauVisible) {
+            NavigationStack {
+                VStack(spacing: 0) {
+                    VStack(spacing: 0) {
+                        HStack {
+                            Text("Nom").font(.system(size: 14)).foregroundStyle(.secondary).frame(width: 70, alignment: .leading)
+                            TextField("Nom du contact", text: $champNom).foregroundStyle(.white)
+                        }
+                        .padding(14)
+                        Divider().overlay(Color(hex: 0x3A3A3C))
+                        HStack {
+                            Text("Numéro").font(.system(size: 14)).foregroundStyle(.secondary).frame(width: 70, alignment: .leading)
+                            TextField("+33 6 …", text: $champTel).foregroundStyle(.white).keyboardType(.phonePad)
+                        }
+                        .padding(14)
+                    }
+                    .background(Color(hex: 0x2C2C2E), in: RoundedRectangle(cornerRadius: 12))
+                    .padding(16)
+                    Spacer()
+                }
+                .background(Color(hex: 0x1C1C1E))
+                .navigationTitle("Nouveau contact")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Annuler") { nouveauVisible = false }.foregroundStyle(telBleu)
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("OK") {
+                            let n = champNom.trimmingCharacters(in: .whitespaces)
+                            guard !n.isEmpty else { return }
+                            Haptique.leger()
+                            magasin.contactsAjoutes.append((n, champTel.trimmingCharacters(in: .whitespaces)))
+                            nouveauVisible = false
+                        }
+                        .foregroundStyle(champNom.trimmingCharacters(in: .whitespaces).isEmpty ? telTexte2 : telBleu)
+                    }
+                }
+            }
+            .preferredColorScheme(.dark)
+            .presentationDetents([.medium])
         }
     }
 }
@@ -616,21 +818,26 @@ struct TelClavierVue: View {
                 .padding(.horizontal, 30)
 
             if let s = suggestion {
-                // Miroir phase B (réf 05-clavier-suggestion) : carte contact + « autres résultats »
+                // v2 étape 4 : la suggestion APPELLE au toucher, et le compte est réel
+                let autres = max(0, DonneesTel.contacts.filter { $0.1.replacingOccurrences(of: " ", with: "").contains(numero) }.count - 1)
                 VStack(alignment: .leading, spacing: 7) {
                     HStack(spacing: 8) {
                         Image(systemName: "person.crop.circle").font(.system(size: 15)).foregroundStyle(telTexte2)
                         Text(s.0).font(.system(size: 14, weight: .semibold)).foregroundStyle(telTexte).lineLimit(1)
                         Text(s.1).font(.system(size: 14)).foregroundStyle(telBleu)
                     }
-                    HStack(spacing: 8) {
-                        Image(systemName: "magnifyingglass").font(.system(size: 13)).foregroundStyle(telTexte2)
-                        Text("3 autres résultats").font(.system(size: 13.5)).foregroundStyle(telTexte2)
+                    if autres > 0 {
+                        HStack(spacing: 8) {
+                            Image(systemName: "magnifyingglass").font(.system(size: 13)).foregroundStyle(telTexte2)
+                            Text("\(autres) autre\(autres > 1 ? "s" : "") résultat\(autres > 1 ? "s" : "")").font(.system(size: 13.5)).foregroundStyle(telTexte2)
+                        }
                     }
                 }
                 .padding(.horizontal, 14).padding(.vertical, 10)
                 .background(telChamp, in: RoundedRectangle(cornerRadius: 12))
                 .padding(.top, 8)
+                .contentShape(Rectangle())
+                .onTapGesture { Haptique.leger(); appelVisible = true }
             }
 
             Spacer()
@@ -696,19 +903,60 @@ struct TelClavierVue: View {
 // ============================================================ MESSAGERIE (répondeur + lecteur + transcription)
 struct TelMessagerieVue: View {
     @ObservedObject private var lecteur = LecteurAudio.partage
+    @ObservedObject private var magasin = MagasinTel.partage
     @State private var ouvert: Int? = nil
+    @State private var modeSelection = false
+    @State private var annonceVisible = false
+    @State private var hautParleur = true
+    @State private var partageVisible = false
 
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
                 HStack {
-                    Text("Modifier").font(.system(size: 16)).foregroundStyle(telTexte)
+                    // v2 étape 4 : Modifier = mode suppression réel
+                    Text(modeSelection ? "Terminé" : "Modifier").font(.system(size: 16)).foregroundStyle(telTexte)
+                        .contentShape(Rectangle())
+                        .onTapGesture { Haptique.leger(); modeSelection.toggle() }
                     Spacer()
+                    // v2 étape 4 : Annonce = écran réel du message d'accueil
                     Text("Annonce").font(.system(size: 16)).foregroundStyle(telTexte)
+                        .contentShape(Rectangle())
+                        .onTapGesture { Haptique.leger(); annonceVisible = true }
                 }
                 Text("Messagerie").font(.system(size: 17, weight: .semibold)).foregroundStyle(telTexte)
             }
             .padding(.horizontal, 18).padding(.vertical, 10)
+            .sheet(isPresented: $annonceVisible) {
+                VStack(spacing: 16) {
+                    Text("Annonce d'accueil").font(.system(size: 18, weight: .semibold)).foregroundStyle(telTexte)
+                        .padding(.top, 24)
+                    Text("Annonce par défaut de l'opérateur")
+                        .font(.system(size: 15)).foregroundStyle(telTexte2)
+                    HStack(spacing: 10) {
+                        Image(systemName: "checkmark.circle.fill").foregroundStyle(telVert)
+                        Text("Par défaut").font(.system(size: 16)).foregroundStyle(telTexte)
+                        Spacer()
+                    }
+                    .padding(14)
+                    .background(telChamp, in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal, 16)
+                    HStack(spacing: 10) {
+                        Image(systemName: "circle").foregroundStyle(telTexte2)
+                        Text("Personnalisée").font(.system(size: 16)).foregroundStyle(telTexte2)
+                        Spacer()
+                        Text("Non enregistrée").font(.system(size: 13)).foregroundStyle(telTexte2)
+                    }
+                    .padding(14)
+                    .background(telChamp, in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal, 16)
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+                .background(telNoir)
+                .presentationDetents([.height(280)])
+                .preferredColorScheme(.dark)
+            }
 
             HStack {
                 Text("Messagerie").font(.system(size: 34, weight: .bold)).foregroundStyle(telTexte)
@@ -720,8 +968,20 @@ struct TelMessagerieVue: View {
                 VStack(spacing: 0) {
                     ForEach(0..<DonneesTel.messagerie.count, id: \.self) { i in
                         let m = DonneesTel.messagerie[i]
+                        if !magasin.vocauxSupprimes.contains(m.fichier) {
                         VStack(spacing: 0) {
                             HStack(alignment: .top, spacing: 12) {
+                                if modeSelection {
+                                    Image(systemName: "minus.circle.fill").font(.system(size: 22))
+                                        .foregroundStyle(telRouge)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            Haptique.leger()
+                                            if lecteur.fichierActif == m.fichier { lecteur.arret() }
+                                            withAnimation { _ = magasin.vocauxSupprimes.insert(m.fichier) }
+                                        }
+                                        .padding(.top, 8)
+                                }
                                 AvatarSilhouette(taille: 40)
                                 VStack(alignment: .leading, spacing: 2) {
                                     HStack {
@@ -765,13 +1025,25 @@ struct TelMessagerieVue: View {
                                         Text("-\(m.duree)").font(.system(size: 11)).foregroundStyle(telTexte2)
                                     }
                                     HStack(spacing: 40) {
+                                        // v2 étape 4 : partage / haut-parleur / corbeille RÉELS
                                         Image(systemName: "square.and.arrow.up").font(.system(size: 19)).foregroundStyle(telTexte)
+                                            .contentShape(Rectangle())
+                                            .onTapGesture { partageVisible = true }
                                         Button { lecteur.bascule(m.fichier) } label: {
                                             Image(systemName: lecteur.fichierActif == m.fichier ? "pause.fill" : "play.fill")
                                                 .font(.system(size: 26)).foregroundStyle(telTexte)
                                         }
-                                        Image(systemName: "speaker.wave.2.fill").font(.system(size: 19)).foregroundStyle(telTexte)
-                                        Image(systemName: "trash").font(.system(size: 18)).foregroundStyle(telTexte)
+                                        Image(systemName: hautParleur ? "speaker.wave.2.fill" : "speaker.slash.fill")
+                                            .font(.system(size: 19)).foregroundStyle(hautParleur ? telBleu : telTexte)
+                                            .contentShape(Rectangle())
+                                            .onTapGesture { Haptique.leger(); hautParleur.toggle() }
+                                        Image(systemName: "trash").font(.system(size: 18)).foregroundStyle(telRouge)
+                                            .contentShape(Rectangle())
+                                            .onTapGesture {
+                                                Haptique.leger()
+                                                if lecteur.fichierActif == m.fichier { lecteur.arret() }
+                                                withAnimation { _ = magasin.vocauxSupprimes.insert(m.fichier) }
+                                            }
                                     }
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text("Transcription").font(.system(size: 12, weight: .semibold)).foregroundStyle(telTexte2)
@@ -784,11 +1056,20 @@ struct TelMessagerieVue: View {
                             }
                             Divider().background(Color(hex: 0x222222)).padding(.leading, 68)
                         }
+                        }  // fin if non-supprimé (v2 étape 4)
+                    }
+                    if DonneesTel.messagerie.allSatisfy({ magasin.vocauxSupprimes.contains($0.fichier) }) {
+                        VStack(spacing: 8) {
+                            Image(systemName: "recordingtape").font(.system(size: 36)).foregroundStyle(telTexte2)
+                            Text("Aucun message vocal").font(.system(size: 15)).foregroundStyle(telTexte2)
+                        }
+                        .frame(maxWidth: .infinity).padding(.top, 60)
                     }
                     Spacer(minLength: 90)
                 }
             }
         }
+        .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Message vocal") }
     }
 }
 
@@ -799,6 +1080,11 @@ struct AppelTelVue: View {
     let numero: String
     @State private var secondes = 0
     @State private var statut = "Appel…"
+    // v2 étape 4 : les boutons de l'écran d'appel RÉAGISSENT (bascules + pavé DTMF)
+    @State private var hautParleur = false
+    @State private var muet = false
+    @State private var pave = false
+    @State private var saisiePave = ""
     private let tic = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -812,14 +1098,50 @@ struct AppelTelVue: View {
 
                 Spacer()
 
+                if pave {
+                    // Pavé DTMF réel pendant l'appel
+                    Text(saisiePave.isEmpty ? " " : saisiePave)
+                        .font(.system(size: 26)).foregroundStyle(.white)
+                        .lineLimit(1).minimumScaleFactor(0.5).padding(.horizontal, 30)
+                    VStack(spacing: 10) {
+                        ForEach(0..<4, id: \.self) { r in
+                            HStack(spacing: 18) {
+                                ForEach(0..<3, id: \.self) { c in
+                                    let t = [["1","2","3"],["4","5","6"],["7","8","9"],["*","0","#"]][r][c]
+                                    Button {
+                                        Haptique.leger()
+                                        saisiePave += t
+                                    } label: {
+                                        Text(t).font(.system(size: 28)).foregroundStyle(.white)
+                                            .frame(width: 66, height: 66)
+                                            .background(.white.opacity(0.18), in: Circle())
+                                    }
+                                }
+                            }
+                        }
+                        Text("Masquer le clavier").font(.system(size: 14)).foregroundStyle(.white.opacity(0.85))
+                            .padding(.top, 6)
+                            .contentShape(Rectangle())
+                            .onTapGesture { withAnimation(.easeOut(duration: 0.2)) { pave = false } }
+                    }
+                    .padding(.bottom, 16)
+                }
+
                 VStack(spacing: 22) {
-                    HStack(spacing: 34) {
-                        BoutonAppelTel(symbole: "speaker.wave.2.fill", nom: "Haut-parleur")
-                        BoutonAppelTel(symbole: "video.fill", nom: "FaceTime")
-                        BoutonAppelTel(symbole: "mic.slash.fill", nom: "Couper le son")
+                    if !pave {
+                        HStack(spacing: 34) {
+                            BoutonAppelTel(symbole: "speaker.wave.2.fill", nom: "Haut-parleur", actif: hautParleur) {
+                                hautParleur.toggle()
+                            }
+                            BoutonAppelTel(symbole: "video.fill", nom: "FaceTime")
+                            BoutonAppelTel(symbole: muet ? "mic.slash.fill" : "mic.fill",
+                                           nom: muet ? "Son coupé" : "Couper le son", actif: muet) {
+                                muet.toggle()
+                            }
+                        }
                     }
                     HStack(spacing: 34) {
-                        BoutonAppelTel(symbole: "ellipsis", nom: "Plus")
+                        if !pave { BoutonAppelTel(symbole: "ellipsis", nom: "Plus") }
                         Button {
                             dismiss()
                         } label: {
@@ -829,7 +1151,11 @@ struct AppelTelVue: View {
                                 Text("Raccrocher").font(.system(size: 12)).foregroundStyle(.white.opacity(0.85))
                             }
                         }
-                        BoutonAppelTel(symbole: "circle.grid.3x3.fill", nom: "Clavier")
+                        if !pave {
+                            BoutonAppelTel(symbole: "circle.grid.3x3.fill", nom: "Clavier") {
+                                withAnimation(.easeOut(duration: 0.2)) { pave = true }
+                            }
+                        }
                     }
                 }
                 .padding(.bottom, 60)
@@ -848,11 +1174,17 @@ struct AppelTelVue: View {
 struct BoutonAppelTel: View {
     let symbole: String
     let nom: String
+    var actif: Bool = false
+    var action: (() -> Void)? = nil
     var body: some View {
         VStack(spacing: 7) {
-            Circle().fill(.white.opacity(0.18)).frame(width: 64, height: 64)
-                .overlay(Image(systemName: symbole).font(.system(size: 23)).foregroundStyle(.white))
+            Circle().fill(actif ? .white.opacity(0.9) : .white.opacity(0.18)).frame(width: 64, height: 64)
+                .overlay(Image(systemName: symbole).font(.system(size: 23))
+                    .foregroundStyle(actif ? Color(hex: 0x5E2A6E) : .white))
             Text(nom).font(.system(size: 12)).foregroundStyle(.white.opacity(0.85))
         }
+        .contentShape(Rectangle())
+        .opacity(action == nil ? 0.45 : 1)   // sans action = grisé (comme iOS tant que l'appel n'est pas décroché)
+        .onTapGesture { if let action { Haptique.leger(); action() } }
     }
 }

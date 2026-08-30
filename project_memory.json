@@ -2077,6 +2077,11 @@
    "titre": "Coque v3 (retour Joachim 17h31) : (1) ouverture d'app = slide up SEUL (zoom/fondu du logo supprimé) ; (2) pack5 d'icônes = sources officielles simulateur + Wikimedia Commons, carrés pleins SANS alpha, unique rognage squircle .continuous côté SwiftUI (fin du double masque « zoomé ») ; (3) les barres système du jeu sont celles de SARAH : vraie barre d'état + vrai indicateur home masqués partout (statusBarHidden + persistentSystemOverlays(.hidden)), BarreSarah (19:47 figé, cohérent verrouillage) + capsule dessinées, defersSystemGestures(.bottom) pour que le 1er glissé-haut aille au jeu (le 2e quitte réellement — sécurité iOS).",
    "detail": "Modifier .coquilleSarah(claire:) appliqué aux 28 covers + 2 covers de notification. claire:true = texte noir (apps claires). Icônes restant en repli SF : Calculatrice, Dictaphone, Ma Banque (fictive), Musique. Snapchat = fantôme redessiné PIL (pas de source libre). Pièges consignés : les previews CityPNG/CleanPNG ne sont PAS des PNG transparents ; les assets pré-masqués + clipShape = double masque ; toujours vérifier le pack par planche contact AVANT push.",
    "verdict": "VALIDÉ device par Joachim le 30/08 18h02 : « C'est parfait »."
+  },
+  "D86": {
+   "date": "2026-08-30",
+   "titre": "Méthode pipeline (demande Joachim 18h39) : plus personne n'attend. Joachim teste l'app suivante PENDANT que l'agent code/build le lot précédent. Chaque rapport de build inclut la fiche de vérification de l'app suivante. Les correctifs de plusieurs apps sont groupés dans un seul build quand c'est possible (économie de quota).",
+   "detail": "Boucle : (1) Joachim envoie la liste de retours de l'app N ; (2) l'agent code le lot N et lance le build ; (3) pendant le build (~6 min), Joachim fait le tour de l'app N+1 avec sa fiche ; (4) fin de build → l'agent donne les points à re-tester sur N + reçoit la liste N+1. Petits correctifs isolés : pousser sans builder, grouper au build suivant."
   }
  },
  "point_de_reprise_migration": {
@@ -2143,7 +2148,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Étape 2 Messages : lot de 6 corrections du retour Joachim 18h13 poussé (nouvelles discussions dans la liste au 1er envoi, envoi à un numéro non répertorié, aperçu = dernier message + remontée en tête, balayage réel cloche/supprimer→Récemment supprimées, nouvelles discussions contact en iMessage bleu, tapback appui long). Build en cours si quota le permet."
+  "derniere_action": "Correctif aperçu de liste Messages (la ligne observe elle-même EnvoisMsg) poussé SANS build — sera groupé avec le lot WhatsApp (méthode pipeline D86). Attente : retours WhatsApp de Joachim + nouveau token Codemagic (annoncé mais pas encore transmis — à mettre dans la fiche du skill, pas dans le chat)."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",

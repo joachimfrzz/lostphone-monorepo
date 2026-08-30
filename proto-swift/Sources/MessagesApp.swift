@@ -534,6 +534,13 @@ struct LigneConvBalayable: View {
 struct LigneConvMsg: View {
     let conv: ConvMsg
     var cloche: Bool = false
+    // v2 étape 2 (correctif 18h39) : la ligne observe ELLE-MÊME les envois du
+    // joueur — l'aperçu se met à jour même si la liste ne se recompose pas.
+    @ObservedObject private var envois = EnvoisMsg.partage
+
+    private var apercuAffiche: String { envois.dernierApercu(conv.nom) ?? conv.apercu }
+    private var dateAffichee: String { envois.dernierApercu(conv.nom) == nil ? conv.date : "19:47" }
+
     var body: some View {
         HStack(spacing: 12) {
             AvatarMsg(nom: conv.nom, taille: 45)
@@ -546,11 +553,11 @@ struct LigneConvMsg: View {
                         Image(systemName: "bell.slash.fill").font(.system(size: 12))
                             .foregroundStyle(msgTexte2.opacity(0.8))
                     }
-                    Text(conv.date).font(.system(size: 14)).foregroundStyle(msgTexte2)
+                    Text(dateAffichee).font(.system(size: 14)).foregroundStyle(msgTexte2)
                     Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(msgTexte2.opacity(0.7))
                 }
-                Text(conv.apercu).font(.system(size: 14.5)).foregroundStyle(msgTexte2)
+                Text(apercuAffiche).font(.system(size: 14.5)).foregroundStyle(msgTexte2)
                     .lineLimit(2).multilineTextAlignment(.leading)
             }
         }

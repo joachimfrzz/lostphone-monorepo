@@ -2106,7 +2106,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Build TestFlight 6a940276 publié (GO Joachim). En attente : son retour de test sur device, puis sessions S7+."
+  "derniere_action": "Intégration v2 phase 1 livrée + build TestFlight publié (12:41). En attente : test device de Joachim, puis phase 2 ou sessions S7+."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2429,5 +2429,13 @@
   "go": "GO explicite de Joachim dans le fil (« peux tu faire le build que je test lostphone sur mon tel ») — garde-fou D65 levé pour ce build uniquement",
   "contenu": "Premier build device incluant TOUTE la refonte D80 S1→S6 (47 écrans v2) + vraies photos pellicule (fix .jpg) + 30 vraies icônes d'apps + polish (CC sombre non vérifié). Verdict emojis tofu attendu sur device (simulateur seul concerné en théorie).",
   "quota": "Build TestFlight ≈ 5 min seulement → quota ~460/500. Encore ~1 build miroir possible ce mois."
+ },
+ "integration_v2_phase1": {
+  "date": "2026-08-30 12:41",
+  "decision_joachim": "Les apps v1 (faites via captures d'avant) SORTENT du jeu — conservées dans le code, accessibles uniquement par le mode capture (ECRAN=...). Le jeu sur device = refonte D80 S1→S6 uniquement.",
+  "livre": "IntegrationV2.swift (TelephoneV2Racine + NavV2) : démarrage verrouillage v2 → glisser haut = déverrouiller → accueil v2 (vraies icônes) → toucher une icône = ouvre l'app v2 → balayage horizontal = écrans suivants/précédents de l'app → glisser depuis la barre home = retour accueil. 14 apps câblées (Réglages 7 écrans, Messages 4, Mail 5, Safari 3, Photos 3, Calendrier 2, Notes 2, Rappels 2, Météo 2, Horloge 3, Dictaphone 2, Calculatrice 2, Téléphone 1, Contacts 1). Apps sans v2 (FaceTime, TV, Podcasts, App Store, Plans, Santé, Cartes, ChatGPT, Musique, Appareil photo) : icône inerte pour l'instant.",
+  "build_testflight": "6a940754f339519dbb26f917 VERT publié 12:41 (série 2xx suivant). Commit 9d030122.",
+  "phase2": "Câblage tactile réel écran par écran (les rangées/boutons ouvrent le bon écran), gestes complets, animations — après S7-S12.",
+  "note_navigation": "La navigation par balayage horizontal est un échafaudage provisoire assumé pour tester la refonte sur device — PAS le comportement iOS final."
  }
 }

@@ -2132,7 +2132,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Coque pixel-perfect livrée (build 17:08). Attente verdict device, puis tour app par app."
+  "derniere_action": "Correctifs coque (double barre, indicateur, icônes redessinées, animation) — build 17:25. Attente verdict."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2525,6 +2525,17 @@
    "Icônes manquantes : Météo, Calculatrice, Localiser, Ma Banque, Dictaphone, Snapchat/Spotify/YouTube/WhatsApp propres",
    "Vignettes widgets à raffiner vs photo réelle",
    "Vérif device par Joachim"
-  ]
+  ],
+  "correctifs_17h25": {
+   "build": "6a944a44 VERT publié 17:25 (commit 153663e2)",
+   "cause_racine": "DOUBLE AFFICHAGE SYSTÈME : je dessinais une fausse barre d'état sur l'accueil et un faux indicateur home sur le verrouillage alors qu'iOS affiche déjà les VRAIS sur device → doublons décalés (le retour photo de Joachim). Règle D83 en germe : ne JAMAIS redessiner un élément que le système affiche déjà sur device (barre d'état, indicateur home) — les fausses versions ne servent qu'au simulateur/capture.",
+   "livre": [
+    "fausse barre d'état accueil supprimée (vraie barre système fait foi)",
+    "faux indicateur home verrouillage supprimé",
+    "dock : marges 10, rayon 38, hauteur réelle",
+    "ouverture d'app : le fond dézoome (0,94) pendant le zoom depuis l'icône, fondu de raccord 0,18s (plus de claquement)",
+    "icônes redessinées PROPRES : Facebook, X, Mail, Messenger (les découpes contaminées sont mortes)"
+   ]
+  }
  }
 }

@@ -544,18 +544,27 @@ struct DestinatairePartage: View {
 struct VerrouillageView: View {
     @State private var deverrouille = false
     @State private var glisse: CGFloat = 0
+    @State private var sortie = false
     @State private var whatsappNotifOuvert = false
     @State private var telephoneNotifOuvert = false
 
     var body: some View {
-        ZStack {
-            if deverrouille {
+        GeometryReader { geo in
+            ZStack {
+                // L'accueil vit SOUS le verrouillage : au déverrouillage, le
+                // verrouillage glisse vers le haut et révèle l'accueil qui se
+                // pose avec un léger zoom (comportement iOS réel).
                 AccueilView()
-                    .transition(.opacity.combined(with: .scale(scale: 1.06)))
-            } else {
-                ecranVerrouille
-                    .statusBarHidden(true)
-                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .scaleEffect(deverrouille ? 1.0 : 1.12)
+                    .opacity(deverrouille ? 1 : 0)
+                    .animation(.easeOut(duration: 0.42), value: deverrouille)
+
+                if !sortie {
+                    ecranVerrouille
+                        .statusBarHidden(true)
+                        .offset(y: deverrouille ? -geo.size.height : min(0, -glisse))
+                        .animation(deverrouille ? .easeIn(duration: 0.38) : nil, value: deverrouille)
+                }
             }
         }
         .fullScreenCover(isPresented: $whatsappNotifOuvert) {
@@ -566,13 +575,16 @@ struct VerrouillageView: View {
         }
     }
 
+    private func deverrouiller() {
+        deverrouille = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { sortie = true }
+    }
+
     private var ecranVerrouille: some View {
         ZStack {
-            // Vrai fond d'écran photo (Sarah & Chloé au festival — canon D46)
-            Image("FondEcran")
-                .resizable().scaledToFill()
-                .ignoresSafeArea()
-            // Voile de lisibilité comme sur iOS (léger, haut et bas)
+            Color.clear.overlay(
+                Image("FondEcran").resizable().scaledToFill()
+            ).clipped().ignoresSafeArea()
             LinearGradient(
                 stops: [.init(color: .black.opacity(0.38), location: 0),
                         .init(color: .black.opacity(0.05), location: 0.3),
@@ -582,18 +594,34 @@ struct VerrouillageView: View {
             ).ignoresSafeArea()
 
             VStack(spacing: 0) {
+                // Barre d'état verrouillée (mesures : Free x39 y24, cadenas x114 13x18)
+                HStack {
+                    Text("Free").font(.system(size: 15)).foregroundStyle(.white)
+                    Spacer()
+                    HStack(spacing: 7) {
+                        Image(systemName: "cellularbars").font(.system(size: 14))
+                        Image(systemName: "wifi").font(.system(size: 14))
+                        Image(systemName: "battery.100percent").font(.system(size: 16))
+                    }
+                    .foregroundStyle(.white)
+                }
+                .padding(.horizontal, 32).padding(.top, 20)
+
                 Image(systemName: "lock.fill")
-                    .font(.system(size: 17))
+                    .font(.system(size: 15))
                     .foregroundStyle(.white)
-                    .padding(.top, 24)
+                    .padding(.top, 4)
+                // Date : mesuré y=72, h=37 (≈ SF 22 semibold)
                 Text("lundi 17 août")
-                    .font(.system(size: 21, weight: .semibold))
+                    .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(.white)
-                    .padding(.top, 10)
+                    .padding(.top, 14)
+                // Horloge : cadre mesuré y=89 h=144 — chiffres ≈ 96 pt SF arrondi
                 Text("19:47")
-                    .font(.system(size: 92, weight: .bold, design: .rounded))
+                    .font(.system(size: 96, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
                     .kerning(-2)
+                    .padding(.top, -8)
 
                 Spacer()
 
@@ -602,7 +630,7 @@ struct VerrouillageView: View {
                           corps: "N'oublie pas : 11h30. Après-demain je te tiens dans mes bras. Supprime bien nos échanges co…")
                     .contentShape(RoundedRectangle(cornerRadius: 24))
                     .onTapGesture {
-                        withAnimation(.spring(duration: 0.45)) { deverrouille = true }
+                        deverrouiller()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { whatsappNotifOuvert = true }
                     }
                 NotifCard(couleur: Color(hex: 0x34C759), symbole: "phone.fill",
@@ -611,33 +639,39 @@ struct VerrouillageView: View {
                     .padding(.top, 8)
                     .contentShape(RoundedRectangle(cornerRadius: 24))
                     .onTapGesture {
-                        withAnimation(.spring(duration: 0.45)) { deverrouille = true }
+                        deverrouiller()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { telephoneNotifOuvert = true }
                     }
 
+                // Lampe / Appareil photo : cercles mesurés à y=748 (94 pt de zone), x=28/280
                 HStack {
                     RondVerre(symbole: "flashlight.on.fill")
                     Spacer()
                     RondVerre(symbole: "camera.fill")
                 }
-                .padding(.horizontal, 52)
-                .padding(.top, 30)
-                .padding(.bottom, 34)
+                .padding(.horizontal, 50)
+                .padding(.top, 26)
+                .padding(.bottom, 40)
+
+                // Indicateur d'accueil : 144×5 à y=861
+                Capsule().fill(.white)
+                    .frame(width: 144, height: 5)
+                    .padding(.bottom, 8)
             }
         }
         .contentShape(Rectangle())
-        .offset(y: -glisse * 0.55)
         .gesture(
             DragGesture()
                 .onChanged { v in glisse = max(0, -v.translation.height) }
                 .onEnded { _ in
                     if glisse > 90 {
-                        withAnimation(.spring(duration: 0.45)) { deverrouille = true }
+                        deverrouiller()
+                    } else {
+                        withAnimation(.spring(duration: 0.35)) { glisse = 0 }
                     }
-                    withAnimation(.spring(duration: 0.35)) { glisse = 0 }
                 }
         )
-        .onTapGesture { withAnimation(.spring(duration: 0.45)) { deverrouille = true } }
+        .onTapGesture { deverrouiller() }
     }
 }
 
@@ -667,7 +701,7 @@ struct NotifCard: View {
             }
         }
         .padding(.horizontal, 15).padding(.vertical, 13)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24)) // VRAI verre iOS
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24))
         .padding(.horizontal, 12)
     }
 }
@@ -682,7 +716,7 @@ struct RondVerre: View {
     }
 }
 
-// ============================================================ ACCUEIL
+// ============================================================ ACCUEIL (mesures S1 : grille x=28/120/213/306, pas 100 ; widgets 169×192 y=88 ; Recherche 100×31 y=703 ; dock y=753 h=104)
 struct AccueilView: View {
     @State private var whatsappOuvert = false
     @State private var telephoneOuvert = false
@@ -712,9 +746,15 @@ struct AccueilView: View {
     @State private var chatgptOuvert = false
     @State private var spotifyOuvert = false
     @State private var youtubeOuvert = false
+    @State private var page = 0
+    // Zoom d'ouverture depuis l'icône (geste signature iOS)
+    @State private var zoomNom: String? = nil
+    @State private var zoomCadre: CGRect = .zero
+    @State private var zoomPlein = false
     @ObservedObject private var routeur = Routeur.partage
 
-    private let apps: [(String, Color, String, Color)] = [
+    // Page 1 : les apps « système » (ordre inspiré du réel) — Page 2 : le reste
+    private let page1: [(String, Color, String, Color)] = [
         ("Horloge", Color(hex: 0x1C1C1E), "clock", .white),
         ("Calendrier", .white, "calendar", Color(hex: 0xFF3B30)),
         ("Photos", .white, "photo.on.rectangle.angled", Color(hex: 0xE64980)),
@@ -728,10 +768,13 @@ struct AccueilView: View {
         ("Santé", .white, "heart.fill", Color(hex: 0xFA5252)),
         ("Ma Banque", Color(hex: 0x123E6B), "building.columns.fill", .white),
         ("Cartes", .black, "wallet.pass.fill", .white),
-        ("Musique", .white, "music.note", Color(hex: 0xFA2D48)),
         ("App Store", Color(hex: 0x0A84FF), "square.stack.3d.up.fill", .white),
         ("Fichiers", .white, "folder.fill", Color(hex: 0x0A84FF)),
         ("Dictaphone", Color(hex: 0x1C1C1E), "waveform", Color(hex: 0xFF3B30)),
+    ]
+    private let page2: [(String, Color, String, Color)] = [
+        ("Mail", Color(hex: 0x0A84FF), "envelope.fill", .white),
+        ("Musique", .white, "music.note", Color(hex: 0xFA2D48)),
         ("Messenger", Color(hex: 0x0084FF), "bolt.horizontal.circle.fill", .white),
         ("Instagram", Color(hex: 0xE1306C), "camera.circle", .white),
         ("Snapchat", Color(hex: 0xFFFC00), "bubble.left.fill", .black),
@@ -780,82 +823,198 @@ struct AccueilView: View {
         case "ChatGPT": return { chatgptOuvert = true }
         case "Spotify": return { spotifyOuvert = true }
         case "YouTube": return { youtubeOuvert = true }
+        case "Mail": return { mailOuvert = true }
+        case "WhatsApp": return { whatsappOuvert = true }
+        case "Téléphone": return { telephoneOuvert = true }
+        case "Messages": return { messagesOuvert = true }
+        case "Safari": return { safariOuvert = true }
         default: return nil
         }
     }
 
+    // Ouverture avec zoom depuis l'icône (0,32 s), puis présentation sans animation
+    private func lancer(_ nom: String, depuis cadre: CGRect) {
+        guard let action = actionPour(nom) else { return }
+        zoomNom = nom
+        zoomCadre = cadre
+        zoomPlein = false
+        withAnimation(.easeInOut(duration: 0.32)) { zoomPlein = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.30) {
+            var tx = Transaction()
+            tx.disablesAnimations = true
+            withTransaction(tx) { action() }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
+            zoomNom = nil
+            zoomPlein = false
+        }
+    }
+
+    private func grille(_ apps: [(String, Color, String, Color)]) -> some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.fixed(62), spacing: 31), count: 4),
+                  spacing: 20) {
+            ForEach(apps, id: \.0) { a in
+                AppIcone(nom: a.0, fond: a.1, symbole: a.2, teinte: a.3,
+                         badge: a.0 == "WhatsApp" ? "3" : nil,
+                         ouvrir: { cadre in lancer(a.0, depuis: cadre) },
+                         inerte: actionPour(a.0) == nil)
+            }
+        }
+        .padding(.horizontal, 24)
+    }
+
     var body: some View {
+        GeometryReader { geo in
         ZStack {
-            // Même photo que le verrouillage, assombrie (comportement iOS réel)
-            Image("FondEcran")
-                .resizable().scaledToFill()
-                .ignoresSafeArea()
+            Color.clear.overlay(
+                Image("FondEcran").resizable().scaledToFill()
+            ).clipped().ignoresSafeArea()
             Color.black.opacity(0.30).ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Widget météo (vrai verre)
+                // Barre d'état (heure figée du jeu)
                 HStack {
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("Lyon").font(.system(size: 14, weight: .semibold)).foregroundStyle(.white)
-                        Text("24°").font(.system(size: 36, weight: .light)).foregroundStyle(.white)
-                    }
+                    Text("19:47").font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
+                        .padding(.leading, 30)
                     Spacer()
-                    Text("Ensoleillé\nMax. 29°  Min. 18°")
-                        .font(.system(size: 12.5)).foregroundStyle(.white.opacity(0.85))
-                        .multilineTextAlignment(.trailing)
-                }
-                .padding(.horizontal, 18).padding(.vertical, 14)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24))
-                .padding(.horizontal, 20).padding(.top, 14)
-
-                // Grille d'apps
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4),
-                          spacing: 20) {
-                    ForEach(apps, id: \.0) { a in
-                        AppIcone(nom: a.0, fond: a.1, symbole: a.2, teinte: a.3,
-                                 action: actionPour(a.0))
+                    HStack(spacing: 7) {
+                        Image(systemName: "cellularbars").font(.system(size: 14))
+                        Image(systemName: "wifi").font(.system(size: 14))
+                        Image(systemName: "battery.100percent").font(.system(size: 16))
                     }
-                    AppIcone(nom: "WhatsApp", fond: Color(hex: 0x25D366),
-                             symbole: "message.fill", teinte: .white, badge: "3") {
-                        whatsappOuvert = true
-                    }
+                    .foregroundStyle(.white)
+                    .padding(.trailing, 24)
                 }
-                .padding(.horizontal, 20).padding(.top, 22)
+                .padding(.top, 12)
 
-                Spacer()
+                TabView(selection: $page) {
+                    // -------- PAGE 1 : widgets + 16 apps --------
+                    VStack(spacing: 0) {
+                        HStack(spacing: 16) {
+                            // Widget Météo (169×192 mesuré)
+                            VStack(alignment: .leading, spacing: 0) {
+                                HStack(spacing: 3) {
+                                    Image(systemName: "location.fill").font(.system(size: 9))
+                                    Text("Lyon").font(.system(size: 14, weight: .semibold))
+                                }
+                                Text("24°").font(.system(size: 38, weight: .light)).padding(.top, 2)
+                                Spacer()
+                                Image(systemName: "sun.max.fill").font(.system(size: 16))
+                                    .foregroundStyle(.yellow)
+                                Text("Ensoleillé").font(.system(size: 13, weight: .medium)).padding(.top, 2)
+                                Text("Max. 29° Min. 18°").font(.system(size: 13)).opacity(0.85)
+                            }
+                            .foregroundStyle(.white)
+                            .padding(15)
+                            .frame(width: 169, height: 192, alignment: .topLeading)
+                            .background(
+                                LinearGradient(colors: [Color(hex: 0x3F7FD9), Color(hex: 0x2A5CA8)],
+                                               startPoint: .top, endPoint: .bottom),
+                                in: RoundedRectangle(cornerRadius: 24))
+                            .onTapGesture { meteoOuverte = true }
 
-                // Pilule Recherche
+                            // Widget Calendrier (169×192 mesuré)
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text("LUNDI").font(.system(size: 13, weight: .semibold)).foregroundStyle(.red)
+                                Text("17").font(.system(size: 34, weight: .regular)).foregroundStyle(.black)
+                                Spacer()
+                                RoundedRectangle(cornerRadius: 3).fill(Color(hex: 0x0A84FF)).frame(width: 4, height: 30)
+                                    .overlay(alignment: .leading) {
+                                        VStack(alignment: .leading, spacing: 1) {
+                                            Text("Agence Bellecour").font(.system(size: 12, weight: .semibold)).foregroundStyle(.black)
+                                            Text("11:30 – 12:30").font(.system(size: 11)).foregroundStyle(.gray)
+                                        }
+                                        .padding(.leading, 10)
+                                        .frame(width: 140, alignment: .leading)
+                                    }
+                                    .padding(.bottom, 4)
+                            }
+                            .padding(15)
+                            .frame(width: 169, height: 192, alignment: .topLeading)
+                            .background(Color.white, in: RoundedRectangle(cornerRadius: 24))
+                            .onTapGesture { calendrierOuvert = true }
+                        }
+                        .padding(.top, 18)
+
+                        grille(page1)
+                            .padding(.top, 24)
+                        Spacer(minLength: 0)
+                    }
+                    .tag(0)
+
+                    // -------- PAGE 2 : le reste --------
+                    VStack(spacing: 0) {
+                        grille(page2)
+                            .padding(.top, 30)
+                        LazyVGrid(columns: Array(repeating: GridItem(.fixed(62), spacing: 31), count: 4), spacing: 20) {
+                            AppIcone(nom: "WhatsApp", fond: Color(hex: 0x25D366),
+                                     symbole: "message.fill", teinte: .white, badge: "3",
+                                     ouvrir: { cadre in lancer("WhatsApp", depuis: cadre) })
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.top, 20)
+                        Spacer(minLength: 0)
+                    }
+                    .tag(1)
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+
+                // Points de page + pilule Recherche (100×31 mesuré)
+                HStack(spacing: 8) {
+                    Circle().fill(page == 0 ? .white : .white.opacity(0.4)).frame(width: 7, height: 7)
+                    Circle().fill(page == 1 ? .white : .white.opacity(0.4)).frame(width: 7, height: 7)
+                }
                 HStack(spacing: 6) {
-                    Image(systemName: "magnifyingglass").font(.system(size: 12)).foregroundStyle(.white.opacity(0.7))
-                    Text("Recherche").font(.system(size: 12.5)).foregroundStyle(.white.opacity(0.85))
+                    Image(systemName: "magnifyingglass").font(.system(size: 12)).foregroundStyle(.white.opacity(0.85))
+                    Text("Recherche").font(.system(size: 13)).foregroundStyle(.white.opacity(0.9))
                 }
-                .padding(.horizontal, 16).padding(.vertical, 7)
+                .frame(width: 100, height: 31)
                 .background(.ultraThinMaterial, in: Capsule())
+                .padding(.top, 10)
 
-                // Dock (vrai verre, sans étiquettes)
+                // Dock (mesuré : pleine largeur h=104, icônes à x=34/122/211/299)
                 HStack {
                     Spacer()
-                    AppIcone(nom: "", fond: Color(hex: 0x2FC74F), symbole: "phone.fill", teinte: .white, badge: "2") {
-                        telephoneOuvert = true
-                    }
+                    AppIcone(nom: "", fond: Color(hex: 0x2FC74F), symbole: "phone.fill", teinte: .white, badge: "2",
+                             ouvrir: { cadre in lancer("Téléphone", depuis: cadre) })
                     Spacer()
-                    AppIcone(nom: "", fond: Color(hex: 0x2FC74F), symbole: "message.fill", teinte: .white, badge: "3") {
-                        messagesOuvert = true
-                    }
+                    AppIcone(nom: "", fond: Color(hex: 0x2FC74F), symbole: "message.fill", teinte: .white, badge: "3",
+                             ouvrir: { cadre in lancer("Messages", depuis: cadre) })
                     Spacer()
-                    AppIcone(nom: "", fond: Color(hex: 0x0A84FF), symbole: "envelope.fill", teinte: .white) {
-                        mailOuvert = true
-                    }
+                    AppIcone(nom: "", fond: Color(hex: 0xF2F2F7), symbole: "safari.fill", teinte: Color(hex: 0x0A84FF),
+                             ouvrir: { cadre in lancer("Safari", depuis: cadre) })
                     Spacer()
-                    AppIcone(nom: "", fond: Color(hex: 0xF2F2F7), symbole: "safari.fill", teinte: Color(hex: 0x0A84FF)) {
-                        safariOuvert = true
-                    }
+                    AppIcone(nom: "", fond: Color(hex: 0x0A84FF), symbole: "envelope.fill", teinte: .white,
+                             ouvrir: { cadre in lancer("Mail", depuis: cadre) })
                     Spacer()
                 }
                 .padding(.vertical, 15)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 32))
-                .padding(.horizontal, 20).padding(.top, 14).padding(.bottom, 6)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 36))
+                .padding(.horizontal, 14).padding(.top, 12).padding(.bottom, 6)
             }
+
+            // ---- Zoom d'ouverture : l'app grandit depuis son icône ----
+            if let nom = zoomNom {
+                RoundedRectangle(cornerRadius: zoomPlein ? 42 : 14.5)
+                    .fill(Color.black)
+                    .overlay(
+                        Group {
+                            if let ui = chargerPellicule("ic-" + AppIcone.cleAsset(nom)) {
+                                Image(uiImage: ui).resizable().scaledToFill()
+                                    .opacity(zoomPlein ? 0 : 1)
+                            }
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: zoomPlein ? 42 : 14.5))
+                    )
+                    .frame(width: zoomPlein ? geo.size.width : zoomCadre.width,
+                           height: zoomPlein ? geo.size.height + geo.safeAreaInsets.top + geo.safeAreaInsets.bottom : zoomCadre.height)
+                    .position(zoomPlein
+                              ? CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
+                              : CGPoint(x: zoomCadre.midX, y: zoomCadre.midY))
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+            }
+        }
         }
         .fullScreenCover(isPresented: $whatsappOuvert) { WhatsAppListeView() }
         .fullScreenCover(isPresented: $telephoneOuvert) { TelephoneVue() }
@@ -909,31 +1068,67 @@ struct AppIcone: View {
     let symbole: String
     let teinte: Color
     var badge: String? = nil
-    var action: (() -> Void)? = nil
+    var ouvrir: ((CGRect) -> Void)? = nil
+    var inerte: Bool = false
     @State private var alerteVisible = false
+    @State private var cadre: CGRect = .zero
+
+    // Vraies icônes Apple (bundle) — repli SF pour celles qu'on n'a pas encore
+    static let assets: [String: String] = [
+        "Horloge": "horloge", "Calendrier": "calendrier", "Photos": "photos",
+        "Plans": "plans", "Notes": "notes", "Rappels": "rappels",
+        "Réglages": "reglages", "Santé": "sante", "Cartes": "cartes",
+        "App Store": "app-store", "Fichiers": "fichiers", "ChatGPT": "chatgpt",
+        "Mail": "mail", "Musique": "musique", "Messenger": "messenger",
+        "Instagram": "instagram", "Facebook": "facebook", "X": "x",
+        "TV": "tv", "Podcasts": "podcasts", "Contacts": "contacts",
+        "FaceTime": "facetime", "Téléphone": "telephone", "Messages": "messages",
+        "Safari": "safari",
+    ]
+    static func cleAsset(_ nom: String) -> String { assets[nom] ?? "" }
+
+    private var vraieIcone: UIImage? {
+        guard let cle = AppIcone.assets[nomAffiche] else { return nil }
+        return chargerPellicule("ic-" + cle)
+    }
 
     var body: some View {
         VStack(spacing: 6) {
-            RoundedRectangle(cornerRadius: 14.5)
-                .fill(fond)
-                .frame(width: 62, height: 62)
-                .overlay(Image(systemName: symbole).font(.system(size: 27)).foregroundStyle(teinte))
-                .overlay(alignment: .topTrailing) {
-                    if let badge {
-                        Text(badge)
-                            .font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
-                            .padding(.horizontal, 7).frame(minWidth: 23, minHeight: 23)
-                            .background(Color(hex: 0xFF3B30), in: Capsule())
-                            .offset(x: 8, y: -8)
-                    }
+            Group {
+                if let ui = vraieIcone {
+                    Image(uiImage: ui).resizable().scaledToFill()
+                        .frame(width: 62, height: 62)
+                        .clipShape(RoundedRectangle(cornerRadius: 14.5))
+                } else {
+                    RoundedRectangle(cornerRadius: 14.5)
+                        .fill(fond)
+                        .frame(width: 62, height: 62)
+                        .overlay(Image(systemName: symbole).font(.system(size: 27)).foregroundStyle(teinte))
                 }
-                .shadow(color: .black.opacity(0.35), radius: 10, y: 3)
+            }
+            .overlay(alignment: .topTrailing) {
+                if let badge {
+                    Text(badge)
+                        .font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
+                        .padding(.horizontal, 7).frame(minWidth: 23, minHeight: 23)
+                        .background(Color(hex: 0xFF3B30), in: Capsule())
+                        .offset(x: 8, y: -8)
+                }
+            }
+            .shadow(color: .black.opacity(0.35), radius: 10, y: 3)
             if !nom.isEmpty {
                 Text(nom).font(.system(size: 11.5, weight: .medium)).foregroundStyle(.white)
+                    .lineLimit(1).fixedSize()
             }
         }
+        .background(
+            GeometryReader { g in
+                Color.clear.onAppear { cadre = g.frame(in: .global) }
+                    .onChange(of: g.frame(in: .global)) { _, nv in cadre = nv }
+            }
+        )
         .onTapGesture {
-            if let action { action() } else { alerteVisible = true }
+            if inerte || ouvrir == nil { alerteVisible = true } else { ouvrir?(cadre) }
         }
         // D56 anneau 3 : cause système unique et cohérente pour toutes les apps pas encore construites
         .alert(nomAffiche, isPresented: $alerteVisible) {
@@ -948,10 +1143,13 @@ struct AppIcone: View {
         switch symbole {
         case "envelope.fill": return "Mail"
         case "safari.fill": return "Safari"
+        case "phone.fill": return "Téléphone"
+        case "message.fill": return "Messages"
         default: return "App"
         }
     }
 }
+
 
 // ============================================================ WHATSAPP (iOS 26, mesuré sur captures réelles du 16/08)
 // Couleurs échantillonnées pixel par pixel dans references/whatsapp/ :

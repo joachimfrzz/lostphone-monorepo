@@ -2082,6 +2082,11 @@
    "date": "2026-08-30",
    "titre": "Méthode pipeline (demande Joachim 18h39) : plus personne n'attend. Joachim teste l'app suivante PENDANT que l'agent code/build le lot précédent. Chaque rapport de build inclut la fiche de vérification de l'app suivante. Les correctifs de plusieurs apps sont groupés dans un seul build quand c'est possible (économie de quota).",
    "detail": "Boucle : (1) Joachim envoie la liste de retours de l'app N ; (2) l'agent code le lot N et lance le build ; (3) pendant le build (~6 min), Joachim fait le tour de l'app N+1 avec sa fiche ; (4) fin de build → l'agent donne les points à re-tester sur N + reçoit la liste N+1. Petits correctifs isolés : pousser sans builder, grouper au build suivant. AMENDEMENT Joachim 19h16 : (a) donner DEUX checklists d'avance pendant que l'agent code ; (b) builds GROUPÉS par session de 4-5 apps — plus de build par app, un build de fin de session (économie de quota + de temps)."
+  },
+  "D87": {
+   "date": "2026-08-31",
+   "titre": "FEUILLE DE ROUTE VALIDÉE (v5.2) — Lost Phone = MOTEUR multi-histoires + MÉTHODE d'écriture IA. Coches bleues = histoire DÉMO (sortie non garantie). Joachim seul testeur.",
+   "detail": "Phases : T transversale (outillage : passation Codemagic ET Hyperagent en 5 min — PASSATION.md + prompt d'amorçage + tout au repo ; exploitation totale Hyperagent : multi-fils parallèles ATELIER/CI-BUILDS/HISTOIRE(/PROMO), project_memory.json = source de vérité commune, runs planifiés, sous-agents, pré-vol CI, fallback GitHub Actions) · 0 infra (clé ASC Admin) · 1 vérification 29 apps (D84) · 2 catalogue d'apps COMPLET générique (vague A : Tinder/SNCF/PayPal/FaceTime/LinkedIn/Uber/AppStore/Musique ; vague B texture à arbitrer ; DÉCISION marques stylisées vs vraies) · 3 moteur (format d'histoire en données, progression paramétrable, sauvegarde par histoire, écran titre) · 3bis méthode d'écriture (template complet, manuel, pipeline IA brief→histoire, preuve : mini-histoire neuve sans toucher au code) · 4 histoire(s) de lancement (DÉCISION, écriture parallèle possible dès maintenant) · 5 polish+médias · 6 conformité (RISQUE n°1 : imitation UI iOS + marques) · 7 fiche App Store (DÉCISION nom+modèle : premium vs gratuit+histoires IAP) · 8 soumission (plan B anti-rejet) · 9 promo · 10 lancement · 11 post-lancement (localisation EN, série d'histoires via méthode+IA, Android). Détail complet : section Plan du fil Hyperagent du 30/08 + FEUILLE-DE-ROUTE.md au repo."
   }
  },
  "point_de_reprise_migration": {
@@ -2148,7 +2153,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Pause du 30/08 soir. Livré : GUIDE-VERIFICATION-COMPLET.md (grille universelle U1-U8 + fiche détaillée des 29 apps existantes + 9 futures apps décidées avec leurs angles narratifs) + lot Téléphone (17 corrections, audit D82 en avance de phase) poussé NON BUILDÉ. Build toujours bloqué : App Store Connect refuse de servir le .p8 (« erreur s'est produite ») — Joachim s'en occupe ce soir ; prochaine hypothèse à vérifier : clé avec rôle ADMIN requise pour créer les profils. À la reprise : (1) clé Admin dans Codemagic → build session 1 (Messages+WhatsApp+Téléphone), (2) listes Photos/Mail de Joachim → coder → build."
+  "derniere_action": "Feuille de route v5.2 VALIDÉE par Joachim (31/08 00h13) et consignée (D87). Reprise du travail : toujours en attente (1) clé ASC Admin fonctionnelle → build session 1, (2) listes Photos/Mail de Joachim. Prochains chantiers phase T : PASSATION.md + kit d'amorçage, agents CI-BUILDS et HISTOIRE, script de pré-vol CI."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",

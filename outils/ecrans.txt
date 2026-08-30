@@ -235,3 +235,12 @@ sm2.mail.boites
 sm2.mail.reception
 sm2.mail.lecture
 sm2.mail.redaction
+pcnr2.photos.phototheque
+pcnr2.photos.collections
+pcnr2.photos.detail
+pcnr2.cal.mois
+pcnr2.cal.jour
+pcnr2.notes.dossiers
+pcnr2.notes.liste
+pcnr2.rappels.accueil
+pcnr2.rappels.liste

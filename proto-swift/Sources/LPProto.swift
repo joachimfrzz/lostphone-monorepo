@@ -61,6 +61,7 @@ struct EcranCapture: View {
         case "divers2": DiversV2Capture(cle: cle)
         case "tcm2": TcmV2Capture(cle: cle)
         case "sm2": SafariMailV2Capture(cle: cle)
+        case "pcnr2": PcnrV2Capture(cle: cle)
         case "chatgpt": ChatGPTVue()
         case "spotify": SpotifyVue()
         case "youtube": ecransYt()

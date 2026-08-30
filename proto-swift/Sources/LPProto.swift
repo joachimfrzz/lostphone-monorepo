@@ -14,7 +14,9 @@ struct LPProtoApp: App {
                 // Chaque vue porte son propre schéma (Ma Banque est claire) — ne pas forcer ici
                 EcranCapture(cle: ecran)
             } else {
-                VerrouillageView().preferredColorScheme(.dark)
+                // Intégration v2 (30/08) : le jeu = refonte D80 ; les écrans v1 restent
+                // accessibles uniquement via le mode capture (ECRAN=...).
+                TelephoneV2Racine()
             }
         }
     }

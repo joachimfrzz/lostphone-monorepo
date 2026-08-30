@@ -366,6 +366,7 @@ struct IconeAccueilV2: View {
             }
         }
         .shadow(color: .black.opacity(0.25), radius: 4, y: 2)
+        .onTapGesture { NavV2.partage.ouvrir(app.0) }
     }
 }
 

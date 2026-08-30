@@ -2066,6 +2066,11 @@
     "Interdits définitifs : « pour le moment », « Réessayez plus tard »"
    ],
    "arbitrage_30_08": "Joachim valide les 16 recos en bloc : A=1,3,5,6,7,8,10,14 ; B=2,4,9,12,13,15,16 ; C=11. Exécution en tour complet de toutes les apps existantes, puis build + son test."
+  },
+  "D84": {
+   "date": "2026-08-30",
+   "titre": "Campagne vérification totale : 28 apps validées une à une (protocole photo-paires + liste de frustrations → correctifs → build → re-test) avant toute nouvelle app",
+   "detail": "Plan complet dans CAMPAGNE-VERIFICATION.md à la racine du repo. Formats : paires de photos vrai iPhone/Lost Phone (format validé par l'expérience du 30/08), une app à la fois, jamais de retour en arrière sur une app validée."
   }
  },
  "point_de_reprise_migration": {
@@ -2132,7 +2137,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Correctifs coque (double barre, indicateur, icônes redessinées, animation) — build 17:25. Attente verdict."
+  "derniere_action": "D84 : campagne vérification totale lancée. Étape 1 (coque) en validation — attente verdict build 17:25, puis fiche Messages."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",

@@ -1418,7 +1418,7 @@
    "testflight_prerequis": "codemagic.yaml exige l'intégration App Store Connect nommée EXACTEMENT « Codemagic » (integrations: app_store_connect: Codemagic). SUR LE COMPTE 2 ELLE N'EXISTE PAS ENCORE -> duel-swift-testflight échouera à la signature tant que Joachim n'a pas ajouté sa clé API ASC (.p8) sous ce nom : codemagic.io -> Teams/Personal -> Integrations -> Developer Portal (App Store Connect) -> Add key -> name: Codemagic.",
    "verifie": "3 runs miroir OK sur le compte 2 dans la nuit. Aucun build Flutter parasite malgré le trigger push du YAML (webhook non actif)."
   },
-  "quota_codemagic": "~325/500 min gratuites après builds #13 et #14 (2026-08-30). Reste ~7 builds miroir."
+  "quota_codemagic": "~430/500 min gratuites après builds #15 et #16 (2026-08-30 ~10h). Reste ~2-3 builds miroir ce mois — ATTENTION quota."
  },
  "artefacts_existants": {
   "document_projet_hyperagent": {
@@ -2106,7 +2106,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Nuit du 29→30/08 : S2+S3+S4 livrés et vérifiés (rapports rapport_S2/S3/S4). Prochain : S5 (Photos/Calendrier/Notes/Rappels v2) puis S6 (Météo/Dictaphone/Horloge/Calculatrice v2) sur go de Joachim."
+  "derniere_action": "Refonte D80 S1→S6 COMPLÈTE : 47 écrans v2 en 6 familles (coque2 8, divers2 5, reglages2 7, tcm2 3, sm2 7, pcnr2 9, mhdc2 8), 16 builds miroir. Prochains chantiers : ICÔNES d'apps (n°1 fidélité), assets pellicule non résolus dans le bundle miroir, polish (CC fond, footer Boîtes, glyphe calc), animations depuis vidéos 60fps, sessions S7-S12."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2343,5 +2343,19 @@
   "statut": "TERMINÉ (build #15 vert, vérifié)",
   "fichier": "proto-swift/Sources/PcnrV2.swift",
   "cles_count": 9
+ },
+ "rapport_S6": {
+  "date": "2026-08-30 ~10h05",
+  "livre": "Météo/Horloge/Dictaphone/Calculatrice v2 8/8 écrans (famille mhdc2) : Météo accueil (DOMICILE Lyon 27° Ensoleillé ↑30° ↓15°, bandeau heure par heure avec Coucher 20:38, prévisions 10 jours avec barres de température et 40 % orage lundi — données réelles S6 conservées, seul le lieu est Sarah-isé) + liste des lieux (Ma position/Mâcon/Annecy, champ Ville ou aéroport) ; Horloge alarmes (Sommeil|Réveil CONFIGURER, alarmes à libellés avec interrupteurs verts/gris), minuteurs (anneau 05:01 + Récents), chronomètre ; Dictaphone (Tous les enregistrements, rangée dépliée avec lecteur ±15 s, bouton rouge Enregistrer) ; Calculatrice élémentaire (162+98 → 260, clavier exact) + menu de modes (Élémentaire ✓ / Scientifique / Notes mathématiques / Convertir). Build vert run #16, captures vérifiées (météo, alarmes, calculatrice).",
+  "ecarts_assumes": [
+   "Touche bas-gauche calculatrice : emoji 🧮 en tofu simulateur → à remplacer par un glyphe dédié au polish (1 ligne)",
+   "Météo : îlot dynamique visible en noir sur fond bleu (simulateur iPhone 16, normal)",
+   "Icônes météo SF multicolores proches mais pas identiques aux glyphes propriétaires Apple (chantier assets si besoin)"
+  ]
+ },
+ "refonte_mhdc_v2": {
+  "statut": "TERMINÉ (build #16 vert, vérifié)",
+  "fichier": "proto-swift/Sources/MhdcV2.swift",
+  "cles_count": 8
  }
 }

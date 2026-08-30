@@ -2040,6 +2040,19 @@
    "date": "2026-08-29",
    "contenu": "DÉCISION (proposée par Joachim 19h28 « refonte entière plutôt que diff », périmètre arbitré par l agent sur délégation — « je sais pas me décider » — consignée avec invitation à correction). Les apps déjà construites ne sont plus corrigées par diffs : CHAQUE ÉCRAN est RECONSTRUIT contre les références exhaustives de la campagne (fiches + XML + vidéos). CONSERVÉS (argument décisif : l infrastructure ne produit aucun pixel — la table rase n achèterait zéro fidélité) : (1) l infra partagée (Routeur, BarreHome, lecteurs audio/vidéo, magasins, FeuillePartage), (2) les jeux de données Sarah (69 photos, conversations, LCL, mémos — remplaçables D59), (3) les 14 composants médias (à re-skinner). CLAUSE DE SÛRETÉ : toute pièce conservée prise en défaut par une référence est refaite sans débat au moment où on la rencontre. ORDRE : au fil des sessions livrées (coque D76 + Réglages + TCM + Safari/Mail + PCNR disponibles dès maintenant). Le verdict reste le device (TestFlight sur GO).",
    "remplace": "Les passes de diff P5 par app (phase 1 de la feuille de route du 28/08) — absorbées par la refonte."
+  },
+  "D81": {
+   "date": "2026-08-30",
+   "titre": "La v1 interactive est le jeu ; les captures sont la source de vérité qui corrige la v1 — jamais une reconstruction parallèle",
+   "contexte": "Test device de la refonte D80 : « catastrophe » (écrans statiques non cliquables, animations non-iOS, assets sales). Discussion de fond avec Joachim : la v1 de la semaine précédente était déjà bien — ce qui manquait, c'était les détails DEVINÉS. Les captures suppriment la devinette.",
+   "regles": [
+    "Le jeu sur device = v1 (composants natifs iOS : vraies listes, vraie navigation, vrais scrolls — la sensation iPhone est gratuite)",
+    "Les références S1-S6 (XML mesurés, vidéos, fiches) servent à corriger la v1 app par app : libellés, valeurs, espacements, écrans manquants",
+    "Transplanter dans la v1 les acquis v2 : vraies photos pellicule, icônes officielles, données Sarah exactes",
+    "Boucle courte OBLIGATOIRE : une app (ou petit lot) → build TestFlight → test device de Joachim → correctifs. Plus jamais 6 sessions livrées d'un coup vérifiées uniquement sur images statiques",
+    "Le pipeline miroir reste l'outil de vérification STATIQUE ; il ne valide jamais la sensation — seul le test device la valide"
+   ],
+   "statut_v2": "Les 47 écrans v2 et IntegrationV2 restent dans le code (mode capture uniquement) comme référence visuelle et réservoir de composants."
   }
  },
  "point_de_reprise_migration": {
@@ -2106,7 +2119,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Correctifs icônes/CC publiés (build 14:09). Attente : retour device + liste animations de Joachim."
+  "derniere_action": "D81 actée : retour v1 comme jeu, captures = charte de correction. Entrée device rebasculée sur VerrouillageView v1. Prochain : lot de correction n°1 (app au choix de Joachim) avec boucle courte."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",

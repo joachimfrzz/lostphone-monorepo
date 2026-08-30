@@ -605,7 +605,7 @@ struct VerrouillageView: View {
                     }
                     .foregroundStyle(.white)
                 }
-                .padding(.horizontal, 32).padding(.top, 20)
+                .padding(.leading, 39).padding(.trailing, 27).padding(.top, 20)
 
                 Image(systemName: "lock.fill")
                     .font(.system(size: 15))
@@ -653,10 +653,6 @@ struct VerrouillageView: View {
                 .padding(.top, 26)
                 .padding(.bottom, 40)
 
-                // Indicateur d'accueil : 144×5 à y=861
-                Capsule().fill(.white)
-                    .frame(width: 144, height: 5)
-                    .padding(.bottom, 8)
             }
         }
         .contentShape(Rectangle())
@@ -751,6 +747,7 @@ struct AccueilView: View {
     @State private var zoomNom: String? = nil
     @State private var zoomCadre: CGRect = .zero
     @State private var zoomPlein = false
+    @State private var zoomFondu: Double = 1
     @ObservedObject private var routeur = Routeur.partage
 
     // Page 1 : les apps « système » (ordre inspiré du réel) — Page 2 : le reste
@@ -838,15 +835,18 @@ struct AccueilView: View {
         zoomNom = nom
         zoomCadre = cadre
         zoomPlein = false
-        withAnimation(.easeInOut(duration: 0.32)) { zoomPlein = true }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.30) {
+        zoomFondu = 1
+        withAnimation(.easeOut(duration: 0.34)) { zoomPlein = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
             var tx = Transaction()
             tx.disablesAnimations = true
             withTransaction(tx) { action() }
+            withAnimation(.easeOut(duration: 0.18)) { zoomFondu = 0 }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.85) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
             zoomNom = nil
             zoomPlein = false
+            zoomFondu = 1
         }
     }
 
@@ -872,21 +872,7 @@ struct AccueilView: View {
             Color.black.opacity(0.30).ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Barre d'état (heure figée du jeu)
-                HStack {
-                    Text("19:47").font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
-                        .padding(.leading, 30)
-                    Spacer()
-                    HStack(spacing: 7) {
-                        Image(systemName: "cellularbars").font(.system(size: 14))
-                        Image(systemName: "wifi").font(.system(size: 14))
-                        Image(systemName: "battery.100percent").font(.system(size: 16))
-                    }
-                    .foregroundStyle(.white)
-                    .padding(.trailing, 24)
-                }
-                .padding(.top, 12)
-
+                // Pas de fausse barre d'état : la vraie barre système iOS fait foi (D82)
                 TabView(selection: $page) {
                     // -------- PAGE 1 : widgets + 16 apps --------
                     VStack(spacing: 0) {
@@ -988,10 +974,12 @@ struct AccueilView: View {
                              ouvrir: { cadre in lancer("Mail", depuis: cadre) })
                     Spacer()
                 }
-                .padding(.vertical, 15)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 36))
-                .padding(.horizontal, 14).padding(.top, 12).padding(.bottom, 6)
+                .padding(.vertical, 17)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 38))
+                .padding(.horizontal, 10).padding(.top, 12).padding(.bottom, 4)
             }
+            .scaleEffect(zoomNom != nil ? 0.94 : 1.0)
+            .animation(.easeOut(duration: 0.34), value: zoomNom != nil)
 
             // ---- Zoom d'ouverture : l'app grandit depuis son icône ----
             if let nom = zoomNom {
@@ -1011,6 +999,7 @@ struct AccueilView: View {
                     .position(zoomPlein
                               ? CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
                               : CGPoint(x: zoomCadre.midX, y: zoomCadre.midY))
+                    .opacity(zoomFondu)
                     .ignoresSafeArea()
                     .allowsHitTesting(false)
             }

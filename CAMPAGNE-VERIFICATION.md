@@ -16,8 +16,8 @@ navigation & gestes · contenu narratif Sarah · animations.
 ## Ordre & état
 | # | App | État |
 |---|---|---|
-| 1 | Coque (verrouillage+accueil) | EN VALIDATION (builds 17:08 + 17:25) |
-| 2 | Messages | à vérifier (lot D82 déjà passé) |
+| 1 | Coque (verrouillage+accueil) | ✅ VALIDÉE 30/08 18h02 (build v3 17h54 : « c'est parfait ») |
+| 2 | Messages | EN COURS — fiche envoyée 30/08 18h05 |
 | 3 | WhatsApp | à vérifier (lot D82 déjà passé) |
 | 4 | Téléphone + Contacts | à vérifier |
 | 5 | Photos | à vérifier |

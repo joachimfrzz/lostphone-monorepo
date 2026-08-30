@@ -2075,7 +2075,8 @@
   "D85": {
    "date": "2026-08-30",
    "titre": "Coque v3 (retour Joachim 17h31) : (1) ouverture d'app = slide up SEUL (zoom/fondu du logo supprimé) ; (2) pack5 d'icônes = sources officielles simulateur + Wikimedia Commons, carrés pleins SANS alpha, unique rognage squircle .continuous côté SwiftUI (fin du double masque « zoomé ») ; (3) les barres système du jeu sont celles de SARAH : vraie barre d'état + vrai indicateur home masqués partout (statusBarHidden + persistentSystemOverlays(.hidden)), BarreSarah (19:47 figé, cohérent verrouillage) + capsule dessinées, defersSystemGestures(.bottom) pour que le 1er glissé-haut aille au jeu (le 2e quitte réellement — sécurité iOS).",
-   "detail": "Modifier .coquilleSarah(claire:) appliqué aux 28 covers + 2 covers de notification. claire:true = texte noir (apps claires). Icônes restant en repli SF : Calculatrice, Dictaphone, Ma Banque (fictive), Musique. Snapchat = fantôme redessiné PIL (pas de source libre). Pièges consignés : les previews CityPNG/CleanPNG ne sont PAS des PNG transparents ; les assets pré-masqués + clipShape = double masque ; toujours vérifier le pack par planche contact AVANT push."
+   "detail": "Modifier .coquilleSarah(claire:) appliqué aux 28 covers + 2 covers de notification. claire:true = texte noir (apps claires). Icônes restant en repli SF : Calculatrice, Dictaphone, Ma Banque (fictive), Musique. Snapchat = fantôme redessiné PIL (pas de source libre). Pièges consignés : les previews CityPNG/CleanPNG ne sont PAS des PNG transparents ; les assets pré-masqués + clipShape = double masque ; toujours vérifier le pack par planche contact AVANT push.",
+   "verdict": "VALIDÉ device par Joachim le 30/08 18h02 : « C'est parfait »."
   }
  },
  "point_de_reprise_migration": {
@@ -2142,7 +2143,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Build coque v3 (D85) VERT et publié TestFlight à 17h54 (build 6a945105, commit 3e783fd6). Attente verdict device de Joachim : animation slide-only, icônes pack5, barres de Sarah. Quota Codemagic quasi épuisé (~495/500)."
+  "derniere_action": "Coque v3 VALIDÉE par Joachim (« c'est parfait », 18h02). Campagne D84 étape 2 : fiche de vérification Messages envoyée, attente de sa liste de retours. Quota Codemagic ~495/500 : le prochain build risque de refuser — nouveau compte à prévoir."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",

@@ -2132,7 +2132,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "D82 validée en bloc. Exécution du tour complet anti-frustration sur la v1."
+  "derniere_action": "D82 lot 1 livré et publié (16:06). Attente test device Joachim sur Messages/WhatsApp/Dictaphone."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2502,5 +2502,16 @@
   "build": "TestFlight 6a941c52 VERT publié 14:09 (commit 4ffeb049)",
   "en_attente": "Liste précise des défauts d'animations de Joachim (déverrouillage, ouverture app depuis l'icône, transitions) → chantier animations mesuré sur vidéos 60fps remonté en priorité",
   "restes": "Icônes sociales (dossier, pas sur l'accueil) encore avec badges — sources propres à trouver ; Appareil photo absente"
+ },
+ "d82_lot1_2026_08_30": {
+  "date": "2026-08-30 16:06",
+  "livre": "Lot 1 anti-frustration (build TestFlight 6a94376a VERT publié 16:06, commits b0dffb08+db5299c2) : Messages — le viseur caméra s'ouvre vraiment (flash, photo sombre envoyée dans la conv), Envoyer plus tard programme vraiment (feuille + toast) ; WhatsApp — micro au geste WhatsApp réel (tap court = « Maintenez pour enregistrer », appui long = enregistrement chrono, relâcher = vraie bulle vocale), bouton vidéo = appel qui sonne dans le vide (comme l'audio), Rechercher = vraie recherche filtrante dans la conversation, « + » création groupe retiré (C validé) ; Dictaphone — le bouton rouge enregistre vraiment (feuille chrono + onde animée, crée un vrai mémo « Nouvel enregistrement N » en tête de liste).",
+  "constat": "Téléphone était déjà propre (D62) : favoris/listes/urgence/blocage basculent réellement, enveloppe ouvre Mail. Restent en B validé : Localiser/Plans (mise à jour iOS nocturne — astuce narrative), Réglages (code requis), Calculatrice (paysage), Ma Banque (alertes bancaires), Messages Sondages/Genmoji/Playground (wording iOS authentique).",
+  "restes_d82": [
+   "Anti-répétition globale (même excuse jamais 2× en 5 min) — non implémentée",
+   "Warnings deprecation onChange/MapAnnotation (non bloquants)",
+   "« Remplacement impossible » Dictaphone conservé (rare)"
+  ],
+  "lecon": "Piège SwiftUI supplémentaire : expression arithmétique inline complexe dans .frame() → « unable to type-check in reasonable time ». Toujours sortir le calcul dans une fonction."
  }
 }

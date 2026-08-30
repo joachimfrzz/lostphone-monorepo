@@ -33,3 +33,8 @@ if [ -f outils/ciel.tar.b64 ]; then
   tar xf /tmp/ciel.tar
   echo "Ciel Météo restauré ($(tar tf /tmp/ciel.tar | wc -l | tr -d ' ') image)."
 fi
+if [ -f outils/icones-apps.tar.b64 ]; then
+  python3 -c "import base64; open('/tmp/icones.tar','wb').write(base64.b64decode(open('outils/icones-apps.tar.b64').read()))"
+  tar xf /tmp/icones.tar
+  echo "Icônes d'apps restaurées ($(tar tf /tmp/icones.tar | wc -l | tr -d ' ') fichiers)."
+fi

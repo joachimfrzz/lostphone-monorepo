@@ -340,14 +340,32 @@ struct AccueilV2View: View {
 struct IconeAccueilV2: View {
     let app: (String, Color, String)
     init(_ app: (String, Color, String)) { self.app = app }
+    static let assets: [String: String] = [
+        "FaceTime": "ic-facetime", "Calendrier": "ic-calendrier", "Photos": "ic-photos",
+        "Mail": "ic-mail", "Notes": "ic-notes", "Rappels": "ic-rappels", "Horloge": "ic-horloge",
+        "TV": "ic-tv", "Podcasts": "ic-podcasts", "App Store": "ic-app-store", "Plans": "ic-plans",
+        "Santé": "ic-sante", "Cartes": "ic-cartes", "Réglages": "ic-reglages", "ChatGPT": "ic-chatgpt",
+        "Téléphone": "ic-telephone", "Messages": "ic-messages", "Safari": "ic-safari", "Musique": "ic-musique",
+        "WhatsApp": "ic-whatsapp", "Instagram": "ic-instagram", "Snapchat": "ic-snapchat",
+        "TikTok": "ic-tiktok", "X": "ic-x", "Telegram": "ic-telegram", "Facebook": "ic-facebook",
+        "Threads": "ic-threads", "Messenger": "ic-messenger", "Discord": "ic-discord", "Signal": "ic-signal"
+    ]
     var body: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(app.1 == .white ? Color.white : app.1)
-            .frame(width: 64, height: 64)
-            .overlay(Image(systemName: app.2)
-                .font(.system(size: 28))
-                .foregroundStyle(app.1 == .white ? Color.black : .white))
-            .shadow(color: .black.opacity(0.25), radius: 4, y: 2)
+        Group {
+            if let nom = Self.assets[app.0], let ui = chargerPellicule(nom) {
+                Image(uiImage: ui).resizable().scaledToFill()
+                    .frame(width: 64, height: 64)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+            } else {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(app.1 == .white ? Color.white : app.1)
+                    .frame(width: 64, height: 64)
+                    .overlay(Image(systemName: app.2)
+                        .font(.system(size: 28))
+                        .foregroundStyle(app.1 == .white ? Color.black : .white))
+            }
+        }
+        .shadow(color: .black.opacity(0.25), radius: 4, y: 2)
     }
 }
 

@@ -421,7 +421,7 @@ struct EnregistrementDictaVue: View {
             HStack(spacing: 2.5) {
                 ForEach(0..<48, id: \.self) { i in
                     Capsule().fill(Color.red)
-                        .frame(width: 2.5, height: CGFloat(6 + (17 * ((i * 7 + tics * 3) % 13)) / 13))
+                        .frame(width: 2.5, height: hauteurBarre(i))
                 }
             }
             .frame(height: 46)
@@ -447,6 +447,12 @@ struct EnregistrementDictaVue: View {
         .background(Color(hex: 0x1C1C1E))
         .preferredColorScheme(.dark)
     }
+    private func hauteurBarre(_ i: Int) -> CGFloat {
+        let phase: Int = (i * 7 + tics * 3) % 13
+        let h: Int = 6 + (17 * phase) / 13
+        return CGFloat(h)
+    }
+
     private var numeroSuivant: Int {
         let nums = magasin.memos.compactMap { m -> Int? in
             guard m.titre.hasPrefix("Nouvel enregistrement ") else { return nil }

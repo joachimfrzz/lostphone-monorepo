@@ -2106,7 +2106,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Polish groupé livré (build #17 vert) : pellicule .jpg résolue (cause racine UIImage extension), vraies photos dans Photothèque + avatar Réglages, glyphe calc, pilule Concentration. Raffinement CC (matériau sombre) poussé, à vérifier au prochain build. Quota serré : 1 build restant."
+  "derniere_action": "Chantier icônes phase 1 poussé (30 icônes réelles + câblage AccueilV2). En attente : nouveau compte Codemagic (Joachim ok pour le créer) pour vérifier icônes + CC sombre, puis sessions S7+."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2370,5 +2370,57 @@
   ],
   "pousse_non_verifie": "CC : matériau passé en mode sombre + voile noir 0,35 (le vrai CC iOS a un matériau sombre quel que soit le fond) ; voile 0,45 RETIRÉ de Bibliothèque et Multitâche (en vrai iOS ces vues reflètent la teinte du fond d'écran). À vérifier au prochain build utile — pas de build dédié pour préserver le quota.",
   "quota": "~455/500 min après build #17. UN SEUL build miroir restant en sécurité ce mois."
+ },
+ "chantier_icones_2026_08_30": {
+  "statut": "PHASE 1 LIVRÉE (commit afb6c7f0) — 30 vraies icônes découpées des références S1 et câblées dans AccueilV2 (grille + dock, repli SF conservé). NON VÉRIFIÉ à l'image (quota ~455/500 — vérification au prochain build, idéalement sur le nouveau compte Codemagic).",
+  "methode": "Les XML de l'écoute passive donnent les cadres exacts (x,y,w,h en points, échelle ×3 vers les JPEG 1206px). PIÈGE : les paires XML↔JPEG de l'écoute passive peuvent être désynchronisées d'une frame — TOUJOURS vérifier par planche contact avant d'adopter une découpe. Sources fiables : accueil = 001-170736 (paire native), dossier Réseaux sociaux = JPEG 013-170327 avec grille manuelle (cols pts [31,121,212,302], rangées y [288,385,477,560,660], carré 60 pt).",
+  "icones_livrees": [
+   "facetime",
+   "calendrier",
+   "photos",
+   "mail",
+   "notes",
+   "rappels",
+   "horloge",
+   "tv",
+   "podcasts",
+   "app-store",
+   "plans",
+   "sante",
+   "cartes",
+   "reglages",
+   "chatgpt",
+   "telephone",
+   "messages",
+   "safari",
+   "musique",
+   "whatsapp",
+   "instagram",
+   "snapchat",
+   "tiktok",
+   "x",
+   "telegram",
+   "facebook",
+   "threads",
+   "messenger",
+   "discord",
+   "signal"
+  ],
+  "manquantes": [
+   "meteo (que widget dans les refs)",
+   "appareil-photo",
+   "calculatrice",
+   "fichiers",
+   "gmail",
+   "youtube",
+   "dictaphone",
+   "contacts",
+   "localiser",
+   "spotify",
+   "bourse",
+   "boussole",
+   "wallet-visuel-alternatif"
+  ],
+  "consigne_sessions": "Pour compléter : au début d'une prochaine session, Joachim reste ~2 s sur CHAQUE page d'accueil et chaque page de la bibliothèque (paires XML+JPEG synchrones) — les icônes manquantes seront découpées pareil."
  }
 }

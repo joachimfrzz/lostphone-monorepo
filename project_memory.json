@@ -2142,7 +2142,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Coque v3 poussée (D85) : slide-only, pack5 icônes officielles, barres de Sarah. Build TestFlight en cours — attente verdict device. Quota Codemagic critique."
+  "derniere_action": "Build coque v3 (D85) VERT et publié TestFlight à 17h54 (build 6a945105, commit 3e783fd6). Attente verdict device de Joachim : animation slide-only, icônes pack5, barres de Sarah. Quota Codemagic quasi épuisé (~495/500)."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",

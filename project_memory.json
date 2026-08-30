@@ -2106,7 +2106,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Phase 2 livrée + build TestFlight 12:56 publié. En attente : test device Joachim."
+  "derniere_action": "Correctifs icônes/CC publiés (build 14:09). Attente : retour device + liste animations de Joachim."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2461,5 +2461,20 @@
    "animations fines mesurées sur les vidéos 60fps",
    "apps sans v2 : FaceTime/TV/Podcasts/App Store/Plans/Santé/Cartes/ChatGPT/Musique/Appareil photo"
   ]
+ },
+ "crise_qualite_2026_08_30": {
+  "date": "2026-08-30 13:50-14:10",
+  "constat_joachim": "« Vraie catastrophe » au test device : halos de wallpaper autour des icônes découpées, badge réel 53775 incrusté dans Mail, CC trop clair, animations pas iOS. Légitime — la structure était là, pas la sensation.",
+  "lecon_majeure": "NE JAMAIS livrer sur device des assets découpés depuis des photos d'écran sans vérification SUR FOND DIFFÉRENT : les halos de wallpaper et badges sont invisibles sur planche contact (même fond) et hideux ailleurs.",
+  "correctifs_livres": [
+   "11 icônes Apple OFFICIELLES extraites des bundles du simulateur (AppIcon60x60@2x.png) : Messages, Safari, Photos, Calendrier, Rappels, Santé, Plans, Cartes, Contacts, Fichiers + Réglages (springboard fond noir)",
+   "Mail REDESSINÉE (dégradé bleu + enveloppe, badge irrécupérable)",
+   "Autres accueil (FaceTime, Horloge, TV, Podcasts, App Store, Téléphone, Musique, Notes, ChatGPT) : recadrage 60/69 pt + marge 4 % + masque squircle alpha — plus de halo possible",
+   "CC : blur 26 + voile noir 0,52 + matériau sombre",
+   "Workflow icones-sim ajouté à codemagic.yaml (réutilisable)"
+  ],
+  "build": "TestFlight 6a941c52 VERT publié 14:09 (commit 4ffeb049)",
+  "en_attente": "Liste précise des défauts d'animations de Joachim (déverrouillage, ouverture app depuis l'icône, transitions) → chantier animations mesuré sur vidéos 60fps remonté en priorité",
+  "restes": "Icônes sociales (dossier, pas sur l'accueil) encore avec badges — sources propres à trouver ; Appareil photo absente"
  }
 }

@@ -90,6 +90,28 @@ final class MagasinMail: ObservableObject {
     func boite(_ nom: String) -> [Courriel] {
         courriels.filter { $0.boite == nom }
     }
+
+    // v2 étape 6 : la persistance est le fil rouge (retours Joachim 31/08)
+    func marquerLu(_ id: UUID) {
+        if let i = courriels.firstIndex(where: { $0.id == id }) {
+            courriels[i].nonLu = false
+        }
+    }
+    func toutMarquerLu(boite nom: String) {
+        for i in courriels.indices where (nom == "*" || courriels[i].boite == nom) {
+            courriels[i].nonLu = false
+        }
+    }
+    func basculerVIP(_ id: UUID) {
+        if let i = courriels.firstIndex(where: { $0.id == id }) {
+            courriels[i].vip.toggle()
+        }
+    }
+    func deplacer(_ ids: Set<UUID>, vers boite: String) {
+        for i in courriels.indices where ids.contains(courriels[i].id) {
+            courriels[i].boite = boite
+        }
+    }
 }
 
 // ============================================================ APP (Boîtes)
@@ -98,6 +120,9 @@ struct MailVue: View {
     @ObservedObject private var magasin = MagasinMail.partage
     @State private var composer = false
     @State private var modifierVisible = false
+    // v2 étape 6 : Mail s'ouvre directement sur la RÉCEPTION (décision Joachim) ;
+    // le chevron retour ramène à l'écran Boîtes, comme le vrai Mail.
+    @State private var receptionOuverte = true
 
     var body: some View {
         NavigationStack {
@@ -173,6 +198,9 @@ struct MailVue: View {
                     Button("Modifier") { modifierVisible = true }.foregroundStyle(Color(hex: 0x0A84FF))
                 }
             }
+            .navigationDestination(isPresented: $receptionOuverte) {
+                ListeMailVue(titre: "Réception", boite: "Réception")
+            }
             .sheet(isPresented: $composer) { ComposerMailVue() }
             .sheet(isPresented: $modifierVisible) {
                 NavigationStack {
@@ -227,6 +255,11 @@ struct ListeMailVue: View {
     @ObservedObject private var magasin = MagasinMail.partage
     @State private var recherche = ""
     @State private var selectionActive = false
+    // v2 étape 6 : sélection réelle, filtre non-lus réel, composer branché
+    @State private var selection = Set<UUID>()
+    @State private var filtreNonLus = false
+    @State private var composerVisible = false
+    @State private var confirmationCorbeille = false
 
     private var items: [Courriel] {
         var l: [Courriel]
@@ -236,6 +269,7 @@ struct ListeMailVue: View {
         case "Envoi": l = []
         default: l = magasin.boite(boite)
         }
+        if filtreNonLus { l = l.filter { $0.nonLu } }
         if !recherche.isEmpty {
             l = l.filter { $0.objet.localizedCaseInsensitiveContains(recherche)
                         || $0.expediteur.localizedCaseInsensitiveContains(recherche)
@@ -248,76 +282,156 @@ struct ListeMailVue: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text(titre).font(.system(size: 30, weight: .bold)).foregroundStyle(.white)
-                Text(boite == "Envoi" ? "Aucun message non envoyé" : "iCloud · MÀJ à l'instant")
-                    .font(.system(size: 12)).foregroundStyle(.secondary)
+                Text(boite == "Envoi" ? "Aucun message non envoyé"
+                     : (filtreNonLus ? "Filtré par : Non lus" : "iCloud · MÀJ à l'instant"))
+                    .font(.system(size: 12))
+                    .foregroundStyle(filtreNonLus ? Color(hex: 0x0A84FF) : .secondary)
                     .padding(.bottom, 10)
                 if items.isEmpty {
-                    Text(boite == "Corbeille" ? "La corbeille est vide" : "Aucun message")
+                    Text(filtreNonLus ? "Aucun message non lu"
+                         : (boite == "Corbeille" ? "La corbeille est vide" : "Aucun message"))
                         .font(.system(size: 15)).foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity).padding(.top, 80)
                 }
                 ForEach(items) { c in
-                    NavigationLink(destination: LectureMailVue(courriel: c)) {
-                        HStack(alignment: .top, spacing: 10) {
-                            if c.nonLu {
-                                Circle().fill(Color(hex: 0x0A84FF)).frame(width: 9, height: 9).padding(.top, 6)
-                            } else {
-                                Color.clear.frame(width: 9, height: 9)
-                            }
-                            Circle().fill(Color(hex: c.couleur))
-                                .frame(width: 38, height: 38)
-                                .overlay(Text(String(c.expediteur.prefix(1))).font(.system(size: 16, weight: .bold)).foregroundStyle(.white))
-                            VStack(alignment: .leading, spacing: 2) {
-                                HStack {
-                                    Text(c.expediteur).font(.system(size: 15.5, weight: .semibold)).foregroundStyle(.white)
-                                    Spacer()
-                                    Text(c.date).font(.system(size: 13)).foregroundStyle(.secondary)
-                                    Image(systemName: "chevron.right").font(.system(size: 11)).foregroundStyle(.secondary)
-                                }
-                                Text(c.objet).font(.system(size: 14)).foregroundStyle(.white.opacity(0.9)).lineLimit(1)
-                                Text(c.apercu).font(.system(size: 13)).foregroundStyle(.secondary).lineLimit(2)
-                            }
+                    HStack(alignment: .top, spacing: 10) {
+                        // v2 étape 6 : sélection RÉELLE
+                        if selectionActive {
+                            Image(systemName: selection.contains(c.id) ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 21))
+                                .foregroundStyle(selection.contains(c.id) ? Color(hex: 0x0A84FF) : .secondary)
+                                .padding(.top, 8)
+                        } else if c.nonLu {
+                            Circle().fill(Color(hex: 0x0A84FF)).frame(width: 9, height: 9).padding(.top, 6)
+                        } else {
+                            Color.clear.frame(width: 9, height: 9)
                         }
-                        .padding(.vertical, 8)
+                        Circle().fill(Color(hex: c.couleur))
+                            .frame(width: 38, height: 38)
+                            .overlay(Text(String(c.expediteur.prefix(1))).font(.system(size: 16, weight: .bold)).foregroundStyle(.white))
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack {
+                                Text(c.expediteur).font(.system(size: 15.5, weight: .semibold)).foregroundStyle(.white)
+                                Spacer()
+                                Text(c.date).font(.system(size: 13)).foregroundStyle(.secondary)
+                                Image(systemName: "chevron.right").font(.system(size: 11)).foregroundStyle(.secondary)
+                            }
+                            Text(c.objet).font(.system(size: 14)).foregroundStyle(.white.opacity(0.9)).lineLimit(1)
+                            Text(c.apercu).font(.system(size: 13)).foregroundStyle(.secondary).lineLimit(2)
+                        }
                     }
-                    .buttonStyle(.plain)
+                    .padding(.vertical, 8)
+                    .contentShape(Rectangle())
+                    .background(
+                        NavigationLink("", destination: LectureMailVue(courriel: c))
+                            .opacity(0)
+                            .disabled(selectionActive)
+                    )
+                    .onTapGesture {
+                        if selectionActive {
+                            Haptique.leger()
+                            if selection.contains(c.id) { selection.remove(c.id) } else { selection.insert(c.id) }
+                        }
+                    }
                     Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 55)
                 }
-                Spacer(minLength: 60)
+                // v2 étape 6 : zone réservée aux commandes du bas — plus de recouvrement
+                Spacer(minLength: 120)
             }
             .padding(.horizontal, 16)
         }
         .background(Color.black)
         .overlay(alignment: .bottom) {
-            // Miroir lot 3 : la recherche vit EN BAS dans la vraie app (pilule + filtre + composition)
-            HStack(spacing: 10) {
-                Image(systemName: "line.3.horizontal.decrease").font(.system(size: 16))
-                    .foregroundStyle(.white)
-                    .frame(width: 42, height: 42)
-                    .background(Color(hex: 0x1F1F21), in: Circle())
-                HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                    TextField("Recherche", text: $recherche).foregroundStyle(.white)
-                    Image(systemName: "mic.fill").foregroundStyle(.secondary)
+            if selectionActive {
+                // Barre du mode sélection : corbeille réelle (avec confirmation) + marquer lu
+                HStack {
+                    Text("\(selection.count) sélectionné\(selection.count > 1 ? "s" : "")")
+                        .font(.system(size: 14)).foregroundStyle(.secondary)
+                    Spacer()
+                    Text("Marquer lu").font(.system(size: 15))
+                        .foregroundStyle(selection.isEmpty ? Color.secondary : Color(hex: 0x0A84FF))
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            guard !selection.isEmpty else { return }
+                            Haptique.leger()
+                            for id in selection { magasin.marquerLu(id) }
+                            selection.removeAll(); selectionActive = false
+                        }
+                    Spacer().frame(width: 20)
+                    Image(systemName: "trash")
+                        .foregroundStyle(selection.isEmpty ? Color.secondary : Color(hex: 0xFF453A))
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            guard !selection.isEmpty else { return }
+                            confirmationCorbeille = true
+                        }
                 }
-                .padding(.horizontal, 13).frame(height: 42)
-                .background(Color(hex: 0x1F1F21), in: Capsule())
-                Image(systemName: "square.and.pencil").font(.system(size: 17))
-                    .foregroundStyle(.white)
-                    .frame(width: 42, height: 42)
-                    .background(Color(hex: 0x1F1F21), in: Circle())
+                .padding(.horizontal, 18).padding(.vertical, 13)
+                .background(.ultraThinMaterial, in: Capsule())
+                .padding(.horizontal, 14).padding(.bottom, 12)
+            } else {
+                // v2 étape 6 : filtre RÉEL (non lus), micro retiré, composer branché,
+                // fond matière pour isoler la barre de la liste
+                HStack(spacing: 10) {
+                    Image(systemName: "line.3.horizontal.decrease").font(.system(size: 16))
+                        .foregroundStyle(filtreNonLus ? Color(hex: 0x0A84FF) : .white)
+                        .frame(width: 42, height: 42)
+                        .background(Color(hex: 0x1F1F21), in: Circle())
+                        .contentShape(Circle())
+                        .onTapGesture { Haptique.leger(); withAnimation(.easeOut(duration: 0.15)) { filtreNonLus.toggle() } }
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                        TextField("Recherche", text: $recherche).foregroundStyle(.white)
+                    }
+                    .padding(.horizontal, 13).frame(height: 42)
+                    .background(Color(hex: 0x1F1F21), in: Capsule())
+                    Image(systemName: "square.and.pencil").font(.system(size: 17))
+                        .foregroundStyle(.white)
+                        .frame(width: 42, height: 42)
+                        .background(Color(hex: 0x1F1F21), in: Circle())
+                        .contentShape(Circle())
+                        .onTapGesture { Haptique.leger(); composerVisible = true }
+                }
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                .background(
+                    LinearGradient(colors: [.black.opacity(0), .black.opacity(0.9), .black],
+                                   startPoint: .top, endPoint: .bottom)
+                )
             }
-            .padding(.horizontal, 14).padding(.bottom, 12)
+        }
+        .sheet(isPresented: $composerVisible) { ComposerMailVue() }
+        .confirmationDialog("Placer \(selection.count) message\(selection.count > 1 ? "s" : "") dans la corbeille ?",
+                            isPresented: $confirmationCorbeille, titleVisibility: .visible) {
+            Button("Placer dans la corbeille", role: .destructive) {
+                withAnimation { magasin.deplacer(selection, vers: "Corbeille") }
+                selection.removeAll(); selectionActive = false
+            }
+            Button("Annuler", role: .cancel) {}
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 14) {
                     Button(selectionActive ? "Annuler" : "Sélectionner") {
+                        Haptique.leger()
                         selectionActive.toggle()
+                        selection.removeAll()
                     }
                     .font(.system(size: 14)).foregroundStyle(Color(hex: 0x0A84FF))
-                    Image(systemName: "ellipsis.circle")
-                        .foregroundStyle(Color(hex: 0x0A84FF))
+                    // v2 étape 6 : « … » AGIT (menu ancré réel)
+                    Menu {
+                        Button {
+                            magasin.toutMarquerLu(boite: boite)
+                        } label: { Label("Tout marquer comme lu", systemImage: "envelope.open") }
+                        Button {
+                            selectionActive = true
+                        } label: { Label("Sélectionner des messages", systemImage: "checkmark.circle") }
+                        Button {
+                            filtreNonLus.toggle()
+                        } label: { Label(filtreNonLus ? "Ne plus filtrer" : "Afficher les non lus", systemImage: "line.3.horizontal.decrease") }
+                    } label: {
+                        Image(systemName: "ellipsis.circle")
+                            .foregroundStyle(Color(hex: 0x0A84FF))
+                    }
                 }
             }
         }
@@ -333,6 +447,9 @@ struct LectureMailVue: View {
     @State private var dossierDialog = false
     @State private var repondreVisible = false
     @State private var nouveauVisible = false
+    // v2 étape 6 : suppression confirmée + fiche expéditeur consultable
+    @State private var confirmationSuppr = false
+    @State private var ficheExpediteur = false
 
     var body: some View {
         ScrollView {
@@ -342,12 +459,17 @@ struct LectureMailVue: View {
                         .frame(width: 40, height: 40)
                         .overlay(Text(String(courriel.expediteur.prefix(1))).font(.system(size: 17, weight: .bold)).foregroundStyle(.white))
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(courriel.expediteur).font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
+                        HStack(spacing: 4) {
+                            Text(courriel.expediteur).font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
+                            Image(systemName: "chevron.right").font(.system(size: 10, weight: .semibold)).foregroundStyle(.secondary)
+                        }
                         Text("À : Sarah Levasseur").font(.system(size: 13)).foregroundStyle(.secondary)
                     }
                     Spacer()
                     Text(courriel.date).font(.system(size: 12.5)).foregroundStyle(.secondary)
                 }
+                .contentShape(Rectangle())
+                .onTapGesture { Haptique.leger(); ficheExpediteur = true }   // v2 étape 6 : fiche réelle
                 Text(courriel.objet).font(.system(size: 19, weight: .bold)).foregroundStyle(.white)
                 Divider().overlay(Color(hex: 0x2C2C2E))
                 Text(courriel.corps).font(.system(size: 16)).foregroundStyle(.white.opacity(0.92))
@@ -360,9 +482,11 @@ struct LectureMailVue: View {
             .padding(16)
         }
         .background(Color.black)
+        .onAppear { magasin.marquerLu(courriel.id) }   // v2 étape 6 : ouvrir = lu, définitivement
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
-                Image(systemName: "trash").onTapGesture { deplacer(vers: "Corbeille"); dismiss() }
+                // v2 étape 6 : suppression CONFIRMÉE (plus de suppression accidentelle)
+                Image(systemName: "trash").onTapGesture { confirmationSuppr = true }
                 Spacer()
                 Image(systemName: "folder").onTapGesture { dossierDialog = true }
                 Spacer()
@@ -370,6 +494,62 @@ struct LectureMailVue: View {
                 Spacer()
                 Image(systemName: "square.and.pencil").onTapGesture { nouveauVisible = true }
             }
+        }
+        .confirmationDialog("Ce message sera placé dans la corbeille.",
+                            isPresented: $confirmationSuppr, titleVisibility: .visible) {
+            Button("Placer dans la corbeille", role: .destructive) { deplacer(vers: "Corbeille"); dismiss() }
+            Button("Annuler", role: .cancel) {}
+        }
+        // v2 étape 6 : fiche expéditeur (adresse réelle, détails d'envoi)
+        .sheet(isPresented: $ficheExpediteur) {
+            VStack(spacing: 14) {
+                Circle().fill(Color(hex: courriel.couleur))
+                    .frame(width: 64, height: 64)
+                    .overlay(Text(String(courriel.expediteur.prefix(1))).font(.system(size: 26, weight: .bold)).foregroundStyle(.white))
+                    .padding(.top, 24)
+                Text(courriel.expediteur).font(.system(size: 19, weight: .semibold)).foregroundStyle(.white)
+                Text(courriel.adresse).font(.system(size: 14)).foregroundStyle(Color(hex: 0x0A84FF))
+                    .textSelection(.enabled)
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("De").font(.system(size: 14)).foregroundStyle(.secondary)
+                        Spacer()
+                        Text(courriel.adresse).font(.system(size: 14)).foregroundStyle(.white)
+                    }
+                    .padding(13)
+                    Divider().overlay(Color(hex: 0x2C2C2E))
+                    HStack {
+                        Text("À").font(.system(size: 14)).foregroundStyle(.secondary)
+                        Spacer()
+                        Text("sarah.levasseur@icloud.com").font(.system(size: 14)).foregroundStyle(.white)
+                    }
+                    .padding(13)
+                    Divider().overlay(Color(hex: 0x2C2C2E))
+                    HStack {
+                        Text("Date").font(.system(size: 14)).foregroundStyle(.secondary)
+                        Spacer()
+                        Text(courriel.date).font(.system(size: 14)).foregroundStyle(.white)
+                    }
+                    .padding(13)
+                    Divider().overlay(Color(hex: 0x2C2C2E))
+                    HStack {
+                        Text("VIP").font(.system(size: 14)).foregroundStyle(.secondary)
+                        Spacer()
+                        Image(systemName: courriel.vip ? "star.fill" : "star")
+                            .foregroundStyle(Color(hex: 0xE8C33D))
+                            .contentShape(Rectangle())
+                            .onTapGesture { Haptique.leger(); magasin.basculerVIP(courriel.id) }
+                    }
+                    .padding(13)
+                }
+                .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal, 16)
+                Spacer()
+            }
+            .frame(maxWidth: .infinity)
+            .background(Color.black)
+            .presentationDetents([.height(360)])
+            .preferredColorScheme(.dark)
         }
         .alert(titreAlerte, isPresented: Binding(get: { alerte != nil }, set: { if !$0 { alerte = nil } })) {
             Button("OK", role: .cancel) {}
@@ -423,6 +603,15 @@ struct ComposerMailVue: View {
     @State private var corps = "\n\nEnvoyé de mon iPhone"
     @State private var brouillonAlerte = false
 
+    // v2 étape 6 : le « + » propose les contacts CONNUS de Sarah (ajout réel)
+    private let contactsMail: [(String, String)] = [
+        ("Chloé", "chloe.bnv@gmail.com"),
+        ("Maman", "famille.levasseur@orange.fr"),
+        ("Thomas", "thomas.rey69@gmail.com"),
+        ("Marc ❤️", "marc.dlc.officier@gmail.com"),
+        ("LCL (agence)", "bellecour@lcl.fr"),
+    ]
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -431,7 +620,16 @@ struct ComposerMailVue: View {
                         Text("À :").foregroundStyle(.secondary)
                         TextField("", text: $destinataire).foregroundStyle(Color(hex: 0x0A84FF))
                             .keyboardType(.emailAddress).autocapitalization(.none)
-                        Image(systemName: "plus.circle").foregroundStyle(Color(hex: 0x0A84FF))
+                        Menu {
+                            ForEach(contactsMail, id: \.1) { c in
+                                Button("\(c.0) — \(c.1)") {
+                                    Haptique.leger()
+                                    destinataire = destinataire.isEmpty ? c.1 : destinataire + ", " + c.1
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "plus.circle").foregroundStyle(Color(hex: 0x0A84FF))
+                        }
                     }
                     .padding(.horizontal, 16).padding(.vertical, 11)
                     Divider().overlay(Color(hex: 0x2C2C2E))
@@ -465,12 +663,13 @@ struct ComposerMailVue: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        // D54 transposé au mail : l'envoi part en Boîte d'envoi, jamais distribué
+                        // v2 étape 6 : l'envoi laisse une TRACE — en tête d'Envoyés, visible aussitôt
                         let c = Courriel(expediteur: "Moi", adresse: "sarah.levasseur@icloud.com",
                                          objet: objet.isEmpty ? "(Aucun objet)" : objet,
-                                         apercu: corps.replacingOccurrences(of: "\n\nEnvoyé de mon iPhone", with: ""),
-                                         corps: corps, date: "Maintenant", boite: "Envoyés")
-                        magasin.courriels.append(c)
+                                         apercu: "À : \(destinataire) — " + corps.replacingOccurrences(of: "\n\nEnvoyé de mon iPhone", with: ""),
+                                         corps: "À : \(destinataire)\n\n" + corps,
+                                         date: "19:52", boite: "Envoyés")
+                        magasin.courriels.insert(c, at: 0)
                         dismiss()
                     } label: {
                         Image(systemName: "arrow.up.circle.fill")
@@ -486,8 +685,8 @@ struct ComposerMailVue: View {
                     let c = Courriel(expediteur: "Moi", adresse: "sarah.levasseur@icloud.com",
                                      objet: objet.isEmpty ? "(Aucun objet)" : objet,
                                      apercu: corps.replacingOccurrences(of: "\n\nEnvoyé de mon iPhone", with: ""),
-                                     corps: corps, date: "Maintenant", boite: "Brouillons")
-                    magasin.courriels.append(c)
+                                     corps: corps, date: "19:52", boite: "Brouillons")
+                    magasin.courriels.insert(c, at: 0)   // v2 étape 6 : visible en tête aussitôt
                     dismiss()
                 }
                 Button("Annuler", role: .cancel) {}

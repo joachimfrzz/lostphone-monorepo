@@ -2153,7 +2153,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Lot Photos v2 étape 5 codé et poussé (11 retours Joachim 13h01) : sync suspendue retirée, sélection réelle (+suppression groupée), filtres réels ancrés (Menu), miniatures synchronisées, zoom pincé + double-tap, glissé-bas pour fermer, Ajuster retiré (barre + fiche), partage RÉEL (Messages Chloé/Thomas, WhatsApp via picker, AirDrop comportement réel sans appareil, Copier presse-papiers réel), retour ajouté dans Personnes, profil SL réel (fiche iCloud 173/200 Go). PAS de build : on attend la liste Mail de Joachim pour boucler la session 1 en un build."
+  "derniere_action": "Lot Mail v2 étape 6 codé (13 retours Joachim 13h07) : ouverture directe sur Réception, lu automatique à l'ouverture, Sélectionner réel (marquer lu + corbeille confirmée), … = menu réel, filtre non-lus réel, micro retiré, composer branché en bas, zone du bas réservée (plus de recouvrement), suppression confirmée, + destinataire réel (contacts mail connus dont marc.dlc.officier@gmail.com ⭐), envoi inséré en tête d'Envoyés avec destinataire visible, fiche expéditeur réelle (adresse, dates, VIP basculable). Build de fin de session 1 lancé (Photos+Mail)."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2583,6 +2583,7 @@
    "communautés : création réelle + liste des communautés créées"
   ],
   "build_session1": "TestFlight n°270 du 31/08 13h00 : Messages+WhatsApp+Téléphone corrigées, à re-tester",
-  "etape5_photos_lot1": "11 corrections codées 31/08 13h20 — au prochain build"
+  "etape5_photos_lot1": "11 corrections codées 31/08 13h20 — au prochain build",
+  "etape6_mail_lot1": "13 corrections codées 31/08 13h15 — build session 1 final"
  }
 }

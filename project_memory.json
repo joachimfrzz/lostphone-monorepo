@@ -2153,7 +2153,7 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Feuille de route v5.2 VALIDÉE par Joachim (31/08 00h13) et consignée (D87). Reprise du travail : toujours en attente (1) clé ASC Admin fonctionnelle → build session 1, (2) listes Photos/Mail de Joachim. Prochains chantiers phase T : PASSATION.md + kit d'amorçage, agents CI-BUILDS et HISTOIRE, script de pré-vol CI."
+  "derniere_action": "🟢 BUILD SESSION 1 VERT ET PUBLIÉ TESTFLIGHT (n°270, 31/08 13h00, build 6a955d86) après résolution complète de la passation Codemagic : cause 1 = nouveau compte sans clé privée de certificat et incapable d'en créer → kit-signature via asc.py (certificat+profil créés par l'API ASC, p12+mobileprovision uploadés par Joachim dans Code signing identities) ; cause 2 = collision Redundant Binary Upload → offset 230→260 dans codemagic.yaml. Runbook complet gravé dans la doc du skill. CONTENU DU BUILD 270 : corrections Messages (7, dont aperçu de liste), WhatsApp (14), Téléphone+Contacts (17). ATTENTE : re-test de ces 3 apps par Joachim + ses listes Photos et Mail."
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2581,6 +2581,7 @@
    "+ dans une discussion : Photos/Appareil photo/Contact réels (photo et fiche partent dans le fil), Document/Sondage en réponse D56",
    "audio : s'arrête en quittant la conversation (onDisappear)",
    "communautés : création réelle + liste des communautés créées"
-  ]
+  ],
+  "build_session1": "TestFlight n°270 du 31/08 13h00 : Messages+WhatsApp+Téléphone corrigées, à re-tester"
  }
 }

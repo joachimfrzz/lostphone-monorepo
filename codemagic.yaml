@@ -6,8 +6,10 @@
 #
 # Numéros de build : décalés de +100 pour ne jamais entrer en collision avec les
 # builds 1-27 de l'ancienne app SwiftUI sur la même fiche TestFlight.
-# 27/08/2026 : offset Swift passé de +200 à +230 (compte Codemagic 2 : le compteur
-# repart de ~1 alors que la série 2xx est déjà montée à 230 sur la fiche TestFlight).
+# 27/08/2026 : offset Swift passé de +200 à +230 (compte Codemagic 2).
+# 31/08/2026 : offset passé à +260 (compte Codemagic 3, compteur reparti de 1 —
+# collision « Redundant Binary Upload » sur 239). Règle : à CHAQUE nouveau compte,
+# augmenter l'offset au-delà du plus haut numéro déjà uploadé sur TestFlight.
 
 workflows:
   duel-flutter-testflight:
@@ -105,7 +107,7 @@ workflows:
       - name: Numéro de build (série 2xx)
         script: |
           cd proto-swift
-          agvtool new-version -all $((230 + BUILD_NUMBER))
+          agvtool new-version -all $((260 + BUILD_NUMBER))
 
       - name: Signature (profils via intégration App Store Connect)
         script: |

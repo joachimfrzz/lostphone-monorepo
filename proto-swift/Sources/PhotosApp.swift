@@ -365,6 +365,19 @@ struct PhototequeVue: View {
         }
     }
 
+    // v2 correctifs 31/08 : même filtre appliqué à un sous-ensemble (Mois / Années)
+    private func filtrer(_ items: [PhotoItem]) -> [PhotoItem] {
+        let vivantes = items.filter { !magasin.supprimees.contains($0.id) }
+        switch filtre {
+        case 1: return vivantes.filter { magasin.favoris.contains($0.id) }
+        case 2: return vivantes.filter { $0.capture }
+        default: return vivantes
+        }
+    }
+
+    // v2 correctifs 31/08 : cible de défilement quand on tape une année
+    @State private var moisCible: String? = nil
+
     var body: some View {
         ZStack(alignment: .top) {
             VStack(spacing: 0) {
@@ -391,16 +404,19 @@ struct PhototequeVue: View {
                             .foregroundStyle(filtre == 0 ? phTexte : phBleu)
                             .padding(10).background(phCarte, in: Circle())
                     }
-                    // v2 étape 5 : sélection RÉELLE
-                    Text(modeSelection ? "Annuler" : "Sélect.").font(.system(size: 15)).foregroundStyle(phTexte)
-                        .padding(.horizontal, 13).padding(.vertical, 8)
-                        .background(phCarte, in: Capsule())
-                        .contentShape(Capsule())
-                        .onTapGesture {
-                            Haptique.leger()
-                            modeSelection.toggle()
-                            selection.removeAll()
-                        }
+                    // v2 étape 5 (fiabilisé 31/08) : sélection RÉELLE — vrai Button
+                    Button {
+                        Haptique.leger()
+                        modeSelection.toggle()
+                        selection.removeAll()
+                        if modeSelection && portee == 0 { portee = 2 } // la sélection se fait sur les vignettes
+                    } label: {
+                        Text(modeSelection ? "Annuler" : "Sélect.").font(.system(size: 15)).foregroundStyle(phTexte)
+                            .padding(.horizontal, 13).padding(.vertical, 8)
+                            .background(phCarte, in: Capsule())
+                            .contentShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 6)
 
@@ -506,44 +522,83 @@ struct PhototequeVue: View {
     }
 
     private var vueMois: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
-                ForEach(DonneesPhotos.parMois(), id: \.0) { mois, items in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(mois).font(.system(size: 22, weight: .bold)).foregroundStyle(phTexte)
-                            .padding(.horizontal, 16)
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 2), spacing: 2) {
-                            ForEach(items.filter { !magasin.supprimees.contains($0.id) }) { p in
-                                TuilePhoto(item: p, ratio: 1.0)
-                                    .onTapGesture { Haptique.leger(); photoOuverte = p }
+        // v2 correctifs 31/08 : filtre appliqué, sélection possible, défilement vers l'année tapée
+        ScrollViewReader { lecteur in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 22) {
+                    ForEach(DonneesPhotos.parMois(), id: \.0) { mois, items in
+                        let visibles = filtrer(items)
+                        if !visibles.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(mois).font(.system(size: 22, weight: .bold)).foregroundStyle(phTexte)
+                                    .padding(.horizontal, 16)
+                                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 2), spacing: 2) {
+                                    ForEach(visibles) { p in
+                                        TuilePhoto(item: p, ratio: 1.0)
+                                            .overlay(alignment: .bottomTrailing) {
+                                                if modeSelection {
+                                                    Image(systemName: selection.contains(p.id) ? "checkmark.circle.fill" : "circle")
+                                                        .font(.system(size: 20))
+                                                        .foregroundStyle(selection.contains(p.id) ? phBleu : .white.opacity(0.85))
+                                                        .shadow(radius: 2)
+                                                        .padding(5)
+                                                }
+                                            }
+                                            .onTapGesture {
+                                                Haptique.leger()
+                                                if modeSelection {
+                                                    if selection.contains(p.id) { selection.remove(p.id) } else { selection.insert(p.id) }
+                                                } else {
+                                                    photoOuverte = p
+                                                }
+                                            }
+                                    }
+                                }
                             }
+                            .id(mois)
                         }
                     }
+                    Color.clear.frame(height: 130)
                 }
-                Color.clear.frame(height: 130)
+                .padding(.top, 6)
             }
-            .padding(.top, 6)
+            .scrollIndicators(.hidden)
+            .onAppear {
+                if let cible = moisCible {
+                    lecteur.scrollTo(cible, anchor: .top)
+                    moisCible = nil
+                }
+            }
         }
-        .scrollIndicators(.hidden)
     }
 
     private var vueAnnees: some View {
+        // v2 correctifs 31/08 : filtre appliqué + année CLIQUABLE (ouvre Mois, défilé sur l'année)
         ScrollView {
             VStack(spacing: 14) {
                 ForEach(DonneesPhotos.parAnnee(), id: \.0) { annee, items in
-                    ZStack(alignment: .topLeading) {
-                        if let img = ChargeurPhoto.image(items.first!.id) {
-                            Image(uiImage: img).resizable().scaledToFill()
-                                .frame(height: 220).clipped()
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .overlay(RoundedRectangle(cornerRadius: 16)
-                                    .fill(LinearGradient(colors: [.black.opacity(0.45), .clear],
-                                                         startPoint: .top, endPoint: .center)))
+                    let visibles = filtrer(items)
+                    if !visibles.isEmpty {
+                        ZStack(alignment: .topLeading) {
+                            if let img = ChargeurPhoto.image(visibles.first!.id) {
+                                Image(uiImage: img).resizable().scaledToFill()
+                                    .frame(height: 220).clipped()
+                                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                                    .overlay(RoundedRectangle(cornerRadius: 16)
+                                        .fill(LinearGradient(colors: [.black.opacity(0.45), .clear],
+                                                             startPoint: .top, endPoint: .center)))
+                            }
+                            Text(annee).font(.system(size: 22, weight: .bold)).foregroundStyle(.white)
+                                .padding(14)
                         }
-                        Text(annee).font(.system(size: 22, weight: .bold)).foregroundStyle(.white)
-                            .padding(14)
+                        .padding(.horizontal, 16)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            Haptique.leger()
+                            moisCible = visibles.first?.mois
+                            portee = 1
+                        }
                     }
-                    .padding(.horizontal, 16)
                 }
                 Color.clear.frame(height: 130)
             }

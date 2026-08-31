@@ -32,15 +32,16 @@ struct MessageVocal {
 }
 
 enum DonneesTel {
+    // v2 correctifs 31/08 : TRIÉ du plus récent au plus ancien (aujourd'hui = lundi 17 août)
     static let recents: [AppelRecent] = [
         AppelRecent(nom: "Chloé", manque: true, sortant: false, type: "portable", date: "19:33", compte: 2, duree: nil),
-        AppelRecent(nom: "Agence Bellecour", manque: false, sortant: false, type: "portable", date: "mercredi", compte: 1, duree: "4 minutes"),
-        AppelRecent(nom: "Marc ❤️", manque: false, sortant: false, type: "WhatsApp vidéo", date: "5 juil.", compte: 1, duree: "19 secondes"),
-        AppelRecent(nom: "Maman", manque: false, sortant: true, type: "portable", date: "dim. 12 juil.", compte: 1, duree: "12 minutes"),
-        AppelRecent(nom: "Marc ❤️", manque: true, sortant: false, type: "WhatsApp vidéo", date: "6 mai", compte: 1, duree: nil),
-        AppelRecent(nom: "Marie kiné", manque: false, sortant: true, type: "portable", date: "mardi", compte: 1, duree: "6 minutes"),
-        AppelRecent(nom: "Chloé", manque: false, sortant: true, type: "portable", date: "jeudi", compte: 1, duree: "3 minutes"),
         AppelRecent(nom: "Thomas", manque: false, sortant: false, type: "portable", date: "sam.", compte: 1, duree: "8 minutes"),
+        AppelRecent(nom: "Chloé", manque: false, sortant: true, type: "portable", date: "jeudi", compte: 1, duree: "3 minutes"),
+        AppelRecent(nom: "Agence Bellecour", manque: false, sortant: false, type: "portable", date: "mercredi", compte: 1, duree: "4 minutes"),
+        AppelRecent(nom: "Marie kiné", manque: false, sortant: true, type: "portable", date: "mardi", compte: 1, duree: "6 minutes"),
+        AppelRecent(nom: "Maman", manque: false, sortant: true, type: "portable", date: "dim. 12 juil.", compte: 1, duree: "12 minutes"),
+        AppelRecent(nom: "Marc ❤️", manque: false, sortant: false, type: "WhatsApp vidéo", date: "5 juil.", compte: 1, duree: "19 secondes"),
+        AppelRecent(nom: "Marc ❤️", manque: true, sortant: false, type: "WhatsApp vidéo", date: "6 mai", compte: 1, duree: nil),
     ]
 
     static let contacts: [(String, String)] = [
@@ -183,17 +184,7 @@ struct TelRecentsVue: View {
                 .padding(3)
                 .background(telChamp, in: Capsule())
                 Spacer()
-                Image(systemName: "line.3.horizontal").font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(telTexte)
-                    .padding(9).background(telChamp, in: Circle())
-                    .onTapGesture { menuVisible = true }
-                    .confirmationDialog("", isPresented: $menuVisible, titleVisibility: .hidden) {
-                        // v2 étape 4 : effacement RÉEL (session) — le joueur détruit ses indices en connaissance de cause
-                        Button("Effacer les appels récents", role: .destructive) {
-                            withAnimation { magasin.appelsSupprimes.formUnion(0..<DonneesTel.recents.count) }
-                        }
-                        Button("Annuler", role: .cancel) {}
-                    }
+                // v2 correctifs 31/08 : bouton ≡ (effacer l'historique) SUPPRIMÉ — décision Joachim
             }
             .padding(.horizontal, 16).padding(.top, 8)
 
@@ -256,10 +247,13 @@ struct TelRecentsVue: View {
                             Haptique.leger()
                             appelVisible = true
                         }
+                        // v2 correctifs 31/08 : date + ⓘ calés à DROITE (le NavigationLink ne s'étire plus)
                         Text(a.date).font(.system(size: 15)).foregroundStyle(telTexte2)
+                            .layoutPriority(1)
                         NavigationLink(destination: TelFicheVue(nom: a.nom)) {
                             Image(systemName: "info.circle").font(.system(size: 20)).foregroundStyle(telBleu)
                         }
+                        .fixedSize()
                     }
                     .listRowBackground(telNoir)
                     .listRowSeparatorTint(Color(hex: 0x222222))
@@ -335,7 +329,10 @@ struct TelFicheVue: View {
                         RondFiche(symbole: "message.fill") { messagesVisible = true }
                         RondFiche(symbole: "phone.fill") { appelVisible = true }
                         RondFiche(symbole: "video.fill") { appelVisible = true }
-                        RondFiche(symbole: "envelope.fill") { Routeur.partage.allerMail() }
+                        // v2 correctifs 31/08 : Mail s'ouvre sur un NOUVEAU MESSAGE préadressé au contact
+                        RondFiche(symbole: "envelope.fill") {
+                            Routeur.partage.allerMail(composePour: AnnuaireMail.adresse(nom))
+                        }
                     }
                     .padding(.top, 16)
 
@@ -481,7 +478,7 @@ struct TelFicheVue: View {
 
                     // Actions
                     VStack(spacing: 0) {
-                        LigneFiche(texte: "Partager cette fiche")
+                        LigneFiche(texte: "Partager cette fiche", nomFiche: nom, numeroFiche: numero)
                         Divider().background(Color.white.opacity(0.1)).padding(.leading, 14)
                         LigneFiche(texte: "Ajouter aux favoris")
                         Divider().background(Color.white.opacity(0.1)).padding(.leading, 14)
@@ -532,6 +529,8 @@ struct RondFiche: View {
 struct LigneFiche: View {
     let texte: String
     var rouge: Bool = false
+    var nomFiche: String = ""      // v2 correctifs 31/08 : pour le partage réel
+    var numeroFiche: String = ""
     @State private var alerteVisible = false
     @State private var partageVisible = false
     @State private var bascule = false
@@ -549,7 +548,8 @@ struct LigneFiche: View {
                 Haptique.leger(); bascule.toggle()
             } else { alerteVisible = true }
         }
-        .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Fiche de contact") }
+        // v2 correctifs 31/08 : partage de fiche RÉEL (la fiche part vraiment dans Messages ou WhatsApp)
+        .sheet(isPresented: $partageVisible) { PartageFicheContactVue(nomContact: nomFiche, numero: numeroFiche) }
         // D56 : réponse déterministe propre à chaque ligne
         .alert(ErreurLambda.reponse(cleBanale), isPresented: $alerteVisible) {
             Button("OK", role: .cancel) {}
@@ -628,9 +628,11 @@ struct TelFavorisVue: View {
                                 appelNumero = DonneesTel.contacts.first(where: { $0.0 == nom })?.1 ?? ""
                                 appelVisible = true
                             }
+                            // v2 correctifs 31/08 : ⓘ calé à droite
                             NavigationLink(destination: TelFicheVue(nom: nom)) {
                                 Image(systemName: "info.circle").font(.system(size: 20)).foregroundStyle(telBleu)
                             }
+                            .fixedSize()
                         }
                         .listRowBackground(telNoir)
                         .listRowSeparatorTint(Color(hex: 0x222222))
@@ -1070,6 +1072,82 @@ struct TelMessagerieVue: View {
             }
         }
         .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Message vocal") }
+    }
+}
+
+// ============================================================ v2 CORRECTIFS 31/08 — PARTAGE DE FICHE RÉEL
+struct PartageFicheContactVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let nomContact: String
+    let numero: String
+    @State private var envoyeA: String? = nil
+    @State private var whatsappPickerVisible = false
+
+    private var carte: String { "👤 \(nomContact) — \(numero)" }
+    private func heure() -> String {
+        let f = DateFormatter(); f.dateFormat = "HH:mm"; return f.string(from: Date())
+    }
+    private func envoyerMessages(_ dest: String) {
+        Haptique.leger()
+        EnvoisMsg.partage.envoyer(carte, a: dest)
+        envoyeA = dest + " (Messages)"
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { dismiss() }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                Circle().fill(Color(hex: 0x3A3A3C)).frame(width: 40, height: 40)
+                    .overlay(Image(systemName: "person.crop.circle.fill").font(.system(size: 20)).foregroundStyle(.white))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Fiche de \(nomContact)").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white).lineLimit(1)
+                    Text(numero).font(.system(size: 12.5)).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark").font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
+                        .frame(width: 28, height: 28).background(Color(hex: 0x2C2C2E), in: Circle())
+                }
+            }
+            .padding(16)
+            Divider().overlay(Color(hex: 0x2C2C2E))
+
+            if let dest = envoyeA {
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(telVert)
+                    Text("Fiche envoyée à \(dest)").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                }
+                .padding(.vertical, 26)
+            } else {
+                HStack(spacing: 22) {
+                    DestinatairePartagePhoto(nom: "Chloé", symbole: "message.fill", fond: 0x32D74B) {
+                        envoyerMessages("Chloé")
+                    }
+                    DestinatairePartagePhoto(nom: "Thomas", symbole: "message.fill", fond: 0x32D74B) {
+                        envoyerMessages("Thomas")
+                    }
+                    DestinatairePartagePhoto(nom: "Maman", symbole: "message.fill", fond: 0x32D74B) {
+                        envoyerMessages("Maman")
+                    }
+                    DestinatairePartagePhoto(nom: "WhatsApp", symbole: "phone.fill", fond: 0x25D366) {
+                        whatsappPickerVisible = true
+                    }
+                }
+                .padding(.vertical, 20)
+            }
+            Spacer()
+        }
+        .background(Color(hex: 0x1C1C1E))
+        .presentationDetents([.height(220)])
+        .preferredColorScheme(.dark)
+        .sheet(isPresented: $whatsappPickerVisible) {
+            PartageContactWAVue(nomSource: "") { dest in
+                EnvoisJoueur.partage.ajouter(dest, .contactPartage(false, nomContact, heure()))
+                whatsappPickerVisible = false
+                envoyeA = dest + " (WhatsApp)"
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { dismiss() }
+            }
+        }
     }
 }
 

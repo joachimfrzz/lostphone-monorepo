@@ -2584,6 +2584,34 @@
   ],
   "build_session1": "TestFlight n°270 du 31/08 13h00 : Messages+WhatsApp+Téléphone corrigées, à re-tester",
   "etape5_photos_lot1": "11 corrections codées 31/08 13h20 — au prochain build",
-  "etape6_mail_lot1": "13 corrections codées 31/08 13h15 — build session 1 final"
+  "etape6_mail_lot1": "13 corrections codées 31/08 13h15 — build session 1 final",
+  "retest_271_2026_08_31": {
+   "contexte": "Retour Joachim 16h33 sur le build 271 : 15 points sur Téléphone/Messages/WhatsApp/Photos/Mail, dont 2 critiques (crashs WhatsApp, Mail bloqué). Tous codés en un lot (D86), build 272.",
+   "telephone": [
+    "tri Récents par vraie récence (Chloé 19:33 en tête … Marc 6 mai en bas)",
+    "bouton ≡ Effacer les appels récents SUPPRIMÉ",
+    "date/heure à droite : .layoutPriority(1) + ⓘ .fixedSize() (Récents et Favoris)",
+    "fiche contact → rond Mail = ouvre Mail avec Nouveau message préadressé (Routeur.allerMail(composePour:) + AnnuaireMail)",
+    "Partager cette fiche = partage réel (carte contact via Messages ou WhatsApp, PartageFicheContactVue)"
+   ],
+   "messages": "2 commandes vocales retirées (recherche + champ de saisie : flèche d'envoi seulement si texte)",
+   "whatsapp": [
+    "CRASHS RÉPARÉS : navigationDestination(isPresented:) par rangée (×6) remplacé par NavigationLink(isActive:) caché en .background ; navigationDestination(item:) déclaré UNE fois sur le Group toujours monté du switch — Abonnements, Listes et menu Nouveau ne ferment plus le jeu",
+    "heure verte de la liste = estNonLue en direct (redevient grise après lecture)",
+    "compteurs 100% dynamiques et masqués à zéro : badge onglet Discussions, puce Non lues N, chevron retour de conversation (ConversationVue observe MagasinWA), retour Archivées, badges WhatsApp de l'accueil (grille + page 2, badgeWA observé)"
+   ],
+   "photos": [
+    "années CLIQUABLES : tap → bascule sur Mois défilé sur cette année (moisCible + ScrollViewReader)",
+    "Sélectionner fiabilisé : vrai Button (plus d'onTapGesture) ; si on est sur Années, bascule sur Toutes",
+    "sélection possible aussi dans Mois (cercles + toggle)",
+    "filtres Favorites/Captures appliqués aussi dans Mois et Années (helper filtrer(), sections/années vides masquées)"
+   ],
+   "mail": "BUG CRITIQUE RÉPARÉ : NavigationLink('') en .background .opacity(0) ne capte pas les taps → vraie rangée NavigationLink hors sélection, ligneMail() factorisée ; les mails s'ouvrent de nouveau",
+   "pieges_swiftui_graves": [
+    "navigationDestination déclaré PAR RANGÉE ou dans une branche de switch démontée = CRASH à la première navigation → NavigationLink(isActive:) caché par rangée + navigationDestination(item:) une seule fois sur une vue toujours montée",
+    "NavigationLink('') .opacity(0) en background ne capte PAS les taps → toujours un vrai NavigationLink englobant"
+   ],
+   "build": "n°272 lancé 31/08 ~17h (--GO-JOACHIM), 7 fichiers poussés"
+  }
  }
 }

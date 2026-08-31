@@ -491,6 +491,7 @@ final class Routeur: ObservableObject {
     var numeroAppel: String? = nil
     var pageSafari: String? = nil
     var urlSafari: String? = nil
+    var mailCompose: String? = nil   // v2 correctifs 31/08 : composer préadressé
 
     func allerTelephone(_ numero: String) {
         numeroAppel = numero; cible = .telephone; demande += 1
@@ -500,8 +501,13 @@ final class Routeur: ObservableObject {
     }
     func allerPlans() { cible = .plans; demande += 1 }
     func allerMail() { cible = .mail; demande += 1 }
+    // v2 correctifs 31/08 : ouvre Mail directement sur un nouveau message préadressé
+    func allerMail(composePour adresse: String) {
+        mailCompose = adresse; cible = .mail; demande += 1
+    }
     func allerMessages() { cible = .messages; demande += 1 }
     func consommerNumero() -> String? { let n = numeroAppel; numeroAppel = nil; return n }
+    func consommerMailCompose() -> String? { let a = mailCompose; mailCompose = nil; return a }
     func consommerPage() -> (String, String)? {
         guard let p = pageSafari, let u = urlSafari else { return nil }
         pageSafari = nil; urlSafari = nil
@@ -801,6 +807,9 @@ struct AccueilView: View {
     @State private var spotifyOuvert = false
     @State private var youtubeOuvert = false
     @State private var page = 0
+    // v2 correctifs 31/08 : badge WhatsApp de l'accueil = vraies non-lues (disparaît à zéro)
+    @ObservedObject private var magasinWA = MagasinWA.partage
+    private var badgeWA: String? { magasinWA.nonLues.isEmpty ? nil : "\(magasinWA.nonLues.count)" }
     @ObservedObject private var routeur = Routeur.partage
 
     // Page 1 : les apps « système » (ordre inspiré du réel) — Page 2 : le reste
@@ -892,7 +901,7 @@ struct AccueilView: View {
                   spacing: 20) {
             ForEach(apps, id: \.0) { a in
                 AppIcone(nom: a.0, fond: a.1, symbole: a.2, teinte: a.3,
-                         badge: a.0 == "WhatsApp" ? "3" : nil,
+                         badge: a.0 == "WhatsApp" ? badgeWA : nil,
                          ouvrir: { cadre in lancer(a.0, depuis: cadre) },
                          inerte: actionPour(a.0) == nil)
             }
@@ -971,7 +980,7 @@ struct AccueilView: View {
                             .padding(.top, 30)
                         LazyVGrid(columns: Array(repeating: GridItem(.fixed(62), spacing: 31), count: 4), spacing: 20) {
                             AppIcone(nom: "WhatsApp", fond: Color(hex: 0x25D366),
-                                     symbole: "message.fill", teinte: .white, badge: "3",
+                                     symbole: "message.fill", teinte: .white, badge: badgeWA,
                                      ouvrir: { cadre in lancer("WhatsApp", depuis: cadre) })
                         }
                         .padding(.horizontal, 24)
@@ -1266,13 +1275,19 @@ struct WhatsAppListeView: View {
                     default: discussions
                     }
                 }
+                // v2 correctifs 31/08 ANTI-CRASH : destination déclarée UNE fois, sur une vue
+                // toujours montée (plus jamais dans une branche du switch qui disparaît)
+                .navigationDestination(item: $nomConvOuverte) { nom in
+                    ConversationVue(nomContact: nom)
+                }
 
                 HStack(spacing: 10) {
                     HStack(spacing: 0) {
                         OngletFlottant(symbole: "circle.dashed", nom: "Actus", actif: onglet == 0, pointVert: true) { onglet = 0 }
                         OngletFlottant(symbole: "phone", nom: "Appels", actif: onglet == 1) { onglet = 1 }
                         OngletFlottant(symbole: "person.3", nom: "Communautés", actif: onglet == 2) { onglet = 2 }
-                        OngletFlottant(symbole: "bubble.left.and.bubble.right.fill", nom: "Discussions", actif: onglet == 3, badge: "3") { onglet = 3 }
+                        OngletFlottant(symbole: "bubble.left.and.bubble.right.fill", nom: "Discussions", actif: onglet == 3,
+                                       badge: magasin.nonLues.isEmpty ? nil : "\(magasin.nonLues.count)") { onglet = 3 }
                     }
                     .padding(.vertical, 8).padding(.horizontal, 6)
                     .background(waTabBar, in: Capsule())
@@ -1357,9 +1372,6 @@ struct WhatsAppListeView: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { nomConvOuverte = nom }
                 }
             }
-            .navigationDestination(item: $nomConvOuverte) { nom in
-                ConversationVue(nomContact: nom)
-            }
             HStack {
                 Text("Discussions").font(.system(size: 34, weight: .bold)).foregroundStyle(waTexte)
                 Spacer()
@@ -1381,7 +1393,8 @@ struct WhatsAppListeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     PuceActive(texte: "Toutes", active: filtre == 0) { filtre = 0 }
-                    PuceActive(texte: "Non lues 2", active: filtre == 1) { filtre = 1 }
+                    PuceActive(texte: magasin.nonLues.isEmpty ? "Non lues" : "Non lues \(magasin.nonLues.count)",
+                               active: filtre == 1) { filtre = 1 }
                     PuceActive(texte: "Favoris", active: filtre == 2) { filtre = 2 }
                     PuceActive(texte: "Groupes 1", active: filtre == 3) { filtre = 3 }
                 }
@@ -1476,7 +1489,8 @@ struct LigneConvWARangee: View {
 
     var body: some View {
         NavigationLink(destination: ConversationVue(nomContact: c.0)) {
-            LigneConv(c: (c.0, c.1, c.2, magasin.nonLues[c.0].flatMap { $0.isEmpty ? "•" : $0 }, c.3),
+            // v2 correctifs 31/08 : l'heure suit l'état non-lu RÉEL (repasse en gris une fois lue)
+            LigneConv(c: (c.0, c.1, c.2, magasin.nonLues[c.0].flatMap { $0.isEmpty ? "•" : $0 }, estNonLue),
                       epinglee: magasin.epinglees.contains(c.0))
         }
         .listRowBackground(waNoir)
@@ -1503,9 +1517,15 @@ struct LigneConvWARangee: View {
             Button("Infos du contact") { infosVisibles = true }
             Button("Annuler", role: .cancel) {}
         }
-        .navigationDestination(isPresented: $infosVisibles) {
-            InfosContactVue(nom: c.0, numero: DonneesWA.fiches[c.0]?.numero ?? "")
-        }
+        // v2 correctifs 31/08 ANTI-CRASH : navigationDestination par rangée SUPPRIMÉ
+        // (déclarations multiples = crash fatal SwiftUI dès qu'on pousse un écran).
+        // Remplacé par un lien caché par rangée — le motif sûr déjà utilisé dans Messages.
+        .background(
+            NavigationLink(isActive: $infosVisibles) {
+                InfosContactVue(nom: c.0, numero: DonneesWA.fiches[c.0]?.numero ?? "")
+            } label: { EmptyView() }
+            .opacity(0)
+        )
     }
 }
 

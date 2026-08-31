@@ -252,7 +252,10 @@ struct ArchiveesVue: View {
                     Button { dismiss() } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "chevron.left").font(.system(size: 20, weight: .semibold))
-                            Text("3").font(.system(size: 16))
+                            // v2 correctifs 31/08 : compteur RÉEL de non-lues (disparaît à zéro)
+                            if !MagasinWA.partage.nonLues.isEmpty {
+                                Text("\(MagasinWA.partage.nonLues.count)").font(.system(size: 16))
+                            }
                         }
                         .foregroundStyle(waTexte)
                     }

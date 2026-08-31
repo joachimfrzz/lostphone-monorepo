@@ -272,6 +272,7 @@ struct ConversationVue: View {
     @Environment(\.dismiss) private var dismiss
     let nomContact: String
     @ObservedObject private var envois = EnvoisJoueur.partage
+    @ObservedObject private var magasinWA = MagasinWA.partage   // compteur retour en temps réel
     @State private var saisie = ""
     @State private var appelVisible = false
     @State private var appelVideoActif = false
@@ -312,7 +313,10 @@ struct ConversationVue: View {
                 Button { dismiss() } label: {
                     HStack(spacing: 3) {
                         Image(systemName: "chevron.left").font(.system(size: 22, weight: .semibold))
-                        Text("3").font(.system(size: 15))
+                        // v2 correctifs 31/08 : compteur RÉEL de non-lues (disparaît à zéro)
+                        if !MagasinWA.partage.nonLues.isEmpty {
+                            Text("\(MagasinWA.partage.nonLues.count)").font(.system(size: 15))
+                        }
                     }
                     .foregroundStyle(waTexte)
                 }

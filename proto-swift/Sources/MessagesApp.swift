@@ -416,7 +416,7 @@ struct MessagesVue: View {
                     TextField("", text: $recherche,
                               prompt: Text("Recherche").foregroundStyle(msgTexte2))
                         .font(.system(size: 16)).foregroundStyle(msgTexte)
-                    Image(systemName: "mic.fill").font(.system(size: 15)).foregroundStyle(msgTexte2)
+                    // v2 correctifs 31/08 : micro retiré (aucune commande vocale dans le jeu)
                 }
                 .padding(.horizontal, 13).padding(.vertical, 11)
                 .background(Color(hex: 0x1F1F21), in: Capsule())
@@ -690,9 +690,8 @@ struct MsgConvVue: View {
                         TextField("", text: $saisie,
                                   prompt: Text(conv.service).foregroundStyle(msgTexte2))
                             .font(.system(size: 16)).foregroundStyle(msgTexte)
-                        if saisie.isEmpty {
-                            Image(systemName: "mic").font(.system(size: 16)).foregroundStyle(msgTexte2)
-                        } else {
+                        // v2 correctifs 31/08 : micro retiré (aucune commande vocale dans le jeu)
+                        if !saisie.isEmpty {
                             Image(systemName: "arrow.up.circle.fill")
                                 .font(.system(size: 26)).foregroundStyle(couleurEnvoi)
                                 .onTapGesture {

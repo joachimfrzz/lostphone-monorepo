@@ -114,6 +114,27 @@ final class MagasinMail: ObservableObject {
     }
 }
 
+// v2 correctifs 31/08 — destinataire de composition (sheet(item:))
+struct ComposeDest: Identifiable {
+    let id = UUID()
+    let adresse: String
+}
+
+// v2 correctifs 31/08 — annuaire mail des contacts connus (partagé Téléphone/Mail)
+enum AnnuaireMail {
+    static let adresses: [String: String] = [
+        "Chloé": "chloe.bnv@gmail.com",
+        "Maman": "famille.levasseur@orange.fr",
+        "Thomas": "thomas.rey69@gmail.com",
+        "Marc ❤️": "marc.dlc.officier@gmail.com",
+        "Agence Bellecour": "bellecour@lcl.fr",
+        "Marie kiné": "cabinet.kine.fantasques@gmail.com",
+    ]
+    static func adresse(_ nom: String) -> String {
+        adresses[nom] ?? nom.lowercased().replacingOccurrences(of: " ", with: ".") + "@gmail.com"
+    }
+}
+
 // ============================================================ APP (Boîtes)
 struct MailVue: View {
     @Environment(\.dismiss) private var dismiss
@@ -123,6 +144,8 @@ struct MailVue: View {
     // v2 étape 6 : Mail s'ouvre directement sur la RÉCEPTION (décision Joachim) ;
     // le chevron retour ramène à l'écran Boîtes, comme le vrai Mail.
     @State private var receptionOuverte = true
+    // v2 correctifs 31/08 : composer préadressé quand une autre app le demande (fiche contact)
+    @State private var composeDestinataire: ComposeDest? = nil
 
     var body: some View {
         NavigationStack {
@@ -201,6 +224,15 @@ struct MailVue: View {
             .navigationDestination(isPresented: $receptionOuverte) {
                 ListeMailVue(titre: "Réception", boite: "Réception")
             }
+            .onAppear {
+                // v2 correctifs 31/08 : fiche contact → « nouveau mail préadressé »
+                if let dest = Routeur.partage.consommerMailCompose() {
+                    composeDestinataire = ComposeDest(adresse: dest)
+                }
+            }
+            .sheet(item: $composeDestinataire) { dest in
+                ComposerMailVue(destinataire: dest.adresse)
+            }
             .sheet(isPresented: $composer) { ComposerMailVue() }
             .sheet(isPresented: $modifierVisible) {
                 NavigationStack {
@@ -278,6 +310,37 @@ struct ListeMailVue: View {
         return l
     }
 
+    // v2 correctifs 31/08 : rangée factorisée (mode normal + mode sélection)
+    @ViewBuilder
+    private func ligneMail(_ c: Courriel, cercle: Bool) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            if cercle {
+                Image(systemName: selection.contains(c.id) ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 21))
+                    .foregroundStyle(selection.contains(c.id) ? Color(hex: 0x0A84FF) : .secondary)
+                    .padding(.top, 8)
+            } else if c.nonLu {
+                Circle().fill(Color(hex: 0x0A84FF)).frame(width: 9, height: 9).padding(.top, 6)
+            } else {
+                Color.clear.frame(width: 9, height: 9)
+            }
+            Circle().fill(Color(hex: c.couleur))
+                .frame(width: 38, height: 38)
+                .overlay(Text(String(c.expediteur.prefix(1))).font(.system(size: 16, weight: .bold)).foregroundStyle(.white))
+            VStack(alignment: .leading, spacing: 2) {
+                HStack {
+                    Text(c.expediteur).font(.system(size: 15.5, weight: .semibold)).foregroundStyle(.white)
+                    Spacer()
+                    Text(c.date).font(.system(size: 13)).foregroundStyle(.secondary)
+                    Image(systemName: "chevron.right").font(.system(size: 11)).foregroundStyle(.secondary)
+                }
+                Text(c.objet).font(.system(size: 14)).foregroundStyle(.white.opacity(0.9)).lineLimit(1)
+                Text(c.apercu).font(.system(size: 13)).foregroundStyle(.secondary).lineLimit(2)
+            }
+        }
+        .padding(.vertical, 8)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -294,43 +357,21 @@ struct ListeMailVue: View {
                         .frame(maxWidth: .infinity).padding(.top, 80)
                 }
                 ForEach(items) { c in
-                    HStack(alignment: .top, spacing: 10) {
-                        // v2 étape 6 : sélection RÉELLE
+                    // v2 correctifs 31/08 : BUG CRITIQUE réparé — la rangée redevient un vrai
+                    // NavigationLink hors sélection (le lien invisible d'hier ne captait pas le tap)
+                    Group {
                         if selectionActive {
-                            Image(systemName: selection.contains(c.id) ? "checkmark.circle.fill" : "circle")
-                                .font(.system(size: 21))
-                                .foregroundStyle(selection.contains(c.id) ? Color(hex: 0x0A84FF) : .secondary)
-                                .padding(.top, 8)
-                        } else if c.nonLu {
-                            Circle().fill(Color(hex: 0x0A84FF)).frame(width: 9, height: 9).padding(.top, 6)
+                            ligneMail(c, cercle: true)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    Haptique.leger()
+                                    if selection.contains(c.id) { selection.remove(c.id) } else { selection.insert(c.id) }
+                                }
                         } else {
-                            Color.clear.frame(width: 9, height: 9)
-                        }
-                        Circle().fill(Color(hex: c.couleur))
-                            .frame(width: 38, height: 38)
-                            .overlay(Text(String(c.expediteur.prefix(1))).font(.system(size: 16, weight: .bold)).foregroundStyle(.white))
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack {
-                                Text(c.expediteur).font(.system(size: 15.5, weight: .semibold)).foregroundStyle(.white)
-                                Spacer()
-                                Text(c.date).font(.system(size: 13)).foregroundStyle(.secondary)
-                                Image(systemName: "chevron.right").font(.system(size: 11)).foregroundStyle(.secondary)
+                            NavigationLink(destination: LectureMailVue(courriel: c)) {
+                                ligneMail(c, cercle: false)
                             }
-                            Text(c.objet).font(.system(size: 14)).foregroundStyle(.white.opacity(0.9)).lineLimit(1)
-                            Text(c.apercu).font(.system(size: 13)).foregroundStyle(.secondary).lineLimit(2)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                    .contentShape(Rectangle())
-                    .background(
-                        NavigationLink("", destination: LectureMailVue(courriel: c))
-                            .opacity(0)
-                            .disabled(selectionActive)
-                    )
-                    .onTapGesture {
-                        if selectionActive {
-                            Haptique.leger()
-                            if selection.contains(c.id) { selection.remove(c.id) } else { selection.insert(c.id) }
+                            .buttonStyle(.plain)
                         }
                     }
                     Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 55)

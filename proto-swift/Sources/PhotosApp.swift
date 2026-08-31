@@ -348,35 +348,59 @@ struct PhototequeVue: View {
     @State private var portee = 2 // 0 Années, 1 Mois, 2 Toutes
     @State private var moisVisible = ""
     @State private var photoOuverte: PhotoItem? = nil
-    @State private var alerteSynchro = false
-    @State private var triVisible = false
+    // v2 étape 5 : sélection réelle + filtre réel ancré au bouton
+    @State private var modeSelection = false
+    @State private var selection = Set<String>()
+    @State private var filtre = 0   // 0 Toutes, 1 Favorites, 2 Captures d'écran
+    @State private var confirmationSupprSelection = false
 
     private let colonnes = Array(repeating: GridItem(.flexible(), spacing: 2), count: 3)
+
+    // Photos affichées selon le filtre actif
+    private var photosFiltrees: [PhotoItem] {
+        switch filtre {
+        case 1: return magasin.visibles.filter { magasin.favoris.contains($0.id) }
+        case 2: return magasin.visibles.filter { $0.capture }
+        default: return magasin.visibles
+        }
+    }
 
     var body: some View {
         ZStack(alignment: .top) {
             VStack(spacing: 0) {
-                // En-tête
+                // En-tête (v2 étape 5 : « Synchronisation suspendue » retirée — décision Joachim)
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Photothèque").font(.system(size: 26, weight: .bold)).foregroundStyle(phTexte)
-                        HStack(spacing: 4) {
-                            Image(systemName: "icloud.slash").font(.system(size: 11))
-                            Text("Synchronisation suspendue")
-                            Image(systemName: "chevron.right").font(.system(size: 9, weight: .semibold))
+                        if filtre != 0 {
+                            Text(filtre == 1 ? "Favorites" : "Captures d'écran")
+                                .font(.system(size: 12.5)).foregroundStyle(phBleu)
                         }
-                        .font(.system(size: 12.5)).foregroundStyle(phTexte2)
-                        .contentShape(Rectangle())
-                        .onTapGesture { alerteSynchro = true }
                     }
                     Spacer()
-                    Image(systemName: "line.3.horizontal.decrease")
-                        .font(.system(size: 15, weight: .semibold)).foregroundStyle(phTexte)
-                        .padding(10).background(phCarte, in: Circle())
-                        .onTapGesture { triVisible = true }
-                    Text("Sélect.").font(.system(size: 15)).foregroundStyle(phTexte)
+                    // v2 étape 5 : menu ANCRÉ au bouton, filtres RÉELS
+                    Menu {
+                        Picker("Afficher", selection: $filtre) {
+                            Label("Toutes les photos", systemImage: "photo.on.rectangle").tag(0)
+                            Label("Favorites", systemImage: "heart").tag(1)
+                            Label("Captures d'écran", systemImage: "camera.viewfinder").tag(2)
+                        }
+                    } label: {
+                        Image(systemName: "line.3.horizontal.decrease")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(filtre == 0 ? phTexte : phBleu)
+                            .padding(10).background(phCarte, in: Circle())
+                    }
+                    // v2 étape 5 : sélection RÉELLE
+                    Text(modeSelection ? "Annuler" : "Sélect.").font(.system(size: 15)).foregroundStyle(phTexte)
                         .padding(.horizontal, 13).padding(.vertical, 8)
                         .background(phCarte, in: Capsule())
+                        .contentShape(Capsule())
+                        .onTapGesture {
+                            Haptique.leger()
+                            modeSelection.toggle()
+                            selection.removeAll()
+                        }
                 }
                 .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 6)
 
@@ -413,16 +437,37 @@ struct PhototequeVue: View {
         .fullScreenCover(item: $photoOuverte) { photo in
             PhotoDetailVue(depart: photo)
         }
-        .alert("iCloud — Espace insuffisant", isPresented: $alerteSynchro) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("173 Go sur 200 Go utilisés. La synchronisation est suspendue. Libérez de l'espace ou passez à un forfait supérieur dans Réglages > Compte Apple > iCloud.")
+        // v2 étape 5 : barre d'actions du mode sélection (suppression réelle → Suppr. récemment)
+        .overlay(alignment: .bottom) {
+            if modeSelection {
+                HStack {
+                    Text("\(selection.count) sélectionnée\(selection.count > 1 ? "s" : "")")
+                        .font(.system(size: 14)).foregroundStyle(phTexte2)
+                    Spacer()
+                    Image(systemName: "trash")
+                        .font(.system(size: 19))
+                        .foregroundStyle(selection.isEmpty ? phTexte2 : Color(hex: 0xFF453A))
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            guard !selection.isEmpty else { return }
+                            confirmationSupprSelection = true
+                        }
+                }
+                .padding(.horizontal, 20).padding(.vertical, 13)
+                .background(.ultraThinMaterial, in: Capsule())
+                .padding(.horizontal, 16).padding(.bottom, 132)
+            }
         }
-        .confirmationDialog("Afficher par", isPresented: $triVisible) {
-            Button("Récentes") {}
-            Button("Favorites") { portee = 2 }
-            Button("Captures d'écran") { portee = 2 }
+        .confirmationDialog("Supprimer \(selection.count) photo\(selection.count > 1 ? "s" : "") ?",
+                            isPresented: $confirmationSupprSelection, titleVisibility: .visible) {
+            Button("Supprimer", role: .destructive) {
+                withAnimation { magasin.supprimees.formUnion(selection) }
+                selection.removeAll()
+                modeSelection = false
+            }
             Button("Annuler", role: .cancel) {}
+        } message: {
+            Text("Conservées 30 jours dans Suppr. récemment.")
         }
     }
 
@@ -430,10 +475,26 @@ struct PhototequeVue: View {
         ScrollViewReader { lecteur in
             ScrollView {
                 LazyVGrid(columns: colonnes, spacing: 2) {
-                    ForEach(magasin.visibles) { p in
+                    ForEach(photosFiltrees) { p in
                         TuilePhoto(item: p)
                             .onAppear { moisVisible = p.mois }
-                            .onTapGesture { Haptique.leger(); photoOuverte = p }
+                            .overlay(alignment: .bottomTrailing) {
+                                if modeSelection {
+                                    Image(systemName: selection.contains(p.id) ? "checkmark.circle.fill" : "circle")
+                                        .font(.system(size: 20))
+                                        .foregroundStyle(selection.contains(p.id) ? phBleu : .white.opacity(0.85))
+                                        .shadow(radius: 2)
+                                        .padding(5)
+                                }
+                            }
+                            .onTapGesture {
+                                Haptique.leger()
+                                if modeSelection {
+                                    if selection.contains(p.id) { selection.remove(p.id) } else { selection.insert(p.id) }
+                                } else {
+                                    photoOuverte = p
+                                }
+                            }
                             .id(p.id)
                     }
                 }
@@ -544,9 +605,16 @@ struct PhotoDetailVue: View {
     private var items: [PhotoItem] { magasin.visibles }
     private var item: PhotoItem { items.first(where: { $0.id == courante }) ?? depart }
 
+    // v2 étape 5 : zoom pincé + fermeture au glissé vers le bas (gestes iOS naturels)
+    @State private var zoom: CGFloat = 1
+    @State private var zoomBase: CGFloat = 1
+    @State private var panoramique: CGSize = .zero
+    @State private var glisseFermeture: CGFloat = 0
+
     var body: some View {
         ZStack {
             phFond.ignoresSafeArea()
+                .opacity(1.0 - Double(min(glisseFermeture / 500, 0.6)))
             VStack(spacing: 0) {
                 // Barre du haut : retour, pilule date, menu
                 HStack {
@@ -568,34 +636,78 @@ struct PhotoDetailVue: View {
                 }
                 .padding(.horizontal, 8)
 
-                // Pagination entre photos
+                // Pagination entre photos + zoom pincé (v2 étape 5)
                 TabView(selection: $courante) {
                     ForEach(items) { p in
                         Group {
                             if let img = ChargeurPhoto.image(p.id) {
                                 Image(uiImage: img).resizable().scaledToFit()
+                                    .scaleEffect(p.id == courante ? zoom : 1)
+                                    .offset(p.id == courante ? panoramique : .zero)
+                                    .gesture(
+                                        MagnificationGesture()
+                                            .onChanged { v in
+                                                zoom = max(1, min(zoomBase * v, 5))
+                                            }
+                                            .onEnded { _ in
+                                                zoomBase = zoom
+                                                if zoom <= 1.02 {
+                                                    withAnimation(.spring(duration: 0.25)) { zoom = 1; zoomBase = 1; panoramique = .zero }
+                                                }
+                                            }
+                                    )
+                                    .simultaneousGesture(
+                                        // déplacement dans la photo zoomée uniquement
+                                        zoom > 1.02 ? DragGesture()
+                                            .onChanged { v in panoramique = v.translation }
+                                            .onEnded { _ in } : nil
+                                    )
+                                    .onTapGesture(count: 2) {
+                                        // double-tap : zoom ×2,5 / retour 1× (comme iOS)
+                                        withAnimation(.spring(duration: 0.3)) {
+                                            if zoom > 1.02 { zoom = 1; zoomBase = 1; panoramique = .zero }
+                                            else { zoom = 2.5; zoomBase = 2.5 }
+                                        }
+                                    }
                             }
                         }
                         .tag(p.id)
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
+                .onChange(of: courante) { _, _ in
+                    // changer de photo remet le zoom à zéro
+                    zoom = 1; zoomBase = 1; panoramique = .zero
+                }
 
-                // Vignettes
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 3) {
-                        ForEach(items) { p in
-                            if let img = ChargeurPhoto.image(p.id) {
-                                Image(uiImage: img).resizable().scaledToFill()
-                                    .frame(width: p.id == courante ? 34 : 24, height: 40).clipped()
-                                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                                    .onTapGesture { withAnimation { courante = p.id } }
+                // Vignettes SYNCHRONISÉES avec la photo affichée (v2 étape 5)
+                ScrollViewReader { defileurVignettes in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 3) {
+                            ForEach(items) { p in
+                                if let img = ChargeurPhoto.image(p.id) {
+                                    Image(uiImage: img).resizable().scaledToFill()
+                                        .frame(width: p.id == courante ? 34 : 24, height: 40).clipped()
+                                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 4)
+                                                .stroke(p.id == courante ? Color.white : .clear, lineWidth: 1.5)
+                                        )
+                                        .id("vig-" + p.id)
+                                        .onTapGesture { withAnimation { courante = p.id } }
+                                }
                             }
                         }
+                        .padding(.horizontal, 16)
                     }
-                    .padding(.horizontal, 16)
+                    .frame(height: 48)
+                    .onAppear { defileurVignettes.scrollTo("vig-" + courante, anchor: .center) }
+                    .onChange(of: courante) { _, nv in
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            defileurVignettes.scrollTo("vig-" + nv, anchor: .center)
+                        }
+                    }
                 }
-                .frame(height: 48)
 
                 // Barre d'actions
                 HStack {
@@ -617,9 +729,6 @@ struct PhotoDetailVue: View {
                         .padding(10).contentShape(Rectangle())
                         .onTapGesture { infosVisibles = true }
                     Spacer()
-                    Image(systemName: "slider.horizontal.3").font(.system(size: 19)).foregroundStyle(phTexte2)
-                        .padding(10)
-                    Spacer()
                     Image(systemName: "trash").font(.system(size: 19)).foregroundStyle(phTexte)
                         .padding(10).contentShape(Rectangle())
                         .onTapGesture { confirmationSuppr = true }
@@ -628,6 +737,23 @@ struct PhotoDetailVue: View {
             }
         }
         .onAppear { courante = depart.id }
+        // v2 étape 5 : glisser vers le bas = fermer (geste iOS naturel), seulement hors zoom
+        .offset(y: glisseFermeture)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 25)
+                .onChanged { v in
+                    guard zoom <= 1.02, v.translation.height > 0,
+                          abs(v.translation.height) > abs(v.translation.width) else { return }
+                    glisseFermeture = v.translation.height
+                }
+                .onEnded { v in
+                    if glisseFermeture > 130 {
+                        dismiss()
+                    } else {
+                        withAnimation(.spring(duration: 0.3)) { glisseFermeture = 0 }
+                    }
+                }
+        )
         .sheet(isPresented: $infosVisibles) { FichePhotoVue(item: item) }
         .confirmationDialog("Supprimer la photo ?", isPresented: $confirmationSuppr, titleVisibility: .visible) {
             Button("Supprimer la photo", role: .destructive) {
@@ -639,7 +765,144 @@ struct PhotoDetailVue: View {
         } message: {
             Text("Cette photo sera conservée 30 jours dans Suppr. récemment.")
         }
-        .sheet(isPresented: $partageErreur) { FeuillePartage(element: "1 photo") }
+        .sheet(isPresented: $partageErreur) { PartagePhotoVue(item: item) }
+    }
+}
+
+// ============================================================ v2 ÉTAPE 5 — PARTAGE RÉEL D'UNE PHOTO
+// La photo PART vraiment : Messages (conversation réelle), WhatsApp (contact au choix),
+// AirDrop = vrai comportement iOS sans appareil autour, Copier = vrai presse-papiers.
+struct PartagePhotoVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let item: PhotoItem
+    @State private var airdropVisible = false
+    @State private var whatsappPickerVisible = false
+    @State private var envoyeA: String? = nil
+    @State private var copie = false
+
+    private func heure() -> String {
+        let f = DateFormatter(); f.dateFormat = "HH:mm"; return f.string(from: Date())
+    }
+    private func envoyerMessages(_ contact: String) {
+        Haptique.leger()
+        EnvoisMsg.partage.envoyerImage(item.id, a: contact)
+        envoyeA = contact + " (Messages)"
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { dismiss() }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // En-tête : aperçu réel de la photo
+            HStack(spacing: 12) {
+                Group {
+                    if let img = ChargeurPhoto.image(item.id) {
+                        Image(uiImage: img).resizable().scaledToFill()
+                    } else { Rectangle().fill(Color(hex: 0x2C2C2E)) }
+                }
+                .frame(width: 40, height: 40).clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("1 photo").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                    Text(item.nomFichier).font(.system(size: 12.5)).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark").font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
+                        .frame(width: 28, height: 28).background(Color(hex: 0x2C2C2E), in: Circle())
+                }
+            }
+            .padding(16)
+            Divider().overlay(Color(hex: 0x2C2C2E))
+
+            if let dest = envoyeA {
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(Color(hex: 0x32D74B))
+                    Text("Envoyée à \(dest)").font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                }
+                .padding(.vertical, 24)
+            } else {
+                HStack(spacing: 22) {
+                    DestinatairePartagePhoto(nom: "AirDrop", symbole: "dot.radiowaves.left.and.right", fond: 0x1C7CF5) {
+                        airdropVisible = true
+                    }
+                    DestinatairePartagePhoto(nom: "Chloé", symbole: "message.fill", fond: 0x32D74B) {
+                        envoyerMessages("Chloé")
+                    }
+                    DestinatairePartagePhoto(nom: "Thomas", symbole: "message.fill", fond: 0x32D74B) {
+                        envoyerMessages("Thomas")
+                    }
+                    DestinatairePartagePhoto(nom: "WhatsApp", symbole: "phone.fill", fond: 0x25D366) {
+                        whatsappPickerVisible = true
+                    }
+                }
+                .padding(.vertical, 18)
+            }
+            Divider().overlay(Color(hex: 0x2C2C2E))
+
+            HStack {
+                Text(copie ? "Copiée" : "Copier la photo").foregroundStyle(copie ? Color.secondary : Color.white)
+                Spacer()
+                Image(systemName: copie ? "checkmark" : "doc.on.doc").foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 18).padding(.vertical, 13)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                // v2 étape 5 : copie RÉELLE dans le presse-papiers
+                if let img = ChargeurPhoto.image(item.id) {
+                    UIPasteboard.general.image = img
+                }
+                Haptique.leger()
+                copie = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { dismiss() }
+            }
+            Spacer()
+        }
+        .background(Color(hex: 0x1C1C1E))
+        .presentationDetents([.height(300)])
+        .preferredColorScheme(.dark)
+        // AirDrop : vrai comportement iOS quand aucun appareil n'est à proximité
+        .sheet(isPresented: $airdropVisible) {
+            VStack(spacing: 18) {
+                Text("AirDrop").font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
+                    .padding(.top, 22)
+                ProgressView().tint(.secondary)
+                Text("Recherche d'appareils à proximité…")
+                    .font(.system(size: 14)).foregroundStyle(.secondary)
+                Text("Aucun appareil trouvé. Rapprochez-vous d'un appareil dont AirDrop est activé.")
+                    .font(.system(size: 13)).foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center).padding(.horizontal, 30)
+                Spacer()
+            }
+            .frame(maxWidth: .infinity)
+            .background(Color(hex: 0x1C1C1E))
+            .presentationDetents([.height(220)])
+            .preferredColorScheme(.dark)
+        }
+        // WhatsApp : choix du contact, la photo part réellement dans la conversation
+        .sheet(isPresented: $whatsappPickerVisible) {
+            PartageContactWAVue(nomSource: "") { contact in
+                EnvoisJoueur.partage.ajouter(contact, .imageJoueur(item.id, heure()))
+                whatsappPickerVisible = false
+                envoyeA = contact + " (WhatsApp)"
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { dismiss() }
+            }
+        }
+    }
+}
+
+struct DestinatairePartagePhoto: View {
+    let nom: String
+    let symbole: String
+    let fond: UInt
+    let action: () -> Void
+    var body: some View {
+        VStack(spacing: 6) {
+            Circle().fill(Color(hex: fond)).frame(width: 52, height: 52)
+                .overlay(Image(systemName: symbole).font(.system(size: 21)).foregroundStyle(.white))
+            Text(nom).font(.system(size: 11.5)).foregroundStyle(.secondary)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { action() }
     }
 }
 
@@ -665,7 +928,7 @@ struct FichePhotoVue: View {
                         HStack {
                             Text(item.date).font(.system(size: 15, weight: .semibold)).foregroundStyle(phTexte)
                             Spacer()
-                            Text("Ajuster").font(.system(size: 14)).foregroundStyle(phBleu)
+                            // v2 étape 5 : « Ajuster » retiré (bouton mort — décision Joachim)
                         }
                         VStack(alignment: .leading, spacing: 10) {
                             HStack(spacing: 8) {
@@ -833,24 +1096,22 @@ struct RecherchePhotosVue: View {
 // ============================================================ COLLECTIONS
 struct CollectionsPhotosVue: View {
     @ObservedObject private var magasin = MagasinPhotos.partage
+    @State private var profilVisible = false   // v2 étape 5 : profil SL réel
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
                 HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Collections").font(.system(size: 26, weight: .bold)).foregroundStyle(phTexte)
-                        HStack(spacing: 4) {
-                            Image(systemName: "icloud.slash").font(.system(size: 11))
-                            Text("Synchronisation suspendue")
-                            Image(systemName: "chevron.right").font(.system(size: 9, weight: .semibold))
-                        }
-                        .font(.system(size: 12.5)).foregroundStyle(phTexte2)
-                    }
+                    // v2 étape 5 : « Synchronisation suspendue » retirée (décision Joachim)
+                    Text("Collections").font(.system(size: 26, weight: .bold)).foregroundStyle(phTexte)
                     Spacer()
+                    // v2 étape 5 : le profil SL s'ouvre vraiment
                     AvatarMsg(nom: "Sarah Levasseur", taille: 34)
+                        .contentShape(Circle())
+                        .onTapGesture { Haptique.leger(); profilVisible = true }
                 }
                 .padding(.horizontal, 16).padding(.top, 8)
+                .sheet(isPresented: $profilVisible) { ProfilPhotosVue() }
 
                 // Souvenirs
                 SectionTitrePhotos(nom: "Souvenirs")
@@ -1077,11 +1338,25 @@ struct PersonnePhotos: View {
             Button("Annuler", role: .cancel) { nomSaisi = "" }
         })
         .fullScreenCover(isPresented: $albumVisible) {
+            // v2 étape 5 : bouton Retour AJOUTÉ — le joueur n'est plus bloqué (retour Joachim)
             NavigationStack {
                 AlbumVue(titre: nom.isEmpty ? (nomSaisi.isEmpty ? "Inconnue" : nomSaisi) : nom,
                          items: MagasinPhotos.partage.visibles.filter {
                              !nom.isEmpty ? ($0.motsCles.contains(nom.lowercased()) || $0.motsCles.contains("selfie")) : true
                          }.prefix(8).map { $0 })
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button {
+                                albumVisible = false
+                            } label: {
+                                HStack(spacing: 3) {
+                                    Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold))
+                                    Text("Retour")
+                                }
+                                .foregroundStyle(phBleu)
+                            }
+                        }
+                    }
             }
             .preferredColorScheme(.dark)
         }
@@ -1107,6 +1382,55 @@ struct LigneTypeMedia: View {
 }
 
 // ============================================================ ALBUM GÉNÉRIQUE / SOUVENIR / PLAN / VERROUS
+// v2 étape 5 — profil du propriétaire (SL en haut de Collections, désormais réel)
+struct ProfilPhotosVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var magasin = MagasinPhotos.partage
+    var body: some View {
+        VStack(spacing: 14) {
+            AvatarMsg(nom: "Sarah Levasseur", taille: 72).padding(.top, 26)
+            Text("Sarah Levasseur").font(.system(size: 20, weight: .semibold)).foregroundStyle(phTexte)
+            Text("sar•••@icloud.com").font(.system(size: 14)).foregroundStyle(phTexte2)
+            VStack(spacing: 0) {
+                HStack {
+                    Text("Photos").font(.system(size: 15)).foregroundStyle(phTexte)
+                    Spacer()
+                    Text("\(magasin.visibles.count)").font(.system(size: 15)).foregroundStyle(phTexte2)
+                }
+                .padding(14)
+                Divider().overlay(Color.white.opacity(0.1))
+                HStack {
+                    Text("iCloud").font(.system(size: 15)).foregroundStyle(phTexte)
+                    Spacer()
+                    Text("173 Go sur 200 Go").font(.system(size: 15)).foregroundStyle(phTexte2)
+                }
+                .padding(14)
+                Divider().overlay(Color.white.opacity(0.1))
+                HStack {
+                    Text("Partage de photothèque").font(.system(size: 15)).foregroundStyle(phTexte)
+                    Spacer()
+                    Text("Désactivé").font(.system(size: 15)).foregroundStyle(phTexte2)
+                }
+                .padding(14)
+            }
+            .background(phCarte, in: RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal, 16)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
+        .background(phFond)
+        .presentationDetents([.height(340)])
+        .preferredColorScheme(.dark)
+        .overlay(alignment: .topTrailing) {
+            Image(systemName: "xmark").font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
+                .frame(width: 28, height: 28).background(phCarte, in: Circle())
+                .padding(14)
+                .contentShape(Circle())
+                .onTapGesture { dismiss() }
+        }
+    }
+}
+
 struct AlbumVue: View {
     let titre: String
     let items: [PhotoItem]

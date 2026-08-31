@@ -2612,6 +2612,18 @@
     "NavigationLink('') .opacity(0) en background ne capte PAS les taps → toujours un vrai NavigationLink englobant"
    ],
    "build": "n°272 lancé 31/08 ~17h (--GO-JOACHIM), 7 fichiers poussés"
+  },
+  "session2_safari_2026_08_31": {
+   "retours_joachim_17h": "5 points Safari (session 2), le n°1 prioritaire car il bloquait le test du bas de l'app",
+   "corrections_codees": [
+    "1 GLOBAL — BarreHome (LPProto) : zone tactile réduite à la capsule (150 pt de large) au lieu de TOUTE la largeur de l'écran ; s'applique aux 29 apps. Barre d'outils Safari remontée au-dessus de la capsule.",
+    "2 onglets RÉELS : + ouvre un nouvel onglet (page de démarrage avec favoris/suggestions tappables), × ferme, compteur vivant, bascule normal/privé avec onglets privés réels ; l'onglet actif suit la navigation",
+    "3 bouton aA RÉEL : menu zoom du texte (70–130 %, PageZoomee scaleEffect+mesure), Afficher le lecteur (version texte serif des pages d'enquête), Masquer la barre d'outils (pilule URL pour restaurer) ; recharger et chevrons arrière/avant réels (piles)",
+    "4 recherche CONTRÔLÉE : CatalogueRecherches.resoudre() — ~14 requêtes de l'histoire → vraies pages (arnaque, OKAFOR, Marc Delacroix, hôtel, LCL, TGV, meetic, gratin, navire, victimes, cyber, forum, fonfon) ; inconnu → page Google 'Aucun résultat pertinent' avec recherches associées ; ressemble à une URL → erreur serveur",
+    "5 sites ÉTOFFÉS : service-public enrichi (loi, numéros), NOUVELLES pages France Victimes / Cybermalveillance / forum Doctissimo (témoignage miroir + réponses), VesselFinder enrichi (navires au nom proche), Fonfon enrichi (carte, adresse, avis) ; CHAQUE résultat Google est ouvrable (14 articles génériques : hôtels, SNCF, LCL, LinkedIn Marc chauffagiste, defense.gouv 'aucun officier à ce nom', etc.)"
+   ],
+   "beat_enquete_ajoute": "recherche 'Marc Delacroix officier marine' → 7 résultats qui ne collent pas (chauffagiste, homonyme, annuaire Marine vide) — pièce d'enquête jouable",
+   "build": "PAS de build — protocole D86 : un build par session de 4-5 apps ; Safari attend le lot session 2"
   }
  }
 }

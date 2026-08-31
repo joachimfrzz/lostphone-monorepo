@@ -464,6 +464,8 @@ struct BarreHome: View {
     let action: () -> Void
     var sombre: Bool = false
     var body: some View {
+        // v2 Safari 31/08 : la zone tactile est limitée à la capsule elle-même (+5 pt de marge),
+        // plus JAMAIS toute la largeur de l'écran — les contrôles bas des apps (Safari…) restent utilisables.
         VStack(spacing: 0) {
             Capsule()
                 .fill(sombre ? Color.black.opacity(0.75) : Color.white.opacity(0.92))
@@ -471,12 +473,13 @@ struct BarreHome: View {
         }
         .padding(.top, 9)
         .padding(.bottom, 5)
-        .frame(maxWidth: .infinity)
+        .frame(width: 150)
         .contentShape(Rectangle())
         .onTapGesture { action() }
         .gesture(DragGesture(minimumDistance: 8).onEnded { v in
             if v.translation.height < -15 { action() }
         })
+        .frame(maxWidth: .infinity)   // centrage seulement, sans zone tactile
     }
 }
 

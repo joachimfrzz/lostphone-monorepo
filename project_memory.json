@@ -5,10 +5,10 @@
   "date_export": "2026-07-20T16:10:00+02:00",
   "source": {
    "plateforme": "Hyperagent",
-   "thread_id": "cms7gg1540yoq07adfwx86s8u",
-   "thread_url": "https://hyperagent.com/thread/cms7gg1540yoq07adfwx86s8u",
+   "thread_id": "cmtim40hr08lo06ad89ww6nja",
+   "thread_url": "https://hyperagent.com/thread/cmtim40hr08lo06ad89ww6nja",
    "projet": "Lost Phone",
-   "lignee": "Fichier vivant. Lignée : thread cmrt2bu702ia007ad4uuh5p9g (export 2026-07-20T14:27) → thread cmrt83dz000wr07adcfl16cjx (maintenu jusqu au 2026-07-22T18:20) → TRANSITION DE COMPTE ACCOMPLIE le 2026-07-30 : kit réimporté dans le thread cms7gg1540yoq07adfwx86s8u (nouveau compte), nouvel agent a adopté le rôle (amorcage_nouvel_agent) et repris au point de reprise exact. Tout le contenu d origine est conservé ; les évolutions s ajoutent par décisions datées, jamais par écrasement. → 2026-08-26 : PASSATION V2 ACCOMPLIE — fichier réimporté dans le thread cmt96v1du0dvd07ad4stmengg (nouveau compte Hyperagent), nouvel agent a lu l'intégralité, adopté le rôle amorcage_nouvel_agent et rendu son résumé d'embauche. → 2026-08-28 : PASSATION V3 ACCOMPLIE — fichier lu EN INTÉGRALITÉ depuis la racine du repo GitHub joachimfrzz/lostphone-monorepo (thread cmtd7jaaf00ut07ad74zya8pi, nouveau compte Hyperagent), nouvel agent a adopté le rôle amorcage_nouvel_agent, rendu son résumé d embauche, validé par GO de Joachim (19h25)."
+   "lignee": "Fichier vivant. Lignée : thread cmrt2bu702ia007ad4uuh5p9g (export 2026-07-20T14:27) → thread cmrt83dz000wr07adcfl16cjx (maintenu jusqu au 2026-07-22T18:20) → TRANSITION DE COMPTE ACCOMPLIE le 2026-07-30 : kit réimporté dans le thread cms7gg1540yoq07adfwx86s8u (nouveau compte), nouvel agent a adopté le rôle (amorcage_nouvel_agent) et repris au point de reprise exact. Tout le contenu d origine est conservé ; les évolutions s ajoutent par décisions datées, jamais par écrasement. → 2026-08-26 : PASSATION V2 ACCOMPLIE — fichier réimporté dans le thread cmt96v1du0dvd07ad4stmengg (nouveau compte Hyperagent), nouvel agent a lu l'intégralité, adopté le rôle amorcage_nouvel_agent et rendu son résumé d'embauche. → 2026-08-28 : PASSATION V3 ACCOMPLIE — fichier lu EN INTÉGRALITÉ depuis la racine du repo GitHub joachimfrzz/lostphone-monorepo (thread cmtd7jaaf00ut07ad74zya8pi, nouveau compte Hyperagent), nouvel agent a adopté le rôle amorcage_nouvel_agent, rendu son résumé d embauche, validé par GO de Joachim (19h25). → 2026-09-01 : PASSATION V4 ACCOMPLIE — fichier lu depuis la racine du repo GitHub joachimfrzz/lostphone-monorepo (thread cmtim40hr08lo06ad89ww6nja, nouveau compte Hyperagent), nouvel agent a adopté le rôle amorcage_nouvel_agent, rendu son résumé d embauche (signalement : le prompt de passation disait 71 décisions, le fichier en contient 85), validé par GO de Joachim (16h40)."
   },
   "langue": "fr",
   "integrite": "Export en un seul fichier — le découpage en plusieurs parties n'a pas été nécessaire.",
@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-08-30T00:20:00+02:00",
+  "date_derniere_maj": "2026-09-01T16:45:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1595,15 +1595,17 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-08-29 (~21h30, clôture du jour)",
-  "dernier_evenement": "RAPPORT S1 RENDU (protocole builds S1->S6, référence = sessions du 29/08). Coque v2 complète 8 écrans + 5 transversaux, tous verts. En attente : validation du rapport puis Build S2 (Réglages, ~85 pages à couvrir par lots).",
+  "date": "2026-09-01 (16h45)",
+  "dernier_evenement": "PASSATION V4 accomplie sur nouveau compte (thread cmtim40hr08lo06ad89ww6nja) : lecture repo, rôle adopté, résumé d embauche validé par GO. Reprise au point exact : campagne de vérification D84 en méthode pipeline D86.",
   "en_attente": [
-   "DEMAIN (Joachim) : sessions S7-S12 (S7 Plans/Localiser -> S8 Fichiers/Wallet/Santé -> S9 WhatsApp -> S10 sociales comptes B -> S11 -> S12) + reliquat CC en dernier. Rituel : Demarrer-LostPhone.cmd -> URL -> GO Sx -> naviguer -> « fini » -> lien SwissTransfer.",
-   "Agent (ce soir/entre les sessions) : refonte coque D80 contre fiches S1 (verrouillage+piles, bibliothèque, Spotlight, multitâche), puis Réglages.",
-   "RAPPEL : re-signature WDA (fix-input) avant le 2026-09-04."
+   "Joachim : verdict du build TestFlight 272 (correctifs des 15 points du retest 271, dont crashs WhatsApp et Mail bloqué réparés)",
+   "Agent : lot session 2 (Safari codé le 31/08 ; compléter le lot avec les apps suivantes de la session 2 avant build, protocole D86)",
+   "Compte : recréer skill pilote-codemagic-lostphone (credential CODEMAGIC_API_TOKEN, APP_ID compte 2 = 6a8f67340674263dd88340ad) + 2 mémoires (préférence une-action-par-réponse ; piège SwiftUI scaledToFill) — cartes proposées",
+   "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
+   "Vérifier le quota Codemagic au premier appel (réinitialisation mensuelle probable)"
   ],
-  "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends ici.",
-  "derniere_maj": "2026-08-30 00h20. Re-signature WDA due le 2026-09-04."
+  "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
+  "derniere_maj": "2026-09-01 16h45"
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2153,7 +2155,13 @@
    "fileId_D15": "cmtd84kps00y007adercuvqh8 (SaveFile du 2026-08-28, fil cmtd7jaaf00ut07ad74zya8pi) — À RÉUTILISER à chaque SaveFile.",
    "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
   },
-  "derniere_action": "Lot Mail v2 étape 6 codé (13 retours Joachim 13h07) : ouverture directe sur Réception, lu automatique à l'ouverture, Sélectionner réel (marquer lu + corbeille confirmée), … = menu réel, filtre non-lus réel, micro retiré, composer branché en bas, zone du bas réservée (plus de recouvrement), suppression confirmée, + destinataire réel (contacts mail connus dont marc.dlc.officier@gmail.com ⭐), envoi inséré en tête d'Envoyés avec destinataire visible, fiche expéditeur réelle (adresse, dates, VIP basculable). Build de fin de session 1 lancé (Photos+Mail)."
+  "derniere_action": "Lot Mail v2 étape 6 codé (13 retours Joachim 13h07) : ouverture directe sur Réception, lu automatique à l'ouverture, Sélectionner réel (marquer lu + corbeille confirmée), … = menu réel, filtre non-lus réel, micro retiré, composer branché en bas, zone du bas réservée (plus de recouvrement), suppression confirmée, + destinataire réel (contacts mail connus dont marc.dlc.officier@gmail.com ⭐), envoi inséré en tête d'Envoyés avec destinataire visible, fiche expéditeur réelle (adresse, dates, VIP basculable). Build de fin de session 1 lancé (Photos+Mail).",
+  "2026_09_01": {
+   "thread_id": "cmtim40hr08lo06ad89ww6nja",
+   "contexte": "Fil de passation V4 (nouveau compte Hyperagent). Fichier lu depuis le repo GitHub.",
+   "fileId_D15": "À CRÉER au premier SaveFile de ce fil — puis À RÉUTILISER à chaque SaveFile.",
+   "regle": "D15 : mise à jour du fichier + SaveFile (MÊME fileId) + push à la racine du repo GitHub, à chaque mise à jour."
+  }
  },
  "feuille_de_route_2026_08_28": {
   "posee_le": "2026-08-28 (fil cmtb8wqse09ow07adft5w2jr9)",
@@ -2182,6 +2190,12 @@
    "thread": "cmtd7jaaf00ut07ad74zya8pi — https://hyperagent.com/thread/cmtd7jaaf00ut07ad74zya8pi",
    "statut": "Lecture intégrale depuis le repo ✓, rôle adopté ✓, résumé d embauche validé (GO) ✓, réparation D19 ✓. Outillage : GitHub ✓ ; skill Codemagic + mémoires en cartes à valider ; SideTap côté PC intact (rien à refaire).",
    "verifications_faites": "github__get_file_contents OK (SHA d099cc9869e592ffb80782f4b7c7686e48847a87) ; 35 sections lues à 100%."
+  },
+  "reprise_v4_effectuee": {
+   "date": "2026-09-01 16h40",
+   "thread": "cmtim40hr08lo06ad89ww6nja — https://hyperagent.com/thread/cmtim40hr08lo06ad89ww6nja",
+   "statut": "Lecture depuis le repo ✓ (SHA fb043e92, 65 sections parcourues, sections critiques lues à 100%), rôle adopté ✓, résumé d embauche validé (GO 16h40) ✓. Outillage : GitHub ✓ ; skill Codemagic + 2 mémoires proposées en cartes juste après le push. Côté PC : rien à refaire.",
+   "signalements": "(1) Le prompt de passation annonçait 71 décisions ; le fichier en contient 85 (D01-D87, D64 perdue, D83 non consignée). (2) Quota Codemagic ~460/500 fin août — réinitialisation mensuelle probable au 1er septembre, à vérifier au premier appel API. (3) RAPPEL : re-signature WDA (fix-input) due avant le 2026-09-04."
   }
  },
  "codemagic_compte2_verification_2026_08_28": {

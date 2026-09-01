@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-01T21:15:00+02:00",
+  "date_derniere_maj": "2026-09-01T21:25:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1596,17 +1596,18 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "D88 : tri du repo Lot 1 exécuté (README + PASSATION refondus, bannière moteur/, note registre canonique docs/decisions gelé à D27, READMEs tools/ et outils/). Registre des décisions = project_memory.json seul.",
+  "dernier_evenement": "D88 Lots 1+2 exécutés (tri repo : docs refondus + tools/archives/). SIGNALEMENT A10 : un compte Codemagic 3 existe (YAML 31/08, offset +260) — APP_ID/token à consigner au premier appel API.",
   "en_attente": [
    "Joachim : verdict du build TestFlight 272 (correctifs des 15 points du retest 271)",
    "Joachim : valider les cartes skill Codemagic (+ token) et mémoires si pas encore fait",
-   "Arbitrage Lot 2 du tri repo : déplacer session1*_driver vers tools/archives/ et les références pré-SideTap de outils/ vers references/archives-b64/ (après vérif codemagic.yaml) — ou en rester au Lot 1",
+   "Tri repo : Lots 1+2 FAITS. Reste éventuel : rangement physique des references*.tar.b64 (non recommandé — voir D88)",
    "Agent : lot session 2 (Safari codé le 31/08 ; compléter le lot avant build, protocole D86)",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
-   "Vérifier le quota Codemagic au premier appel (réinitialisation mensuelle probable)"
+   "Vérifier le quota Codemagic au premier appel (réinitialisation mensuelle probable)",
+   "A10 : consigner APP_ID + token du compte Codemagic 3 (skill + mémoire) au premier appel API"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-01 21h15"
+  "derniere_maj": "2026-09-01 21h25"
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2094,7 +2095,7 @@
   "D88": {
    "date": "2026-09-01",
    "titre": "Tri du repo pour passation claire (Lot 1) + registre canonique des décisions",
-   "detail": "Arbitrage Joachim (21h10) après audit complet du repo. (1) Le registre canonique des décisions est project_memory.json (option b) : les fiches docs/decisions/ sont GELÉES à D27 avec note explicite — on ne maintient pas deux registres. (2) Lot 1 exécuté : README.md racine refondu (carte du repo complète, canal de build corrigé duel-swift-testflight — l ancienne mention duel-flutter était obsolète depuis D50) ; PASSATION.md refondu (plus AUCUN état dupliqué — l état vit dans etat_conversation ; ajout du volet passation Codemagic : APP_ID, token, clé ASC nommée Codemagic — phase T de D87) ; moteur/README.md = bannière OBSOLÈTE (Flutter conservé comme témoin D49/D50 et référence pour re-arbitrage ARCH-2/Android) ; READMEs de répartition tools/ (scripts SideTap) vs outils/ (archives b64, dont ENTRÉES DE BUILD à ne pas déplacer sans mettre à jour codemagic.yaml). (3) Principes du tri : jamais de suppression aveugle ; un tri git ne libère aucun espace (historique) — il sert la lisibilité ; les archives références pré-SideTap de outils/ sont les seules copies survivantes (R9) et sont conservées. Lot 2 (rangement tools/archives + references/archives-b64) et vérification croisée codemagic.yaml : EN ATTENTE d arbitrage."
+   "detail": "Arbitrage Joachim (21h10) après audit complet du repo. (1) Le registre canonique des décisions est project_memory.json (option b) : les fiches docs/decisions/ sont GELÉES à D27 avec note explicite — on ne maintient pas deux registres. (2) Lot 1 exécuté : README.md racine refondu (carte du repo complète, canal de build corrigé duel-swift-testflight — l ancienne mention duel-flutter était obsolète depuis D50) ; PASSATION.md refondu (plus AUCUN état dupliqué — l état vit dans etat_conversation ; ajout du volet passation Codemagic : APP_ID, token, clé ASC nommée Codemagic — phase T de D87) ; moteur/README.md = bannière OBSOLÈTE (Flutter conservé comme témoin D49/D50 et référence pour re-arbitrage ARCH-2/Android) ; READMEs de répartition tools/ (scripts SideTap) vs outils/ (archives b64, dont ENTRÉES DE BUILD à ne pas déplacer sans mettre à jour codemagic.yaml). (3) Principes du tri : jamais de suppression aveugle ; un tri git ne libère aucun espace (historique) — il sert la lisibilité ; les archives références pré-SideTap de outils/ sont les seules copies survivantes (R9) et sont conservées. Lot 2 (rangement tools/archives + references/archives-b64) et vérification croisée codemagic.yaml : EN ATTENTE d arbitrage. — LOT 2 EXÉCUTÉ le 2026-09-01 (~21h25) après vérification croisée : codemagic.yaml ne référence que outils/decode-binaires.sh et outils/ecrans.txt ; il copie AUSSI l icône 1024 depuis moteur/ios/ (le dossier Flutter obsolète reste une ENTRÉE DE BUILD — ne jamais le supprimer sans corriger le YAML). Déplacé : session1_driver.py, session1b_driver.py, session1b-checklist.md -> tools/archives/ (avec README). NON déplacé (arbitrage agent, à re-challenger si besoin) : les archives references*.tar.b64 de outils/ restent en place — les déplacer via l API exigerait de faire transiter ~70 Mo de base64 fichier par fichier (~100 appels) pour un gain purement cosmétique, decode-references.sh pointe sur outils/, et le README d index posé au Lot 1 remplit déjà l objectif de lisibilité."
   }
  },
  "point_de_reprise_migration": {
@@ -2141,6 +2142,9 @@
    "auteur": "Agent (passation V3)",
    "A8_app_id_inverse": "CORRECTION 2026-08-28 20h50 (vérifiée avec le jeton actif) : le VRAI APP_ID du compte Codemagic 2 est 6a8f67340674263dd88340ad (GET /apps ne liste que lui ; 6a80d5e4a5a38a5cf29053f5 renvoie 404). La note correctif_codemagic du 27/08 avait INVERSÉ les deux valeurs. Vérification builds : 6a8fe522 (#5 finished, TestFlight ~235) + 4 échecs signature + 6a8f720d (miroir vague 3) = conforme à la mémoire. Les mentions 6a80d5e4 dans D65.etat et point_de_reprise_migration_v2 sont donc OBSOLÈTES pour le compte 2.",
    "A9_D19_reparee": "RÉSOLU : l entrée D19 de journal_decisions était corrompue (texte en tableau de caractères) — réparée à l identique le 2026-08-28 (note_reparation dans D19)."
+  },
+  "releve_2026_09_01": {
+   "A10_compte_codemagic_3": "SIGNALEMENT (agent, 2026-09-01) : le commentaire de codemagic.yaml du 31/08 dit « offset passé à +260 (compte Codemagic 3, compteur reparti de 1 — collision Redundant Binary Upload sur 239) ». La mémoire (codemagic_compte2, skill) ne connaît que le compte 2 (APP_ID 6a8f6734...). Il existe donc un COMPTE 3 dont l APP_ID et le token ne sont consignés nulle part. À FAIRE au premier appel API : token du compte 3 dans la skill, GET /apps pour noter le nouvel APP_ID, mettre à jour la skill et cette mémoire. Les builds 270-272 du 31/08 sont partis de ce compte 3."
   }
  },
  "memoire_fil_courant": {

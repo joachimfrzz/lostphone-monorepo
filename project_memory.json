@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-01T21:30:00+02:00",
+  "date_derniere_maj": "2026-09-01T21:50:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1604,15 +1604,14 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "Skill Codemagic opérationnelle sur le compte 3 (A10 résolue : APP_ID 6a9454919667617e9cf9743e vérifié, dernier build = 272 finished). Tri repo D88 Lots 1+2 faits.",
+  "dernier_evenement": "Fiches de vérification D84 générées pour TOUTES les apps restantes (fiches-verification/, 22 fiches + index) et poussées au repo. Joachim peut tester en continu sans attendre l agent (pipeline D86 avec checklists d avance).",
   "en_attente": [
-   "Joachim : verdict du build TestFlight 272 (correctifs des 15 points du retest 271)",
-   "Tri repo : Lots 1+2 FAITS. Reste éventuel : rangement physique des references*.tar.b64 (non recommandé — voir D88)",
-   "Agent : lot session 2 (Safari codé le 31/08 ; compléter le lot avant build, protocole D86)",
+   "Joachim : re-test build 272 (Messages, WhatsApp, Téléphone, Photos, Mail) puis tour session 2 avec les fiches (Safari re-test attendra le build du lot session 2)",
+   "Agent : coder les retours au fil de l eau, builds groupés par session (D86)",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-01 21h30"
+  "derniere_maj": "2026-09-01 21h50"
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2653,6 +2652,7 @@
    ],
    "beat_enquete_ajoute": "recherche 'Marc Delacroix officier marine' → 7 résultats qui ne collent pas (chauffagiste, homonyme, annuaire Marine vide) — pièce d'enquête jouable",
    "build": "PAS de build — protocole D86 : un build par session de 4-5 apps ; Safari attend le lot session 2"
-  }
+  },
+  "fiches_2026_09_01": "Les 22 fiches de vérification (21 apps restantes + re-test Safari) sont dans fiches-verification/ du repo (commit adf58de5), avec README d index et plan de sessions D86 : S2 = Safari(re-test)+Notes+Rappels+Calendrier+Réglages ; S3 = Horloge+Météo+Calculatrice+Dictaphone ; S4 = Fichiers+Localiser+Santé+Cartes+Ma Banque ; S5 = Messenger+Instagram+Snapchat+Facebook ; S6 = X+ChatGPT+Spotify+YouTube. Chaque fiche : tour ≤5 min, boutons à tester (D82), contenu Sarah attendu, pièges connus à ne pas re-signaler. Sources : rapports S1-S6, chantier_design, cercle2."
  }
 }

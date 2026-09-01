@@ -1,8 +1,19 @@
-# Journal des décisions (ADR)
+# Journal des décisions (ADR) — GELÉ À D27
 
-Une décision importante = un fichier daté : contexte, décision, justification, statut. Le canon se complète par décisions datées, jamais par écrasement. Toute collision de principes tranchée s'ajoute ici (jurisprudence, D16).
+> **REGISTRE CANONIQUE : `project_memory.json` (racine du repo), sections
+> `journal_decisions` (D01–D55) et `decisions` (D56 et suivantes).**
+>
+> Décision de tri du 2026-09-01 (arbitrage Joachim, option b) : les fiches de ce dossier
+> s'arrêtent à D27 (juillet 2026) et ne seront PAS rattrapées. Depuis D15, la mémoire
+> vivante `project_memory.json` est la seule référence des décisions — maintenir deux
+> registres en parallèle garantirait qu'un des deux mente un jour. Les fiches D01–D27
+> ci-dessous restent valables comme lecture historique des fondations.
 
-## Index
+Une décision importante = une entrée datée : contexte, décision, justification, statut.
+Le canon se complète par décisions datées, jamais par écrasement. Toute collision de
+principes tranchée s'ajoute au registre canonique (jurisprudence, D16).
+
+## Index des fiches historiques (fondations, juillet 2026)
 
 - [D01](D01.md) — Méthode : fondations d'abord (EN)
 - [D02](D02.md) — Ordre de travail de la phase de présentation (TERMINÉ)
@@ -31,3 +42,5 @@ Une décision importante = un fichier daté : contexte, décision, justification
 - [D25](D25.md) — Lot des propositions : neuf promues, P01 en discussion, P11 écartée (ACTÉ)
 - [D26](D26.md) — P01 adoptée : clones structurels, identités propres, finition de référence (ACTÉ)
 - [D27](D27.md) — Registre : signalement des fins et routage des questions ouvertes (ACTÉ)
+
+**D28 et suivantes** : voir `project_memory.json`.

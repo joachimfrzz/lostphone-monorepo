@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-01T16:45:00+02:00",
+  "date_derniere_maj": "2026-09-01T21:15:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1595,17 +1595,18 @@
   "checklist_d_histoire": "Les quatre sections vérifiables de toute histoire : déclarations, ouverture, équité & contenu, QA de publication (D32)."
  },
  "etat_conversation": {
-  "date": "2026-09-01 (16h45)",
-  "dernier_evenement": "PASSATION V4 accomplie sur nouveau compte (thread cmtim40hr08lo06ad89ww6nja) : lecture repo, rôle adopté, résumé d embauche validé par GO. Reprise au point exact : campagne de vérification D84 en méthode pipeline D86.",
+  "date": "2026-09-01 (21h15)",
+  "dernier_evenement": "D88 : tri du repo Lot 1 exécuté (README + PASSATION refondus, bannière moteur/, note registre canonique docs/decisions gelé à D27, READMEs tools/ et outils/). Registre des décisions = project_memory.json seul.",
   "en_attente": [
-   "Joachim : verdict du build TestFlight 272 (correctifs des 15 points du retest 271, dont crashs WhatsApp et Mail bloqué réparés)",
-   "Agent : lot session 2 (Safari codé le 31/08 ; compléter le lot avec les apps suivantes de la session 2 avant build, protocole D86)",
-   "Compte : recréer skill pilote-codemagic-lostphone (credential CODEMAGIC_API_TOKEN, APP_ID compte 2 = 6a8f67340674263dd88340ad) + 2 mémoires (préférence une-action-par-réponse ; piège SwiftUI scaledToFill) — cartes proposées",
+   "Joachim : verdict du build TestFlight 272 (correctifs des 15 points du retest 271)",
+   "Joachim : valider les cartes skill Codemagic (+ token) et mémoires si pas encore fait",
+   "Arbitrage Lot 2 du tri repo : déplacer session1*_driver vers tools/archives/ et les références pré-SideTap de outils/ vers references/archives-b64/ (après vérif codemagic.yaml) — ou en rester au Lot 1",
+   "Agent : lot session 2 (Safari codé le 31/08 ; compléter le lot avant build, protocole D86)",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
    "Vérifier le quota Codemagic au premier appel (réinitialisation mensuelle probable)"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-01 16h45"
+  "derniere_maj": "2026-09-01 21h15"
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2089,6 +2090,11 @@
    "date": "2026-08-31",
    "titre": "FEUILLE DE ROUTE VALIDÉE (v5.2) — Lost Phone = MOTEUR multi-histoires + MÉTHODE d'écriture IA. Coches bleues = histoire DÉMO (sortie non garantie). Joachim seul testeur.",
    "detail": "Phases : T transversale (outillage : passation Codemagic ET Hyperagent en 5 min — PASSATION.md + prompt d'amorçage + tout au repo ; exploitation totale Hyperagent : multi-fils parallèles ATELIER/CI-BUILDS/HISTOIRE(/PROMO), project_memory.json = source de vérité commune, runs planifiés, sous-agents, pré-vol CI, fallback GitHub Actions) · 0 infra (clé ASC Admin) · 1 vérification 29 apps (D84) · 2 catalogue d'apps COMPLET générique (vague A : Tinder/SNCF/PayPal/FaceTime/LinkedIn/Uber/AppStore/Musique ; vague B texture à arbitrer ; DÉCISION marques stylisées vs vraies) · 3 moteur (format d'histoire en données, progression paramétrable, sauvegarde par histoire, écran titre) · 3bis méthode d'écriture (template complet, manuel, pipeline IA brief→histoire, preuve : mini-histoire neuve sans toucher au code) · 4 histoire(s) de lancement (DÉCISION, écriture parallèle possible dès maintenant) · 5 polish+médias · 6 conformité (RISQUE n°1 : imitation UI iOS + marques) · 7 fiche App Store (DÉCISION nom+modèle : premium vs gratuit+histoires IAP) · 8 soumission (plan B anti-rejet) · 9 promo · 10 lancement · 11 post-lancement (localisation EN, série d'histoires via méthode+IA, Android). Détail complet : section Plan du fil Hyperagent du 30/08 + FEUILLE-DE-ROUTE.md au repo."
+  },
+  "D88": {
+   "date": "2026-09-01",
+   "titre": "Tri du repo pour passation claire (Lot 1) + registre canonique des décisions",
+   "detail": "Arbitrage Joachim (21h10) après audit complet du repo. (1) Le registre canonique des décisions est project_memory.json (option b) : les fiches docs/decisions/ sont GELÉES à D27 avec note explicite — on ne maintient pas deux registres. (2) Lot 1 exécuté : README.md racine refondu (carte du repo complète, canal de build corrigé duel-swift-testflight — l ancienne mention duel-flutter était obsolète depuis D50) ; PASSATION.md refondu (plus AUCUN état dupliqué — l état vit dans etat_conversation ; ajout du volet passation Codemagic : APP_ID, token, clé ASC nommée Codemagic — phase T de D87) ; moteur/README.md = bannière OBSOLÈTE (Flutter conservé comme témoin D49/D50 et référence pour re-arbitrage ARCH-2/Android) ; READMEs de répartition tools/ (scripts SideTap) vs outils/ (archives b64, dont ENTRÉES DE BUILD à ne pas déplacer sans mettre à jour codemagic.yaml). (3) Principes du tri : jamais de suppression aveugle ; un tri git ne libère aucun espace (historique) — il sert la lisibilité ; les archives références pré-SideTap de outils/ sont les seules copies survivantes (R9) et sont conservées. Lot 2 (rangement tools/archives + references/archives-b64) et vérification croisée codemagic.yaml : EN ATTENTE d arbitrage."
   }
  },
  "point_de_reprise_migration": {

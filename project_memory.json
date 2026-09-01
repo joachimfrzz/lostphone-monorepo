@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-01T21:25:00+02:00",
+  "date_derniere_maj": "2026-09-01T21:30:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1418,7 +1418,15 @@
    "testflight_prerequis": "codemagic.yaml exige l'intégration App Store Connect nommée EXACTEMENT « Codemagic » (integrations: app_store_connect: Codemagic). SUR LE COMPTE 2 ELLE N'EXISTE PAS ENCORE -> duel-swift-testflight échouera à la signature tant que Joachim n'a pas ajouté sa clé API ASC (.p8) sous ce nom : codemagic.io -> Teams/Personal -> Integrations -> Developer Portal (App Store Connect) -> Add key -> name: Codemagic.",
    "verifie": "3 runs miroir OK sur le compte 2 dans la nuit. Aucun build Flutter parasite malgré le trigger push du YAML (webhook non actif)."
   },
-  "quota_codemagic": "~455/500 min gratuites après build #17 (2026-08-30 ~10h40). UN build miroir restant en sécurité."
+  "quota_codemagic": "~455/500 min gratuites après build #17 (2026-08-30 ~10h40). UN build miroir restant en sécurité.",
+  "codemagic_compte3": {
+   "date": "2026-09-01 21h25 (vérifié par appel API)",
+   "contexte": "Compte Codemagic 3 créé par Joachim le 31/08 après la collision « Redundant Binary Upload » sur le build 239 (compte 2). Offset builds passé à +260 dans codemagic.yaml. Règle consignée dans le YAML : à chaque nouveau compte, augmenter l offset au-delà du plus haut numéro déjà uploadé.",
+   "app_id": "6a9454919667617e9cf9743e (lostphone-monorepo — GET /apps n en liste qu une, token actif = compte 3)",
+   "verification": "builds 1-12 sur ce compte : 8 échecs de signature puis 4 finished, dernier = index 12 = TestFlight 272 (31/08 16h50 Paris) — cohérent avec la mémoire. Intégration ASC « Codemagic » opérationnelle (builds publiés).",
+   "quota": "Compte neuf du 31/08 : 12 builds consommés (8 échecs courts + 4 aboutis). Marge confortable ce mois.",
+   "obsolete": "APP_ID compte 2 (6a8f67340674263dd88340ad) et compte 1 : OBSOLÈTES."
+  }
  },
  "artefacts_existants": {
   "document_projet_hyperagent": {
@@ -1596,18 +1604,15 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "D88 Lots 1+2 exécutés (tri repo : docs refondus + tools/archives/). SIGNALEMENT A10 : un compte Codemagic 3 existe (YAML 31/08, offset +260) — APP_ID/token à consigner au premier appel API.",
+  "dernier_evenement": "Skill Codemagic opérationnelle sur le compte 3 (A10 résolue : APP_ID 6a9454919667617e9cf9743e vérifié, dernier build = 272 finished). Tri repo D88 Lots 1+2 faits.",
   "en_attente": [
    "Joachim : verdict du build TestFlight 272 (correctifs des 15 points du retest 271)",
-   "Joachim : valider les cartes skill Codemagic (+ token) et mémoires si pas encore fait",
    "Tri repo : Lots 1+2 FAITS. Reste éventuel : rangement physique des references*.tar.b64 (non recommandé — voir D88)",
    "Agent : lot session 2 (Safari codé le 31/08 ; compléter le lot avant build, protocole D86)",
-   "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
-   "Vérifier le quota Codemagic au premier appel (réinitialisation mensuelle probable)",
-   "A10 : consigner APP_ID + token du compte Codemagic 3 (skill + mémoire) au premier appel API"
+   "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-01 21h25"
+  "derniere_maj": "2026-09-01 21h30"
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2144,7 +2149,7 @@
    "A9_D19_reparee": "RÉSOLU : l entrée D19 de journal_decisions était corrompue (texte en tableau de caractères) — réparée à l identique le 2026-08-28 (note_reparation dans D19)."
   },
   "releve_2026_09_01": {
-   "A10_compte_codemagic_3": "SIGNALEMENT (agent, 2026-09-01) : le commentaire de codemagic.yaml du 31/08 dit « offset passé à +260 (compte Codemagic 3, compteur reparti de 1 — collision Redundant Binary Upload sur 239) ». La mémoire (codemagic_compte2, skill) ne connaît que le compte 2 (APP_ID 6a8f6734...). Il existe donc un COMPTE 3 dont l APP_ID et le token ne sont consignés nulle part. À FAIRE au premier appel API : token du compte 3 dans la skill, GET /apps pour noter le nouvel APP_ID, mettre à jour la skill et cette mémoire. Les builds 270-272 du 31/08 sont partis de ce compte 3."
+   "A10_compte_codemagic_3": "SIGNALEMENT (agent, 2026-09-01) : le commentaire de codemagic.yaml du 31/08 dit « offset passé à +260 (compte Codemagic 3, compteur reparti de 1 — collision Redundant Binary Upload sur 239) ». La mémoire (codemagic_compte2, skill) ne connaît que le compte 2 (APP_ID 6a8f6734...). Il existe donc un COMPTE 3 dont l APP_ID et le token ne sont consignés nulle part. À FAIRE au premier appel API : token du compte 3 dans la skill, GET /apps pour noter le nouvel APP_ID, mettre à jour la skill et cette mémoire. Les builds 270-272 du 31/08 sont partis de ce compte 3. → RÉSOLU 2026-09-01 21h30 : token compte 3 saisi dans la skill, GET /apps vérifié, APP_ID = 6a9454919667617e9cf9743e consigné (etat_technique.codemagic_compte3), skill mise à jour (carte émise)."
   }
  },
  "memoire_fil_courant": {

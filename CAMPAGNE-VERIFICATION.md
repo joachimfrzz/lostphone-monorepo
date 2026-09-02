@@ -18,7 +18,7 @@ navigation & gestes · contenu narratif Sarah · animations.
 
 **Fiches de vérification détaillées des 28 apps** : `FICHES-VERIFICATION-APPS.md` (fichier unique, 02/09). Le dossier `fiches-verification/` (01/09) est remplacé — conservé une itération, suppression sur arbitrage.
 
-## Ordre & état (à jour du 02/09/2026 19h30)
+## Ordre & état (à jour du 02/09/2026 20h10 — 14/28 validées)
 | # | App | État |
 |---|---|---|
 | 1 | Coque (verrouillage+accueil) | ✅ VALIDÉE 30/08 18h02 (v3 : « c'est parfait ») |
@@ -34,13 +34,13 @@ navigation & gestes · contenu narratif Sarah · animations.
 | 13 | Météo | ✅ VALIDÉE 02/09 17h29 (build 272) |
 | 14 | Calculatrice | ✅ VALIDÉE 02/09 17h29 (build 272) |
 | 15 | Dictaphone | ✅ VALIDÉE 02/09 18h29 (build 274) |
-| 16 | Fichiers | 🔄 RE-TEST build 278 |
-| 17 | Localiser | 🔄 RE-TEST build 278 (Memoji, carte, itinéraire) |
+| 16 | Fichiers | ✅ VALIDÉE 02/09 20h10 (build 278) |
+| 17 | Localiser | ✅ VALIDÉE 02/09 20h10 (build 278) |
 | 18 | Santé | ✅ VALIDÉE 02/09 18h50 (build 274) — à enrichir selon les histoires |
-| 19 | Cartes (Wallet) | 🔄 RE-TEST build 278 (QR/code-barres réels, cartes) |
-| 20 | Ma Banque | 🔄 RE-TEST build 278 (virement persistant, clavier, détails) |
+| 19 | Cartes (Wallet) | ✅ VALIDÉE 02/09 20h10 (build 278) |
+| 20 | Ma Banque | ✅ VALIDÉE 02/09 20h10 (build 278) |
 | 21-28 | Messenger, Instagram, Snapchat, Facebook, X, ChatGPT, Spotify, YouTube | à vérifier |
 
-Builds 276 (19h05) et 277 (19h13) : rouges à la compilation, corrigés ; **278 (19h14 → 19h21) VERT**.
+Builds 276 (19h05) et 277 (19h13) : rouges à la compilation, corrigés ; **278 (19h14 → 19h21) VERT, validé 16/16 par Joachim à 20h10**.
 
 Ensuite : création des nouvelles apps (chacune naît avec ce niveau d'exigence).

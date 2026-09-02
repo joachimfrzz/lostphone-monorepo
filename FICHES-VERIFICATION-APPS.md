@@ -14,7 +14,9 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 ## 🔔 DERNIER BUILD — à vérifier en priorité
 > Cette section est MISE À JOUR À CHAQUE BUILD (règle D89, 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
-**Build : TestFlight n° 278 — lancé le 02/09 à 19h14, compilé 19h15-19h21, publication TestFlight ~19h22 (disponible ~10 min après).** Retours de la **session 4** (Fichiers, Localiser, Santé, Cartes, Ma Banque) + 2 corrections globales. Les 276 (19h05) et 277 (19h13) ont échoué à la compilation et n'apparaîtront pas dans TestFlight. Précédent valide : 275 (02/09 18h45) — ses 13 points restent à vérifier si tu ne l'as pas encore fait.
+**Build : TestFlight n° 278 — lancé le 02/09 à 19h14, compilé 19h15-19h21, publication TestFlight ~19h22 (disponible ~10 min après).**
+
+✅ **278 VALIDÉ par Joachim le 02/09 à 20h10 — 16/16 points.** Fichiers, Localiser, Cartes, Ma Banque validées (14/28). Reste à faire : la **checklist du 275 (13 points)** ci-dessous dans l'historique, puis la session 5. Retours de la **session 4** (Fichiers, Localiser, Santé, Cartes, Ma Banque) + 2 corrections globales. Les 276 (19h05) et 277 (19h13) ont échoué à la compilation et n'apparaîtront pas dans TestFlight. Précédent valide : 275 (02/09 18h45) — ses 13 points restent à vérifier si tu ne l'as pas encore fait.
 
 ### Ce que tu avais demandé (retours session 4)
 - Fichiers : Sélectionner mort ; Se connecter au serveur / Scanner / Compresser / Dupliquer inutiles ; « Ouvrir » (Infos) mort ; flèche muette dans Supprimés récemment ; micro dans la recherche ; iCloud Drive et Sur mon iPhone morts
@@ -61,7 +63,7 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 | 2 | Safari (re-test) · Notes · Rappels · Calendrier | TestFlight **275** (02/09 18h41) |
 | 3 | Horloge · Dictaphone (Météo ✅, Calculatrice ✅) | TestFlight **275** (02/09 18h41) |
 | finale | Réglages (passe dédiée, D89) | dernier lot |
-| 4 | Fichiers · Localiser · Cartes · Ma Banque (Santé ✅) | TestFlight **278** (02/09 19h14) |
+| 4 | Fichiers ✅ · Localiser ✅ · Cartes ✅ · Ma Banque ✅ (Santé ✅) | TestFlight **278** (02/09 19h14) — ✅ validé 20h10 |
 | 5 | Messenger · Instagram · Snapchat · Facebook | lot session 5 |
 | 6 | X · ChatGPT · Spotify · YouTube | lot session 6 |
 
@@ -234,31 +236,31 @@ On n'y revient pas, **sauf régression**. Si tu vois l'un de ces points cassé p
 
 # SESSION 4
 
-## 15. FICHIERS — validée sur TestFlight 230 (D68) : cherche les RÉGRESSIONS
+## 15. FICHIERS — ✅ VALIDÉE 02/09 20h10 (build 278)
 **Écrans** : Récents (grille avec VRAIES vignettes photo, bascule Icônes/Liste, tri Nom/Type/Date/Taille/Tags) ; fiche Infos complète ; aperçu plein écran (image / page PDF) ; recherche à jetons « Le nom contient “x” » + état vide ; Partagé (état vide) ; Explorer (favoris, emplacements, Suppressions récentes RÉCUPÉRABLES, 10 tags colorés) ; dossiers Documents / Kiné / Billets
 **Gestes & touchers** : appui long → Coup d'œil, Ouvrir avec, Lire les informations, Renommer, Compresser, Dupliquer, Afficher dans le dossier parent, Tags ; barre d'onglets en pilule flottante (3 onglets) ; bouton Ouvrir dans Infos ; chaque emplacement s'ouvre ; FeuillePartage
 **Contenu Sarah** : 12 fichiers recoupant Mail/Banque/Kiné/pellicule ; « billet-tgv-28-aout » tag Important = or narratif ; emplacements réduits à un jeu crédible (pas les apps tierces du vrai iPhone)
 **Pièges connus** : aucun assumé
 
-## 16. LOCALISER
+## 16. LOCALISER — ✅ VALIDÉE 02/09 20h10 (build 278)
 **Écrans** : carte MapKit plein écran + pastilles par onglet ; PERSONNES (Chloé partage vivant Croix-Rousse « Maintenant », Maman Théizé « il y a 40 min », **« Marc ❤️ — Invitation envoyée le 12 mai · En attente »**) ; fiche personne (Contacter / Itinéraire / Me prévenir toggle / Cesser de partager) ; fiche invitation (Renvoyer) ; APPAREILS (iPhone de Sarah « Cet iPhone » 14 rue des Capucins, AirPods Domicile il y a 2 h, MacBook Air « Aucune position trouvée ») ; fiche appareil complète (Émettre un son avec réponses distinctes cet-appareil/distant, Itinéraire, Mode Perdu → code requis, Me prévenir, Effacer/Supprimer avec messages iOS) ; OBJETS (AirTag « Clés 🔑 » entier : Émettre un son à portée, Recherche de précision, Mode Perdu, Retirer) ; MOI (Ma position, Partager toggle, Étiquette, Autoriser les demandes d'amis)
 **Gestes & touchers** : chaque action de fiche répond (A ou B crédible — « mise à jour iOS nocturne » validée en B)
 **Contenu Sarah** : l'invitation Marc en attente depuis le 12 mai = l'indice en creux (il n'a JAMAIS accepté de partager sa position)
 **Pièges connus** : sur TON iPhone, les actions Localiser sont zone INTERDITE D71 — compare avec des captures, ne déclenche rien
 
-## 17. SANTÉ — v1 jugée insuffisante (D68), c'est la V2 (26/08) que tu juges
+## 17. SANTÉ — ✅ VALIDÉE 02/09 18h50 (build 274) — à enrichir selon les histoires
 **Écrans** : Résumé (cartes épinglées avec mini-graphes, Points forts 2 cartes, Tendances 5 lignes avec flèches) ; Parcourir (catégories) ; Activité (pas/distance/étages/énergie active) ; SOMMEIL (phases éveil/paradoxal/léger/profond, horaires coucher/lever, historique S/M — durée totale cohérente avec les phases) ; Cœur (FC repos + FC marche) ; Audition (dB casque) ; Mesures corporelles (poids : courbe à points, 4 pesées + liste) ; états vides Alimentation / Cycle / Pleine conscience / Respiratoire ; Fiche médicale ; Contact d'urgence Maman ; Historique de santé (vaccins/antécédents)
 **Gestes & touchers** : sélecteurs J/S/M (chaque échelle) ; barres interactives au tap ; tap Tendance → fiche ; loupe → recherche RÉELLE (D62) ; « Appeler » du contact d'urgence → route vers Téléphone ; barre d'onglets pilule flottante + loupe ronde séparée
 **Contenu Sarah** : 35 jours (14 juil → 17 août) — nuit de 3 h 10 le 17 juil (le virement), FC 71 le 18, Western Union le 24 juil visibles dans la vue M ; nuit du 16 août 2 h 34 ; pic de pas le 11 août (banque) : l'anxiété de l'arnaque doit se LIRE dans les courbes
 **Pièges connus** : pas de référence réelle (aucune donnée Santé chez Joachim) — juge la fidélité à la structure iOS et la lisibilité narrative
 
-## 18. CARTES (Wallet) — validée sur TestFlight 230 (D68) : cherche les RÉGRESSIONS
+## 18. CARTES (Wallet) — ✅ VALIDÉE 02/09 20h10 (build 278)
 **Écrans** : pile DENSE de 3 cartes (LCL Visa •••• 4417 = la MÊME que Ma Banque, fidélité Phox Photo = recoupe le mail Phox, billet TGV violet du 28 août) ; carte ouverte pleine largeur + 5 dernières transactions (recoupent Plans + l'achat SNCF) ; DÉTAIL transaction (gros montant, marchand/ville, « État : accepté », MINI-CARTE Plans du lieu, « Contacter LCL », « Signaler des informations incorrectes ») ; billet plein écran avec QR ; flux d'ajout ; réglages
 **Gestes & touchers** : « Contacter LCL » → route vers Téléphone ; menu … (Commandes, Paiements préautorisés, Remplissage automatique, Expirées, Notifications, En savoir plus) : chaque entrée répond ; flux d'ajout va jusqu'au REFUS émetteur (fidèle iOS, voulu) ; bascules réelles
 **Contenu Sarah** : cohérence croisée STRICTE avec Ma Banque et Plans (mêmes montants/commerces) ; billet du 28 = or narratif
 **Pièges connus** : aucun assumé
 
-## 19. MA BANQUE — banque FICTIVE sans référence réelle : juge la crédibilité, pas le pixel
+## 19. MA BANQUE — ✅ VALIDÉE 02/09 20h10 (build 278)
 **Écrans** : splash LCL « Connexion automatique Sarah L. » (porte ouverte D57) ; 4 onglets ; COMPTES (dépôt 132,60 € vidé par l'arnaque + Livret A 85 € vidé de 5000 en 2 virements 20/07 et 15/08) ; HISTORIQUE (OKAFOR 300 € 08/05, CB WESTERN UNION 850 € 13/06 = P67, virements Livret A → compte 2000 + 3000, retrait DAB 300, **VIREMENT 4850 REFUSÉ 16/08** badge rouge = P57, + vie normale : loyer 745, salaire ATELIER GRAPHIK 2180, kiné 8,50, pharmacie, Carrefour) ; RIB = P58 à l'identique (FR76 3000 2005…, CRLYFRPP, Lyon République) ; CARTES (Visa 4417, plafonds, opposition) ; MESSAGERIE
 **Gestes & touchers** : VIREMENT FONCTIONNEL — bénéficiaires (OKAFOR « ajouté le 8 mai » !, Maman, Chloé), saisie montant, **REFUS RÉEL si plafond 3000 €/7 j dépassé** : RETENTE le virement de Sarah, l'écran P57 doit se rejouer ; succès → persiste dans l'historique ; copie IBAN réelle ; plafonds → « prenez RDV en agence » ; opposition → numéro
 **Contenu Sarah** : messagerie = confirmation RDV lundi 17/08 11h30 M. Rossi agence LYON BELLECOUR « augmentation de plafond » + message sécurité « LCL ne vous demandera JAMAIS… » (ironie tragique) ; l'écart de 750 € entre le virement 4850 et les demandes WhatsApp (D58 option B)

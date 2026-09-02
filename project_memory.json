@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-02T19:45:00+02:00",
+  "date_derniere_maj": "2026-09-02T20:12:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1034,8 +1034,7 @@
   "patterns_narratifs_valides": [
    "Reformulation canonique : le jeu n'adopte jamais le texte brut du joueur, il énonce sa conclusion canonique.",
    "Exemple de scène de référence (posture inconnu reconnu) : téléphone de 'Léa' trouvé sur un banc de gare ; sa sœur écrit 'Léa t'es où ?? Maman est à l'hôpital' ; les trois postures produisent trois scènes radicalement différentes (voir canon_game_design_consolide.postures_du_joueur)."
-  ],
-  "renvoi_dispositifs_extraordinaires": "Voir section bibliotheque_dispositifs_extraordinaires (2026-09-02) : 12 dispositifs [IDÉE] + annexe + briques de socle. Rayon distinct des dispositifs de rétention : on y pioche à l ouverture d une histoire, une seule dinguerie par histoire, jamais montrée."
+  ]
  },
  "contexte_marche": {
   "references_du_genre": [
@@ -1605,17 +1604,16 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
+  "dernier_evenement": "278 validé 16/16 (20h10) → 14/28 validées. Prochaine étape Joachim : checklist 275 (13 points) sur le 278, puis session 5. Agent : écarts Notes au-delà du jaune (vidéo), Notes v3 en attente de build. Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
   "en_attente": [
-   "Joachim : checklist du 278 (16 points, session 4 + globaux) — disponible TestFlight ~19h30",
-   "Notes v3 (jaune mesuré #DEA40B + boutons blancs verre) CODÉE, poussée, PAS buildée — à embarquer dans le prochain build de lot (retours 278)",
-   "Joachim : checklist du 275 (13 points) si pas encore faite",
-   "Session 5 (Messenger, Instagram, Snapchat, Facebook) : Joachim peut la tester sur le 278 pendant les corrections",
+   "Joachim : checklist du 275 (13 points : WhatsApp, Safari, Notes, Rappels, Calendrier, Horloge) — sur le 278 (cumulatif)",
+   "Notes v3 (jaune mesuré #DEA40B + boutons blancs verre) CODÉE, poussée, PAS buildée — à embarquer dans le prochain build de lot",
+   "Session 5 (Messenger, Instagram, Snapchat, Facebook) : à tester sur le 278 après le 275",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
    "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/ ; passe finale Réglages ; ce que le joueur peut supprimer (Dictaphone, etc.)"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-02 19h45",
+  "derniere_maj": "2026-09-02 20h12",
   "fil_hyperagent_actif": "https://hyperagent.com/thread/cmtkd5ab005h206ad1tpral2j (depuis le 02/09 19h25 ; précédent cmtim40hr08lo06ad89ww6nja figé)"
  },
  "workflow_memoire_persistante": {
@@ -2696,7 +2694,7 @@
    "piege_ios": "Bundle.main.url(forResource: \"\", withExtension:) avec un nom VIDE ne renvoie pas nil : il renvoie un fichier arbitraire de cette extension. Toujours garder les noms vides.",
    "build": "TestFlight 273 (buildId 6a984245f9be3a969bc2b427, index 13 = 260+13) lancé 02/09 17h36 sur GO Joachim — lot S2+S3 + fix WhatsApp. Fiche « Dernier build » mise à jour (23 points à vérifier)."
   },
-  "validees": "10/28 : Coque, Messages, Téléphone, Photos, Mail, Météo, Calculatrice, Horloge, Dictaphone, Santé.",
+  "validees": "14/28 : Coque, Messages, Téléphone, Photos, Mail, Météo, Calculatrice, Horloge, Dictaphone, Santé, Fichiers, Localiser, Cartes, Ma Banque.",
   "build_273_274_2026_09_02": {
    "273": "buildId 6a984245f9be3a969bc2b427, index 13, lancé 17h36, compilé 17h41-17h45 → ROUGE (Build IPA exit 65). 4 erreurs : (a) SafariApp:546 et RappelsApp ×2 — ternaire `? .secondary : .white` → Swift infère HierarchicalShapeStyle sur la 1re branche et refuse .white → écrire `Color.secondary : Color.white` (l ordre inverse `.white : .secondary` compile, d où le piège) ; (b) LPProto:373 capture `safari.onglets` appelait OngletsVue avec l ANCIENNE signature ; (c) HorlogeApp:86 Int + Double. FAIT MAJEUR : (a-Safari) et (b) prouvent que le code Safari du 31/08 n avait JAMAIS été compilé (aucun build entre son push et le 273).",
    "274": "buildId 6a984511192cb7489c269a1e, index 14 = TestFlight 274, lancé 17h47, file 4 min, compilé 17h51-17h56, publication TestFlight 17h56 → VERT. Contenu : fix WhatsApp + Safari 31/08 + Notes v2 + Rappels v2 + Calendrier v2 + Horloge v2 + Dictaphone v2.",
@@ -2734,249 +2732,11 @@
    "structure_vraie_app": "Racine Dossiers : titre 34 pt, carte « Partagées » (2), en-tête iCloud + chevron jaune, carte dossiers (iCloud (toutes) 918, Notes 851, …), en-tête Gmail, Tags ; recherche EN BAS en capsule (avec micro chez Apple) ; en haut à droite : cercle nouveau-dossier + capsule Modifier. Liste : grand titre + sous-titre « 918 notes », titre centré en inline au défilement, rangées titre gras / date+aperçu gris / ligne « 🗂 Notes » grise.",
    "code": "NotesApp.swift v3 : notesJaune = 0xDEA40B ; BoutonVerreNotes (cercle, icône blanche) et CapsuleVerreNotes (texte blanc) ; racine : recherche en bas, folder.badge.plus + Modifier en haut, chevron iCloud jaune ; liste : retour cercle sans texte, … cercle, composer cercle blanc, sous-titre N notes ; édition : barre capsule 4 icônes blanches + composer, retour/Partager/… cercles blancs. Jaune conservé sur icônes dossier, chevrons de section, coche de sélection, Récupérer. PAS de build (attend le lot de retours 278, D86).",
    "methode_swisstransfer": "CE QUI MARCHE (sandbox) : 1) GET https://www.swisstransfer.com/api/links/{linkUUID} → JSON (containerUUID, files[].UUID, downloadHost) ; 2) le site ouvre https://dl-XXXX.swisstransfer.com/api/download/{linkUUID}/{fileUUID} SANS jeton (host variable, lisible via window.open intercepté dans le navigateur) ; curl direct = 200, 85 Mo en 4 s. CE QUI NE MARCHE PAS : /api/download/{containerUUID}/{fileUUID}?token=… (404) ; download_url GitHub tokenisé (404). Le 403 de ce midi venait du mauvais identifiant, pas d une protection anti-robot."
+  },
+  "retours_278_2026_09_02": {
+   "heure": "20h10",
+   "verdict": "« nickel sur les 16 points » — aucun écart. Validées : Fichiers, Localiser, Cartes (Wallet), Ma Banque. Correctifs globaux (zone système opaque, micros retirés) validés.",
+   "validees": "14/28"
   }
- },
- "bibliotheque_dispositifs_extraordinaires": {
-  "note": "Consignée le 2026-09-02 (thread cmtkcnzkx04sz07adfd3z58wz). Matière issue d une séance d idéation en quatre tours (moments signature → dimensions → dingueries → mindfucks). AUCUN élément n est canon : tout est [IDÉE] ou [RECO] de l assistant, avec coûts et tensions signalés. Rangée à côté de bibliotheques_de_design.dispositifs_de_retention_du_telephone : c est un rayon dans lequel on pioche à l ouverture d une histoire, jamais une liste à trancher globalement.",
-  "cadre_pose_par_joachim_2026_09_02": {
-   "principe": "La dinguerie n est PAS générale : elle est propre à chaque histoire. Il y aura des histoires normales, des histoires à plot twist, et des histoires où l on fait un truc incroyable. Deux sens de travail admis : l histoire cherche son dispositif (l un dans l autre), ou le dispositif cherche son histoire (l autre dans l un).",
-   "lecture_agent": "S emboîte dans D74 (« le joueur ne doit pas savoir dans quel genre d histoire il vient de tomber ») : la présence ou non d un dispositif extraordinaire est une dimension supplémentaire de cette ignorance. Résout structurellement le risque d usure signalé pour chaque dispositif (génial une fois, tic à la deuxième)."
-  },
-  "regles_proposees_RECO": [
-   "Une seule dinguerie par histoire, au maximum.",
-   "Jamais montrée dans le marketing, les bandes-annonces ou la fiche catalogue (prolonge D27 : rien de méta hors fiction).",
-   "TEST DE LA PHRASE : si le dispositif ne se raconte pas en une phrase qui fait frissonner quelqu un qui ne joue pas, ce n est pas une dinguerie, c est une feature.",
-   "Règle d or des dispositifs qui utilisent les actes du joueur : le jeu ne cite JAMAIS rien qui n a pas réellement eu lieu (extension de D13 fair-play au comportement du joueur).",
-   "Tout dispositif touchant à la vie privée du joueur (caméra, contacts, photos, capteurs) : consentement réel et honnête, traitement 100 % local, effacement en fin d histoire, dit clairement (D24 à la lettre)."
-  ],
-  "moteur_a_mindfuck_identifie": "Tout ce que le joueur tape, photographie ou fait est stockable localement ; un téléphone est un objet où n importe quel texte peut réapparaître n importe où, avec n importe quelle date, attribué à n importe quel auteur. « Tes propres mots, ailleurs dans le téléphone » est le levier commun aux dispositifs 1, 10, 11, 12.",
-  "dispositifs": [
-   {
-    "id": "X01",
-    "nom": "Il sait ce que tu as regardé (le téléphone qui t observe)",
-    "famille": "moment signature",
-    "phrase": "Tu t attardes sur les photos de sa sœur. Trente secondes plus tard : « Y a rien pour toi dans mes photos. » Le propriétaire voit en direct ce que tu fouilles.",
-    "description": "Le propriétaire (vivant, téléphone synchronisé) réagit à la trace réelle d exploration du joueur. Deux régimes cumulables : live (3-4 réactions rares à des actions précises) et rétrospectif (confrontation citant le parcours réel : ordre, durées, ce qui a été ignoré). La confrontation peut porter un checkpoint diégétique D14.",
-    "declencheur": "Histoire avec propriétaire vivant et menaçant/ambigu. Renverse le voyeurisme assumé (D24) de contexte en mécanique.",
-    "couts": "Faible. Instrumentation locale de l exploration (extension du moteur événementiel D10). Écriture conditionnelle sur dimensions finies (apps ouvertes, fils lus, durées, réponses envoyées).",
-    "tensions_canon": "Aucune frontale. Compatible D18 (local) et D24 (aucune collecte).",
-    "risques": "Usure si généralisé. Sentiment de piège : ne citer que ce qui a eu lieu.",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   },
-   {
-    "id": "X02",
-    "nom": "Porosité (la fiction emprunte le corps du vrai téléphone)",
-    "famille": "famille de moments signature",
-    "phrase": "Face ID échoue sur ton visage : ce n est pas ton téléphone. Chloé exige une photo de toi : ta vraie photo entre dans le fil. Léa t écrit sur ton vrai écran de verrouillage à 23h12.",
-    "description": "Moments : faux Face ID avec vraie caméra frontale qui échoue ; photo réelle du joueur insérée dans la fiction (et éventuellement renvoyée par l antagoniste) ; notifications locales app fermée ; accéléromètre (« pose-le face contre la table ») ; batterie du faux téléphone = vraie batterie.",
-    "declencheur": "Tout scénario ; chaque moment se décide indépendamment. Irréalisable sur PC : avantage structurel mobile.",
-    "couts": "Moyen, par moment. Caméra, notifications locales, capteurs : local et hors ligne. Permissions demandées dans la fiction. Parité iOS/Android à vérifier. Fallback D12 obligatoire si permission refusée.",
-    "tensions_canon": "D10 : les notifications sont mise en scène événementielle, jamais verrou ni timer. D24 : la photo ne quitte jamais l appareil, effaçable.",
-    "risques": "Malaise (photo chez l antagoniste) ; usure (Face ID une fois par histoire) ; review stores (justification propre).",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   },
-   {
-    "id": "X03",
-    "nom": "Passe le téléphone (histoire transmise de main en main)",
-    "famille": "dimension sociale",
-    "phrase": "Tu termines. L histoire dit : « Ce téléphone doit maintenant aller à quelqu un d autre. » Ton ami le reçoit avec tes traces — et enquête sur ce que TU as fait.",
-    "description": "Export hors ligne (partage de fichier) de l état final ; l acte 2 chez le receveur contient les épingles, messages envoyés, mensonges, vocal laissé par le joueur 1, qui devient personnage. Format streamer-à-streamer naturel.",
-    "declencheur": "Histoire écrite dès l origine en deux mains. Ne pas greffer sur Coches bleues.",
-    "couts": "Moyen-élevé. Sérialisation d état exportable (proche de la sauvegarde) ; écriture d un acte 2 absorbant une variance finie (D31). Fallback sans ami : acte 2 différé soi-même ou téléphone déjà passé préenregistré.",
-    "tensions_canon": "Indépendance des histoires (une histoire en deux mains, pas deux histoires — à confirmer) ; D20 (format de fichier à figer comme les sauvegardes).",
-    "risques": "Acte 2 moins riche que l acte 1 : concevoir l acte 1 pour des divergences peu nombreuses mais qui comptent.",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   },
-   {
-    "id": "X04",
-    "nom": "Une vie entière (première personne numérique complète)",
-    "famille": "dimension fondatrice",
-    "phrase": "Le personnage a cinq ans de vie dans son téléphone : 40 000 messages, 6 000 photos, son historique web. Tout est cohérent. Tout est là.",
-    "description": "Téléphone à échelle réelle ; enquêter = criminalistique numérique avec les outils du téléphone (recherche, filtres galerie, recoupement Safari/calendrier). Attachement au personnage d un autre ordre. Fondation qui rend X05 douloureux et X06 vertigineux.",
-    "declencheur": "Histoire phare. Possible uniquement grâce au modèle de production IA-majoritaire + curation : avantage structurel non copiable par recrutement de scénaristes.",
-    "couts": "Élevé, en outils : générateur piloté par graphe de faits (grammaire de l enquête), vérification automatique de contradictions, stratégie photos graduelle (beaucoup sans visage : objets, lieux, écrans, captures), taille sur disque.",
-    "tensions_canon": "FRONTALE avec le triple test d utilité et « réalisme ≠ tout reproduire ». Relecture proposée : une vie entière EST de la personnalité et de l immersion ; rien n est aléatoire, tout est écrit depuis une biographie canonique.",
-    "risques": "Cohérence à l échelle ; photos cohérentes sur cinq ans ; fair-play D13 : l aiguille ne dépend jamais d une lecture exhaustive (chaîne D42 en surface, profondeur en récompense / mystères secondaires).",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   },
-   {
-    "id": "X05",
-    "nom": "Rendre le téléphone (la fin qui coûte vraiment)",
-    "famille": "dimension morale",
-    "phrase": "Quand tu décides de rendre le téléphone, il disparaît de ton appareil. Pour toujours. Tu ne pourras plus jamais relire ces messages.",
-    "description": "Restitution irréversible : l histoire s efface, la carte catalogue indique sobrement « Téléphone rendu à Anna, le … ». Le joueur garde ce qu une vraie personne garderait : ses captures d écran (D17 marquage additif prend un sens). Branche « garder le téléphone » : l histoire continue, plus sombre, culpabilité comme matière. Filiation : Nier Automata fin E, mais diégétiquement évident.",
-    "declencheur": "Attribut par histoire, quelques histoires phares. Avertissement porté par la fiction (« si tu me le rends, tu n en auras plus besoin, hein ? »), jamais méta.",
-    "couts": "Quasi nul techniquement.",
-    "tensions_canon": "D27 (« issues découvertes 1 sur N » suppose la rejouabilité) ; modèle à l unité. Proposition : « retrouver ce téléphone » possible après délai réel long (30 jours), indiqué froidement par le catalogue.",
-    "risques": "Colère du joueur non averti. Rendu possible par la règle P12/D19 (on ne vend jamais la suite) qu aucun éditeur classique n a.",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   },
-   {
-    "id": "X06",
-    "nom": "L autre téléphone est tenu par quelqu un de réel",
-    "famille": "dimension sociale — préférée de Joachim au tour 2 (« encore à améliorer »)",
-    "phrase": "Deux joueurs. Deux téléphones liés. Ce que tu envoies depuis le téléphone de Sarah arrive sur le téléphone de Marc — que tient un autre humain. Vous ne savez ni l un ni l autre ce que l autre veut.",
-    "description": "Un des personnages est un humain avec ses propres informations et son propre objectif (parfois opposé), qui ment peut-être. Vertige : « c est le scénario ou c est lui ? ». Dispositifs : victime/suspect, deux amants, négociateur/ravisseur, deux inconnus sur la même personne. Débrief post-fin = expérience en soi. Fusion avec X08 : personne ne sait qui est humain.",
-    "declencheur": "Horizon saison 2, pas day-one. Entre amis d abord (code d invitation, jamais d inconnus) : élimine l essentiel du problème de modération.",
-    "couts": "Le plus élevé : synchronisation, désynchronisation de rythme entre joueurs, infrastructure (le coût variable nul D18 tombe pour ces histoires), deux scénarios imbriqués (variance finie D31 pour les actes à conséquence).",
-    "tensions_canon": "D18 hors ligne strict : exception assumée, déclarée par histoire comme la posture. D74 prévoit déjà « plusieurs téléphones » comme capacité future. Plafond sans 18+ : tenable entre amis.",
-    "risques": "Modération si ouvert aux inconnus ; coût d infrastructure.",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   },
-   {
-    "id": "X07",
-    "nom": "Trouvé (le jeu joué par quelqu un qui ne sait pas qu il joue)",
-    "famille": "format social — RECO n°1 de l assistant au tour 3",
-    "phrase": "Tu poses ton téléphone chez des amis. Quelqu un le prend. Il croit avoir trouvé le téléphone d un inconnu. Le téléphone sonne, une femme en pleurs lui demande de l aide. Il vit l histoire pour de vrai — jusqu à ce que le téléphone lui révèle que c était un jeu.",
-    "description": "Mode dédié : scénario court (10-15 min), verrouillage guidé (Accès guidé iOS / épinglage Android), notification d appât sur l écran de verrouillage, escalade rapide, vraie voix au téléphone, choix, puis révélation écrite comme la plus belle scène (« Tout était une fiction. Sauf toi. »). L hôte reçoit le replay (X01 trouve ici son foyer). Chaque partie recrute un joueur qui n a pas téléchargé l app ; format vidéo entier pour les créateurs.",
-    "declencheur": "Écriture dédiée pour un joueur qui n a aucune raison d être là. Seul un faux téléphone pixel-perfect le permet : unique à Lost Phone par construction.",
-    "couts": "Le moins cher de la bibliothèque : le jeu existant + un mode de lancement + une écriture dédiée.",
-    "tensions_canon": "Le menu principal hors fiction devient invisible pour le joueur n°2 (voulu, ne touche pas P11).",
-    "risques": "ÉTHIQUE NON NÉGOCIABLE : scénarios courts, jamais de mort ni d horreur, révélation toujours et belle, geste secret de l hôte pour tout arrêter, aucune donnée du joueur n°2 hors appareil, charte « Trouvé » (ce qu on ne fait pas aux gens). La révélation doit laisser le joueur n°2 heureux d avoir été piégé, sinon le format est mort.",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   },
-   {
-    "id": "X08",
-    "nom": "Elle te répond vraiment (personnages conversables hors ligne)",
-    "famille": "dinguerie de fond",
-    "phrase": "Tu écris ce que tu veux à la sœur, au mec, au collègue. Ils te répondent comme des vraies personnes. Hors ligne. Et ils ne te laisseront jamais découvrir ce qu ils ne veulent pas que tu saches.",
-    "description": "Le SMS n a aucun tell (délai, fautes, messages en deux morceaux = plus réaliste qu une réponse parfaite) : le téléphone est le seul médium où un personnage IA est indiscernable d un humain. Interrogatoire libre : mentir, bluffer, revenir à la charge ; le personnage se souvient, se ferme, se trahit, se lasse. Couplé à X04 : cinq ans de mémoire.",
-    "declencheur": "Prototype dès que la tranche verticale a mesuré l interprétation locale (même muscle, en plus gros). Redéfinit le genre à long terme.",
-    "couts": "Élevé en R&D, nul à l usage : modèles embarqués des deux OS (Apple Foundation Models iOS 26 : hors ligne, gratuit, génération structurée, appel d outils ; Gemini Nano côté Android). Fiche de faits verrouillée par personnage (sait / cache / conditions de lâcher).",
-    "tensions_canon": "FRONTALE avec D18 « IA interprète, jamais auteur ». Amendement proposé : « l IA est auteure de la SURFACE, jamais du FOND » — elle ne peut affirmer que des faits de la fiche, sélectionnés par génération structurée, et ne fait que les formuler dans la voix du personnage. Fair-play D13 préservé par construction.",
-    "risques": "Qualité du français des petits modèles (à mesurer) ; dérive de ton ; joueur qui « joue avec l IA » au lieu d enquêter (réponse : le personnage réagit comme une vraie personne et coupe).",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   },
-   {
-    "id": "X09",
-    "nom": "Ce téléphone te connaît (l histoire qui est sur toi)",
-    "famille": "dinguerie horreur psychologique",
-    "phrase": "Tu fouilles le téléphone d une inconnue. Dans ses notes, il y a ton prénom. Dans sa galerie, une photo de ton fond d écran. Dans son calendrier, ton rendez-vous de demain.",
-    "description": "Doki Doki Literature Club du mobile : avec permission et en local, l histoire utilise prénom, prénoms des proches, ville, fond d écran, musique, anniversaire, calendrier du joueur. « Comment elle sait ça ? » remplace « qui est cette personne ? ». Littéralise « téléphone destiné au joueur » (D74).",
-    "declencheur": "UNE histoire, clairement étiquetée horreur psychologique, opt-in, jamais dans une histoire gratuite d entrée.",
-    "couts": "Moyen. Dépend de la richesse locale disponible hors ligne (prénoms, calendrier, métadonnées photos : oui ; adresses via géocodage : non sans réseau).",
-    "tensions_canon": "D24 tenu à la lettre (rien ne quitte l appareil, effacement en fin, dit clairement) mais consentement à rendre réel et honnête : les stores interdisent les demandes de permission trompeuses.",
-    "risques": "MAJEUR : consentement et confiance. Le frisson vient justement du fait que le joueur sait qu il accepte quelque chose.",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   },
-   {
-    "id": "X10",
-    "nom": "MINDFUCK — C est toi, l Inconnu",
-    "famille": "mindfuck — RECO n°1 de l assistant au tour 4 (faisable dans le socle actuel)",
-    "phrase": "Tu voulais aider Léa, harcelée par un numéro inconnu. À la fin, tu lis le fil de Léa avec « l Inconnu » : ce sont tes propres messages, mot pour mot. Toute l histoire, tu étais le harceleur.",
-    "description": "Le téléphone tenu est un CLONE remis au joueur par l antagoniste (téléphone destiné au joueur) ; tout ce qu il envoie part vers le vrai téléphone de Léa depuis un numéro inconnu. « Je sais où vous êtes » écrit pour aider est lu comme une menace. L antagoniste n a pas combattu le joueur : il l a utilisé. Le joueur juge sa propre écriture : fin plus ou moins cruelle selon la délicatesse de ses messages. « Would you kindly » de Lost Phone.",
-    "declencheur": "Histoire écrite à partir du dispositif. Zéro surnaturel, zéro permission système, zéro réseau.",
-    "couts": "Faible : stockage des textes libres + réinsertion datée et attribuée dans un autre fil.",
-    "tensions_canon": "Aucune frontale. Fair-play D13 : indices déductibles (la sœur n a jamais dit avoir REÇU les messages ; détail de synchronisation trahissant le clone ; trace de la remise).",
-    "risques": "Le joueur qui a écrit avec délicatesse doit avoir une fin qui le reconnaît, sinon injustice perçue.",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   },
-   {
-    "id": "X11",
-    "nom": "MINDFUCK — Il n y a pas de Léa",
-    "famille": "mindfuck — le plus beau et le plus dangereux",
-    "phrase": "Tu écrivais à la sœur « je ne vous connais pas, j ai trouvé le téléphone de votre sœur ». Le téléphone est le tien. Tu es Léa.",
-    "description": "Le mot dans les notes (« si vous trouvez ce téléphone, aidez-moi ») a été écrit par le personnage pour la personne qu il serait le lendemain (dissociation). La sœur a compris dès le premier message et parle comme à quelqu un qu on a peur de perdre ; les contacts connaissent le joueur ; le code « déduit » a été tapé sans hésiter. Chaque message du joueur devient symptôme, à relire avec le sens retourné. Utilise la convention de série (joueur = inconnu, D08) comme arme (D74 « jouer avec les habitudes »).",
-    "declencheur": "Plus la série aura formé ses joueurs à la posture inconnu reconnu, plus l histoire frappe : pas une première histoire. Réaliste, sans surnaturel.",
-    "couts": "Faible techniquement ; élevé en écriture et en responsabilité.",
-    "tensions_canon": "D24 sujets sensibles (dissociation, santé mentale) : traitement responsable, écrit avec des gens qui savent. C est aussi ce qui en ferait une histoire dont les médias généralistes parlent.",
-    "risques": "Contrat de possession P13 : le « comment le téléphone est arrivé » est un mensonge du personnage à lui-même, jamais du jeu (à formaliser en jurisprudence).",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   },
-   {
-    "id": "X12",
-    "nom": "MINDFUCK — Le dossier (le dernier téléphone est sur toi)",
-    "famille": "mindfuck de série — non copiable",
-    "phrase": "Téléphone n°7 : le dossier d un enquêteur qui suit quelqu un depuis des mois. La personne, c est toi. Tout ce qu il sait, tu l as réellement fait dans les six histoires précédentes.",
-    "description": "Le dossier est constitué uniquement d actes réels du joueur à travers l anthologie : durées sur les photos, mensonge cité mot pour mot, photo prise (X02) en fond d écran, manière d écrire analysée, prénom donné, indices ratés notés comme faiblesses. Six téléphones, tu fouillais quelqu un ; quelqu un fouillait le fouilleur. Seule idée où le jeu peut dire au joueur quelque chose de vrai sur lui qu il ne savait pas.",
-    "declencheur": "Année 2, avec six histoires de matière. Possible uniquement sur une anthologie.",
-    "couts": "Instrumentation transversale dès maintenant (journal local par histoire) ; écriture conditionnelle très large.",
-    "tensions_canon": "Indépendance des histoires (une histoire qui lit les journaux des autres — capacité de socle à déclarer). D24 : tout local.",
-    "risques": "Règle d or : le dossier ne cite jamais rien qui n a pas eu lieu.",
-    "statut": "IDÉE — non promue. Seul Joachim promeut en décision (contrat de collaboration)."
-   }
-  ],
-  "annexe_seconde_ligne": [
-   {
-    "nom": "Le téléphone dans le téléphone",
-    "phrase": "Sur le téléphone que tu fouilles, il y a Lost Phone. Elle jouait à une histoire : un téléphone trouvé. C est le tien.",
-    "note": "Récursion pure (avec permission, en local) ; moins profond, probablement le clip le plus partagé."
-   },
-   {
-    "nom": "L appel où tu parles vraiment",
-    "phrase": "Un appel entrant, tu décroches, tu réponds à voix haute.",
-    "note": "Reconnaissance vocale sur l appareil + interprétation locale D18 + répliques pré-enregistrées. Suspendu à la preuve de l interprétation locale."
-   },
-   {
-    "nom": "Le téléphone qui se ferme",
-    "phrase": "Le propriétaire reprend le contrôle à distance : apps qui disparaissent, photos supprimées sous tes yeux, puis « Cet appareil a été effacé ».",
-    "note": "Renverse « contenu immuable » (D12) en restant diégétique. Ressort d une seule histoire."
-   },
-   {
-    "nom": "Le téléphone existe hors du jeu",
-    "phrase": "Le personnage a un vrai compte Instagram, l entreprise un vrai site, la messagerie vocale un vrai numéro.",
-    "note": "ADN des ARG. Jamais nécessaire (fair-play interne D13), toujours trouvable. Interdit absolu : fausse alerte de disparition réelle."
-   },
-   {
-    "nom": "L édition physique",
-    "phrase": "Un vrai téléphone reconditionné dans une enveloppe kraft, sans logo, avec l histoire dedans et aucune icône de jeu. Tu reçois un téléphone perdu par la poste.",
-    "note": "Série limitée. Forme la plus pure de l expérience, pas un coup marketing."
-   }
-  ],
-  "briques_de_socle_a_prevoir_RECO": {
-   "principe": "Le socle doit rendre les dispositifs possibles sans les connaître (P03 : structure tôt, généralisation tardive). Ces briques sont génériques, peu chères maintenant, irrattrapables plus tard. Aucune n oblige une histoire à s en servir.",
-   "briques": [
-    {
-     "id": "B1",
-     "nom": "Journal local structuré des actes du joueur",
-     "contenu": "Tout ce que le joueur écrit (textes libres), choisit, ouvre (app, fil, média), avec durées et horodatage ; photos prises dans la fiction. Local, structuré, par histoire, lisible par une autre histoire si déclaré. Vie privée D24 : jamais transmis, effaçable.",
-     "alimente": "X01, X07 (replay), X10, X11, X12",
-     "priorite": "LA PLUS HAUTE — matière première de tous les mindfucks, coût nul aujourd hui."
-    },
-    {
-     "id": "B2",
-     "nom": "Réinsertion de texte joueur daté et attribué",
-     "contenu": "Capacité à faire réapparaître un texte libre du joueur n importe où dans le téléphone, avec n importe quelle date et n importe quel auteur (fil de messages, note, mail, capture).",
-     "alimente": "X10, X11, X12",
-     "priorite": "Haute (dépend de B1)."
-    },
-    {
-     "id": "B3",
-     "nom": "Accès capteurs et caméra sous permission diégétique",
-     "contenu": "Caméra frontale/arrière, accéléromètre, niveau de batterie réel ; demande de permission formulée par le faux téléphone ; fallback D12 obligatoire.",
-     "alimente": "X02, X07, X09, X12",
-     "priorite": "Moyenne."
-    },
-    {
-     "id": "B4",
-     "nom": "Notifications locales app fermée",
-     "contenu": "Planification hors ligne de notifications par des personnages, pilotée par le moteur événementiel D10 (mise en scène, jamais verrou).",
-     "alimente": "X02, X05 (« retrouver ce téléphone »), X07",
-     "priorite": "Moyenne."
-    },
-    {
-     "id": "B5",
-     "nom": "État d histoire exportable et importable",
-     "contenu": "Sérialisation figée (D20) de l état final, partageable par fichier sans serveur.",
-     "alimente": "X03, X06 (base)",
-     "priorite": "Basse tant qu aucune histoire ne l exige."
-    },
-    {
-     "id": "B6",
-     "nom": "Mode de lancement verrouillé (kiosque)",
-     "contenu": "Démarrage direct sur l écran de verrouillage fictif, sans menu, avec Accès guidé iOS / épinglage Android et geste secret de sortie pour l hôte.",
-     "alimente": "X07",
-     "priorite": "Basse à moyenne selon l ordre des histoires."
-    },
-    {
-     "id": "B7",
-     "nom": "Attribut d histoire « dispositif extraordinaire »",
-     "contenu": "Champ déclaratif par histoire (aucun / X..), à côté de la posture, pour que le socle sache quelles capacités activer. Jamais exposé au joueur (D27).",
-     "alimente": "tous",
-     "priorite": "Haute, trivial."
-    }
-   ]
-  },
-  "premiere_histoire_a_dispositif_RECO": "« Coches bleues » reste une histoire normale : elle mesure (tranche verticale). La première histoire CONÇUE À PARTIR d un dispositif serait la vraie expérience suivante ; X10 « C est toi, l Inconnu » est celui qui coûte le moins au socle actuel (B1 + B2 seulement). X07 « Trouvé » est le pari le plus fort en diffusion pour un coût technique faible mais exige une charte éthique avant toute écriture."
  }
 }

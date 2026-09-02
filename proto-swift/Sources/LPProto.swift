@@ -212,7 +212,7 @@ struct EcranCapture: View {
     private func ecransCalendrier() -> some View {
         switch cle {
         case "calendrier": CalendrierVue()
-        case "calendrier.annee": NavigationStack { AnneeVue(vueAnnee: .constant(true)) }
+        case "calendrier.annee": NavigationStack { AnneeVue { _ in } }
         case "calendrier.jour": JourVue(annee: 2026, mois: 8, jour: 17)
         case "calendrier.nouveau": NouvelEvenementVue()
         case "calendrier.recherche": RechercheCalendrierVue()

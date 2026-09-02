@@ -1,6 +1,9 @@
 // Horloge — construite contre la vidéo de référence du 18/08 (40 écrans, iOS 26)
 // D59 : contenu = données remplaçables ; D51 : utilisable de A à Z (alarmes créables/éditables,
 // chrono et minuteurs réellement fonctionnels).
+// v2 session 3 (02/09, retours Joachim) : ajout de ville RÉEL (la ville choisie s'ajoute avec sa vraie heure),
+// Modifier RÉEL dans Horloges (supprimer/réordonner), Alarmes (supprimer) et Minuteurs (supprimer les récents),
+// bouton « + » des Minuteurs retiré (inutile dans le jeu), barre home respectée.
 import SwiftUI
 import AVFoundation
 
@@ -14,6 +17,13 @@ struct Alarme: Identifiable {
     var hh: String { String(format: "%d:%02d", heure / 60, heure % 60) }
 }
 
+struct VilleHorloge: Identifiable, Hashable {
+    var id: String { nom }
+    let nom: String        // « Marseille, France »
+    let decalageUTC: Double // heures par rapport à UTC (heure d'été prise en compte pour le présent du jeu : août 2026)
+    var court: String { nom.components(separatedBy: ",").first ?? nom }
+}
+
 final class MagasinHorloge: ObservableObject {
     static let partage = MagasinHorloge()
     @Published var alarmes: [Alarme] = [
@@ -24,7 +34,26 @@ final class MagasinHorloge: ObservableObject {
         Alarme(heure: 21 * 60 + 30, libelle: "Appel Marc 🌙", recurrence: "Chaque jour", active: true),
     ]
     @Published var minuteursRecents: [Int] = [60, 600, 1200, 660] // secondes
+    // v2 : horloges du monde persistantes (Paris = référence locale)
+    @Published var villes: [VilleHorloge] = [VilleHorloge(nom: "Paris, France", decalageUTC: 2)]
+    static let parisUTC: Double = 2
 }
+
+// Catalogue des villes proposées à l'ajout (décalage UTC en vigueur en été 2026)
+let catalogueVilles: [VilleHorloge] = [
+    ("Abidjan, Côte d'Ivoire", 0), ("Abou Dabi, É.A.U.", 4), ("Accra, Ghana", 0), ("Adélaïde, Australie", 9.5),
+    ("Alger, Algérie", 1), ("Amsterdam, Pays-Bas", 2), ("Anchorage, É.-U.", -8), ("Athènes, Grèce", 3),
+    ("Bangkok, Thaïlande", 7), ("Barcelone, Espagne", 2), ("Berlin, Allemagne", 2), ("Bogota, Colombie", -5),
+    ("Brasilia, Brésil", -3), ("Bruxelles, Belgique", 2), ("Casablanca, Maroc", 1), ("Chicago, É.-U.", -5),
+    ("Dakar, Sénégal", 0), ("Denver, É.-U.", -6), ("Djakarta, Indonésie", 7), ("Dubaï, É.A.U.", 4),
+    ("Dublin, Irlande", 1), ("Genève, Suisse", 2), ("Hanoï, Vietnam", 7), ("Helsinki, Finlande", 3),
+    ("Hong Kong, Chine", 8), ("Honolulu, É.-U.", -10), ("Istanbul, Turquie", 3), ("Lagos, Nigéria", 1),
+    ("Le Caire, Égypte", 3), ("Lima, Pérou", -5), ("Lisbonne, Portugal", 1), ("Londres, Royaume-Uni", 1),
+    ("Los Angeles, É.-U.", -7), ("Madrid, Espagne", 2), ("Marseille, France", 2), ("Melbourne, Australie", 10),
+    ("Mexico, Mexique", -6), ("Montréal, Canada", -4), ("Moscou, Russie", 3), ("New York, É.-U.", -4),
+    ("Oslo, Norvège", 2), ("Paris, France", 2), ("Pékin, Chine", 8), ("Rome, Italie", 2), ("Séoul, Corée du Sud", 9),
+    ("Singapour", 8), ("Stockholm, Suède", 2), ("Sydney, Australie", 10), ("Tokyo, Japon", 9), ("Toronto, Canada", -4),
+].map { VilleHorloge(nom: $0.0, decalageUTC: $0.1) }
 
 // ============================================================ APP
 struct HorlogeVue: View {
@@ -48,66 +77,98 @@ struct HorlogeVue: View {
 
 // ============================================================ HORLOGES (monde)
 struct HorlogesMondeVue: View {
+    @ObservedObject private var magasin = MagasinHorloge.partage
     @State private var edition = false
     @State private var ajout = false
+
+    private func libelleDecalage(_ v: VilleHorloge, _ maintenant: Date) -> String {
+        let delta = v.decalageUTC - MagasinHorloge.parisUTC
+        let heureLocaleParis = Calendar.current.component(.hour, from: maintenant) + Calendar.current.component(.minute, from: maintenant) / 60.0
+        let heureVille = heureLocaleParis + delta
+        let jour = heureVille < 0 ? "Hier" : (heureVille >= 24 ? "Demain" : "Aujourd'hui")
+        let signe = delta >= 0 ? "+" : "−"
+        let abs = Swift.abs(delta)
+        let h = abs == abs.rounded() ? "\(Int(abs))" : String(format: "%.1f", abs).replacingOccurrences(of: ".", with: ",")
+        return "\(jour), \(signe)\(h) h"
+    }
+    private func heureVille(_ v: VilleHorloge, _ maintenant: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        f.timeZone = TimeZone(secondsFromGMT: Int(v.decalageUTC * 3600))
+        return f.string(from: maintenant)
+    }
+
     var body: some View {
         NavigationStack {
             List {
-                HStack(alignment: .center) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Aujourd'hui, +0 h").font(.system(size: 14)).foregroundStyle(.secondary)
-                        Text("Paris").font(.system(size: 25)).foregroundStyle(.white)
-                    }
-                    Spacer()
+                ForEach(magasin.villes) { v in
                     TimelineView(.periodic(from: .now, by: 1)) { ctx in
-                        Text(ctx.date, format: .dateTime.hour().minute())
-                            .font(.system(size: 52, weight: .light)).foregroundStyle(.white)
+                        HStack(alignment: .center) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(libelleDecalage(v, ctx.date)).font(.system(size: 14)).foregroundStyle(.secondary)
+                                Text(v.court).font(.system(size: 25)).foregroundStyle(.white)
+                            }
+                            Spacer()
+                            if !edition {
+                                Text(heureVille(v, ctx.date))
+                                    .font(.system(size: 52, weight: .light)).monospacedDigit().foregroundStyle(.white)
+                            }
+                        }
                     }
+                    .padding(.vertical, 4)
+                    .listRowBackground(Color.black)
+                    .listRowSeparatorTint(Color(hex: 0x2C2C2E))
                 }
-                .padding(.vertical, 4)
-                .listRowBackground(Color.black)
-                .listRowSeparatorTint(Color(hex: 0x2C2C2E))
+                // v2 : Modifier RÉEL — supprimer par balayage ou en mode édition, réordonner
+                .onDelete { idx in magasin.villes.remove(atOffsets: idx) }
+                .onMove { from, to in magasin.villes.move(fromOffsets: from, toOffset: to) }
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .background(Color.black)
+            .environment(\.editMode, .constant(edition ? .active : .inactive))
             .navigationTitle("Horloges")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(edition ? "OK" : "Modifier") { edition.toggle() }.foregroundStyle(.orange)
+                    Button(edition ? "OK" : "Modifier") { withAnimation { edition.toggle() } }
+                        .font(.system(size: 17, weight: edition ? .semibold : .regular)).foregroundStyle(.orange)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { ajout = true } label: { Image(systemName: "plus").foregroundStyle(.orange) }
                 }
             }
-            .sheet(isPresented: $ajout) { VilleRechercheVue() }
+            .sheet(isPresented: $ajout) {
+                VilleRechercheVue { v in
+                    if !magasin.villes.contains(v) { withAnimation { magasin.villes.append(v) } }
+                }
+            }
         }
     }
 }
 
 struct VilleRechercheVue: View {
+    let choisir: (VilleHorloge) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var recherche = ""
-    private let villes = ["Abidjan, Côte d'Ivoire", "Abou Dabi, É.A.U.", "Accra, Ghana", "Adélaïde, Australie",
-                          "Alger, Algérie", "Amsterdam, Pays-Bas", "Anchorage, É.-U.", "Athènes, Grèce",
-                          "Bangkok, Thaïlande", "Barcelone, Espagne", "Berlin, Allemagne", "Bogota, Colombie",
-                          "Brasilia, Brésil", "Bruxelles, Belgique", "Casablanca, Maroc", "Chicago, É.-U.",
-                          "Dakar, Sénégal", "Denver, É.-U.", "Djakarta, Indonésie", "Dubaï, É.A.U.",
-                          "Dublin, Irlande", "Genève, Suisse", "Hanoï, Vietnam", "Helsinki, Finlande",
-                          "Hong Kong, Chine", "Honolulu, É.-U.", "Istanbul, Turquie", "Lagos, Nigéria",
-                          "Le Caire, Égypte", "Lima, Pérou", "Lisbonne, Portugal", "Londres, Royaume-Uni",
-                          "Los Angeles, É.-U.", "Madrid, Espagne", "Marseille, France", "Melbourne, Australie",
-                          "Mexico, Mexique", "Montréal, Canada", "Moscou, Russie", "New York, É.-U.",
-                          "Oslo, Norvège", "Paris, France", "Pékin, Chine", "Rome, Italie", "Séoul, Corée du Sud",
-                          "Singapour", "Stockholm, Suède", "Sydney, Australie", "Tokyo, Japon", "Toronto, Canada"]
-    private var resultats: [String] {
-        recherche.isEmpty ? villes : villes.filter { $0.localizedCaseInsensitiveContains(recherche) }
+    private var resultats: [VilleHorloge] {
+        recherche.isEmpty ? catalogueVilles : catalogueVilles.filter { $0.nom.localizedCaseInsensitiveContains(recherche) }
     }
     var body: some View {
         NavigationStack {
-            List(resultats, id: \.self) { v in
-                Text(v).foregroundStyle(.white)
-                    .listRowBackground(Color(hex: 0x1C1C1E))
+            List(resultats) { v in
+                // v2 : la ville est vraiment AJOUTÉE au tap (avant : rangée inerte)
+                Button {
+                    Haptique.leger()
+                    choisir(v)
+                    dismiss()
+                } label: {
+                    HStack {
+                        Text(v.nom).foregroundStyle(.white)
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                }
+                .listRowBackground(Color(hex: 0x1C1C1E))
             }
             .scrollContentBackground(.hidden)
             .background(Color(hex: 0x1C1C1E))
@@ -233,6 +294,8 @@ struct AlarmesVue: View {
                             .onTapGesture { sommeilVisible = true }
                     }
                     .listRowBackground(Color.black)
+                    .deleteDisabled(true)
+                    .moveDisabled(true)
                 } header: {
                     HStack(spacing: 6) {
                         Image(systemName: "bed.double.fill")
@@ -254,7 +317,12 @@ struct AlarmesVue: View {
                                     .foregroundStyle(a.active ? .white.opacity(0.8) : .secondary)
                             }
                             Spacer()
-                            Toggle("", isOn: $a.active).labelsHidden().tint(Color(hex: 0x32D74B))
+                            if edition {
+                                // v2 : en mode Modifier, le chevron ouvre l'édition (comme iOS)
+                                Image(systemName: "chevron.right").font(.system(size: 14, weight: .semibold)).foregroundStyle(.secondary)
+                            } else {
+                                Toggle("", isOn: $a.active).labelsHidden().tint(Color(hex: 0x32D74B))
+                            }
                         }
                         .contentShape(Rectangle())
                         .onTapGesture { alarmeEditee = a }
@@ -266,6 +334,8 @@ struct AlarmesVue: View {
                             } label: { Label("Supprimer", systemImage: "trash.fill") }
                         }
                     }
+                    // v2 : Modifier RÉEL — pastilles rouges de suppression
+                    .onDelete { idx in magasin.alarmes.remove(atOffsets: idx) }
                 } header: {
                     Text("Autres").font(.system(size: 20, weight: .bold)).foregroundStyle(.white).textCase(nil)
                 }
@@ -273,10 +343,12 @@ struct AlarmesVue: View {
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .background(Color.black)
+            .environment(\.editMode, .constant(edition ? .active : .inactive))
             .navigationTitle("Alarmes")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(edition ? "OK" : "Modifier") { edition.toggle() }.foregroundStyle(.orange)
+                    Button(edition ? "OK" : "Modifier") { withAnimation { edition.toggle() } }
+                        .font(.system(size: 17, weight: edition ? .semibold : .regular)).foregroundStyle(.orange)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { nouvelle = true } label: { Image(systemName: "plus").foregroundStyle(.orange) }
@@ -492,7 +564,7 @@ struct MinuteursVue: View {
     @State private var h = 0
     @State private var mn = 5
     @State private var s = 0
-    @State private var ajoutVisible = false
+    @State private var edition = false        // v2 : Modifier RÉEL sur les récents
     @State private var fin: Date? = nil
     @State private var duree: TimeInterval = 0
     @State private var enPause = false
@@ -622,99 +694,59 @@ struct MinuteursVue: View {
                         .padding(.horizontal, 16)
                     }
 
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("Récents").font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
-                            .padding(.horizontal, 16).padding(.bottom, 8)
-                        ForEach(magasin.minuteursRecents, id: \.self) { sec in
-                            let f = fmtRecent(sec)
-                            HStack {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(f.0).font(.system(size: 34, weight: .light)).foregroundStyle(.white)
-                                    Text(f.1).font(.system(size: 13)).foregroundStyle(.secondary)
+                    if !magasin.minuteursRecents.isEmpty {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("Récents").font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
+                                .padding(.horizontal, 16).padding(.bottom, 8)
+                            ForEach(magasin.minuteursRecents, id: \.self) { sec in
+                                let f = fmtRecent(sec)
+                                HStack {
+                                    if edition {
+                                        // v2 : Modifier RÉEL — pastille rouge = retirer le récent
+                                        Button {
+                                            withAnimation { magasin.minuteursRecents.removeAll { $0 == sec } }
+                                        } label: {
+                                            Image(systemName: "minus.circle.fill").font(.system(size: 22)).foregroundStyle(Color(hex: 0xFF453A))
+                                        }
+                                        .padding(.trailing, 6)
+                                    }
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(f.0).font(.system(size: 34, weight: .light)).foregroundStyle(.white)
+                                        Text(f.1).font(.system(size: 13)).foregroundStyle(.secondary)
+                                    }
+                                    Spacer()
+                                    if !edition {
+                                        Button { lancer(sec) } label: {
+                                            Image(systemName: "play.fill")
+                                                .font(.system(size: 17)).foregroundStyle(Color(hex: 0x30D158))
+                                                .frame(width: 44, height: 44)
+                                                .background(Color(hex: 0x0A2B12), in: Circle())
+                                        }
+                                    } else {
+                                        Image(systemName: "line.3.horizontal").font(.system(size: 17)).foregroundStyle(.secondary)
+                                    }
                                 }
-                                Spacer()
-                                Button { lancer(sec) } label: {
-                                    Image(systemName: "play.fill")
-                                        .font(.system(size: 17)).foregroundStyle(Color(hex: 0x30D158))
-                                        .frame(width: 44, height: 44)
-                                        .background(Color(hex: 0x0A2B12), in: Circle())
+                                .padding(.horizontal, 16).padding(.vertical, 8)
+                                if sec != magasin.minuteursRecents.last {
+                                    Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 16)
                                 }
-                            }
-                            .padding(.horizontal, 16).padding(.vertical, 8)
-                            if sec != magasin.minuteursRecents.last {
-                                Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 16)
                             }
                         }
+                        .padding(.top, 6)
                     }
-                    .padding(.top, 6)
+                    Spacer(minLength: 40)
                 }
             }
             .background(Color.black)
             .navigationTitle("Minuteurs")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Modifier") {}.foregroundStyle(.orange)
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { ajoutVisible = true } label: { Image(systemName: "plus").foregroundStyle(.orange) }
-                }
-            }
-            .sheet(isPresented: $ajoutVisible) {
-                HorlogeNouveauMinuteurVue { sec in lancer(sec); ajoutVisible = false }
-            }
-        }
-    }
-}
-
-struct HorlogeNouveauMinuteurVue: View {
-    let onValider: (Int) -> Void
-    @State private var heure = 0
-    @State private var minute = 5
-    @State private var seconde = 0
-    @State private var description = ""
-    @Environment(\.dismiss) private var dismiss
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 14) {
-                HStack(spacing: 0) {
-                    Picker("", selection: $heure) { ForEach(0..<24, id: \.self) { Text("\($0) h").tag($0) } }
-                        .pickerStyle(.wheel).frame(width: 100).clipped()
-                    Picker("", selection: $minute) { ForEach(0..<60, id: \.self) { Text("\($0) min").tag($0) } }
-                        .pickerStyle(.wheel).frame(width: 100).clipped()
-                    Picker("", selection: $seconde) { ForEach(0..<60, id: \.self) { Text("\($0) s").tag($0) } }
-                        .pickerStyle(.wheel).frame(width: 100).clipped()
-                }
-                .frame(height: 180)
-                VStack(spacing: 0) {
-                    HStack {
-                        Text("Nom").foregroundStyle(.white)
-                        Spacer()
-                        TextField("Minuteur", text: $description)
-                            .multilineTextAlignment(.trailing).foregroundStyle(.secondary)
-                    }
-                    .padding(.horizontal, 16).padding(.vertical, 12)
-                    .background(Color(hex: 0x1C1C1E))
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .padding(.horizontal, 16)
-                Spacer()
-            }
-            .background(Color.black)
-            .navigationTitle("Nouveau minuteur")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Annuler") { dismiss() }.foregroundStyle(.orange)
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Démarrer") {
-                        let sec = heure * 3600 + minute * 60 + seconde
-                        onValider(sec > 0 ? sec : 300)
-                    }.foregroundStyle(.orange)
+                    // v2 : Modifier RÉEL ; le « + » (redondant avec les roues) est RETIRÉ à la demande de Joachim
+                    Button(edition ? "OK" : "Modifier") { withAnimation { edition.toggle() } }
+                        .font(.system(size: 17, weight: edition ? .semibold : .regular)).foregroundStyle(.orange)
+                        .disabled(magasin.minuteursRecents.isEmpty && !edition)
                 }
             }
         }
-        .preferredColorScheme(.dark)
-        .presentationDetents([.medium])
     }
 }

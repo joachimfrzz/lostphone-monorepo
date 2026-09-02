@@ -2,6 +2,10 @@
 // D59 : données remplaçables. AUDIO RÉEL : 2 mémos de Sarah générés et embarqués (voix Leda),
 // dont la répétition du rendez-vous bancaire (recoupe la note P60 « Dire que c'est pour des travaux ?? »).
 // D51 : lecture réelle, avance/recul 15 s réels, renommer/dupliquer/supprimer/favori réels.
+// v2 session 3 (02/09, retours Joachim) : un NOUVEL ENREGISTREMENT est un vrai fichier audio de la durée
+// exacte enregistrée (fini le mémo « Idée photo » lu à sa place — cause : nom de fichier vide → iOS renvoyait
+// le premier .mp3 du bundle) ; Sélectionner RÉEL (cocher → Supprimer/Partager) ; Recherche RÉELLE ;
+// Modifier RÉEL sur les dossiers (supprimer/renommer un dossier) ; bouton rouge remonté au-dessus de la capsule.
 import SwiftUI
 import AVFoundation
 
@@ -11,7 +15,7 @@ struct MemoVocal: Identifiable {
     var titre: String
     var dateTexte: String
     var duree: String
-    var fichier: String            // nom du mp3 dans Ressources/
+    var fichier: String            // nom du mp3 dans Ressources/ OU chemin absolu d'un enregistrement du joueur
     var transcription: String
     var favori: Bool = false
     var dossier: String? = nil
@@ -29,6 +33,41 @@ final class MagasinMemos: ObservableObject {
                   transcription: "Idée photo… la brume sur les quais ce matin, c'était incroyable. Y retourner en novembre, tôt, genre sept heures. Prendre le cinquante millimètres. Et tester la pose longue sur les reflets, cette fois sans trembler.",
                   favori: true, dossier: "Idées photo"),
     ]
+    // v2 : dossiers persistants (Modifier réel)
+    @Published var dossiers: [String] = ["Idées photo"]
+
+    func supprimer(_ ids: Set<UUID>) { memos.removeAll { ids.contains($0.id) } }
+    func supprimerDossier(_ d: String) {
+        dossiers.removeAll { $0 == d }
+        for i in memos.indices where memos[i].dossier == d { memos[i].dossier = nil }
+    }
+    func renommerDossier(_ d: String, en nouveau: String) {
+        guard let i = dossiers.firstIndex(of: d), !nouveau.isEmpty else { return }
+        dossiers[i] = nouveau
+        for k in memos.indices where memos[k].dossier == d { memos[k].dossier = nouveau }
+    }
+}
+
+// ============================================================ FICHIER AUDIO D'UN ENREGISTREMENT DU JOUEUR
+// Le jeu n'active pas le micro (la demande d'autorisation iOS « Lost Phone souhaite accéder au micro »
+// casserait la fiction). On produit un vrai WAV PCM de la durée exacte mesurée : la lecture dure ce temps-là,
+// la barre avance, ±15 s marchent — cohérence totale avec ce qui vient d'être créé.
+enum AudioJoueur {
+    static func creerWavSilencieux(duree: TimeInterval) -> String? {
+        let hz = 8000, canaux = 1, bits = 16
+        let frames = max(1, Int(duree * Double(hz)))
+        let dataSize = frames * canaux * bits / 8
+        var d = Data(capacity: 44 + dataSize)
+        func u32(_ v: UInt32) { var x = v.littleEndian; d.append(Data(bytes: &x, count: 4)) }
+        func u16(_ v: UInt16) { var x = v.littleEndian; d.append(Data(bytes: &x, count: 2)) }
+        d.append(contentsOf: Array("RIFF".utf8)); u32(UInt32(36 + dataSize)); d.append(contentsOf: Array("WAVE".utf8))
+        d.append(contentsOf: Array("fmt ".utf8)); u32(16); u16(1); u16(UInt16(canaux))
+        u32(UInt32(hz)); u32(UInt32(hz * canaux * bits / 8)); u16(UInt16(canaux * bits / 8)); u16(UInt16(bits))
+        d.append(contentsOf: Array("data".utf8)); u32(UInt32(dataSize))
+        d.append(Data(count: dataSize))
+        let url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("memo-\(UUID().uuidString).wav")
+        do { try d.write(to: url); return url.path } catch { return nil }
+    }
 }
 
 // ============================================================ LECTEUR (seek réel ±15 s)
@@ -44,8 +83,15 @@ final class LecteurMemo: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func charge(_ fichier: String) {
         guard fichierActif != fichier else { return }
         arret()
-        let url = Bundle.main.url(forResource: fichier, withExtension: "mp3")
-            ?? Bundle.main.url(forResource: fichier, withExtension: "mp3", subdirectory: "Ressources")
+        // v2 : JAMAIS de nom vide (iOS renverrait le premier mp3 du bundle) ; chemins absolus acceptés
+        guard !fichier.isEmpty else { return }
+        let url: URL?
+        if fichier.hasPrefix("/") {
+            url = FileManager.default.fileExists(atPath: fichier) ? URL(fileURLWithPath: fichier) : nil
+        } else {
+            url = Bundle.main.url(forResource: fichier, withExtension: "mp3")
+                ?? Bundle.main.url(forResource: fichier, withExtension: "mp3", subdirectory: "Ressources")
+        }
         guard let url else { return }
         try? AVAudioSession.sharedInstance().setCategory(.playback)
         try? AVAudioSession.sharedInstance().setActive(true)
@@ -68,7 +114,7 @@ final class LecteurMemo: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
     func saute(_ delta: TimeInterval) {
         guard let l = lecteur else { return }
-        l.currentTime = max(0, min(l.duration - 0.2, l.currentTime + delta))
+        l.currentTime = max(0, min(max(0, l.duration - 0.2), l.currentTime + delta))
         position = l.currentTime
     }
     func arret() {
@@ -86,6 +132,9 @@ struct DictaphoneVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinMemos.partage
     @State private var enregVisible = false
+    @State private var edition = false                 // v2 : Modifier réel (dossiers)
+    @State private var dossierARenommer: String? = nil
+    @State private var nouveauNomDossier = ""
     // Miroir lot 1 : la vraie app s'ouvre sur la liste, les dossiers sont l'écran de retour
     @State private var chemin: [String] = ["tous"]
 
@@ -109,25 +158,46 @@ struct DictaphoneVue: View {
                         }
                         .clipShape(RoundedRectangle(cornerRadius: 12))
 
-                        Text("Mes dossiers").font(.system(size: 15)).foregroundStyle(.secondary)
-                        VStack(spacing: 1) {
-                            NavigationLink(destination: ListeMemosVue(titre: "Idées photo") { $0.dossier == "Idées photo" }) {
-                                LigneDossier(symbole: "folder.fill", couleur: Color(hex: 0x0A84FF),
-                                             nom: "Idées photo", compte: magasin.memos.filter { $0.dossier == "Idées photo" }.count)
+                        if !magasin.dossiers.isEmpty {
+                            Text("Mes dossiers").font(.system(size: 15)).foregroundStyle(.secondary)
+                            VStack(spacing: 1) {
+                                ForEach(magasin.dossiers, id: \.self) { d in
+                                    HStack(spacing: 0) {
+                                        if edition {
+                                            // v2 : mode Modifier réel — supprimer / renommer un dossier
+                                            Button {
+                                                withAnimation { magasin.supprimerDossier(d) }
+                                            } label: {
+                                                Image(systemName: "minus.circle.fill").font(.system(size: 22)).foregroundStyle(Color(hex: 0xFF453A))
+                                            }
+                                            .padding(.leading, 14)
+                                            Button { dossierARenommer = d; nouveauNomDossier = d } label: {
+                                                LigneDossier(symbole: "folder.fill", couleur: Color(hex: 0x0A84FF),
+                                                             nom: d, compte: magasin.memos.filter { $0.dossier == d }.count, chevron: false)
+                                            }
+                                        } else {
+                                            NavigationLink(destination: ListeMemosVue(titre: d) { $0.dossier == d }) {
+                                                LigneDossier(symbole: "folder.fill", couleur: Color(hex: 0x0A84FF),
+                                                             nom: d, compte: magasin.memos.filter { $0.dossier == d }.count)
+                                            }
+                                        }
+                                    }
+                                    .background(Color(hex: 0x1C1C1E))
+                                }
                             }
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        Spacer(minLength: 120)
+                        Spacer(minLength: 130)
                     }
                     .padding(.horizontal, 16)
                 }
 
-                // Bouton d'enregistrement
+                // Bouton d'enregistrement (v2 : remonté au-dessus de la capsule home)
                 Button { enregVisible = true } label: {
                     Circle().fill(Color(hex: 0xFF3B30)).frame(width: 54, height: 54)
                         .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 3).frame(width: 66, height: 66))
                 }
-                .padding(.bottom, 22)
+                .padding(.bottom, 34)
 
             BarreHome { dismiss() }
             }
@@ -136,8 +206,16 @@ struct DictaphoneVue: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Text("Modifier").foregroundStyle(Color(hex: 0x0A84FF))
+                    // v2 : Modifier RÉEL
+                    Button(edition ? "OK" : "Modifier") { withAnimation { edition.toggle() } }
+                        .font(.system(size: 17, weight: edition ? .semibold : .regular))
+                        .foregroundStyle(Color(hex: 0x0A84FF))
                 }
+            }
+            .alert("Renommer le dossier", isPresented: Binding(get: { dossierARenommer != nil }, set: { if !$0 { dossierARenommer = nil } })) {
+                TextField("Nom", text: $nouveauNomDossier)
+                Button("Annuler", role: .cancel) {}
+                Button("OK") { if let d = dossierARenommer { magasin.renommerDossier(d, en: nouveauNomDossier) } }
             }
             .sheet(isPresented: $enregVisible) {
                 EnregistrementDictaVue().presentationDetents([.height(280)])
@@ -153,6 +231,7 @@ struct LigneDossier: View {
     let couleur: Color
     let nom: String
     let compte: Int
+    var chevron: Bool = true
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: symbole).font(.system(size: 17)).foregroundStyle(couleur)
@@ -160,7 +239,9 @@ struct LigneDossier: View {
             Text(nom).font(.system(size: 16.5)).foregroundStyle(.white)
             Spacer()
             Text("\(compte)").font(.system(size: 16)).foregroundStyle(.secondary)
-            Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
+            if chevron {
+                Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
+            }
         }
         .padding(.horizontal, 14).padding(.vertical, 13)
         .background(Color(hex: 0x1C1C1E))
@@ -180,14 +261,22 @@ struct ListeMemosVue: View {
     @State private var partageVisible = false
     @State private var enregListeVisible = false
     @State private var remplacerAlerte = false
+    // v2 : sélection RÉELLE + recherche RÉELLE
     @State private var selectionActive = false
     @State private var selectionIds: Set<UUID> = []
+    @State private var rechercheActive = false
+    @State private var recherche = ""
+    @FocusState private var champRecherche: Bool
 
     init(titre: String, filtre: @escaping (MemoVocal) -> Bool) {
         self.titre = titre; self.filtre = filtre
     }
 
-    private var items: [MemoVocal] { magasin.memos.filter(filtre) }
+    private var items: [MemoVocal] {
+        let base = magasin.memos.filter(filtre)
+        guard rechercheActive, !recherche.trimmingCharacters(in: .whitespaces).isEmpty else { return base }
+        return base.filter { $0.titre.localizedCaseInsensitiveContains(recherche) || $0.transcription.localizedCaseInsensitiveContains(recherche) }
+    }
 
     private func fmt(_ t: TimeInterval) -> String {
         String(format: "%02d:%05.2f", Int(t) / 60, t.truncatingRemainder(dividingBy: 60))
@@ -198,18 +287,37 @@ struct ListeMemosVue: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(titre).font(.system(size: 30, weight: .bold)).foregroundStyle(.white)
                     .padding(.bottom, 10)
+                if rechercheActive {
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                        TextField("Rechercher", text: $recherche).foregroundStyle(.white).focused($champRecherche)
+                        if !recherche.isEmpty {
+                            Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary).onTapGesture { recherche = "" }
+                        }
+                    }
+                    .padding(.horizontal, 12).frame(height: 38)
+                    .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.bottom, 10)
+                }
                 if items.isEmpty {
                     VStack(spacing: 10) {
-                        Image(systemName: "folder").font(.system(size: 42)).foregroundStyle(.secondary)
-                        Text("Aucun enregistrement").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
-                        Text("Touchez le bouton Enregistrer pour commencer un mémo vocal.")
-                            .font(.system(size: 13)).foregroundStyle(.secondary)
+                        Image(systemName: rechercheActive && !recherche.isEmpty ? "magnifyingglass" : "folder").font(.system(size: 42)).foregroundStyle(.secondary)
+                        Text(rechercheActive && !recherche.isEmpty ? "Aucun résultat" : "Aucun enregistrement").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                        if !(rechercheActive && !recherche.isEmpty) {
+                            Text("Touchez le bouton Enregistrer pour commencer un mémo vocal.")
+                                .font(.system(size: 13)).foregroundStyle(.secondary)
+                        }
                     }
                     .frame(maxWidth: .infinity).padding(.top, 120)
                 }
                 ForEach(items) { m in
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
+                            if selectionActive {
+                                Image(systemName: selectionIds.contains(m.id) ? "checkmark.circle.fill" : "circle")
+                                    .font(.system(size: 22)).foregroundStyle(selectionIds.contains(m.id) ? Color(hex: 0x0A84FF) : .secondary)
+                                    .padding(.trailing, 6)
+                            }
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(m.titre).font(.system(size: 16.5, weight: .semibold)).foregroundStyle(.white)
                                 Text(m.dateTexte).font(.system(size: 13.5)).foregroundStyle(.secondary)
@@ -218,36 +326,40 @@ struct ListeMemosVue: View {
                             if ouvert != m.id {
                                 Text(m.duree).font(.system(size: 14)).foregroundStyle(.secondary)
                             }
-                            Menu {
-                                Button { renommageId = m.id; nouveauNom = m.titre } label: { Label("Renommer", systemImage: "pencil") }
-                                Button { transcriptionVisible = m } label: { Label("Afficher la transcription", systemImage: "quote.bubble") }
-                                Button {
-                                    if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) {
-                                        magasin.memos[i].favori.toggle()
+                            if !selectionActive {
+                                Menu {
+                                    Button { renommageId = m.id; nouveauNom = m.titre } label: { Label("Renommer", systemImage: "pencil") }
+                                    Button { transcriptionVisible = m } label: { Label("Afficher la transcription", systemImage: "quote.bubble") }
+                                    Button {
+                                        if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) { magasin.memos[i].favori.toggle() }
+                                    } label: { Label(m.favori ? "Retirer des favoris" : "Ajouter aux favoris", systemImage: "heart") }
+                                    if !magasin.dossiers.isEmpty {
+                                        Menu("Déplacer vers") {
+                                            ForEach(magasin.dossiers, id: \.self) { d in
+                                                Button(d) { if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) { magasin.memos[i].dossier = d } }
+                                            }
+                                            if m.dossier != nil {
+                                                Button("Aucun dossier") { if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) { magasin.memos[i].dossier = nil } }
+                                            }
+                                        }
                                     }
-                                } label: { Label(m.favori ? "Retirer des favoris" : "Ajouter aux favoris", systemImage: "heart") }
-                                Button {
-                                    if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) {
-                                        let copie = magasin.memos[i]
-                                        let nouvelle = MemoVocal(titre: copie.titre + " copie", dateTexte: copie.dateTexte,
-                                                                 duree: copie.duree, fichier: copie.fichier,
-                                                                 transcription: copie.transcription, favori: false, dossier: copie.dossier)
-                                        magasin.memos.insert(nouvelle, at: i + 1)
-                                    }
-                                } label: { Label("Dupliquer", systemImage: "plus.square.on.square") }
-                                Button(role: .destructive) {
-                                    magasin.memos.removeAll { $0.id == m.id }
-                                } label: { Label("Supprimer", systemImage: "trash") }
-                            } label: {
-                                Image(systemName: "ellipsis").font(.system(size: 17)).foregroundStyle(.secondary)
-                                    .frame(width: 34, height: 34)
+                                    Button { dupliquer(m) } label: { Label("Dupliquer", systemImage: "plus.square.on.square") }
+                                    Button(role: .destructive) { magasin.memos.removeAll { $0.id == m.id } } label: { Label("Supprimer", systemImage: "trash") }
+                                } label: {
+                                    Image(systemName: "ellipsis").font(.system(size: 17)).foregroundStyle(.secondary)
+                                        .frame(width: 34, height: 34)
+                                }
                             }
                         }
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                if ouvert == m.id { ouvert = nil; lecteur.arret() }
-                                else { ouvert = m.id; lecteur.charge(m.fichier) }
+                            if selectionActive {
+                                if selectionIds.contains(m.id) { selectionIds.remove(m.id) } else { selectionIds.insert(m.id) }
+                            } else {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    if ouvert == m.id { ouvert = nil; lecteur.arret() }
+                                    else { ouvert = m.id; lecteur.charge(m.fichier) }
+                                }
                             }
                         }
                         .contextMenu {
@@ -255,25 +367,13 @@ struct ListeMemosVue: View {
                             Button { renommageId = m.id; nouveauNom = m.titre } label: { Label("Renommer", systemImage: "pencil") }
                             Button { transcriptionVisible = m } label: { Label("Afficher la transcription", systemImage: "quote.bubble") }
                             Button {
-                                if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) {
-                                    magasin.memos[i].favori.toggle()
-                                }
+                                if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) { magasin.memos[i].favori.toggle() }
                             } label: { Label(m.favori ? "Retirer des favoris" : "Ajouter aux favoris", systemImage: "heart") }
-                            Button {
-                                if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) {
-                                    let copie = magasin.memos[i]
-                                    let nouvelle = MemoVocal(titre: copie.titre + " copie", dateTexte: copie.dateTexte,
-                                                             duree: copie.duree, fichier: copie.fichier,
-                                                             transcription: copie.transcription, favori: false, dossier: copie.dossier)
-                                    magasin.memos.insert(nouvelle, at: i + 1)
-                                }
-                            } label: { Label("Dupliquer", systemImage: "plus.square.on.square") }
-                            Button(role: .destructive) {
-                                magasin.memos.removeAll { $0.id == m.id }
-                            } label: { Label("Supprimer", systemImage: "trash") }
+                            Button { dupliquer(m) } label: { Label("Dupliquer", systemImage: "plus.square.on.square") }
+                            Button(role: .destructive) { magasin.memos.removeAll { $0.id == m.id } } label: { Label("Supprimer", systemImage: "trash") }
                         }
 
-                        if ouvert == m.id {
+                        if ouvert == m.id && !selectionActive {
                             VStack(spacing: 12) {
                                 // Transcription visible pendant la lecture (comme la référence)
                                 Text(m.transcription)
@@ -316,7 +416,7 @@ struct ListeMemosVue: View {
                     .padding(.vertical, 10)
                     Divider().overlay(Color(hex: 0x2C2C2E))
                 }
-                Spacer(minLength: 60)
+                Spacer(minLength: 120)
             }
             .padding(.horizontal, 18)
         }
@@ -324,29 +424,64 @@ struct ListeMemosVue: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 10) {
-                    Image(systemName: "magnifyingglass").font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(width: 32, height: 32)
-                        .background(Color(hex: 0x1C1C1E), in: Circle())
-                    Text(selectionActive ? "Annuler" : "Sélectionner").font(.system(size: 15)).foregroundStyle(Color(hex: 0x0A84FF))
-                        .padding(.horizontal, 12).padding(.vertical, 6)
-                        .background(Color(hex: 0x1C1C1E), in: Capsule())
-                        .onTapGesture { selectionActive.toggle(); if !selectionActive { selectionIds.removeAll() } }
+                    // v2 : Recherche RÉELLE
+                    Button {
+                        withAnimation { rechercheActive.toggle() }
+                        if rechercheActive { champRecherche = true } else { recherche = "" }
+                    } label: {
+                        Image(systemName: rechercheActive ? "xmark" : "magnifyingglass").font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 32, height: 32)
+                            .background(Color(hex: 0x1C1C1E), in: Circle())
+                    }
+                    // v2 : Sélectionner RÉEL
+                    Button {
+                        withAnimation { selectionActive.toggle() }
+                        if !selectionActive { selectionIds.removeAll() } else { ouvert = nil; lecteur.arret() }
+                    } label: {
+                        Text(selectionActive ? "Annuler" : "Sélectionner").font(.system(size: 15)).foregroundStyle(Color(hex: 0x0A84FF))
+                            .padding(.horizontal, 12).padding(.vertical, 6)
+                            .background(Color(hex: 0x1C1C1E), in: Capsule())
+                    }
                 }
             }
         }
         .overlay(alignment: .bottom) {
-            // Miroir lot 1bis : le bouton d'enregistrement vit AUSSI sur la liste (référence f001)
-            Button { enregListeVisible = true } label: {
-                Circle().fill(Color(hex: 0xFF3B30)).frame(width: 54, height: 54)
-                    .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 3).frame(width: 66, height: 66))
+            if selectionActive {
+                // v2 : barre d'actions de sélection (comme iOS : Partager / Supprimer)
+                HStack {
+                    Button { partageVisible = true } label: {
+                        Image(systemName: "square.and.arrow.up").font(.system(size: 20))
+                            .foregroundStyle(selectionIds.isEmpty ? .secondary : Color(hex: 0x0A84FF))
+                    }.disabled(selectionIds.isEmpty)
+                    Spacer()
+                    Text(selectionIds.isEmpty ? "Sélectionner des éléments" : "\(selectionIds.count) sélectionné\(selectionIds.count > 1 ? "s" : "")")
+                        .font(.system(size: 15)).foregroundStyle(.white)
+                    Spacer()
+                    Button {
+                        withAnimation { magasin.supprimer(selectionIds) }
+                        selectionIds.removeAll(); selectionActive = false
+                    } label: {
+                        Image(systemName: "trash").font(.system(size: 20))
+                            .foregroundStyle(selectionIds.isEmpty ? .secondary : Color(hex: 0xFF453A))
+                    }.disabled(selectionIds.isEmpty)
+                }
+                .padding(.horizontal, 22).padding(.vertical, 14)
+                .background(.ultraThinMaterial)
+                .padding(.bottom, 26)
+            } else {
+                // Miroir lot 1bis : le bouton d'enregistrement vit AUSSI sur la liste (référence f001) — v2 : remonté
+                Button { enregListeVisible = true } label: {
+                    Circle().fill(Color(hex: 0xFF3B30)).frame(width: 54, height: 54)
+                        .overlay(Circle().stroke(.white.opacity(0.9), lineWidth: 3).frame(width: 66, height: 66))
+                }
+                .padding(.bottom, 34)
             }
-            .padding(.bottom, 26)
         }
         .sheet(isPresented: $enregListeVisible) {
-            EnregistrementDictaVue().presentationDetents([.height(280)])
+            EnregistrementDictaVue(dossier: magasin.dossiers.contains(titre) ? titre : nil).presentationDetents([.height(280)])
         }
-        .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Mémo vocal") }
+        .sheet(isPresented: $partageVisible) { FeuillePartage(element: selectionIds.count > 1 ? "\(selectionIds.count) mémos vocaux" : "Mémo vocal") }
         .alert("Renommer", isPresented: Binding(get: { renommageId != nil }, set: { if !$0 { renommageId = nil } })) {
             TextField("Nom", text: $nouveauNom)
             Button("Annuler", role: .cancel) {}
@@ -383,6 +518,16 @@ struct ListeMemosVue: View {
         }
         .onDisappear { lecteur.arret() }
     }
+
+    private func dupliquer(_ m: MemoVocal) {
+        if let i = magasin.memos.firstIndex(where: { $0.id == m.id }) {
+            let copie = magasin.memos[i]
+            let nouvelle = MemoVocal(titre: copie.titre + " copie", dateTexte: copie.dateTexte,
+                                     duree: copie.duree, fichier: copie.fichier,
+                                     transcription: copie.transcription, favori: false, dossier: copie.dossier)
+            magasin.memos.insert(nouvelle, at: i + 1)
+        }
+    }
 }
 
 extension MemoVocal: Hashable {
@@ -392,16 +537,20 @@ extension MemoVocal: Hashable {
 
 
 // ============================================================ D82 — ENREGISTREMENT RÉEL
-// L'enregistrement tourne (chrono + onde animée) et crée un vrai mémo dans la liste.
+// L'enregistrement tourne (chrono + onde animée) et crée un vrai mémo dans la liste,
+// avec un VRAI fichier audio de la durée exacte (v2).
 struct EnregistrementDictaVue: View {
+    var dossier: String? = nil
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var magasin = MagasinMemos.partage
     @State private var debut = Date()
     @State private var tics = 0
     private let minuteur = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     private var chrono: String {
-        let t = Int(Date().timeIntervalSince(debut))
-        return String(format: "%d:%02d,%02d", t/60, t%60, Int(Date().timeIntervalSince(debut)*100)%100/10*10/10)
+        let e = Date().timeIntervalSince(debut)
+        let t = Int(e)
+        let dixiemes = Int(e * 10) % 10
+        return String(format: "%d:%02d,%d0", t / 60, t % 60, dixiemes)
     }
     var body: some View {
         VStack(spacing: 0) {
@@ -429,13 +578,18 @@ struct EnregistrementDictaVue: View {
             .onReceive(minuteur) { _ in tics += 1 }
             Spacer()
             Button {
-                let t = max(1, Int(Date().timeIntervalSince(debut)))
-                let duree = String(format: "%d:%02d", t/60, t%60)
+                let elapsed = max(1.0, Date().timeIntervalSince(debut))
+                let t = Int(elapsed.rounded())
+                let duree = String(format: "%d:%02d", t / 60, t % 60)
                 let f = DateFormatter(); f.dateFormat = "d MMM yyyy"; f.locale = Locale(identifier: "fr_FR")
+                // v2 : fichier audio réel de la durée enregistrée (jamais un nom vide)
+                let chemin = AudioJoueur.creerWavSilencieux(duree: elapsed) ?? "memo-vide-introuvable"
                 magasin.memos.insert(MemoVocal(titre: "Nouvel enregistrement \(numeroSuivant)",
                                                dateTexte: f.string(from: Date()), duree: duree,
-                                               fichier: "", transcription: "Transcription non disponible"),
+                                               fichier: chemin, transcription: "Aucune transcription disponible",
+                                               dossier: dossier),
                                      at: 0)
+                Haptique.leger()
                 dismiss()
             } label: {
                 Circle().stroke(Color(white: 0.45), lineWidth: 3).frame(width: 64, height: 64)

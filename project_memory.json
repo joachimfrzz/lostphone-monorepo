@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-02T19:05:00+02:00",
+  "date_derniere_maj": "2026-09-02T19:30:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1604,16 +1604,18 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "Retours 274 traités (WhatsApp crash, Safari signets/7 résultats/bande, partage réel partout D90, Notes Modifier/clavier, Calendrier bulles/position, localisation fr). BUILD 275 VERT (18h41→18h45). 9/28 validées. Joachim : session 4 sur le 274 + capture d écran vraie app Notes attendue.",
+  "dernier_evenement": "Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
   "en_attente": [
-   "Build 275 publié TestFlight ~18h50 — Joachim : checklist du 275 (13 points)",
-   "Joachim : retours session 4 (Fichiers, Localiser, Santé, Cartes, Ma Banque) testée sur le 274 ; capture d écran de la vraie app Notes (Dossiers) pour le jaune",
-   "Joachim : checklist du 275 (13 points) quand disponible",
+   "Joachim : checklist du 278 (16 points, session 4 + globaux) — disponible TestFlight ~19h30",
+   "Joachim : checklist du 275 (13 points) si pas encore faite",
+   "Joachim : capture d écran (image) de la vraie app Notes (Dossiers) → prélever le jaune exact",
+   "Session 5 (Messenger, Instagram, Snapchat, Facebook) : Joachim peut la tester sur le 278 pendant les corrections",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
    "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/ ; passe finale Réglages ; ce que le joueur peut supprimer (Dictaphone, etc.)"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-02 18h50"
+  "derniere_maj": "2026-09-02 19h30",
+  "fil_hyperagent_actif": "https://hyperagent.com/thread/cmtkd5ab005h206ad1tpral2j (depuis le 02/09 19h25 ; précédent cmtim40hr08lo06ad89ww6nja figé)"
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2693,7 +2695,7 @@
    "piege_ios": "Bundle.main.url(forResource: \"\", withExtension:) avec un nom VIDE ne renvoie pas nil : il renvoie un fichier arbitraire de cette extension. Toujours garder les noms vides.",
    "build": "TestFlight 273 (buildId 6a984245f9be3a969bc2b427, index 13 = 260+13) lancé 02/09 17h36 sur GO Joachim — lot S2+S3 + fix WhatsApp. Fiche « Dernier build » mise à jour (23 points à vérifier)."
   },
-  "validees": "7/28 : Coque, Messages, Téléphone, Photos, Mail (build 272), Météo, Calculatrice (272, 02/09 17h29).",
+  "validees": "10/28 : Coque, Messages, Téléphone, Photos, Mail, Météo, Calculatrice, Horloge, Dictaphone, Santé.",
   "build_273_274_2026_09_02": {
    "273": "buildId 6a984245f9be3a969bc2b427, index 13, lancé 17h36, compilé 17h41-17h45 → ROUGE (Build IPA exit 65). 4 erreurs : (a) SafariApp:546 et RappelsApp ×2 — ternaire `? .secondary : .white` → Swift infère HierarchicalShapeStyle sur la 1re branche et refuse .white → écrire `Color.secondary : Color.white` (l ordre inverse `.white : .secondary` compile, d où le piège) ; (b) LPProto:373 capture `safari.onglets` appelait OngletsVue avec l ANCIENNE signature ; (c) HorlogeApp:86 Int + Double. FAIT MAJEUR : (a-Safari) et (b) prouvent que le code Safari du 31/08 n avait JAMAIS été compilé (aucun build entre son push et le 273).",
    "274": "buildId 6a984511192cb7489c269a1e, index 14 = TestFlight 274, lancé 17h47, file 4 min, compilé 17h51-17h56, publication TestFlight 17h56 → VERT. Contenu : fix WhatsApp + Safari 31/08 + Notes v2 + Rappels v2 + Calendrier v2 + Horloge v2 + Dictaphone v2.",
@@ -2709,6 +2711,19 @@
    "horloge": "swipeActions « Supprimer » explicite + LOCALISATION FR du projet (project.yml developmentLanguage fr, CFBundleDevelopmentRegion fr, CFBundleLocalizations [fr], Sources/fr.lproj/Localizable.strings) → textes système en français dans toutes les apps.",
    "fichiers": "MagasinFichiers.ajoutes + ajouter(nom:genre:contenu:) ; FichierItem.contenu ; aperçu du texte ; micros retirés.",
    "build": "275 = buildId 6a9851a5fc57b014bafea839, index 15, lancé 18h41, compilé 18h42-18h45, publication 18h45 → VERT du premier coup. Joachim teste la session 4 (Fichiers, Localiser, Santé, Cartes, Ma Banque) sur le 274 pendant ce temps."
+  },
+  "session4_retours_2026_09_02": {
+   "heure": "18h50",
+   "validees": "Santé (« vraiment bien », à enrichir selon les histoires) → 10/28",
+   "fichiers": "Sélectionner mort ; Se connecter/Scanner/Compresser/Dupliquer inutiles ; Ouvrir (Infos) mort ; flèche muette Supprimés récemment ; micro ; iCloud Drive / Sur mon iPhone morts. CODÉ : sélection réelle + barre Partager/Supprimer ; 4 options retirées ; Ouvrir → aperçu ; bouton Récupérer réel (sous-vue LigneSupprimeeFichier) ; EmplacementFichiersVue (dossiers+fichiers par emplacement) ; micros retirés.",
+   "localiser": "+ retirés ; boutons carte réels (satellite via .hybrid, recentrer) ; centrer(lat,lon) à la sélection (closure passée aux panneaux) ; Memoji : 3 images générées (Chloé, Maman, Sarah — style Apple Memoji) packagées outils/memoji.tar.b64 + décodage dans decode-binaires.sh → Ressources/memoji-*.jpg, AvatarMemoji avec repli emoji ; Itinéraire → Routeur.allerPlans(itineraireVers:lat:lon:) consommé par PlansApp.onAppear (ouvre ItinerairePlanVue) ; Étiquette retirée ; bouton Localiser retiré (C). RÉFÉRENCES Localiser (vidéo brute 5 du 19/08 + 12 captures) : archivées dans outils/references*.tar.b64 (non consultées ce soir).",
+   "sante": "VALIDÉE. Problème transversal zone système → corrigé à la racine : CoquilleSarah met un fond (ultraThinMaterial si claire, noir 0,72 sinon) sous BarreSarah, toutes apps.",
+   "wallet": "QR et codes-barres faux → RÉELS via CoreImage (CIQRCodeGenerator, CICode128BarcodeGenerator, contenu fictif) ; cartes redessinées (TrameCarte, PuceEMV, SansContact, logos) ; … retirés (ReglagesCartesVue supprimée, capture cartes.reglages → RechercheCartesVue) ; clavier ajout masquable.",
+   "ma_banque": "Virement : la logique décrémentait déjà soldeCourant (non reproduit) — renforcé : solde visible dans Virements, « Solde après opération » dans la confirmation, contentTransition numérique, refus réel si solde insuffisant (découvert 200), virementsSur7j @Published ; pavé numérique : FocusState + tap ailleurs + bouton OK clavier ; DetailOperationVue (référence, catégorie, solde après recalculé) ; Partager RIB → FeuillePartage réelle.",
+   "global_micros": "Règle Joachim : aucun bouton vocal nulle part (apps anciennes et futures). 9 icônes retirées dans TcmV2, MhdcV2, CoqueV2 (Spotlight), TelephoneApp ×2, MessengerApp, SnapchatApp, ChatGPTApp ×2 ; + Plans, Fichiers ×3. Conservés : micros « couper le son » des écrans d appel, icône podcast Spotify, réglage « Micro » de Réglages.",
+   "notes_jaune": "Vidéo SwissTransfer (ScreenRecording 85 Mo) : téléchargement impossible (403 sandbox, CORS navigateur, token à usage unique). Demande à Joachim : une CAPTURE D ÉCRAN (image) de l écran Dossiers de la vraie app Notes.",
+   "builds": "Code session 4 poussé 19h03 (891ba115). 276 (index 16, 19h05) ROUGE : background(_:in:) ambigu sur le bouton Récupérer + capture cartes.reglages appelait ReglagesCartesVue supprimée → fix 19bf10a0. 277 (index 17, 19h13) ROUGE : type-check SuppressionsFichiersVue → fix 5f34127a (sous-vue LigneSupprimeeFichier). 278 (index 18, buildId 6a9859868f3b97da3e644019) lancé 19h14 → VERT 19h21 (IPA LPProtoSwift.ipa). Fiche « Dernier build » = 278 (16 points).",
+   "incident_fil": "19h14-19h20 : le fil Hyperagent « Lost Phone Project Onboarding » (cmtim40hr08lo06ad89ww6nja) s est figé juste après le push du fix 277 / lancement du 278. Les mises à jour fiche + mémoire de la session 4 n avaient PAS été poussées (restées dans le sandbox perdu) → reconstruites et poussées depuis le nouveau fil cmtkd5ab005h206ad1tpral2j (19h30). Leçon : pousser fiche + mémoire AVANT d attendre le verdict du build."
   }
  }
 }

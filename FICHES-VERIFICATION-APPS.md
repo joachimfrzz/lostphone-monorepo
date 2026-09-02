@@ -14,41 +14,43 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 ## 🔔 DERNIER BUILD — à vérifier en priorité
 > Cette section est MISE À JOUR À CHAQUE BUILD (règle D89, 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
-**Build : TestFlight n° 275 — lancé le 02/09 à 18h41, compilé 18h42-18h45, publication TestFlight 18h45 (disponible ~10 min après).** Retours du 274 + principe « toute action annoncée produit son résultat ». Précédent valide : 274 (02/09 17h57).
+**Build : TestFlight n° 278 — lancé le 02/09 à 19h14, compilé 19h15-19h21, publication TestFlight ~19h22 (disponible ~10 min après).** Retours de la **session 4** (Fichiers, Localiser, Santé, Cartes, Ma Banque) + 2 corrections globales. Les 276 (19h05) et 277 (19h13) ont échoué à la compilation et n'apparaîtront pas dans TestFlight. Précédent valide : 275 (02/09 18h45) — ses 13 points restent à vérifier si tu ne l'as pas encore fait.
 
-### Ce que tu avais demandé (retours du 274)
-- WhatsApp : Gérer le stockage / Important / Notifications / Thème… dans une fiche contact → le jeu se ferme
-- Safari : Livre = seulement l'historique (il manque Favoris et Liste de lecture) ; retirer « Effacer » ; le contenu remonte dans la zone heure/batterie ; « Marc Delacroix » : 3 résultats au lieu de 7
-- Notes : jaune pas fidèle ; feuille de partage sans conséquence ; Modifier (dossiers) mort ; clavier qui reste après une recherche
-- Rappels : feuille de partage sans conséquence
-- Calendrier : double bulle sur le bouton retour ; changer Compact/Empilé déplace la période consultée
-- Horloge : « Delete » en anglais au balayage ; plus généralement aucun texte anglais
-- Dictaphone : RAS (mémo « banque » supprimé par toi lors du test — rien à corriger) ; suppressions : ne rien changer pour l'instant
-- Validées : Horloge, Dictaphone (Météo, Calculatrice déjà validées) → 9/28
+### Ce que tu avais demandé (retours session 4)
+- Fichiers : Sélectionner mort ; Se connecter au serveur / Scanner / Compresser / Dupliquer inutiles ; « Ouvrir » (Infos) mort ; flèche muette dans Supprimés récemment ; micro dans la recherche ; iCloud Drive et Sur mon iPhone morts
+- Localiser : retirer les « + » ; 2 boutons de carte morts ; recentrer la carte à la sélection ; Memoji Apple au lieu d'emojis ; Itinéraire doit ouvrir Plans AVEC la destination ; « Étiquette de localisation » à retirer ; bouton « Localiser » (À proximité) artificiel
+- Santé : ✅ VALIDÉE (à enrichir plus tard selon les histoires) ; contenu qui remonte dans la zone heure/batterie (constaté aussi Safari)
+- Cartes/Wallet : QR codes et codes-barres visiblement faux ; cartes trop simples ; menus « … » au milieu de l'écran + « Supprimer la carte » inutile
+- Ma Banque : le virement doit avoir une conséquence réelle et persistante ; pavé numérique impossible à fermer ; (plus tard) détail des opérations
+- Global : plus aucun bouton vocal dans aucune app
 
 ### Ce qui a été modifié dans ce build
-- WhatsApp : CAUSE du crash = deux clés en double dans le dictionnaire des sous-réglages (« Thème de la discussion », « Messages éphémères ») → Swift plante à la première lecture. Fusionnées. Toutes les options de fiche ouvrent leur écran.
-- Safari : bouton Livre = Signets à 3 onglets (Favoris / Liste de lecture / Historique) ; « Effacer » retiré de l'historique ; les 4 résultats manquants de « Marc Delacroix officier marine » ajoutés (7 réels : chauffagiste, promo 1988, annuaire Marine vide, PagesJaunes, profils Facebook, Cybermalveillance, témoignage) ; la recherche accepte la dictée « marc/marque de la croix » ; bande opaque sous la zone système, la page défile dessous
-- Feuille de partage (Notes, Rappels, Fichiers, Dictaphone, Safari…) : AirDrop → recherche puis « Aucun appareil à proximité » ; WhatsApp → choix du contact et le message APPARAÎT dans sa conversation ; Mail → ouvre un nouveau message ; Messages → ouvre Messages ; Copier → presse-papiers réel ; Enregistrer dans Fichiers → le fichier APPARAÎT dans Fichiers (Récents + Documents, aperçu du texte) ; Imprimer → recherche puis « Aucune imprimante AirPrint détectée »
-- Notes : Modifier réel (pastille rouge = supprimer un dossier, tap = renommer ; Nouveau dossier crée vraiment) ; un tap hors du champ masque le clavier ; JAUNE : inchangé en attendant ta capture d'écran de la vraie app Notes (je prélèverai la couleur exacte)
-- Calendrier : plus de capsule maison dans la barre (iOS 26 en met déjà une → double bulle) ; changer Compact/Empilé/Liste garde le mois consulté
-- Horloge : balayage « Supprimer » explicite en français ; PROJET localisé en français (langue de développement fr + fr.lproj) → tous les textes système (Supprimer, Annuler, OK…) sortent en français dans TOUTES les apps
-- Fichiers : reçoit les fichiers enregistrés depuis la feuille de partage ; micro retiré des recherches
+- **Global — zone système** : la bande heure/batterie de Sarah a maintenant un fond (matériau) dans TOUTES les apps : le contenu défile DESSOUS, jamais dedans (Santé, Safari, Mail, listes…)
+- **Global — micros** : 9 icônes de dictée retirées (Messages, Météo villes, Spotlight, Téléphone ×2, Messenger, Snapchat, ChatGPT ×2, Plans, Fichiers ×3) ; les micros « couper le son » des écrans d'appel restent (ce ne sont pas des boutons vocaux)
+- **Fichiers** : Sélectionner RÉEL (cocher → Partager / Supprimer) ; Scanner, Se connecter, Compresser, Dupliquer RETIRÉS ; « Ouvrir » ouvre le fichier ; Supprimés récemment → bouton **Récupérer** réel ; iCloud Drive et Sur mon iPhone ouvrent leur contenu ; micro retiré
+- **Localiser** : « + » retirés ; bouton carte pliée = **plan / satellite** réel ; bouton localisation = **recentre sur moi** ; toucher Chloé / Maman / un appareil / les clés **recentre la carte** dessus ; **Memoji** (Chloé, Maman, Sarah dans Moi) ; **Itinéraire ouvre Plans directement sur l'itinéraire** vers la personne/l'appareil ; « Étiquette de localisation » retirée ; bouton « Localiser » retiré
+- **Cartes/Wallet** : **vrai QR code** (généré par iOS, lisible) sur le billet TGV ; **vrai code-barres Code 128** sur la carte Phox ; cartes redessinées (puce, sans-contact, trame, Visa, logo SNCF, membre/points) ; « … » retirés ; clavier de l'ajout de carte masquable
+- **Ma Banque** : virement → **solde diminué immédiatement** + « Solde après opération » dans la confirmation + refus réel si solde insuffisant (découvert 200 €) ; pavé numérique fermé d'un tap ailleurs ou par « OK » ; **détail d'opération** au tap (type, dates, catégorie, référence, solde après) ; Partager le RIB réel
+- **Plans** : reçoit les demandes d'itinéraire de Localiser ; micro retiré ; « Ajouter » (bouton mort) retiré
+- **Notes — jaune** : INCHANGÉ. Ta vidéo SwissTransfer est bloquée pour mon environnement (protection anti-robot) — envoie-moi une **capture d'écran** (image) de l'écran Dossiers de la vraie app Notes, je prélèverai la couleur au pixel
 
 ### ✅ À VÉRIFIER DANS CE BUILD (checklist)
-- [ ] WhatsApp — fiche de Marc (balayage → Plus → Infos) : Gérer le stockage, Important, Notifications, Thème de la discussion, Verrouiller, Confidentialité avancée, Médias : CHAQUE option ouvre son écran, le jeu ne se ferme jamais ; idem depuis la fiche du groupe Les filles
-- [ ] Safari — Livre : 3 onglets Favoris / Liste de lecture / Historique ; un favori s'ouvre ; une page de la liste de lecture s'ouvre ; plus de bouton Effacer
-- [ ] Safari — faire défiler une page longue : le contenu passe SOUS la zone heure/batterie, jamais dedans
-- [ ] Safari — recherche « Marc Delacroix officier marine » (ou dictée « marque de la croix ») → 7 résultats, chacun s'ouvre
-- [ ] Partage (Notes → une note → partager) : AirDrop cherche puis « Aucun appareil à proximité » ; WhatsApp → Chloé → le texte de la note est dans la conversation Chloé ; Copier → coller dans une autre app (Notes) fonctionne ; Enregistrer dans Fichiers → ouvrir Fichiers → le fichier est dans Récents et dans Documents, son aperçu montre le texte ; Imprimer → « Aucune imprimante AirPrint détectée » ; Mail → un nouveau message s'ouvre
-- [ ] Partage — même feuille depuis Rappels (liste Courses) : Enregistrer dans Fichiers crée « Liste « Courses » » avec les articles
-- [ ] Notes — Dossiers → Modifier : pastille rouge sur Recettes/Santé supprime (les notes passent dans Notes), tap sur un nom = Renommer ; Nouveau dossier (icône dossier +) crée un dossier ; OK
-- [ ] Notes — lancer une recherche, taper un mot, toucher ailleurs → le clavier disparaît
-- [ ] Calendrier — bouton « ‹ 2026 » / « ‹ Août » : UNE seule bulle
-- [ ] Calendrier — aller sur Mai, passer Compact → Empilé → Liste : on reste sur Mai
-- [ ] Horloge — balayer une ville → « Supprimer » (en français) ; Modifier → pastille rouge puis bouton rouge « Supprimer »
-- [ ] Toutes apps — chasse aux mots anglais (Delete, Done, Cancel…) : tout doit être en français
-- [ ] Régression — Messages, Téléphone, Photos, Mail, Météo, Calculatrice, Horloge, Dictaphone : tour rapide
+- [ ] Global — Santé, Safari, Mail, Réglages : faire défiler → le contenu passe SOUS la zone heure/batterie (fond visible), jamais dedans
+- [ ] Global — barres de recherche de Téléphone, Messages, Plans, Fichiers, Spotlight, Météo (villes) et champs de saisie Messenger / Snapchat / ChatGPT : plus aucun micro
+- [ ] Fichiers — … → Sélectionner → cocher 2 fichiers → corbeille : ils partent ; Explorer → Suppressions récentes → **Récupérer** les ramène
+- [ ] Fichiers — Infos d'un PDF → **Ouvrir** ouvre l'aperçu ; appui long : plus de Compresser/Dupliquer ; menu … : plus de Scanner / Se connecter
+- [ ] Fichiers — Explorer → Sur mon iPhone et iCloud Drive s'ouvrent avec leurs dossiers/fichiers
+- [ ] Localiser — plus de « + » ; bouton carte pliée bascule plan/satellite ; bouton localisation recentre sur le domicile
+- [ ] Localiser — toucher Chloé → la carte glisse sur Croix-Rousse ; toucher Maman → Théizé ; toucher AirPods → domicile
+- [ ] Localiser — Chloé et Maman ont un **Memoji** (visage 3D), Moi aussi ; Marc reste en silhouette (invitation)
+- [ ] Localiser — fiche Chloé → **Itinéraire** → Plans s'ouvre SUR l'itinéraire vers Chloé (destination déjà remplie)
+- [ ] Localiser — Moi : plus de ligne « Étiquette de localisation » ; Clés : plus de bouton « Localiser », mais Émettre un son + Itinéraire
+- [ ] Wallet — billet TGV : le QR ressemble à un vrai (essaie même de le scanner avec l'appareil photo de ton iPad : il contient la référence du billet) ; carte Phox : vrai code-barres avec chiffres dessous
+- [ ] Wallet — cartes : puce, sans-contact, trame, logos ; plus aucun « … »
+- [ ] Ma Banque — virement de 400 € à Maman → « Solde après opération » affiché, le solde du compte baisse de 400 € et l'opération est en tête de l'historique ; revenir dans Comptes : le solde reste diminué
+- [ ] Ma Banque — taper un montant → toucher ailleurs ou « OK » au-dessus du clavier → le pavé se ferme
+- [ ] Ma Banque — toucher une opération → fiche détail (catégorie, référence, solde après)
+- [ ] Régression — Notes, Rappels, Calendrier, Horloge, Dictaphone, Météo, Calculatrice : tour rapide
 
 ---
 
@@ -59,7 +61,7 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 | 2 | Safari (re-test) · Notes · Rappels · Calendrier | TestFlight **275** (02/09 18h41) |
 | 3 | Horloge · Dictaphone (Météo ✅, Calculatrice ✅) | TestFlight **275** (02/09 18h41) |
 | finale | Réglages (passe dédiée, D89) | dernier lot |
-| 4 | Fichiers · Localiser · Santé · Cartes · Ma Banque | lot session 4 |
+| 4 | Fichiers · Localiser · Cartes · Ma Banque (Santé ✅) | TestFlight **278** (02/09 19h14) |
 | 5 | Messenger · Instagram · Snapchat · Facebook | lot session 5 |
 | 6 | X · ChatGPT · Spotify · YouTube | lot session 6 |
 

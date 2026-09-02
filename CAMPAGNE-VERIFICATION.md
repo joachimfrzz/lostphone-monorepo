@@ -18,23 +18,29 @@ navigation & gestes · contenu narratif Sarah · animations.
 
 **Fiches de vérification détaillées des 28 apps** : `FICHES-VERIFICATION-APPS.md` (fichier unique, 02/09). Le dossier `fiches-verification/` (01/09) est remplacé — conservé une itération, suppression sur arbitrage.
 
-## Ordre & état (à jour du 02/09/2026)
+## Ordre & état (à jour du 02/09/2026 19h30)
 | # | App | État |
 |---|---|---|
 | 1 | Coque (verrouillage+accueil) | ✅ VALIDÉE 30/08 18h02 (v3 : « c'est parfait ») |
 | 2 | Messages | ✅ VALIDÉE 02/09 16h43 (build 272) |
-| 3 | WhatsApp | 🔄 RE-TEST build 275 (tap rangée → conversation) |
+| 3 | WhatsApp | 🔄 RE-TEST build 275 (+278) (tap rangée → conversation) |
 | 4 | Téléphone + Contacts | ✅ VALIDÉE 02/09 16h43 (build 272) |
 | 5 | Photos | ✅ VALIDÉE 02/09 16h43 (build 272) |
 | 6 | Mail | ✅ VALIDÉE 02/09 16h43 (build 272) |
-| 7 | Safari | 🔄 RE-TEST build 275 |
-| 8-10 | Notes, Rappels, Calendrier | 🔄 RE-TEST build 275 |
+| 7 | Safari | 🔄 RE-TEST build 275 (+278) |
+| 8-10 | Notes, Rappels, Calendrier | 🔄 RE-TEST build 275 (+278) |
 | 11 | Réglages | ⏸ REPORTÉE en passe dédiée FINALE (demande Joachim 02/09 : app trop vaste) |
 | 12 | Horloge | ✅ VALIDÉE 02/09 18h29 (build 274) — reste le mot anglais « Delete », corrigé au 275 |
 | 13 | Météo | ✅ VALIDÉE 02/09 17h29 (build 272) |
 | 14 | Calculatrice | ✅ VALIDÉE 02/09 17h29 (build 272) |
 | 15 | Dictaphone | ✅ VALIDÉE 02/09 18h29 (build 274) |
-| 16-20 | Fichiers, Localiser, Santé, Cartes, Ma Banque | à vérifier |
+| 16 | Fichiers | 🔄 RE-TEST build 278 |
+| 17 | Localiser | 🔄 RE-TEST build 278 (Memoji, carte, itinéraire) |
+| 18 | Santé | ✅ VALIDÉE 02/09 18h50 (build 274) — à enrichir selon les histoires |
+| 19 | Cartes (Wallet) | 🔄 RE-TEST build 278 (QR/code-barres réels, cartes) |
+| 20 | Ma Banque | 🔄 RE-TEST build 278 (virement persistant, clavier, détails) |
 | 21-28 | Messenger, Instagram, Snapchat, Facebook, X, ChatGPT, Spotify, YouTube | à vérifier |
+
+Builds 276 (19h05) et 277 (19h13) : rouges à la compilation, corrigés ; **278 (19h14 → 19h21) VERT**.
 
 Ensuite : création des nouvelles apps (chacune naît avec ce niveau d'exigence).

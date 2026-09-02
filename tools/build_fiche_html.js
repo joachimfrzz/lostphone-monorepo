@@ -23,6 +23,7 @@ for (let i = 0; i < lines.length; i++) {
     continue;
   }
   closeTable();
+  if (inBuild && /^---\s*$/.test(l)) { closeList(); html += "</section>"; inBuild = false; continue; }
   if (/^---\s*$/.test(l)) { closeList(); continue; }
   let m;
   if ((m = l.match(/^# (.*)/))) {
@@ -60,7 +61,6 @@ for (let i = 0; i < lines.length; i++) {
     } else html += `<h3>${inline(t)}</h3>`;
     continue;
   }
-  if (inBuild && /^---\s*$/.test(l)) { closeList(); html += "</section>"; inBuild = false; continue; }
   if ((m = l.match(/^- \[( |x)\] (.*)/))) {
     if (!inList) { html += '<ul class="checks">'; inList = true; }
     const cid = "chk" + (++checkN);

@@ -12,10 +12,9 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 - Comparaison sur ton vrai iPhone : régime **D71** — lecture seule, sociales via tes comptes B, jamais Ma Banque, jamais d'action Localiser réelle.
 
 ## 🔔 DERNIER BUILD — à vérifier en priorité
-> Cette section est MISE À JOUR À CHAQUE BUILD (règle instituée le 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
+> Cette section est MISE À JOUR À CHAQUE BUILD (règle D89, 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
-**Build disponible sur TestFlight : n° 272 — généré le 31/08 vers 17h00.**
-**Prochain build : EN PRÉPARATION (lot sessions 2 + 3) — décision Joachim 02/09 17h05 : la session 3 (Horloge, Météo, Calculatrice, Dictaphone) est testée sur le 272 AVANT le build ; ses correctifs s'ajouteront à la liste ci-dessous. Le build partira sur ton GO.**
+**Build : TestFlight n° 273 — lancé le 02/09 à 17h36 (disponible sur TestFlight ~10 min plus tard).** Lot **sessions 2 + 3** + fix WhatsApp. Précédent : 272 (31/08 17h00).
 
 ### Ce que tu avais demandé (avant ce build)
 - WhatsApp : le tap sur une conversation ouvrait les infos du contact/groupe au lieu de la discussion
@@ -23,14 +22,19 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 - Notes : couleurs pas fidèles ; titres pas en gras ; menu … à 3 entrées mortes ; micro dans la recherche ; niveau Dossiers manquant ; Retour qui quitte l'app
 - Rappels : Recherche et … ne font rien
 - Calendrier : Aujourd'hui ne fait rien ; bouton « carré + 2 barres » mort ; transition Année → Mois qui se recale ; zoom entre granularités
-- Réglages : REPORTÉ en passe dédiée finale (à ta demande)
+- Horloge : ville choisie incliquable (pas ajoutée) ; Modifier mort dans Horloges, Alarmes et Minuteurs ; retirer le « + » des Minuteurs
+- Dictaphone : un nouvel enregistrement de 1 s lisait le mémo « Idée photo » (14 s) à sa place ; Sélectionner, Recherche et Modifier morts
+- Météo, Calculatrice : ✅ VALIDÉES (rien à modifier) · Réglages : REPORTÉ en passe dédiée finale
 
 ### Ce qui a été modifié dans ce build
-- WhatsApp : lien caché par rangée supprimé ; « Infos du contact » route par une destination unique (fichier LPProto.swift)
+- WhatsApp : lien caché par rangée supprimé ; « Infos du contact » route par une destination unique
 - Safari : correctifs du 31/08 enfin embarqués (ils n'étaient PAS dans le 272) — zone tactile home réduite à la capsule (~150 pt, pour les 29 apps), barre d'outils remontée, aA = vrai menu (zoom 70–130 %, lecteur, masquer la barre), onglets réels, recherche contrôlée
-- Notes : teinte jaune système (plus l'ambre), titre de note en gras 28 pt + date en tête, racine = Dossiers (iCloud (toutes) / Notes / Recettes / Santé / Suppressions récentes), Retour = retour aux Dossiers, micro retiré, menu … réel (Pièces jointes → écran vide iOS ; Sélectionner → mode sélection avec Supprimer réel ; Galerie → cartes 2 colonnes), barres remontées au-dessus de la capsule
-- Rappels : Recherche réelle (feuille avec résultats), menu … réel (Modifier les listes = réordonner/supprimer ; Modèles), Nouvelle liste crée VRAIMENT la liste, menu … des listes (Afficher les terminés / Trier par), bouton + remonté
-- Calendrier : Aujourd'hui ramène au 17 août (depuis Mois ou Année), bouton d'affichage = menu Compact / Empilé / Liste (réel), transition Année → Mois en un seul positionnement, pincer = Mois → Année, écarter = Liste, barre basse remontée
+- Notes : teinte jaune système, titre de note en gras 28 pt + date en tête, racine = Dossiers (iCloud (toutes) / Notes / Recettes / Santé / Suppressions récentes), Retour = retour aux Dossiers, micro retiré, menu … réel (Pièces jointes / Sélectionner + Supprimer réel / Galerie), barres remontées
+- Rappels : Recherche réelle, menu … réel (Modifier les listes / Modèles), Nouvelle liste crée vraiment la liste, menu … des listes (Afficher les terminés / Trier par)
+- Calendrier : Aujourd'hui réel, bouton d'affichage = Compact / Empilé / Liste, transition Année → Mois en un seul positionnement, pincer = Année, écarter = Liste
+- Horloge : la ville choisie s'AJOUTE vraiment avec sa vraie heure et son décalage ; Modifier réel dans Horloges (supprimer/réordonner), Alarmes (pastilles de suppression), Minuteurs (retirer des récents) ; « + » des Minuteurs retiré
+- Dictaphone : un nouvel enregistrement crée un VRAI fichier audio de la durée exacte (lecture de 1 s pour 1 s, barre et ±15 s cohérents — le contenu est silencieux : le jeu n'active pas le micro, sinon iOS afficherait « Lost Phone souhaite accéder au micro ») ; Sélectionner réel (cocher → Partager / Supprimer) ; Recherche réelle ; Modifier réel sur les dossiers (supprimer / renommer) ; menu … : Déplacer vers un dossier
+- Transversal : barres du bas de Notes, Rappels, Calendrier, Dictaphone remontées au-dessus de la capsule home (même famille de bug que Safari)
 
 ### ✅ À VÉRIFIER DANS CE BUILD (checklist)
 - [ ] WhatsApp — tap sur Marc, Chloé, Les filles, Maman : la CONVERSATION s'ouvre (pas les infos) ; balayage → Plus → Infos du contact ouvre bien les infos
@@ -39,7 +43,7 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 - [ ] Safari — + ouvre un onglet, × ferme, compteur juste ; recherche « Marc Delacroix officier marine » → 7 résultats qui ne collent pas
 - [ ] Notes — ouverture sur DOSSIERS ; iCloud (toutes) → liste ; chevron « Dossiers » revient aux dossiers (ne quitte PAS l'app) ; capsule home = accueil
 - [ ] Notes — couleur jaune sur tous les boutons ; titres en gras dans la liste ; dans une note : titre gras 28 pt, date au-dessus
-- [ ] Notes — plus de micro dans la recherche ; menu … : Pièces jointes / Sélectionner (cocher 2 notes → Supprimer → elles vont dans Suppressions récentes → Récupérer) / Galerie
+- [ ] Notes — plus de micro ; menu … : Pièces jointes / Sélectionner (cocher 2 notes → Supprimer → Suppressions récentes → Récupérer) / Galerie
 - [ ] Notes — créer une note depuis Dossiers ET depuis une liste ; elle persiste après retour
 - [ ] Rappels — loupe → recherche « RIB » trouve « Imprimer le RIB » ; … → Modifier les listes (glisser pour réordonner) ; Nouvelle liste « Vacances » apparaît dans Mes listes
 - [ ] Rappels — dans une liste : … → Afficher les terminés / Trier par titre
@@ -47,7 +51,14 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 - [ ] Calendrier — bouton carré + barres → Compact (points) / Empilé (titres) / Liste (évènements sous la grille)
 - [ ] Calendrier — Année → tap sur Mai → Mai s'affiche DIRECTEMENT bien positionné, sans saut
 - [ ] Calendrier — pincer sur le mois → Année ; écarter → Liste
-- [ ] Régression — Messages, Téléphone, Photos, Mail : un tour rapide, rien ne doit avoir bougé
+- [ ] Horloge — Horloges : + → choisir « Alger » → Alger apparaît avec « Aujourd'hui, −1 h » et sa vraie heure ; Modifier → pastille rouge supprime, poignée réordonne ; OK
+- [ ] Horloge — Alarmes : Modifier → pastilles rouges sur les alarmes (pas sur Sommeil | Réveil) ; supprimer une alarme ; OK
+- [ ] Horloge — Minuteurs : plus de « + » en haut à droite ; Modifier → pastilles rouges retirent des Récents ; OK
+- [ ] Dictaphone — bouton rouge → enregistrer ~3 s → stop : « Nouvel enregistrement 15 » 0:03 ; Play → la lecture dure 3 s (barre qui avance, chrono 00:03 puis stop), PAS le mémo « Idée photo »
+- [ ] Dictaphone — Sélectionner → cocher un mémo → corbeille supprime ; Annuler sort du mode
+- [ ] Dictaphone — loupe → taper « banque » → seul le mémo bancaire reste ; × ferme
+- [ ] Dictaphone — écran Mémos vocaux → Modifier → pastille rouge sur « Idées photo », tap sur le nom = Renommer ; OK
+- [ ] Régression — Messages, Téléphone, Photos, Mail, Météo, Calculatrice : un tour rapide, rien ne doit avoir bougé
 
 ---
 
@@ -55,8 +66,8 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 | Session | Apps | Build |
 |---|---|---|
 | RE-TEST | Messages · WhatsApp · Téléphone · Photos · Mail | TestFlight **272** (dehors) |
-| 2 | Safari (re-test) · Notes · Rappels · Calendrier | build lot S2+S3 (à venir) |
-| 3 | Horloge · Météo · Calculatrice · Dictaphone | build lot S2+S3 (à venir) |
+| 2 | Safari (re-test) · Notes · Rappels · Calendrier | TestFlight **273** (02/09 17h36) |
+| 3 | Horloge · Dictaphone (Météo ✅, Calculatrice ✅) | TestFlight **273** (02/09 17h36) |
 | finale | Réglages (passe dédiée, D89) | dernier lot |
 | 4 | Fichiers · Localiser · Santé · Cartes · Ma Banque | lot session 4 |
 | 5 | Messenger · Instagram · Snapchat · Facebook | lot session 5 |

@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-02T17:08:00+02:00",
+  "date_derniere_maj": "2026-09-02T17:40:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1604,16 +1604,15 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "Session 3 en cours de test par Joachim sur le 272 (Horloge, Météo, Calculatrice, Dictaphone). Le build de lot embarquera S2+S3. Code S2 poussé (5b2ed423).",
+  "dernier_evenement": "BUILD 273 lancé 17h36 (lot sessions 2+3 + fix WhatsApp). Fiche « Dernier build » à jour (23 points). 7/28 apps validées. Joachim va dérouler la checklist et rendre ses derniers retours.",
   "en_attente": [
-   "Joachim : retours session 3 (Horloge, Météo, Calculatrice, Dictaphone) → agent code → GO → build lot S2+S3",
-   "Agent au build : mettre à jour la section Dernier build (numéro réel + heure) et republier la page",
-   "Joachim : dérouler la checklist « À vérifier dans ce build »",
+   "Codemagic : build 273 (6a984245f9be3a969bc2b427) en cours — vérifier qu il finit VERT et est publié TestFlight",
+   "Joachim : dérouler la checklist « À vérifier dans ce build » (23 points) + régressions apps validées, puis rendre ses retours",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
-   "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/"
+   "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/ ; passe finale Réglages"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-02 17h08"
+  "derniere_maj": "2026-09-02 17h40"
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2678,6 +2677,16 @@
    "reglages": "REPORTÉE (D89).",
    "build": "PAS ENCORE LANCÉ — code poussé ; build de lot session 2 sur GO de Joachim. Fiche « Dernier build » préremplie avec le contenu prévu."
   },
-  "session3_plan_2026_09_02": "17h05 — Joachim : session 3 (Horloge, Météo, Calculatrice, Dictaphone) testée sur le build 272 AVANT de builder → UN SEUL build de lot sessions 2+3. En attente de ses retours."
+  "session3_plan_2026_09_02": "17h05 — Joachim : session 3 (Horloge, Météo, Calculatrice, Dictaphone) testée sur le build 272 AVANT de builder → UN SEUL build de lot sessions 2+3. En attente de ses retours.",
+  "session3_retours_2026_09_02": {
+   "heure": "17h29",
+   "meteo": "VALIDÉE (« vraiment pas mal », niveau de détail suffisant pour l importance de l app).",
+   "calculatrice": "VALIDÉE (« nickel »).",
+   "horloge": "Ville choisie incliquable (non ajoutée) ; Modifier mort dans Horloges/Alarmes/Minuteurs ; retirer le + des Minuteurs. CODÉ (HorlogeApp.swift) : magasin.villes persistant + catalogue de 50 villes avec décalage UTC (été 2026), ajout réel au tap avec heure locale et libellé Aujourd hui/Hier/Demain ±h ; Modifier réel = editMode + onDelete/onMove (Horloges), onDelete + chevrons (Alarmes, rangée Sommeil deleteDisabled), pastilles rouges sur les Récents (Minuteurs) ; + des Minuteurs et HorlogeNouveauMinuteurVue retirés.",
+   "dictaphone": "BUG : nouvel enregistrement (1 s) lisait « Idée photo » (14 s). CAUSE : fichier \"\" → Bundle.main.url(forResource: \"\", withExtension: \"mp3\") renvoie le PREMIER mp3 du bundle. CORRECTIF (DictaphoneApp.swift) : AudioJoueur.creerWavSilencieux(duree:) génère un vrai WAV PCM 8 kHz de la durée exacte dans tmp ; LecteurMemo.charge accepte les chemins absolus et refuse les noms vides. CHOIX consigné : pas de vrai micro (la demande d autorisation iOS « Lost Phone souhaite accéder au micro » casserait la fiction) → contenu silencieux, transcription « Aucune transcription disponible ». + Sélectionner réel (cocher → Partager/Supprimer), Recherche réelle (titre + transcription), Modifier réel sur les dossiers (supprimer/renommer), menu … Déplacer vers un dossier, dossiers persistants.",
+   "piege_ios": "Bundle.main.url(forResource: \"\", withExtension:) avec un nom VIDE ne renvoie pas nil : il renvoie un fichier arbitraire de cette extension. Toujours garder les noms vides.",
+   "build": "TestFlight 273 (buildId 6a984245f9be3a969bc2b427, index 13 = 260+13) lancé 02/09 17h36 sur GO Joachim — lot S2+S3 + fix WhatsApp. Fiche « Dernier build » mise à jour (23 points à vérifier)."
+  },
+  "validees": "7/28 : Coque, Messages, Téléphone, Photos, Mail (build 272), Météo, Calculatrice (272, 02/09 17h29)."
  }
 }

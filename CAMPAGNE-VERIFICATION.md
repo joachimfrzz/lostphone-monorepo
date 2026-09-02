@@ -23,17 +23,17 @@ navigation & gestes · contenu narratif Sarah · animations.
 |---|---|---|
 | 1 | Coque (verrouillage+accueil) | ✅ VALIDÉE 30/08 18h02 (v3 : « c'est parfait ») |
 | 2 | Messages | ✅ VALIDÉE 02/09 16h43 (build 272) |
-| 3 | WhatsApp | 🔄 RE-TEST build 273 (tap rangée → conversation) |
+| 3 | WhatsApp | 🔄 RE-TEST build 274 (tap rangée → conversation) |
 | 4 | Téléphone + Contacts | ✅ VALIDÉE 02/09 16h43 (build 272) |
 | 5 | Photos | ✅ VALIDÉE 02/09 16h43 (build 272) |
 | 6 | Mail | ✅ VALIDÉE 02/09 16h43 (build 272) |
-| 7 | Safari | 🔄 RE-TEST build 273 |
-| 8-10 | Notes, Rappels, Calendrier | 🔄 RE-TEST build 273 |
+| 7 | Safari | 🔄 RE-TEST build 274 |
+| 8-10 | Notes, Rappels, Calendrier | 🔄 RE-TEST build 274 |
 | 11 | Réglages | ⏸ REPORTÉE en passe dédiée FINALE (demande Joachim 02/09 : app trop vaste) |
-| 12 | Horloge | 🔄 RE-TEST build 273 (ville ajoutable, Modifier ×3, + retiré) |
+| 12 | Horloge | 🔄 RE-TEST build 274 (ville ajoutable, Modifier ×3, + retiré) |
 | 13 | Météo | ✅ VALIDÉE 02/09 17h29 (build 272) |
 | 14 | Calculatrice | ✅ VALIDÉE 02/09 17h29 (build 272) |
-| 15 | Dictaphone | 🔄 RE-TEST build 273 (nouvel enregistrement = vrai fichier audio, Sélectionner/Recherche/Modifier) |
+| 15 | Dictaphone | 🔄 RE-TEST build 274 (nouvel enregistrement = vrai fichier audio, Sélectionner/Recherche/Modifier) |
 | 16-20 | Fichiers, Localiser, Santé, Cartes, Ma Banque | à vérifier |
 | 21-28 | Messenger, Instagram, Snapchat, Facebook, X, ChatGPT, Spotify, YouTube | à vérifier |
 

@@ -14,7 +14,7 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 ## 🔔 DERNIER BUILD — à vérifier en priorité
 > Cette section est MISE À JOUR À CHAQUE BUILD (règle D89, 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
-**Build : TestFlight n° 273 — lancé le 02/09 à 17h36 (disponible sur TestFlight ~10 min plus tard).** Lot **sessions 2 + 3** + fix WhatsApp. Précédent : 272 (31/08 17h00).
+**Build : TestFlight n° 274 — lancé le 02/09 à 17h47, compilé à partir de 17h51 (disponible sur TestFlight ~10 min après la fin).** Lot **sessions 2 + 3** + fix WhatsApp. Le 273 (17h36) a échoué à la compilation (4 erreurs corrigées, dont 2 héritées du code Safari du 31/08) — il n'apparaîtra pas sur TestFlight. Précédent build valide : 272 (31/08 17h00).
 
 ### Ce que tu avais demandé (avant ce build)
 - WhatsApp : le tap sur une conversation ouvrait les infos du contact/groupe au lieu de la discussion
@@ -66,8 +66,8 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 | Session | Apps | Build |
 |---|---|---|
 | RE-TEST | Messages · WhatsApp · Téléphone · Photos · Mail | TestFlight **272** (dehors) |
-| 2 | Safari (re-test) · Notes · Rappels · Calendrier | TestFlight **273** (02/09 17h36) |
-| 3 | Horloge · Dictaphone (Météo ✅, Calculatrice ✅) | TestFlight **273** (02/09 17h36) |
+| 2 | Safari (re-test) · Notes · Rappels · Calendrier | TestFlight **274** (02/09 17h47) |
+| 3 | Horloge · Dictaphone (Météo ✅, Calculatrice ✅) | TestFlight **274** (02/09 17h47) |
 | finale | Réglages (passe dédiée, D89) | dernier lot |
 | 4 | Fichiers · Localiser · Santé · Cartes · Ma Banque | lot session 4 |
 | 5 | Messenger · Instagram · Snapchat · Facebook | lot session 5 |

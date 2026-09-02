@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-02T16:35:00+02:00",
+  "date_derniere_maj": "2026-09-02T16:55:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1604,14 +1604,16 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "FICHES-VERIFICATION-APPS.md (fichier unique détaillé, 28 apps) livré et poussé. Question ouverte : intégrer Plans à la campagne ?",
+  "dernier_evenement": "Verdict 272 : Messages/Téléphone/Photos/Mail VALIDÉES (5/28 avec la coque). WhatsApp : bug tap-rangée→infos corrigé dans le repo (pas de build). Joachim va livrer ses retours session 2 (Safari, Notes, Rappels, Calendrier, Réglages) → ensuite UN build.",
   "en_attente": [
-   "Joachim : re-test build 272 (Messages, WhatsApp, Téléphone, Photos, Mail) puis tour session 2 avec les fiches (Safari re-test attendra le build du lot session 2)",
-   "Agent : coder les retours au fil de l eau, builds groupés par session (D86)",
-   "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04"
+   "Joachim : retours session 2 (Safari, Notes, Rappels, Calendrier, Réglages) — il les livre AVANT le build",
+   "Agent : coder les retours session 2 puis lancer le build de lot (embarque : fix WhatsApp + 5 corr. Safari + retours S2) sur GO",
+   "Re-test au prochain build : WhatsApp (tap rangée → conversation) puis validation WhatsApp",
+   "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
+   "Arbitrages ouverts : ajouter Plans à la campagne (session 4) ; supprimer fiches-verification/"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-02 16h30"
+  "derniere_maj": "2026-09-02 16h55"
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2654,6 +2656,12 @@
    "build": "PAS de build — protocole D86 : un build par session de 4-5 apps ; Safari attend le lot session 2"
   },
   "fiches_2026_09_01": "Les 22 fiches de vérification (21 apps restantes + re-test Safari) sont dans fiches-verification/ du repo (commit adf58de5), avec README d index et plan de sessions D86 : S2 = Safari(re-test)+Notes+Rappels+Calendrier+Réglages ; S3 = Horloge+Météo+Calculatrice+Dictaphone ; S4 = Fichiers+Localiser+Santé+Cartes+Ma Banque ; S5 = Messenger+Instagram+Snapchat+Facebook ; S6 = X+ChatGPT+Spotify+YouTube. Chaque fiche : tour ≤5 min, boutons à tester (D82), contenu Sarah attendu, pièges connus à ne pas re-signaler. Sources : rapports S1-S6, chantier_design, cercle2.",
-  "fiches_2026_09_02": "Demande Joachim 02/09 16h21 : fiches REFAITES en UN SEUL fichier détaillé — FICHES-VERIFICATION-APPS.md à la racine (28 apps : coque en régression seule, 5 apps en re-test 272 avec leurs points précis, Safari re-test, 21 restantes ; par app : écrans, gestes & touchers D82, contenu Sarah, animations, pièges connus ; plan des sessions D86 en tête). Le dossier fiches-verification/ du 01/09 est REMPLACÉ (conservé une itération, à supprimer sur arbitrage). [QUESTION posée] : PLANS (construite v1 le 20/08) est ABSENTE de la liste des 28 de CAMPAGNE-VERIFICATION.md — à intégrer (session 4) ? → 16h35 : Joachim trouve le .md brut « moche, pas de présentation » → version PRÉSENTÉE publiée (page web mobile : sommaire, cases à cocher par app persistantes, barre de progression, encadrés par axe). Source = FICHES-VERIFICATION-APPS.md, générateur tools/build_fiche_html.js, rendu fiches-verification.html poussés au repo. Règle retenue : pour Joachim, un livrable de lecture = page présentée, jamais un .md brut."
+  "fiches_2026_09_02": "Demande Joachim 02/09 16h21 : fiches REFAITES en UN SEUL fichier détaillé — FICHES-VERIFICATION-APPS.md à la racine (28 apps : coque en régression seule, 5 apps en re-test 272 avec leurs points précis, Safari re-test, 21 restantes ; par app : écrans, gestes & touchers D82, contenu Sarah, animations, pièges connus ; plan des sessions D86 en tête). Le dossier fiches-verification/ du 01/09 est REMPLACÉ (conservé une itération, à supprimer sur arbitrage). [QUESTION posée] : PLANS (construite v1 le 20/08) est ABSENTE de la liste des 28 de CAMPAGNE-VERIFICATION.md — à intégrer (session 4) ? → 16h35 : Joachim trouve le .md brut « moche, pas de présentation » → version PRÉSENTÉE publiée (page web mobile : sommaire, cases à cocher par app persistantes, barre de progression, encadrés par axe). Source = FICHES-VERIFICATION-APPS.md, générateur tools/build_fiche_html.js, rendu fiches-verification.html poussés au repo. Règle retenue : pour Joachim, un livrable de lecture = page présentée, jamais un .md brut.",
+  "verdict_272_2026_09_02": {
+   "heure": "16h43",
+   "validees": "Messages, Téléphone, Photos, Mail — VALIDÉES par Joachim sur le build 272 (« tout est bon »). Coque déjà validée le 30/08. Total : 5/28.",
+   "whatsapp_bug": "Tap sur une rangée de discussion → ouvrait les INFOS du contact/groupe au lieu de la conversation. CAUSE : le correctif anti-crash du 31/08 avait mis un NavigationLink(isActive:) caché en .background de chaque rangée, en plus du NavigationLink de la rangée → DEUX liens dans une même rangée de List, SwiftUI déclenchait le caché. CORRECTIF (02/09, LPProto.swift) : lien caché supprimé ; « Infos du contact » route par une destination UNIQUE .navigationDestination(item: $nomInfosOuvert) sur la vue toujours montée, type dédié InfosContactCible (pour ne pas entrer en conflit avec la destination String de la conversation), binding passé à LigneConvWARangee. Poussé au repo, PAS de build (Joachim livre d abord ses retours Safari/Notes/Rappels/Calendrier/Réglages → un seul build de lot session 2).",
+   "piege_swiftui": "Dans une List, une rangée = UN SEUL NavigationLink. Un second lien (même caché, même .opacity(0) en background) fait que le tap de rangée déclenche le mauvais. Pour les navigations secondaires d une rangée : état au niveau de la liste + navigationDestination(item:) unique avec un type dédié."
+  }
  }
 }

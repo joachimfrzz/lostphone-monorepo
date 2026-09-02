@@ -18,15 +18,15 @@ navigation & gestes · contenu narratif Sarah · animations.
 
 **Fiches de vérification détaillées des 28 apps** : `FICHES-VERIFICATION-APPS.md` (fichier unique, 02/09). Le dossier `fiches-verification/` (01/09) est remplacé — conservé une itération, suppression sur arbitrage.
 
-## Ordre & état (à jour du 01/09/2026)
+## Ordre & état (à jour du 02/09/2026)
 | # | App | État |
 |---|---|---|
 | 1 | Coque (verrouillage+accueil) | ✅ VALIDÉE 30/08 18h02 (v3 : « c'est parfait ») |
-| 2 | Messages | 🔄 RE-TEST build 272 (6 corr. étape 2 + 2 corr. retest 271 codées) |
-| 3 | WhatsApp | 🔄 RE-TEST build 272 (gros lot étape 3 + CRASHS navigation réparés) |
-| 4 | Téléphone + Contacts | 🔄 RE-TEST build 272 (5 corr. retest 271 : tri Récents, Mail préadressé, partage fiche…) |
-| 5 | Photos | 🔄 RE-TEST build 272 (11 corr. étape 5 + 4 corr. retest 271 : années cliquables, filtres…) |
-| 6 | Mail | 🔄 RE-TEST build 272 (13 corr. étape 6 + bug critique « mails ne s'ouvrent plus » réparé) |
+| 2 | Messages | ✅ VALIDÉE 02/09 16h43 (build 272) |
+| 3 | WhatsApp | 🛠 1 bug restant (tap rangée → infos au lieu de la conv) CORRIGÉ 02/09 dans le repo — au build du lot session 2 |
+| 4 | Téléphone + Contacts | ✅ VALIDÉE 02/09 16h43 (build 272) |
+| 5 | Photos | ✅ VALIDÉE 02/09 16h43 (build 272) |
+| 6 | Mail | ✅ VALIDÉE 02/09 16h43 (build 272) |
 | 7 | Safari | 🛠 CORRIGÉE 31/08 (5 retours session 2 : zone BarreHome, onglets réels, aA, recherche contrôlée, sites étoffés) — build au LOT session 2 |
 | 8-15 | Notes, Rappels, Calendrier, Réglages, Horloge, Météo, Calculatrice, Dictaphone | à vérifier (sessions 2-3) |
 | 16-20 | Fichiers, Localiser, Santé, Cartes, Ma Banque | à vérifier |

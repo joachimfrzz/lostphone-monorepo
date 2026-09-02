@@ -1219,6 +1219,7 @@ struct WhatsAppListeView: View {
     @State private var photosListeVisibles = false
     @State private var photoAEnvoyer: PhotoAPartagerWA? = nil
     @State private var nomConvOuverte: String? = nil
+    @State private var nomInfosOuvert: InfosContactCible? = nil   // fix 02/09 : infos routées au niveau liste
     @State private var modeSelection = false
     @State private var selectionWA = Set<String>()
     @ObservedObject private var envois = EnvoisJoueur.partage
@@ -1282,6 +1283,13 @@ struct WhatsAppListeView: View {
                 // toujours montée (plus jamais dans une branche du switch qui disparaît)
                 .navigationDestination(item: $nomConvOuverte) { nom in
                     ConversationVue(nomContact: nom)
+                }
+                // fix 02/09 (retour Joachim : le tap de rangée ouvrait les infos au lieu de la discussion) :
+                // le lien caché par rangée créait DEUX NavigationLink dans une même rangée de List —
+                // SwiftUI en déclenchait un au hasard. « Infos du contact » passe désormais par cette
+                // destination UNIQUE, déclarée une fois sur la vue toujours montée (même motif que la conv).
+                .navigationDestination(item: $nomInfosOuvert) { cible in
+                    InfosContactVue(nom: cible.nom, numero: DonneesWA.fiches[cible.nom]?.numero ?? "")
                 }
 
                 HStack(spacing: 10) {
@@ -1437,7 +1445,7 @@ struct WhatsAppListeView: View {
                                 if selectionWA.contains(c.0) { selectionWA.remove(c.0) } else { selectionWA.insert(c.0) }
                             }
                         } else {
-                            LigneConvWARangee(c: c)
+                            LigneConvWARangee(c: c, infosPour: $nomInfosOuvert)
                         }
                     }
                 }
@@ -1482,11 +1490,18 @@ struct PhotoAPartagerWA: Identifiable {
 }
 
 // v2 étape 3 — rangée de discussion avec balayages RÉELS (non lu / archiver / plus)
+// fix 02/09 : cible d’« Infos du contact » (type dédié pour ne pas entrer en conflit
+// avec la destination String de la conversation)
+struct InfosContactCible: Identifiable, Hashable {
+    let nom: String
+    var id: String { nom }
+}
+
 struct LigneConvWARangee: View {
     let c: (String, String, String, Bool)
+    @Binding var infosPour: InfosContactCible?
     @ObservedObject private var magasin = MagasinWA.partage
     @State private var menuPlusVisible = false
-    @State private var infosVisibles = false
 
     private var estNonLue: Bool { magasin.nonLues[c.0] != nil }
 
@@ -1517,18 +1532,12 @@ struct LigneConvWARangee: View {
             Button(magasin.epinglees.contains(c.0) ? "Désépingler" : "Épingler") {
                 magasin.basculerEpingle(c.0)
             }
-            Button("Infos du contact") { infosVisibles = true }
+            Button("Infos du contact") { infosPour = InfosContactCible(nom: c.0) }
             Button("Annuler", role: .cancel) {}
         }
-        // v2 correctifs 31/08 ANTI-CRASH : navigationDestination par rangée SUPPRIMÉ
-        // (déclarations multiples = crash fatal SwiftUI dès qu'on pousse un écran).
-        // Remplacé par un lien caché par rangée — le motif sûr déjà utilisé dans Messages.
-        .background(
-            NavigationLink(isActive: $infosVisibles) {
-                InfosContactVue(nom: c.0, numero: DonneesWA.fiches[c.0]?.numero ?? "")
-            } label: { EmptyView() }
-            .opacity(0)
-        )
+        // fix 02/09 : plus AUCUN second NavigationLink dans la rangée (voir WhatsAppListeView).
+        // Piège consigné : dans une List, une rangée = UN seul NavigationLink, sinon le tap
+        // de rangée déclenche le mauvais lien (ici : les infos s’ouvraient au lieu de la discussion).
     }
 }
 

@@ -42,6 +42,7 @@ for (let i = 0; i < lines.length; i++) {
     }
     continue;
   }
+  if ((m = l.match(/^### (.*)/))) { closeList(); html += `<h3>${inline(m[1])}</h3>`; continue; }
   if ((m = l.match(/^## (.*)/))) {
     closeList();
     const t = m[1];

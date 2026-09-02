@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-02T16:55:00+02:00",
+  "date_derniere_maj": "2026-09-02T17:25:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1604,16 +1604,16 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "Verdict 272 : Messages/Téléphone/Photos/Mail VALIDÉES (5/28 avec la coque). WhatsApp : bug tap-rangée→infos corrigé dans le repo (pas de build). Joachim va livrer ses retours session 2 (Safari, Notes, Rappels, Calendrier, Réglages) → ensuite UN build.",
+  "dernier_evenement": "Retours session 2 codés (Notes réécrite, Rappels, Calendrier ; Safari déjà corrigé dans le repo). D89 : section « Dernier build » instituée dans la fiche (préremplie) ; Réglages reportée en passe finale. EN ATTENTE : GO Joachim pour le build de lot session 2.",
   "en_attente": [
-   "Joachim : retours session 2 (Safari, Notes, Rappels, Calendrier, Réglages) — il les livre AVANT le build",
-   "Agent : coder les retours session 2 puis lancer le build de lot (embarque : fix WhatsApp + 5 corr. Safari + retours S2) sur GO",
-   "Re-test au prochain build : WhatsApp (tap rangée → conversation) puis validation WhatsApp",
+   "Joachim : GO pour le build de lot session 2 (embarque : fix WhatsApp, Safari 31/08, Notes v2, Rappels v2, Calendrier v2)",
+   "Agent au build : mettre à jour la section Dernier build (numéro réel + heure) et republier la page",
+   "Joachim : dérouler la checklist « À vérifier dans ce build »",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
-   "Arbitrages ouverts : ajouter Plans à la campagne (session 4) ; supprimer fiches-verification/"
+   "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-02 16h55"
+  "derniere_maj": "2026-09-02 17h25"
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2102,6 +2102,11 @@
    "date": "2026-09-01",
    "titre": "Tri du repo pour passation claire (Lot 1) + registre canonique des décisions",
    "detail": "Arbitrage Joachim (21h10) après audit complet du repo. (1) Le registre canonique des décisions est project_memory.json (option b) : les fiches docs/decisions/ sont GELÉES à D27 avec note explicite — on ne maintient pas deux registres. (2) Lot 1 exécuté : README.md racine refondu (carte du repo complète, canal de build corrigé duel-swift-testflight — l ancienne mention duel-flutter était obsolète depuis D50) ; PASSATION.md refondu (plus AUCUN état dupliqué — l état vit dans etat_conversation ; ajout du volet passation Codemagic : APP_ID, token, clé ASC nommée Codemagic — phase T de D87) ; moteur/README.md = bannière OBSOLÈTE (Flutter conservé comme témoin D49/D50 et référence pour re-arbitrage ARCH-2/Android) ; READMEs de répartition tools/ (scripts SideTap) vs outils/ (archives b64, dont ENTRÉES DE BUILD à ne pas déplacer sans mettre à jour codemagic.yaml). (3) Principes du tri : jamais de suppression aveugle ; un tri git ne libère aucun espace (historique) — il sert la lisibilité ; les archives références pré-SideTap de outils/ sont les seules copies survivantes (R9) et sont conservées. Lot 2 (rangement tools/archives + references/archives-b64) et vérification croisée codemagic.yaml : EN ATTENTE d arbitrage. — LOT 2 EXÉCUTÉ le 2026-09-01 (~21h25) après vérification croisée : codemagic.yaml ne référence que outils/decode-binaires.sh et outils/ecrans.txt ; il copie AUSSI l icône 1024 depuis moteur/ios/ (le dossier Flutter obsolète reste une ENTRÉE DE BUILD — ne jamais le supprimer sans corriger le YAML). Déplacé : session1_driver.py, session1b_driver.py, session1b-checklist.md -> tools/archives/ (avec README). NON déplacé (arbitrage agent, à re-challenger si besoin) : les archives references*.tar.b64 de outils/ restent en place — les déplacer via l API exigerait de faire transiter ~70 Mo de base64 fichier par fichier (~100 appels) pour un gain purement cosmétique, decode-references.sh pointe sur outils/, et le README d index posé au Lot 1 remplit déjà l objectif de lisibilité."
+  },
+  "D89": {
+   "date": "2026-09-02",
+   "titre": "Fiche de vérification = point de référence après chaque build (section « Dernier build » obligatoire) + Réglages reportée en passe dédiée finale",
+   "detail": "Demande Joachim 16h51. (1) À CHAQUE nouveau build, la fiche de vérification (FICHES-VERIFICATION-APPS.md + page présentée) est mise à jour avec une section « DERNIER BUILD » distincte du reste : numéro/version + heure de génération ; ce que Joachim avait demandé avant ce build ; ce qui a effectivement été modifié ; et surtout une CHECKLIST « À vérifier dans ce build » précise, app par app. Joachim ne doit jamais relire l historique pour savoir quoi tester. (2) RÉGLAGES est retirée de la session 2 et traitée EN DERNIER, dans une passe dédiée (app trop vaste, déjà « plutôt bien » à première vue). (3) Sites Safari : enrichissement reporté au chantier histoires (quand on saura quels sites comptent par scénario)."
   }
  },
  "point_de_reprise_migration": {
@@ -2662,6 +2667,16 @@
    "validees": "Messages, Téléphone, Photos, Mail — VALIDÉES par Joachim sur le build 272 (« tout est bon »). Coque déjà validée le 30/08. Total : 5/28.",
    "whatsapp_bug": "Tap sur une rangée de discussion → ouvrait les INFOS du contact/groupe au lieu de la conversation. CAUSE : le correctif anti-crash du 31/08 avait mis un NavigationLink(isActive:) caché en .background de chaque rangée, en plus du NavigationLink de la rangée → DEUX liens dans une même rangée de List, SwiftUI déclenchait le caché. CORRECTIF (02/09, LPProto.swift) : lien caché supprimé ; « Infos du contact » route par une destination UNIQUE .navigationDestination(item: $nomInfosOuvert) sur la vue toujours montée, type dédié InfosContactCible (pour ne pas entrer en conflit avec la destination String de la conversation), binding passé à LigneConvWARangee. Poussé au repo, PAS de build (Joachim livre d abord ses retours Safari/Notes/Rappels/Calendrier/Réglages → un seul build de lot session 2).",
    "piege_swiftui": "Dans une List, une rangée = UN SEUL NavigationLink. Un second lien (même caché, même .opacity(0) en background) fait que le tap de rangée déclenche le mauvais. Pour les navigations secondaires d une rangée : état au niveau de la liste + navigationDestination(item:) unique avec un type dédié."
+  },
+  "session2_retours_2026_09_02": {
+   "heure": "16h51",
+   "safari": "Barre home vole les 5 boutons du bas ; aA mort ; sites pas assez détaillés (reporté). DIAGNOSTIC : le build 272 ne contenait PAS les correctifs Safari du 31/08 (codés après le lancement) — le code du repo est déjà corrigé (BarreHome 150 pt, barre remontée, aA = Menu réel). Rien à recoder, à vérifier au prochain build.",
+   "notes": "Couleurs pas fidèles ; titres pas en gras ; menu … (Pièces jointes / Sélectionner / Galerie) mort ; micro dans la recherche ; niveau Dossiers manquant ; Retour quitte l app. CODÉ (NotesApp.swift réécrit) : jaune système 0xFFD60A (l ambre 0xE8A33D était la cause couleur — l iPhone de Sarah est en apparence SOMBRE d après Réglages v2, Notes reste sombre), racine Dossiers (NavigationPath : dossiers + notes), Retour = pop interne, micro retiré, titre 28 pt gras + date en tête dans l éditeur, menu … réel (Pièces jointes = écran vide iOS, Sélectionner = mode sélection + Supprimer réel → Suppressions récentes récupérables, Galerie = cartes 2 colonnes), barres basses remontées (.padding(.bottom, 26)). Références S5 (references/s5-pcnr-2026-08-29/s5.b64.part00-03, 11 Mo) : PRÉSENTES au repo mais inaccessibles via l API GitHub (>1 Mo) — non consultées.",
+   "rappels": "Recherche et … morts. CODÉ (RappelsApp.swift) : Recherche réelle (feuille), … = Modifier les listes (réordonner/supprimer réel) + Modèles (écran vide iOS), listes persistantes (Nouvelle liste crée vraiment), … des listes = Afficher les terminés / Trier par, Liste changeable dans Détails, bouton + remonté.",
+   "calendrier": "Aujourd hui mort ; bouton carré+2 barres mort ; transition Année→Mois qui se recale ; zoom entre granularités souhaité. CODÉ (CalendrierApp.swift) : Aujourd hui réel (déclencheur allerAujourdhui + retour Mois depuis Année), bouton = Menu Compact/Empilé/Liste réel (mode Liste = évènements du mois sous la grille), transition propre (VStack au lieu de LazyVStack + UN scrollTo sans animation sur moisCible ; la double visée à 0,35 s — cause du recalage — supprimée), pincement Mois→Année / écarter→Liste, barre basse remontée. Vue semaine : n existe pas sur iPhone portrait — non ajoutée.",
+   "piege_generalise": "BarreHome (19 pt de haut, 150 pt de large, centrée) : toute barre d app posée à moins de ~20 pt du bas est partiellement recouverte au centre → le tap va à l accueil. Règle : barres basses d app à .padding(.bottom, ≥ 24).",
+   "reglages": "REPORTÉE (D89).",
+   "build": "PAS ENCORE LANCÉ — code poussé ; build de lot session 2 sur GO de Joachim. Fiche « Dernier build » préremplie avec le contenu prévu."
   }
  }
 }

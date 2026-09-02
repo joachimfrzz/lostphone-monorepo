@@ -11,6 +11,46 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 - **Une app validée = on n'y revient plus.**
 - Comparaison sur ton vrai iPhone : régime **D71** — lecture seule, sociales via tes comptes B, jamais Ma Banque, jamais d'action Localiser réelle.
 
+## 🔔 DERNIER BUILD — à vérifier en priorité
+> Cette section est MISE À JOUR À CHAQUE BUILD (règle instituée le 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
+
+**Build disponible sur TestFlight : n° 272 — généré le 31/08 vers 17h00.**
+**Prochain build : EN PRÉPARATION (lot session 2) — le contenu ci-dessous est ce qu'il embarquera ; il partira sur ton GO.**
+
+### Ce que tu avais demandé (avant ce build)
+- WhatsApp : le tap sur une conversation ouvrait les infos du contact/groupe au lieu de la discussion
+- Safari : barre home qui vole les 5 boutons du bas ; bouton aA mort ; sites trop peu détaillés (reporté au chantier histoires)
+- Notes : couleurs pas fidèles ; titres pas en gras ; menu … à 3 entrées mortes ; micro dans la recherche ; niveau Dossiers manquant ; Retour qui quitte l'app
+- Rappels : Recherche et … ne font rien
+- Calendrier : Aujourd'hui ne fait rien ; bouton « carré + 2 barres » mort ; transition Année → Mois qui se recale ; zoom entre granularités
+- Réglages : REPORTÉ en passe dédiée finale (à ta demande)
+
+### Ce qui a été modifié dans ce build
+- WhatsApp : lien caché par rangée supprimé ; « Infos du contact » route par une destination unique (fichier LPProto.swift)
+- Safari : correctifs du 31/08 enfin embarqués (ils n'étaient PAS dans le 272) — zone tactile home réduite à la capsule (~150 pt, pour les 29 apps), barre d'outils remontée, aA = vrai menu (zoom 70–130 %, lecteur, masquer la barre), onglets réels, recherche contrôlée
+- Notes : teinte jaune système (plus l'ambre), titre de note en gras 28 pt + date en tête, racine = Dossiers (iCloud (toutes) / Notes / Recettes / Santé / Suppressions récentes), Retour = retour aux Dossiers, micro retiré, menu … réel (Pièces jointes → écran vide iOS ; Sélectionner → mode sélection avec Supprimer réel ; Galerie → cartes 2 colonnes), barres remontées au-dessus de la capsule
+- Rappels : Recherche réelle (feuille avec résultats), menu … réel (Modifier les listes = réordonner/supprimer ; Modèles), Nouvelle liste crée VRAIMENT la liste, menu … des listes (Afficher les terminés / Trier par), bouton + remonté
+- Calendrier : Aujourd'hui ramène au 17 août (depuis Mois ou Année), bouton d'affichage = menu Compact / Empilé / Liste (réel), transition Année → Mois en un seul positionnement, pincer = Mois → Année, écarter = Liste, barre basse remontée
+
+### ✅ À VÉRIFIER DANS CE BUILD (checklist)
+- [ ] WhatsApp — tap sur Marc, Chloé, Les filles, Maman : la CONVERSATION s'ouvre (pas les infos) ; balayage → Plus → Infos du contact ouvre bien les infos
+- [ ] Safari — les 5 boutons du bas (◁ ▷ partage livre onglets) répondent sans quitter l'app ; le tap sur la capsule centrale ramène à l'accueil
+- [ ] Safari — aA ouvre un menu : Agrandir/Réduire le texte change vraiment la taille ; Masquer la barre d'outils laisse une pilule URL
+- [ ] Safari — + ouvre un onglet, × ferme, compteur juste ; recherche « Marc Delacroix officier marine » → 7 résultats qui ne collent pas
+- [ ] Notes — ouverture sur DOSSIERS ; iCloud (toutes) → liste ; chevron « Dossiers » revient aux dossiers (ne quitte PAS l'app) ; capsule home = accueil
+- [ ] Notes — couleur jaune sur tous les boutons ; titres en gras dans la liste ; dans une note : titre gras 28 pt, date au-dessus
+- [ ] Notes — plus de micro dans la recherche ; menu … : Pièces jointes / Sélectionner (cocher 2 notes → Supprimer → elles vont dans Suppressions récentes → Récupérer) / Galerie
+- [ ] Notes — créer une note depuis Dossiers ET depuis une liste ; elle persiste après retour
+- [ ] Rappels — loupe → recherche « RIB » trouve « Imprimer le RIB » ; … → Modifier les listes (glisser pour réordonner) ; Nouvelle liste « Vacances » apparaît dans Mes listes
+- [ ] Rappels — dans une liste : … → Afficher les terminés / Trier par titre
+- [ ] Calendrier — Aujourd'hui depuis un autre mois → revient sur Août 2026 (17 en rouge) ; depuis l'Année aussi
+- [ ] Calendrier — bouton carré + barres → Compact (points) / Empilé (titres) / Liste (évènements sous la grille)
+- [ ] Calendrier — Année → tap sur Mai → Mai s'affiche DIRECTEMENT bien positionné, sans saut
+- [ ] Calendrier — pincer sur le mois → Année ; écarter → Liste
+- [ ] Régression — Messages, Téléphone, Photos, Mail : un tour rapide, rien ne doit avoir bougé
+
+---
+
 ## Sessions et builds (méthode D86)
 | Session | Apps | Build |
 |---|---|---|

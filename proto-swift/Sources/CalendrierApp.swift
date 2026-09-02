@@ -3,6 +3,9 @@
 // R3 : RDV Banque 11:30 le 17, kiné les jeudis 17:30, brunch des filles le samedi 22 (groupe WhatsApp),
 // anniversaire de Maman le 14 février (= P01-P05), et « MARC ARRIVE ⚓️ » le vendredi 28 août.
 // D51 : vue mois/année/jour réelles, création d'événement fonctionnelle, recherche réelle.
+// v2 session 2 (02/09, retours Joachim) : « Aujourd'hui » RÉEL (ramène au 17 août), bouton d'affichage
+// RÉEL (Compact / Empilé / Liste, comme iOS), transition Année → Mois PROPRE (un seul positionnement,
+// plus de recalage), pincement pour passer Mois ⇄ Année, barre basse remontée au-dessus de la capsule home.
 import SwiftUI
 
 // ============================================================ DONNÉES (remplaçables — D59)
@@ -63,20 +66,42 @@ final class MagasinCalendrier: ObservableObject {
         evenements.filter { $0.annee == a && $0.mois == m && $0.jour == j }
             .sorted { ($0.heure ?? -1) < ($1.heure ?? -1) }
     }
+    func duMois(_ a: Int, _ m: Int) -> [Evenement] {
+        evenements.filter { $0.annee == a && $0.mois == m }
+            .sorted { ($0.jour, $0.heure ?? -1) < ($1.jour, $1.heure ?? -1) }
+    }
 }
 
 // Le présent du jeu
 let jeuAnnee = 2026, jeuMois = 8, jeuJour = 17
 
+// v2 : modes d'affichage du mois (bouton « carré + barres » d'iOS)
+enum ModeAffichageCal: String, CaseIterable {
+    case compact = "Compact"
+    case empile = "Empilé"
+    case liste = "Liste"
+    var symbole: String {
+        switch self {
+        case .compact: return "square.grid.3x3"
+        case .empile: return "square.stack"
+        case .liste: return "list.bullet.below.rectangle"
+        }
+    }
+}
+
 // ============================================================ APP
 struct CalendrierVue: View {
     @Environment(\.dismiss) private var dismiss
     @State private var vueAnnee = false
+    @State private var moisCible: (Int, Int) = (jeuAnnee, jeuMois)     // v2 : mois à afficher à l'ouverture du mode Mois
+    @State private var allerAujourdhui = 0                              // v2 : déclencheur « Aujourd'hui »
+    @State private var mode: ModeAffichageCal = .empile                 // v2 : bouton d'affichage réel
     @State private var creation = false
     @State private var rechercheVisible = false
     @State private var jourOuvert: (Int, Int, Int)? = nil
     @State private var conflitsVisible = false
     @State private var invitationsVisible = false
+    @State private var echellePincement: CGFloat = 1
 
     // Période couverte : février 2025 → décembre 2026
     private let moisListe: [(Int, Int)] = {
@@ -91,35 +116,56 @@ struct CalendrierVue: View {
             ZStack(alignment: .bottom) {
                 Color.black.ignoresSafeArea()
                 if vueAnnee {
-                    AnneeVue(vueAnnee: $vueAnnee)
+                    AnneeVue { m in
+                        // v2 : on mémorise le mois touché, la vue Mois s'ouvre DIRECTEMENT dessus (une seule visée)
+                        moisCible = (2026, m)
+                        withAnimation(.easeInOut(duration: 0.25)) { vueAnnee = false }
+                    }
+                    .gesture(MagnificationGesture().onEnded { v in
+                        // pincer-écarter sur l'année → revenir au mois courant
+                        if v > 1.25 { moisCible = (jeuAnnee, jeuMois); withAnimation(.easeInOut(duration: 0.25)) { vueAnnee = false } }
+                    })
                 } else {
                     ScrollViewReader { defileur in
                         ScrollView {
-                            // Miroir run 1 : réserve sous les pilules de la toolbar (Août + L M M J V S D étaient masqués)
-                            LazyVStack(alignment: .leading, spacing: 26) {
+                            // v2 : VStack (plus LazyVStack) → positions exactes dès le premier rendu,
+                            // donc UN SEUL scrollTo, sans le recalage visible à 0,35 s.
+                            VStack(alignment: .leading, spacing: 26) {
                                 ForEach(0..<moisListe.count, id: \.self) { i in
                                     let a = moisListe[i].0
                                     let m = moisListe[i].1
-                                    MoisVue(annee: a, mois: m) { j in jourOuvert = (a, m, j) }
+                                    MoisVue(annee: a, mois: m, mode: mode) { j in jourOuvert = (a, m, j) }
                                         .id("\(a)-\(m)")
                                 }
                             }
                             .padding(.horizontal, 12)
                         }
                         .contentMargins(.top, 48, for: .scrollContent)
-                        // Double visée : la 2e corrige la dérive d'estimation du LazyVStack
                         .onAppear {
-                            defileur.scrollTo("2026-8", anchor: .top)
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                                defileur.scrollTo("2026-8", anchor: .top)
-                            }
+                            var t = Transaction(); t.disablesAnimations = true
+                            withTransaction(t) { defileur.scrollTo("\(moisCible.0)-\(moisCible.1)", anchor: .top) }
                         }
+                        .onChange(of: allerAujourdhui) { _, _ in
+                            withAnimation(.easeInOut(duration: 0.3)) { defileur.scrollTo("\(jeuAnnee)-\(jeuMois)", anchor: .top) }
+                        }
+                        .simultaneousGesture(MagnificationGesture().onEnded { v in
+                            // v2 : pincer sur le mois → année ; écarter → mode Liste (détails), comme iOS
+                            if v < 0.8 { withAnimation(.easeInOut(duration: 0.25)) { vueAnnee = true } }
+                            else if v > 1.3 { withAnimation { mode = .liste } }
+                        })
                     }
                 }
 
                 HStack {
                     Button {
-                        vueAnnee = false
+                        // v2 : « Aujourd'hui » RÉEL — ramène au 17 août 2026 (présent du jeu), depuis Mois OU Année
+                        Haptique.leger()
+                        if vueAnnee {
+                            moisCible = (jeuAnnee, jeuMois)
+                            withAnimation(.easeInOut(duration: 0.25)) { vueAnnee = false }
+                        } else {
+                            allerAujourdhui += 1
+                        }
                     } label: {
                         Text("Aujourd'hui").font(.system(size: 15)).foregroundStyle(.white)
                             .padding(.horizontal, 18).padding(.vertical, 10)
@@ -136,18 +182,19 @@ struct CalendrierVue: View {
                     .padding(.horizontal, 18).padding(.vertical, 10)
                     .background(Color(hex: 0x1C1C1E), in: Capsule())
                 }
-                .padding(.horizontal, 14).padding(.bottom, 6)
+                .padding(.horizontal, 14).padding(.bottom, 28)   // v2 : au-dessus de la capsule home
 
             BarreHome { dismiss() }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        vueAnnee.toggle()
+                        if !vueAnnee { moisCible = (jeuAnnee, jeuMois) }
+                        withAnimation(.easeInOut(duration: 0.25)) { vueAnnee.toggle() }
                     } label: {
                         HStack(spacing: 3) {
                             Image(systemName: "chevron.left").font(.system(size: 15, weight: .semibold))
-                            Text(vueAnnee ? "Août" : "2026").font(.system(size: 16))
+                            Text(vueAnnee ? nomsMois[jeuMois] : "2026").font(.system(size: 16))
                         }
                         .foregroundStyle(.white)
                         .padding(.horizontal, 12).padding(.vertical, 7)
@@ -156,7 +203,19 @@ struct CalendrierVue: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 16) {
-                        Image(systemName: "square.stack").font(.system(size: 16))
+                        // v2 : bouton d'affichage RÉEL (le « carré avec deux barres » d'iOS)
+                        Menu {
+                            ForEach(ModeAffichageCal.allCases, id: \.self) { m in
+                                Button {
+                                    withAnimation(.easeInOut(duration: 0.2)) { mode = m }
+                                } label: {
+                                    Label(m.rawValue, systemImage: mode == m ? "checkmark" : m.symbole)
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "square.stack").font(.system(size: 16))
+                                .frame(width: 24, height: 24).contentShape(Rectangle())
+                        }
                         Image(systemName: "magnifyingglass").font(.system(size: 16))
                             .onTapGesture { rechercheVisible = true }
                         Image(systemName: "plus").font(.system(size: 17))
@@ -222,6 +281,7 @@ let nomsMois = ["", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
 struct MoisVue: View {
     let annee: Int
     let mois: Int
+    var mode: ModeAffichageCal = .empile
     let ouvrir: (Int) -> Void
     @ObservedObject private var magasin = MagasinCalendrier.partage
 
@@ -235,6 +295,8 @@ struct MoisVue: View {
         while jours.count % 7 != 0 { jours.append(nil) }
         return stride(from: 0, to: jours.count, by: 7).map { Array(jours[$0..<$0+7]) }
     }
+
+    private var hauteurCellule: CGFloat { mode == .empile ? 74 : 44 }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -261,26 +323,59 @@ struct MoisVue: View {
                                     .foregroundStyle(estPresent ? .white : (c >= 5 ? .secondary : .white))
                                     .frame(width: 30, height: 30)
                                     .background(estPresent ? Color(hex: 0xFF453A) : .clear, in: Circle())
-                                ForEach(evts.prefix(3)) { e in
-                                    HStack(spacing: 2) {
-                                        Circle().strokeBorder(Color(hex: e.couleur), lineWidth: 2)
-                                            .frame(width: 7, height: 7)
-                                        Text(e.titre).font(.system(size: 8.5))
-                                            .foregroundStyle(.white.opacity(0.85))
-                                            .lineLimit(1)
+                                if mode == .empile {
+                                    ForEach(evts.prefix(3)) { e in
+                                        HStack(spacing: 2) {
+                                            Circle().strokeBorder(Color(hex: e.couleur), lineWidth: 2)
+                                                .frame(width: 7, height: 7)
+                                            Text(e.titre).font(.system(size: 8.5))
+                                                .foregroundStyle(.white.opacity(0.85))
+                                                .lineLimit(1)
+                                        }
+                                        .padding(.horizontal, 3).padding(.vertical, 2)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .background(Color(hex: 0x2C2C2E).opacity(0.8), in: RoundedRectangle(cornerRadius: 4))
                                     }
-                                    .padding(.horizontal, 3).padding(.vertical, 2)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(Color(hex: 0x2C2C2E).opacity(0.8), in: RoundedRectangle(cornerRadius: 4))
+                                } else if !evts.isEmpty {
+                                    // Compact / Liste : un point gris sous le jour (comme iOS)
+                                    Circle().fill(Color(hex: 0x8E8E93)).frame(width: 5, height: 5)
                                 }
                             }
-                            .frame(maxWidth: .infinity, minHeight: 74, alignment: .top)
+                            .frame(maxWidth: .infinity, minHeight: hauteurCellule, alignment: .top)
                             .contentShape(Rectangle())
                             .onTapGesture { ouvrir(j) }
                         } else {
-                            Color.clear.frame(maxWidth: .infinity, minHeight: 74)
+                            Color.clear.frame(maxWidth: .infinity, minHeight: hauteurCellule)
                         }
                     }
+                }
+            }
+            // v2 mode Liste : les évènements du mois sous la grille
+            if mode == .liste {
+                let evts = magasin.duMois(annee, mois)
+                if evts.isEmpty {
+                    Text("Aucun évènement").font(.system(size: 14)).foregroundStyle(.secondary).padding(.top, 8)
+                } else {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(evts) { e in
+                            HStack(spacing: 10) {
+                                Text("\(e.jour)").font(.system(size: 15, weight: .semibold)).foregroundStyle(.secondary)
+                                    .frame(width: 26, alignment: .trailing)
+                                RoundedRectangle(cornerRadius: 2).fill(Color(hex: e.couleur)).frame(width: 3, height: 30)
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(e.titre).font(.system(size: 15, weight: .semibold)).foregroundStyle(.white)
+                                    Text(e.heure.map { String(format: "%02d:%02d", $0, e.minute) } ?? "Jour entier")
+                                        .font(.system(size: 12)).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                            }
+                            .padding(.vertical, 6)
+                            .contentShape(Rectangle())
+                            .onTapGesture { ouvrir(e.jour) }
+                            Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 36)
+                        }
+                    }
+                    .padding(.top, 6)
                 }
             }
         }
@@ -289,7 +384,7 @@ struct MoisVue: View {
 
 // ============================================================ VUE ANNÉE
 struct AnneeVue: View {
-    @Binding var vueAnnee: Bool
+    let ouvrirMois: (Int) -> Void
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
@@ -299,12 +394,13 @@ struct AnneeVue: View {
                     ForEach(1...12, id: \.self) { m in
                         MiniMois(annee: 2026, mois: m)
                             .contentShape(Rectangle())
-                            .onTapGesture { vueAnnee = false }
+                            .onTapGesture { ouvrirMois(m) }
                     }
                 }
             }
             .padding(16)
         }
+        .contentMargins(.top, 48, for: .scrollContent)
     }
 }
 

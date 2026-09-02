@@ -27,8 +27,10 @@ navigation & gestes · contenu narratif Sarah · animations.
 | 4 | Téléphone + Contacts | ✅ VALIDÉE 02/09 16h43 (build 272) |
 | 5 | Photos | ✅ VALIDÉE 02/09 16h43 (build 272) |
 | 6 | Mail | ✅ VALIDÉE 02/09 16h43 (build 272) |
-| 7 | Safari | 🛠 CORRIGÉE 31/08 (5 retours session 2 : zone BarreHome, onglets réels, aA, recherche contrôlée, sites étoffés) — build au LOT session 2 |
-| 8-15 | Notes, Rappels, Calendrier, Réglages, Horloge, Météo, Calculatrice, Dictaphone | à vérifier (sessions 2-3) |
+| 7 | Safari | 🛠 CORRIGÉE (5 retours 31/08 + barre home) — au build lot session 2 |
+| 8-10 | Notes, Rappels, Calendrier | 🛠 RETOURS SESSION 2 CODÉS 02/09 — au build lot session 2 |
+| 11 | Réglages | ⏸ REPORTÉE en passe dédiée FINALE (demande Joachim 02/09 : app trop vaste) |
+| 12-15 | Horloge, Météo, Calculatrice, Dictaphone | à vérifier (session 3) |
 | 16-20 | Fichiers, Localiser, Santé, Cartes, Ma Banque | à vérifier |
 | 21-28 | Messenger, Instagram, Snapchat, Facebook, X, ChatGPT, Spotify, YouTube | à vérifier |
 

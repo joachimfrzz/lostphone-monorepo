@@ -7,7 +7,7 @@ const inline = s => esc(s)
   .replace(/^\[QUESTION\]/, '<span class="tag">QUESTION</span>');
 
 const lines = md.split("\n");
-let html = "", inList = false, inTable = false, section = 0, appOpen = false, toc = [];
+let html = "", inList = false, inTable = false, section = 0, appOpen = false, toc = [], checkN = 0, inBuild = false;
 const closeList = () => { if (inList) { html += "</ul>"; inList = false; } };
 const closeTable = () => { if (inTable) { html += "</tbody></table>"; inTable = false; } };
 const closeApp = () => { if (appOpen) { html += "</section>"; appOpen = false; } };
@@ -54,13 +54,22 @@ for (let i = 0; i < lines.length; i++) {
       toc.push({ id, num, name, status });
       html += `<section class="app" id="${id}"><div class="apphead"><label class="check"><input type="checkbox" data-id="${id}"><span></span></label><div><div class="num">APP ${num}</div><h2>${inline(name)}</h2>${status ? `<div class="status">${inline(status)}</div>` : ""}</div></div>`;
       appOpen = true;
+    } else if (t.startsWith("🔔")) {
+      html += `<section class="build"><h2 class="buildtitle">${inline(t.replace("🔔 ",""))}</h2>`; inBuild = true;
     } else html += `<h3>${inline(t)}</h3>`;
     continue;
+  }
+  if (inBuild && /^---\s*$/.test(l)) { closeList(); html += "</section>"; inBuild = false; continue; }
+  if ((m = l.match(/^- \[( |x)\] (.*)/))) {
+    if (!inList) { html += '<ul class="checks">'; inList = true; }
+    const cid = "chk" + (++checkN);
+    html += `<li class="chk"><label><input type="checkbox" data-id="${cid}"${m[1]==="x"?" checked":""}><span class="box"></span><span class="txt">${inline(m[2])}</span></label></li>`; continue;
   }
   if ((m = l.match(/^- (.*)/))) {
     if (!inList) { html += "<ul>"; inList = true; }
     html += `<li>${inline(m[1])}</li>`; continue;
   }
+  if ((m = l.match(/^> (.*)/))) { closeList(); html += `<p class="note">${inline(m[1])}</p>`; continue; }
   closeList();
   if (!l.trim()) continue;
   if ((m = l.match(/^\*\*(.+?)\*\*\s*:?\s*(.*)$/)) && m[1].length < 40) {
@@ -102,15 +111,23 @@ th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vert
 .axislabel{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue)}
 .tag{display:inline-block;background:#fff4e5;color:#b45309;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-right:6px}
 .app .axis:nth-of-type(1){border-color:var(--blue)}
+\.build{background:#0b1f3a;color:#fff;border-radius:18px;padding:18px;margin:16px 0 6px;box-shadow:0 6px 20px rgba(11,31,58,.25)}
+.build h2.buildtitle{margin:0 0 6px;font-size:20px;font-weight:800;letter-spacing:-.01em}.build h3{color:#9fc1ff;margin-top:18px}
+.build p{color:#dbe6f7}.build p strong{color:#fff}.build .note{font-size:13px;color:#9fc1ff;border-left:3px solid #3b82f6;padding-left:10px}
+.build ul li::marker{color:#9fc1ff}.build code{background:rgba(255,255,255,.12);color:#fff}
+ul.checks{list-style:none;padding-left:0}li.chk{margin:6px 0}li.chk label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+li.chk input{display:none}li.chk .box{flex:none;width:24px;height:24px;border-radius:8px;border:2px solid rgba(255,255,255,.35);position:relative;margin-top:1px}
+li.chk input:checked+.box{background:var(--green);border-color:var(--green)}li.chk input:checked+.box::after{content:"";position:absolute;left:7px;top:3px;width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg)}
+li.chk input:checked~.txt{opacity:.55;text-decoration:line-through}
 @media (max-width:480px){.hero h1{font-size:28px}.apphead h2{font-size:19px}body{font-size:15px}}
 </style></head><body><div class="wrap">
 ${html.replace('<header class="hero">', '<header class="hero">').replace('</header>', `</header><div class="progress"><span id="pc">0 / ${toc.length} apps cochées</span><div class="bar"><i id="pb"></i></div></div><nav class="toc">${tocHtml}</nav>`)}
 </div>
 <script>
 const K="lp-fiches-v1";let mem={};const store={get(){try{return JSON.parse(localStorage.getItem(K)||"{}")}catch(e){return mem}},set(v){mem=v;try{localStorage.setItem(K,JSON.stringify(v))}catch(e){}}};const st=store.get();
-const boxes=[...document.querySelectorAll('input[type=checkbox]')];
+const boxes=[...document.querySelectorAll('.apphead input[type=checkbox]')];const chks=[...document.querySelectorAll('li.chk input')];
 function paint(){let n=0;boxes.forEach(b=>{const id=b.dataset.id;b.checked=!!st[id];if(b.checked)n++;document.getElementById(id).classList.toggle("done",b.checked);const t=document.querySelector('[data-toc="'+id+'"]');t&&t.classList.toggle("done",b.checked)});document.getElementById("pc").textContent=n+" / "+boxes.length+" apps cochées";document.getElementById("pb").style.width=(100*n/boxes.length)+"%"}
-boxes.forEach(b=>b.addEventListener("change",()=>{st[b.dataset.id]=b.checked;store.set(st);paint()}));paint();
+boxes.forEach(b=>b.addEventListener("change",()=>{st[b.dataset.id]=b.checked;store.set(st);paint()}));chks.forEach(b=>{const id=b.dataset.id;if(st[id]!==undefined)b.checked=st[id];b.addEventListener("change",()=>{st[id]=b.checked;store.set(st)})});paint();
 </script></body></html>`;
 fs.writeFileSync("fiches-verification.html", page);
 console.log("apps:", toc.length, "html:", page.length);

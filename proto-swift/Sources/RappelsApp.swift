@@ -1,6 +1,8 @@
 // Rappels — construite contre la vidéo de référence du 18/08 (42 écrans, iOS 26)
 // D59 : données remplaçables. R3 : les Terminés racontent la préparation du dossier bancaire (recoupe P60).
 // D51 : utilisable de A à Z (cocher termine vraiment, création réelle, détails fonctionnels).
+// v2 session 2 (02/09, retours Joachim) : Recherche RÉELLE, menu … RÉEL (Modifier les listes / Modèles),
+// listes persistantes (Nouvelle liste s'ajoute vraiment), barres remontées au-dessus de la capsule home.
 import SwiftUI
 
 // ============================================================ DONNÉES (remplaçables — D59)
@@ -15,6 +17,13 @@ struct Rappel: Identifiable {
     var aujourdhui: Bool = false
     var termine: Bool = false
     var termineTexte: String? = nil    // "Terminé : 16/08/2026 21:40"
+}
+
+struct ListeRappels: Identifiable, Hashable {
+    var id: String { nom }
+    var nom: String
+    var couleur: UInt
+    var symbole: String
 }
 
 final class MagasinRappels: ObservableObject {
@@ -39,6 +48,11 @@ final class MagasinRappels: ObservableObject {
         Rappel(titre: "Photos du festival à Chloé", liste: "Rappels", termine: true,
                termineTexte: "Terminé : 12/07/2026 18:24"),
     ]
+    // v2 : listes persistantes (Nouvelle liste / Modifier les listes réels)
+    @Published var listes: [ListeRappels] = [
+        ListeRappels(nom: "Rappels", couleur: 0xE8873D, symbole: "list.bullet"),
+        ListeRappels(nom: "Courses", couleur: 0x30D158, symbole: "cart.fill"),
+    ]
 
     func terminer(_ id: UUID) {
         guard let i = rappels.firstIndex(where: { $0.id == id }) else { return }
@@ -54,6 +68,9 @@ struct RappelsVue: View {
     @ObservedObject private var magasin = MagasinRappels.partage
     @State private var nouveauVisible = false
     @State private var nouvelleListeVisible = false
+    @State private var rechercheVisible = false       // v2 : recherche réelle
+    @State private var modifierListesVisible = false  // v2 : menu … réel
+    @State private var modelesVisible = false
 
     var body: some View {
         NavigationStack {
@@ -83,27 +100,25 @@ struct RappelsVue: View {
                                         destination: TerminesVue())
                         }
 
-                        // Mes listes
+                        // Mes listes (v2 : depuis le magasin — les listes créées apparaissent vraiment)
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Mes listes").font(.system(size: 21, weight: .bold)).foregroundStyle(.white)
                             VStack(spacing: 1) {
-                                NavigationLink(destination: FiltreVue(titre: "Rappels", teinte: Color(hex: 0xE8873D)) { $0.liste == "Rappels" && !$0.termine }) {
-                                    LigneListe(nom: "Rappels", couleur: Color(hex: 0xE8873D), symbole: "list.bullet",
-                                               compte: magasin.compter { $0.liste == "Rappels" && !$0.termine })
-                                }
-                                NavigationLink(destination: FiltreVue(titre: "Courses", teinte: Color(hex: 0x30D158)) { $0.liste == "Courses" && !$0.termine }) {
-                                    LigneListe(nom: "Courses", couleur: Color(hex: 0x30D158), symbole: "cart.fill",
-                                               compte: magasin.compter { $0.liste == "Courses" && !$0.termine })
+                                ForEach(magasin.listes) { l in
+                                    NavigationLink(destination: FiltreVue(titre: l.nom, teinte: Color(hex: l.couleur)) { $0.liste == l.nom && !$0.termine }) {
+                                        LigneListe(nom: l.nom, couleur: Color(hex: l.couleur), symbole: l.symbole,
+                                                   compte: magasin.compter { $0.liste == l.nom && !$0.termine })
+                                    }
                                 }
                             }
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
-                        Spacer(minLength: 90)
+                        Spacer(minLength: 100)
                     }
                     .padding(.horizontal, 16).padding(.top, 8)
                 }
 
-                // Miroir lot 2 : la référence n'a qu'un bouton + flottant en bas à droite
+                // Miroir lot 2 : la référence n'a qu'un bouton + flottant en bas à droite (v2 : remonté au-dessus de la capsule)
                 HStack {
                     Spacer()
                     Button { nouveauVisible = true } label: {
@@ -112,22 +127,35 @@ struct RappelsVue: View {
                             .shadow(color: .black.opacity(0.4), radius: 8, y: 3)
                     }
                 }
-                .padding(.horizontal, 20).padding(.bottom, 14)
+                .padding(.horizontal, 20).padding(.bottom, 30)
 
             BarreHome { dismiss() }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     HStack(spacing: 16) {
-                        Image(systemName: "magnifyingglass").foregroundStyle(Color(hex: 0x0A84FF))
-                        Image(systemName: "text.badge.plus").foregroundStyle(Color(hex: 0x0A84FF))
-                            .onTapGesture { nouvelleListeVisible = true }
-                        Image(systemName: "ellipsis.circle").foregroundStyle(Color(hex: 0x0A84FF))
+                        // v2 : Recherche RÉELLE
+                        Button { rechercheVisible = true } label: {
+                            Image(systemName: "magnifyingglass").foregroundStyle(Color(hex: 0x0A84FF))
+                        }
+                        Button { nouvelleListeVisible = true } label: {
+                            Image(systemName: "text.badge.plus").foregroundStyle(Color(hex: 0x0A84FF))
+                        }
+                        // v2 : menu … RÉEL
+                        Menu {
+                            Button { modifierListesVisible = true } label: { Label("Modifier les listes", systemImage: "pencil") }
+                            Button { modelesVisible = true } label: { Label("Modèles", systemImage: "doc.on.doc") }
+                        } label: {
+                            Image(systemName: "ellipsis.circle").foregroundStyle(Color(hex: 0x0A84FF))
+                        }
                     }
                 }
             }
             .sheet(isPresented: $nouveauVisible) { NouveauRappelVue() }
             .sheet(isPresented: $nouvelleListeVisible) { RappelsNouvelleListeVue() }
+            .sheet(isPresented: $rechercheVisible) { RechercheRappelsVue() }
+            .sheet(isPresented: $modifierListesVisible) { ModifierListesRappelsVue() }
+            .sheet(isPresented: $modelesVisible) { ModelesRappelsVue() }
         }
         .preferredColorScheme(.dark)
     }
@@ -179,6 +207,117 @@ struct LigneListe: View {
     }
 }
 
+// ============================================================ v2 — RECHERCHE RÉELLE
+struct RechercheRappelsVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var magasin = MagasinRappels.partage
+    @State private var recherche = ""
+    private var resultats: [Rappel] {
+        guard !recherche.trimmingCharacters(in: .whitespaces).isEmpty else { return [] }
+        return magasin.rappels.filter { $0.titre.localizedCaseInsensitiveContains(recherche) || $0.liste.localizedCaseInsensitiveContains(recherche) }
+    }
+    var body: some View {
+        NavigationStack {
+            List {
+                if recherche.isEmpty {
+                    Text("Recherchez dans vos rappels et vos listes.").foregroundStyle(.secondary)
+                        .listRowBackground(Color(hex: 0x1C1C1E))
+                } else if resultats.isEmpty {
+                    Text("Aucun résultat pour « \(recherche) »").foregroundStyle(.secondary)
+                        .listRowBackground(Color(hex: 0x1C1C1E))
+                } else {
+                    ForEach(resultats) { r in
+                        HStack(alignment: .top, spacing: 12) {
+                            if r.termine {
+                                Circle().fill(Color(hex: 0x8E8E93)).frame(width: 22, height: 22)
+                                    .overlay(Image(systemName: "checkmark").font(.system(size: 11, weight: .bold)).foregroundStyle(.black))
+                            } else {
+                                Circle().stroke(Color(hex: 0x8E8E93), lineWidth: 1.5).frame(width: 22, height: 22)
+                            }
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(r.titre).font(.system(size: 16)).foregroundStyle(r.termine ? .secondary : .white)
+                                Text(r.liste + (r.sousTexte.map { " · " + $0 } ?? "") + (r.termineTexte.map { " · " + $0 } ?? ""))
+                                    .font(.system(size: 13)).foregroundStyle(.secondary)
+                            }
+                        }
+                        .listRowBackground(Color(hex: 0x2C2C2E))
+                    }
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .background(Color(hex: 0x1C1C1E))
+            .searchable(text: $recherche, placement: .navigationBarDrawer(displayMode: .always), prompt: "Rechercher")
+            .navigationTitle("Recherche")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) { Button("OK") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF)) }
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+// ============================================================ v2 — MODIFIER LES LISTES (réordonner / supprimer, réel)
+struct ModifierListesRappelsVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var magasin = MagasinRappels.partage
+    var body: some View {
+        NavigationStack {
+            List {
+                Section(header: Text("MES LISTES")) {
+                    ForEach(magasin.listes) { l in
+                        HStack(spacing: 12) {
+                            Circle().fill(Color(hex: l.couleur)).frame(width: 28, height: 28)
+                                .overlay(Image(systemName: l.symbole).font(.system(size: 12, weight: .semibold)).foregroundStyle(.white))
+                            Text(l.nom).foregroundStyle(.white)
+                            Spacer()
+                            Text("\(magasin.compter { $0.liste == l.nom && !$0.termine })").foregroundStyle(.secondary)
+                        }
+                        .listRowBackground(Color(hex: 0x2C2C2E))
+                    }
+                    .onMove { from, to in magasin.listes.move(fromOffsets: from, toOffset: to) }
+                    .onDelete { idx in
+                        let noms = idx.map { magasin.listes[$0].nom }
+                        magasin.listes.remove(atOffsets: idx)
+                        magasin.rappels.removeAll { noms.contains($0.liste) }
+                    }
+                }
+            }
+            .environment(\.editMode, .constant(.active))
+            .scrollContentBackground(.hidden)
+            .background(Color(hex: 0x1C1C1E))
+            .navigationTitle("Modifier les listes")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) { Button("OK") { dismiss() }.fontWeight(.semibold).foregroundStyle(Color(hex: 0x0A84FF)) }
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+// ============================================================ v2 — MODÈLES (écran iOS réel, état vide)
+struct ModelesRappelsVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                VStack(spacing: 10) {
+                    Image(systemName: "doc.on.doc").font(.system(size: 40)).foregroundStyle(.secondary)
+                    Text("Aucun modèle").font(.system(size: 20, weight: .semibold)).foregroundStyle(.white)
+                    Text("Enregistrez une liste comme modèle pour la réutiliser (menu … d'une liste).")
+                        .font(.system(size: 14)).foregroundStyle(.secondary).multilineTextAlignment(.center).padding(.horizontal, 40)
+                }
+            }
+            .navigationTitle("Modèles")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("OK") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF)) } }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
 // ============================================================ LISTE FILTRÉE
 struct FiltreVue: View {
     let titre: String
@@ -187,13 +326,21 @@ struct FiltreVue: View {
     @ObservedObject private var magasin = MagasinRappels.partage
     @State private var detail: Rappel? = nil
     @State private var nouveau = ""
+    @State private var afficherTermines = false     // v2 : menu … réel
+    @State private var triTitre = false
+    @State private var partageVisible = false
     @FocusState private var saisieActive: Bool
 
     init(titre: String, teinte: Color, filtre: @escaping (Rappel) -> Bool) {
         self.titre = titre; self.teinte = teinte; self.filtre = filtre
     }
 
-    private var items: [Rappel] { magasin.rappels.filter(filtre) }
+    private var items: [Rappel] {
+        var r = magasin.rappels.filter(filtre)
+        if afficherTermines { r += magasin.rappels.filter { $0.termine && (titre == "Tous" || $0.liste == titre) } }
+        if triTitre { r.sort { $0.titre.localizedCaseInsensitiveCompare($1.titre) == .orderedAscending } }
+        return r
+    }
 
     var body: some View {
         ScrollView {
@@ -209,16 +356,21 @@ struct FiltreVue: View {
                 }
                 ForEach(items) { r in
                     HStack(alignment: .top, spacing: 12) {
-                        Circle().stroke(Color(hex: 0x8E8E93), lineWidth: 1.5)
-                            .frame(width: 24, height: 24)
-                            .contentShape(Circle())
-                            .onTapGesture {
-                                withAnimation(.easeOut(duration: 0.25)) { magasin.terminer(r.id) }
-                            }
+                        if r.termine {
+                            Circle().fill(Color(hex: 0x8E8E93)).frame(width: 24, height: 24)
+                                .overlay(Image(systemName: "checkmark").font(.system(size: 11, weight: .bold)).foregroundStyle(.black))
+                        } else {
+                            Circle().stroke(Color(hex: 0x8E8E93), lineWidth: 1.5)
+                                .frame(width: 24, height: 24)
+                                .contentShape(Circle())
+                                .onTapGesture {
+                                    withAnimation(.easeOut(duration: 0.25)) { magasin.terminer(r.id) }
+                                }
+                        }
                         VStack(alignment: .leading, spacing: 2) {
                             HStack(spacing: 6) {
                                 if r.urgent { Text("!!!").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0xE84D6B)) }
-                                Text(r.titre).font(.system(size: 16.5)).foregroundStyle(.white)
+                                Text(r.titre).font(.system(size: 16.5)).foregroundStyle(r.termine ? .secondary : .white)
                             }
                             if let s = r.sousTexte {
                                 Text(s).font(.system(size: 14)).foregroundStyle(Color(hex: 0x0A84FF))
@@ -242,8 +394,9 @@ struct FiltreVue: View {
                         .onSubmit {
                             let t = nouveau.trimmingCharacters(in: .whitespaces)
                             if !t.isEmpty {
+                                let listeCible = magasin.listes.contains { $0.nom == titre } ? titre : "Rappels"
                                 magasin.rappels.append(Rappel(titre: t,
-                                                              liste: titre == "Courses" ? "Courses" : "Rappels",
+                                                              liste: listeCible,
                                                               urgent: titre == "Urgent",
                                                               drapeau: titre == "Avec drapeau",
                                                               aujourdhui: titre == "Aujourd'hui"))
@@ -260,14 +413,28 @@ struct FiltreVue: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 16) {
-                    Image(systemName: "square.and.arrow.up").foregroundStyle(Color(hex: 0x0A84FF))
-                    Image(systemName: "ellipsis.circle").foregroundStyle(Color(hex: 0x0A84FF))
+                    // v2 : partage réel + menu … réel (afficher terminés / trier)
+                    Button { partageVisible = true } label: {
+                        Image(systemName: "square.and.arrow.up").foregroundStyle(Color(hex: 0x0A84FF))
+                    }
+                    Menu {
+                        Button { withAnimation { afficherTermines.toggle() } } label: {
+                            Label(afficherTermines ? "Masquer les terminés" : "Afficher les terminés", systemImage: afficherTermines ? "eye.slash" : "eye")
+                        }
+                        Menu("Trier par") {
+                            Button { triTitre = false } label: { Label("Manuel", systemImage: triTitre ? "" : "checkmark") }
+                            Button { triTitre = true } label: { Label("Titre", systemImage: triTitre ? "checkmark" : "") }
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle").foregroundStyle(Color(hex: 0x0A84FF))
+                    }
                 }
             }
         }
         .contentShape(Rectangle())
         .onTapGesture { saisieActive = true }
         .sheet(item: $detail) { r in DetailRappelVue(rappelId: r.id) }
+        .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Liste « \(titre) »") }
     }
 }
 
@@ -386,13 +553,20 @@ struct DetailRappelVue: View {
                         .listRowBackground(Color(hex: 0x2C2C2E))
                     }
                     Section {
-                        HStack {
-                            Text("Liste").foregroundStyle(.white)
-                            Spacer()
-                            Circle().fill(magasin.rappels[i].liste == "Courses" ? Color(hex: 0x30D158) : Color(hex: 0xE8873D))
-                                .frame(width: 12, height: 12)
-                            Text(magasin.rappels[i].liste).foregroundStyle(.secondary)
-                            Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(.secondary)
+                        // v2 : la liste se change vraiment
+                        Menu {
+                            ForEach(magasin.listes) { l in
+                                Button(l.nom) { magasin.rappels[i].liste = l.nom }
+                            }
+                        } label: {
+                            HStack {
+                                Text("Liste").foregroundStyle(.white)
+                                Spacer()
+                                Circle().fill(Color(hex: magasin.listes.first { $0.nom == magasin.rappels[i].liste }?.couleur ?? 0xE8873D))
+                                    .frame(width: 12, height: 12)
+                                Text(magasin.rappels[i].liste).foregroundStyle(.secondary)
+                                Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(.secondary)
+                            }
                         }
                         .listRowBackground(Color(hex: 0x2C2C2E))
                     }
@@ -438,13 +612,14 @@ struct NouveauRappelVue: View {
                 }
                 Section {
                     Menu {
-                        Button("Rappels") { listeChoisie = "Rappels" }
-                        Button("Courses") { listeChoisie = "Courses" }
+                        ForEach(magasin.listes) { l in
+                            Button(l.nom) { listeChoisie = l.nom }
+                        }
                     } label: {
                         HStack {
                             Text("Liste").foregroundStyle(.white)
                             Spacer()
-                            Circle().fill(listeChoisie == "Courses" ? Color(hex: 0x30D158) : Color(hex: 0xE8873D))
+                            Circle().fill(Color(hex: magasin.listes.first { $0.nom == listeChoisie }?.couleur ?? 0xE8873D))
                                 .frame(width: 12, height: 12)
                             Text(listeChoisie).foregroundStyle(.secondary)
                             Image(systemName: "chevron.up.chevron.down").font(.system(size: 11)).foregroundStyle(.secondary)
@@ -480,9 +655,10 @@ struct NouveauRappelVue: View {
 
 struct RappelsNouvelleListeVue: View {
     @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var magasin = MagasinRappels.partage
     @State private var nom = ""
     @State private var couleurIdx = 0
-    private let couleurs: [Color] = [.red, .orange, .yellow, .green, .blue, .purple, .pink]
+    private let couleurs: [UInt] = [0xFF3B30, 0xE8873D, 0xFFD60A, 0x30D158, 0x0A84FF, 0xBF5AF2, 0xFF375F]
     private let symboles = ["list.bullet", "star.fill", "cart.fill", "heart.fill", "bookmark.fill", "house.fill"]
     @State private var symboleIdx = 0
 
@@ -494,7 +670,7 @@ struct RappelsNouvelleListeVue: View {
                         Image(systemName: symboles[symboleIdx])
                             .foregroundStyle(.white)
                             .frame(width: 40, height: 40)
-                            .background(couleurs[couleurIdx], in: Circle())
+                            .background(Color(hex: couleurs[couleurIdx]), in: Circle())
                         TextField("Titre", text: $nom)
                             .font(.system(size: 17))
                     }
@@ -503,9 +679,22 @@ struct RappelsNouvelleListeVue: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 12) {
                             ForEach(couleurs.indices, id: \.self) { i in
-                                Circle().fill(couleurs[i]).frame(width: 32, height: 32)
+                                Circle().fill(Color(hex: couleurs[i])).frame(width: 32, height: 32)
                                     .overlay(couleurIdx == i ? Circle().stroke(.white, lineWidth: 2) : nil)
                                     .onTapGesture { couleurIdx = i }
+                            }
+                        }
+                        .padding(.vertical, 6)
+                    }
+                }
+                Section("Icône") {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(symboles.indices, id: \.self) { i in
+                                Image(systemName: symboles[i]).foregroundStyle(.white)
+                                    .frame(width: 32, height: 32)
+                                    .background(Color(white: symboleIdx == i ? 0.35 : 0.2), in: Circle())
+                                    .onTapGesture { symboleIdx = i }
                             }
                         }
                         .padding(.vertical, 6)
@@ -521,8 +710,16 @@ struct RappelsNouvelleListeVue: View {
                     Button("Annuler") { dismiss() }.foregroundStyle(.blue)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("OK") { dismiss() }.foregroundStyle(.blue)
-                        .disabled(nom.isEmpty)
+                    // v2 : la liste est vraiment créée et apparaît dans « Mes listes »
+                    Button("OK") {
+                        let n = nom.trimmingCharacters(in: .whitespaces)
+                        if !n.isEmpty && !magasin.listes.contains(where: { $0.nom == n }) {
+                            magasin.listes.append(ListeRappels(nom: n, couleur: couleurs[couleurIdx], symbole: symboles[symboleIdx]))
+                        }
+                        dismiss()
+                    }
+                    .foregroundStyle(.blue)
+                    .disabled(nom.isEmpty)
                 }
             }
         }

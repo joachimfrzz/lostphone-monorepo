@@ -1,7 +1,14 @@
-// Notes — construite contre la vidéo de référence du 18/08 (26 écrans, iOS 26)
+// Notes — construite contre la vidéo de référence du 18/08 (26 écrans, iOS 26) + XML S5 (29/08).
 // D59 : données remplaçables. R3 : contient la note « Documents pour lundi » de la capture P60.
 // D51 : utilisable de A à Z (création, édition persistante, recherche réelle, épinglage).
+// v2 session 2 (02/09, retours Joachim) : niveau DOSSIERS racine (le retour ne quitte plus l'app),
+// teinte = JAUNE système Notes (plus l'ambre), titres de notes en GRAS (première ligne = titre),
+// micro retiré, menu … RÉEL (pièces jointes, sélection, galerie), barres remontées au-dessus de la capsule home.
 import SwiftUI
+
+// Jaune Notes iOS (mode sombre) — remplace l'ambre 0xE8A33D
+let notesJaune = Color(hex: 0xFFD60A)
+let notesFondCellule = Color(hex: 0x1C1C1E)
 
 // ============================================================ DONNÉES (remplaçables — D59)
 struct NoteItem: Identifiable {
@@ -10,11 +17,19 @@ struct NoteItem: Identifiable {
     var corps: String
     var dateTexte: String       // "22:47", "hier", "11/08/2026"
     var section: String         // "Épinglées", "Aujourd'hui", "7 jours précédents", "30 jours précédents"
+    var dossier: String = "Notes"
     var verrouillee: Bool = false
     var apercu: String {
         let lignes = corps.split(separator: "\n").map(String.init)
-        return lignes.first ?? ""
+        return lignes.first(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }) ?? ""
     }
+}
+
+struct DossierNotes: Identifiable, Hashable {
+    let id: String          // nom = identifiant
+    var nom: String { id }
+    var icone: String
+    var toutes: Bool = false
 }
 
 final class MagasinNotes: ObservableObject {
@@ -26,7 +41,7 @@ final class MagasinNotes: ObservableObject {
                  dateTexte: "22:47", section: "Épinglées"),
         NoteItem(titre: "Exercices épaule S32",
                  corps: "2 séries chaque matin :\nRotations externes élastique x15\nPendulaire 1 min\nÉtirement porte 30 s\nGlace si douleur le soir",
-                 dateTexte: "05/08/2026", section: "Épinglées"),
+                 dateTexte: "05/08/2026", section: "Épinglées", dossier: "Santé"),
         // Aujourd'hui
         NoteItem(titre: "Perso 🔒",
                  corps: "", dateTexte: "19:12", section: "Aujourd'hui", verrouillee: true),
@@ -36,11 +51,11 @@ final class MagasinNotes: ObservableObject {
                  dateTexte: "mercredi", section: "7 jours précédents"),
         NoteItem(titre: "Recette gratin de mamie",
                  corps: "Courgettes + pommes de terre fines\nCrème entière OBLIGATOIRE (maman insiste)\nMuscade, pas trop\nComté râpé au-dessus\n45 min à 180°",
-                 dateTexte: "jeudi", section: "7 jours précédents"),
+                 dateTexte: "jeudi", section: "7 jours précédents", dossier: "Recettes"),
         // 30 jours précédents
         NoteItem(titre: "Questions kiné",
                  corps: "Encore mal en fin de journée, normal ?\nCombien de semaines encore ?\nPiscine autorisée ?",
-                 dateTexte: "22/07/2026", section: "30 jours précédents"),
+                 dateTexte: "22/07/2026", section: "30 jours précédents", dossier: "Santé"),
         NoteItem(titre: "Livres à lire",
                  corps: "Le vieil homme et la mer (recommandé par M. ❤️)\nLa vague — Todd Strasser\nRelire Rebecca",
                  dateTexte: "12/07/2026", section: "30 jours précédents"),
@@ -48,157 +63,27 @@ final class MagasinNotes: ObservableObject {
                  corps: "Reprendre la photo sérieusement\nCourir un 10 km\nMoins de téléphone le soir 😅\nRencontrer quelqu'un de bien ✓",
                  dateTexte: "02/01/2026", section: "30 jours précédents"),
     ]
-    func nouvelle() -> NoteItem {
-        let n = NoteItem(titre: "", corps: "", dateTexte: "22:47", section: "Aujourd'hui")
-        notes.insert(n, at: 2)
+    @Published var supprimees: [NoteItem] = []
+
+    let dossiers: [DossierNotes] = [
+        DossierNotes(id: "iCloud (toutes)", icone: "folder", toutes: true),
+        DossierNotes(id: "Notes", icone: "folder"),
+        DossierNotes(id: "Recettes", icone: "folder"),
+        DossierNotes(id: "Santé", icone: "folder"),
+    ]
+
+    func compte(_ d: DossierNotes) -> Int {
+        d.toutes ? notes.count : notes.filter { $0.dossier == d.nom }.count
+    }
+    func nouvelle(dossier: String = "Notes") -> NoteItem {
+        let n = NoteItem(titre: "", corps: "", dateTexte: "22:47", section: "Aujourd'hui", dossier: dossier)
+        notes.insert(n, at: notes.filter { $0.section == "Épinglées" }.count)
         return n
     }
-}
-
-// ============================================================ APP
-struct NotesVue: View {
-    @Environment(\.dismiss) private var dismiss
-    @ObservedObject private var magasin = MagasinNotes.partage
-    @State private var recherche = ""
-    @State private var rechercheActive = false
-    @State private var noteOuverte: NoteItem? = nil
-    @State private var codeDemande = false
-
-    private let ordreSections = ["Épinglées", "Aujourd'hui", "7 jours précédents", "30 jours précédents"]
-
-    private var filtrees: [NoteItem] {
-        guard !recherche.isEmpty else { return magasin.notes }
-        return magasin.notes.filter {
-            $0.titre.localizedCaseInsensitiveContains(recherche) ||
-            $0.corps.localizedCaseInsensitiveContains(recherche)
-        }
-    }
-
-    var body: some View {
-        NavigationStack {
-            ZStack(alignment: .bottom) {
-                Color.black.ignoresSafeArea()
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 18) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("iCloud (toutes)").font(.system(size: 32, weight: .bold)).foregroundStyle(.white)
-                            Text("\(magasin.notes.count) notes").font(.system(size: 13)).foregroundStyle(.secondary)
-                        }
-                        .padding(.top, 6)
-
-                        ForEach(ordreSections, id: \.self) { section in
-                            let items = filtrees.filter { $0.section == section }
-                            if !items.isEmpty {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    HStack(spacing: 4) {
-                                        Text(section).font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
-                                        Spacer()
-                                        if section == "Épinglées" {
-                                            Image(systemName: "chevron.down").font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
-                                        }
-                                    }
-                                    VStack(spacing: 1) {
-                                        ForEach(items) { n in
-                                            Button {
-                                                if n.verrouillee { codeDemande = true } else { noteOuverte = n }
-                                            } label: {
-                                                VStack(alignment: .leading, spacing: 3) {
-                                                    HStack(spacing: 6) {
-                                                        Text(n.titre.isEmpty ? "Nouvelle note" : n.titre)
-                                                            .font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
-                                                        if n.verrouillee {
-                                                            Image(systemName: "lock.fill").font(.system(size: 12)).foregroundStyle(.secondary)
-                                                        }
-                                                    }
-                                                    HStack(spacing: 8) {
-                                                        Text(n.dateTexte).font(.system(size: 14)).foregroundStyle(.secondary)
-                                                        Text(n.verrouillee ? "Note verrouillée" : n.apercu)
-                                                            .font(.system(size: 14)).foregroundStyle(.secondary).lineLimit(1)
-                                                    }
-                                                    HStack(spacing: 4) {
-                                                        Image(systemName: "folder").font(.system(size: 11))
-                                                        Text("Notes").font(.system(size: 12.5))
-                                                    }
-                                                    .foregroundStyle(.secondary).padding(.top, 1)
-                                                }
-                                                .frame(maxWidth: .infinity, alignment: .leading)
-                                                .padding(.horizontal, 16).padding(.vertical, 10)
-                                                .background(Color(hex: 0x1C1C1E))
-                                            }
-                                        }
-                                    }
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                                }
-                            }
-                        }
-                        if !recherche.isEmpty && filtrees.isEmpty {
-                            Text("Aucun résultat").font(.system(size: 15)).foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity).padding(.top, 60)
-                        }
-                        Spacer(minLength: 90)
-                    }
-                    .padding(.horizontal, 16)
-                }
-
-                // Barre basse : recherche + composition (comme la référence)
-                HStack(spacing: 12) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                        TextField("Recherche", text: $recherche)
-                            .foregroundStyle(.white)
-                        if !recherche.isEmpty {
-                            Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                                .onTapGesture { recherche = "" }
-                        } else {
-                            Image(systemName: "mic.fill").foregroundStyle(.secondary)
-                        }
-                    }
-                    .padding(.horizontal, 14).frame(height: 42)
-                    .background(Color(hex: 0x1C1C1E), in: Capsule())
-                    Button {
-                        noteOuverte = magasin.nouvelle()
-                    } label: {
-                        Image(systemName: "square.and.pencil")
-                            .font(.system(size: 19)).foregroundStyle(Color(hex: 0xE8A33D))
-                            .frame(width: 44, height: 44)
-                            .background(Color(hex: 0x1C1C1E), in: Circle())
-                    }
-                }
-                .padding(.horizontal, 16).padding(.bottom, 8)
-
-            BarreHome { dismiss() }
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    HStack(spacing: 3) {
-                        Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold))
-                        Text("Dossiers").font(.system(size: 17))
-                    }
-                    .foregroundStyle(Color(hex: 0xE8A33D))
-                    .onTapGesture { dismiss() }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Menu {
-                        Button { } label: { Label("Afficher les pièces jointes", systemImage: "paperclip") }
-                        Button { } label: { Label("Sélectionner des notes", systemImage: "checkmark.circle") }
-                        Button { } label: { Label("Afficher en galerie", systemImage: "square.grid.2x2") }
-                    } label: {
-                        Image(systemName: "ellipsis.circle").foregroundStyle(Color(hex: 0xE8A33D))
-                    }
-                }
-            }
-            .navigationDestination(item: $noteOuverte) { n in
-                NoteEditionVue(noteId: n.id)
-            }
-            // D57 : porte fermée visible — la note verrouillée demande le code
-            .alert("Note verrouillée", isPresented: $codeDemande) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text("Saisissez le code de l'iPhone pour afficher cette note.")
-            }
-        }
-        .tint(Color(hex: 0xE8A33D))
-        .preferredColorScheme(.dark)
+    func supprimer(_ ids: Set<UUID>) {
+        let retirees = notes.filter { ids.contains($0.id) }
+        supprimees.append(contentsOf: retirees)
+        notes.removeAll { ids.contains($0.id) }
     }
 }
 
@@ -208,50 +93,531 @@ extension NoteItem: Hashable {
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
 }
 
+// ============================================================ APP — racine = DOSSIERS (v2 : niveau manquant rétabli)
+struct NotesVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var magasin = MagasinNotes.partage
+    @State private var chemin = NavigationPath()   // dossiers ET notes (un seul type de destination par pile)
+    @State private var recherche = ""
+    @State private var nouveauDossierVisible = false
+    @State private var nomNouveauDossier = ""
+
+    var body: some View {
+        NavigationStack(path: $chemin) {
+            ZStack(alignment: .bottom) {
+                Color.black.ignoresSafeArea()
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("Dossiers").font(.system(size: 34, weight: .bold)).foregroundStyle(.white)
+                            .padding(.top, 4)
+                        // Barre de recherche (SANS micro — inutile dans le jeu)
+                        HStack(spacing: 8) {
+                            Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                            TextField("Recherche", text: $recherche).foregroundStyle(.white)
+                            if !recherche.isEmpty {
+                                Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                                    .onTapGesture { recherche = "" }
+                            }
+                        }
+                        .padding(.horizontal, 12).frame(height: 38)
+                        .background(notesFondCellule, in: RoundedRectangle(cornerRadius: 12))
+
+                        if recherche.isEmpty {
+                            Text("iCloud").font(.system(size: 20, weight: .bold)).foregroundStyle(.white).padding(.top, 6)
+                            VStack(spacing: 0) {
+                                ForEach(Array(magasin.dossiers.enumerated()), id: \.element.id) { i, d in
+                                    Button { chemin.append(d) } label: {
+                                        HStack(spacing: 12) {
+                                            Image(systemName: d.icone).font(.system(size: 18)).foregroundStyle(notesJaune).frame(width: 28)
+                                            Text(d.nom).font(.system(size: 17)).foregroundStyle(.white)
+                                            Spacer()
+                                            Text("\(magasin.compte(d))").font(.system(size: 17)).foregroundStyle(.secondary)
+                                            Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary.opacity(0.6))
+                                        }
+                                        .padding(.horizontal, 16).padding(.vertical, 12)
+                                    }
+                                    if i < magasin.dossiers.count - 1 { Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 56) }
+                                }
+                                Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 56)
+                                HStack(spacing: 12) {
+                                    Image(systemName: "trash").font(.system(size: 18)).foregroundStyle(notesJaune).frame(width: 28)
+                                    Text("Suppressions récentes").font(.system(size: 17)).foregroundStyle(.white)
+                                    Spacer()
+                                    Text("\(magasin.supprimees.count)").font(.system(size: 17)).foregroundStyle(.secondary)
+                                    Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary.opacity(0.6))
+                                }
+                                .padding(.horizontal, 16).padding(.vertical, 12)
+                                .contentShape(Rectangle())
+                                .onTapGesture { chemin.append(DossierNotes(id: "Suppressions récentes", icone: "trash")) }
+                            }
+                            .background(notesFondCellule, in: RoundedRectangle(cornerRadius: 12))
+                        } else {
+                            // Recherche globale réelle depuis la racine
+                            ResultatsRechercheNotes(recherche: recherche) { n in chemin.append(n) }
+                        }
+                        Spacer(minLength: 100)
+                    }
+                    .padding(.horizontal, 16)
+                }
+
+                // Barre basse : nouveau dossier + nouvelle note — REMONTÉE au-dessus de la capsule home (v2)
+                HStack {
+                    Button { nouveauDossierVisible = true } label: {
+                        Image(systemName: "folder.badge.plus").font(.system(size: 20)).foregroundStyle(notesJaune)
+                            .frame(width: 44, height: 44)
+                    }
+                    Spacer()
+                    Button {
+                        chemin.append(magasin.nouvelle())
+                    } label: {
+                        Image(systemName: "square.and.pencil").font(.system(size: 20)).foregroundStyle(notesJaune)
+                            .frame(width: 44, height: 44)
+                    }
+                }
+                .padding(.horizontal, 14).padding(.bottom, 26)
+
+                BarreHome { dismiss() }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Text("Modifier").font(.system(size: 17)).foregroundStyle(notesJaune).fixedSize()
+                        .onTapGesture { Haptique.leger() }
+                }
+            }
+            .navigationDestination(for: DossierNotes.self) { d in
+                if d.nom == "Suppressions récentes" {
+                    SuppressionsRecentesNotesVue()
+                } else {
+                    NotesListeVue(dossier: d) { n in chemin.append(n) }
+                }
+            }
+            .navigationDestination(for: NoteItem.self) { n in
+                NoteEditionVue(noteId: n.id)
+            }
+            .alert("Nouveau dossier", isPresented: $nouveauDossierVisible) {
+                TextField("Nom", text: $nomNouveauDossier)
+                Button("Enregistrer") { nomNouveauDossier = "" }
+                Button("Annuler", role: .cancel) { nomNouveauDossier = "" }
+            }
+        }
+        .tint(notesJaune)
+        .preferredColorScheme(.dark)
+    }
+}
+
+// ============================================================ LISTE D'UN DOSSIER (ex-racine)
+struct NotesListeVue: View {
+    let dossier: DossierNotes
+    let ouvrir: (NoteItem) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var magasin = MagasinNotes.partage
+    @State private var recherche = ""
+    @State private var codeDemande = false
+    // v2 : menu … réel
+    @State private var modeSelection = false
+    @State private var selection = Set<UUID>()
+    @State private var galerie = false
+    @State private var piecesJointesVisibles = false
+
+    private let ordreSections = ["Épinglées", "Aujourd'hui", "7 jours précédents", "30 jours précédents"]
+
+    private var duDossier: [NoteItem] {
+        dossier.toutes ? magasin.notes : magasin.notes.filter { $0.dossier == dossier.nom }
+    }
+    private var filtrees: [NoteItem] {
+        guard !recherche.isEmpty else { return duDossier }
+        return duDossier.filter {
+            $0.titre.localizedCaseInsensitiveContains(recherche) ||
+            $0.corps.localizedCaseInsensitiveContains(recherche)
+        }
+    }
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Color.black.ignoresSafeArea()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(dossier.nom).font(.system(size: 34, weight: .bold)).foregroundStyle(.white)
+                    }
+                    .padding(.top, 2)
+
+                    ForEach(ordreSections, id: \.self) { section in
+                        let items = filtrees.filter { $0.section == section }
+                        if !items.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack(spacing: 4) {
+                                    Text(section).font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
+                                    Spacer()
+                                    if section == "Épinglées" {
+                                        Image(systemName: "chevron.down").font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
+                                    }
+                                }
+                                if galerie {
+                                    // v2 : « Afficher en galerie » = vraies cartes 2 colonnes
+                                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
+                                        ForEach(items) { n in
+                                            carteGalerie(n)
+                                        }
+                                    }
+                                } else {
+                                    VStack(spacing: 1) {
+                                        ForEach(items) { n in rangee(n) }
+                                    }
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                }
+                            }
+                        }
+                    }
+                    if !recherche.isEmpty && filtrees.isEmpty {
+                        Text("Aucun résultat").font(.system(size: 15)).foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity).padding(.top, 60)
+                    }
+                    Spacer(minLength: 110)
+                }
+                .padding(.horizontal, 16)
+            }
+
+            // Barre basse (v2 : SANS micro, REMONTÉE au-dessus de la capsule home)
+            if modeSelection {
+                HStack {
+                    Button("Déplacer") { Haptique.leger() }
+                        .foregroundStyle(selection.isEmpty ? .secondary : notesJaune).disabled(selection.isEmpty)
+                    Spacer()
+                    Text(selection.isEmpty ? "Sélectionner des notes" : "\(selection.count) sélectionnée\(selection.count > 1 ? "s" : "")")
+                        .font(.system(size: 15)).foregroundStyle(.white)
+                    Spacer()
+                    Button("Supprimer") {
+                        withAnimation { magasin.supprimer(selection) }
+                        selection.removeAll(); modeSelection = false
+                    }
+                    .foregroundStyle(selection.isEmpty ? .secondary : Color(hex: 0xFF453A)).disabled(selection.isEmpty)
+                }
+                .font(.system(size: 17))
+                .padding(.horizontal, 16).padding(.vertical, 12)
+                .background(.ultraThinMaterial)
+                .padding(.bottom, 26)
+            } else {
+                HStack(spacing: 12) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                        TextField("Recherche", text: $recherche)
+                            .foregroundStyle(.white)
+                        if !recherche.isEmpty {
+                            Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                                .onTapGesture { recherche = "" }
+                        }
+                    }
+                    .padding(.horizontal, 14).frame(height: 42)
+                    .background(notesFondCellule, in: Capsule())
+                    Button {
+                        ouvrir(magasin.nouvelle(dossier: dossier.toutes ? "Notes" : dossier.nom))
+                    } label: {
+                        Image(systemName: "square.and.pencil")
+                            .font(.system(size: 19)).foregroundStyle(notesJaune)
+                            .frame(width: 44, height: 44)
+                            .background(notesFondCellule, in: Circle())
+                    }
+                }
+                .padding(.horizontal, 16).padding(.bottom, 26)
+            }
+
+            BarreHome { dismiss() }   // capsule = retour ACCUEIL ; le chevron « Dossiers » = navigation interne
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                // v2 : le retour reste DANS Notes (pop vers Dossiers), il ne quitte plus l'app
+                Button { dismiss() } label: {
+                    HStack(spacing: 3) {
+                        Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold))
+                        Text("Dossiers").font(.system(size: 17))
+                    }
+                    .foregroundStyle(notesJaune)
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                if modeSelection {
+                    Button("Terminé") { modeSelection = false; selection.removeAll() }
+                        .font(.system(size: 17, weight: .semibold)).foregroundStyle(notesJaune)
+                } else {
+                    Menu {
+                        // v2 : les 3 entrées font quelque chose de RÉEL
+                        Button { piecesJointesVisibles = true } label: { Label("Afficher les pièces jointes", systemImage: "paperclip") }
+                        Button { modeSelection = true } label: { Label("Sélectionner des notes", systemImage: "checkmark.circle") }
+                        Button { withAnimation(.easeInOut(duration: 0.2)) { galerie.toggle() } } label: {
+                            Label(galerie ? "Afficher en liste" : "Afficher en galerie", systemImage: galerie ? "list.bullet" : "square.grid.2x2")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis.circle").foregroundStyle(notesJaune)
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $piecesJointesVisibles) { PiecesJointesNotesVue(dossier: dossier.nom) }
+        // D57 : porte fermée visible — la note verrouillée demande le code
+        .alert("Note verrouillée", isPresented: $codeDemande) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Saisissez le code de l'iPhone pour afficher cette note.")
+        }
+        .tint(notesJaune)
+        .preferredColorScheme(.dark)
+    }
+
+    @ViewBuilder private func rangee(_ n: NoteItem) -> some View {
+        Button {
+            if modeSelection {
+                if selection.contains(n.id) { selection.remove(n.id) } else { selection.insert(n.id) }
+            } else if n.verrouillee { codeDemande = true } else { ouvrir(n) }
+        } label: {
+            HStack(spacing: 12) {
+                if modeSelection {
+                    Image(systemName: selection.contains(n.id) ? "checkmark.circle.fill" : "circle")
+                        .font(.system(size: 22)).foregroundStyle(selection.contains(n.id) ? notesJaune : .secondary)
+                }
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 6) {
+                        // v2 : titre en GRAS (comme Notes)
+                        Text(n.titre.isEmpty ? "Nouvelle note" : n.titre)
+                            .font(.system(size: 17, weight: .bold)).foregroundStyle(.white).lineLimit(1)
+                        if n.verrouillee {
+                            Image(systemName: "lock.fill").font(.system(size: 12)).foregroundStyle(.secondary)
+                        }
+                    }
+                    HStack(spacing: 8) {
+                        Text(n.dateTexte).font(.system(size: 15)).foregroundStyle(.secondary)
+                        Text(n.verrouillee ? "Note verrouillée" : (n.apercu.isEmpty ? "Aucun texte supplémentaire" : n.apercu))
+                            .font(.system(size: 15)).foregroundStyle(.secondary).lineLimit(1)
+                    }
+                    if dossier.toutes {
+                        HStack(spacing: 4) {
+                            Image(systemName: "folder").font(.system(size: 11))
+                            Text(n.dossier).font(.system(size: 13))
+                        }
+                        .foregroundStyle(.secondary).padding(.top, 1)
+                    }
+                }
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16).padding(.vertical, 11)
+            .background(notesFondCellule)
+        }
+    }
+
+    @ViewBuilder private func carteGalerie(_ n: NoteItem) -> some View {
+        Button {
+            if n.verrouillee { codeDemande = true } else { ouvrir(n) }
+        } label: {
+            VStack(alignment: .leading, spacing: 6) {
+                ZStack(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 10).fill(Color(hex: 0x2C2C2E))
+                    if n.verrouillee {
+                        Image(systemName: "lock.fill").font(.system(size: 26)).foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        Text(n.corps).font(.system(size: 9)).foregroundStyle(.white.opacity(0.8))
+                            .padding(8).lineLimit(9)
+                    }
+                }
+                .frame(height: 118)
+                Text(n.titre.isEmpty ? "Nouvelle note" : n.titre).font(.system(size: 14, weight: .bold)).foregroundStyle(.white).lineLimit(1)
+                Text(n.dateTexte).font(.system(size: 12)).foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+// Recherche depuis la racine Dossiers
+struct ResultatsRechercheNotes: View {
+    let recherche: String
+    let ouvrir: (NoteItem) -> Void
+    @ObservedObject private var magasin = MagasinNotes.partage
+    private var resultats: [NoteItem] {
+        magasin.notes.filter { !$0.verrouillee && ($0.titre.localizedCaseInsensitiveContains(recherche) || $0.corps.localizedCaseInsensitiveContains(recherche)) }
+    }
+    var body: some View {
+        if resultats.isEmpty {
+            Text("Aucun résultat pour « \(recherche) »").font(.system(size: 15)).foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity).padding(.top, 60)
+        } else {
+            VStack(spacing: 1) {
+                ForEach(resultats) { n in
+                    Button { ouvrir(n) } label: {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(n.titre).font(.system(size: 17, weight: .bold)).foregroundStyle(.white)
+                            HStack(spacing: 8) {
+                                Text(n.dateTexte).font(.system(size: 15)).foregroundStyle(.secondary)
+                                Text(n.apercu).font(.system(size: 15)).foregroundStyle(.secondary).lineLimit(1)
+                            }
+                            HStack(spacing: 4) {
+                                Image(systemName: "folder").font(.system(size: 11)); Text(n.dossier).font(.system(size: 13))
+                            }.foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 16).padding(.vertical, 11)
+                        .background(notesFondCellule)
+                    }
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+}
+
+// ============================================================ PIÈCES JOINTES (réel : état iOS « Aucune pièce jointe »)
+struct PiecesJointesNotesVue: View {
+    let dossier: String
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
+                VStack(spacing: 10) {
+                    Image(systemName: "paperclip").font(.system(size: 40)).foregroundStyle(.secondary)
+                    Text("Aucune pièce jointe").font(.system(size: 20, weight: .semibold)).foregroundStyle(.white)
+                    Text("Les photos, scans, dessins et liens ajoutés à vos notes apparaîtront ici.")
+                        .font(.system(size: 14)).foregroundStyle(.secondary).multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                }
+            }
+            .navigationTitle("Pièces jointes")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("OK") { dismiss() }.foregroundStyle(notesJaune) } }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+// ============================================================ SUPPRESSIONS RÉCENTES (réel : récupérer)
+struct SuppressionsRecentesNotesVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var magasin = MagasinNotes.partage
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Color.black.ignoresSafeArea()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Suppressions récentes").font(.system(size: 34, weight: .bold)).foregroundStyle(.white)
+                    Text("Les notes sont conservées 30 jours avant d'être définitivement supprimées.")
+                        .font(.system(size: 13)).foregroundStyle(.secondary)
+                    if magasin.supprimees.isEmpty {
+                        Text("Aucune note").font(.system(size: 15)).foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity).padding(.top, 60)
+                    } else {
+                        VStack(spacing: 1) {
+                            ForEach(magasin.supprimees) { n in
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(n.titre.isEmpty ? "Nouvelle note" : n.titre).font(.system(size: 17, weight: .bold)).foregroundStyle(.white)
+                                        Text(n.dateTexte).font(.system(size: 15)).foregroundStyle(.secondary)
+                                    }
+                                    Spacer()
+                                    Button("Récupérer") {
+                                        withAnimation {
+                                            magasin.supprimees.removeAll { $0.id == n.id }
+                                            magasin.notes.insert(n, at: 0)
+                                        }
+                                    }
+                                    .font(.system(size: 15)).foregroundStyle(notesJaune)
+                                }
+                                .padding(.horizontal, 16).padding(.vertical, 11)
+                                .background(notesFondCellule)
+                            }
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    Spacer(minLength: 100)
+                }
+                .padding(.horizontal, 16)
+            }
+            BarreHome { }
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button { dismiss() } label: {
+                    HStack(spacing: 3) {
+                        Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold))
+                        Text("Dossiers").font(.system(size: 17))
+                    }
+                    .foregroundStyle(notesJaune)
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
 // ============================================================ ÉDITION (persistante — D51)
+// v2 : première ligne = TITRE en gras 28 pt (comme Notes), date centrée en tête, « Terminé » pendant la saisie.
 struct NoteEditionVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinNotes.partage
     let noteId: UUID
-    @State private var texte = ""
+    @State private var titre = ""
+    @State private var corps = ""
     @State private var alerteOutil: String? = nil
     @State private var partageVisible = false
     @State private var confirmerSuppression = false
+    @FocusState private var champ: Champ?
+    enum Champ { case titre, corps }
 
     private var index: Int? { magasin.notes.firstIndex { $0.id == noteId } }
     private var epinglee: Bool { index.map { magasin.notes[$0].section == "Épinglées" } ?? false }
+    private var dateEntete: String {
+        guard let i = index else { return "" }
+        let d = magasin.notes[i].dateTexte
+        return d.contains(":") ? "17 août 2026 à \(d)" : d
+    }
 
     var body: some View {
         VStack(spacing: 0) {
-            TextEditor(text: $texte)
-                .font(.system(size: 17))
-                .foregroundStyle(.white)
-                .scrollContentBackground(.hidden)
-                .background(Color.black)
-                .padding(.horizontal, 10)
-                .onAppear {
-                    if let i = index {
-                        let n = magasin.notes[i]
-                        texte = n.titre.isEmpty ? "" : n.titre + "\n" + n.corps
-                    }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(dateEntete).font(.system(size: 12)).foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity).padding(.top, 6)
+                    TextField("Titre", text: $titre, axis: .vertical)
+                        .font(.system(size: 28, weight: .bold)).foregroundStyle(.white)
+                        .focused($champ, equals: .titre)
+                        .onSubmit { champ = .corps }
+                    TextEditor(text: $corps)
+                        .font(.system(size: 17)).foregroundStyle(.white)
+                        .scrollContentBackground(.hidden)
+                        .background(Color.black)
+                        .frame(minHeight: 420)
+                        .focused($champ, equals: .corps)
+                        .padding(.horizontal, -5)
                 }
-                .onChange(of: texte) { _, t in
-                    guard let i = index else { return }
-                    let lignes = t.split(separator: "\n", maxSplits: 1, omittingEmptySubsequences: false).map(String.init)
-                    magasin.notes[i].titre = lignes.first ?? ""
-                    magasin.notes[i].corps = lignes.count > 1 ? lignes[1] : ""
+                .padding(.horizontal, 20)
+            }
+            .onAppear {
+                if let i = index {
+                    titre = magasin.notes[i].titre
+                    corps = magasin.notes[i].corps
+                    if titre.isEmpty && corps.isEmpty { champ = .titre }
                 }
+            }
+            .onChange(of: titre) { _, t in
+                guard let i = index else { return }
+                magasin.notes[i].titre = t.replacingOccurrences(of: "\n", with: " ")
+            }
+            .onChange(of: corps) { _, c in
+                guard let i = index else { return }
+                magasin.notes[i].corps = c
+            }
 
             // Barre d'outils basse (icônes de la référence — réponses catalogue)
             HStack(spacing: 30) {
                 ForEach(["textformat", "checklist", "tablecells", "paperclip", "pencil.tip.crop.circle"], id: \.self) { s in
                     Image(systemName: s)
-                        .font(.system(size: 19)).foregroundStyle(Color(hex: 0xE8A33D))
+                        .font(.system(size: 19)).foregroundStyle(notesJaune)
                         .onTapGesture { alerteOutil = s }
                 }
                 Spacer()
                 Image(systemName: "square.and.pencil")
-                    .font(.system(size: 19)).foregroundStyle(Color(hex: 0xE8A33D))
+                    .font(.system(size: 19)).foregroundStyle(notesJaune)
                     .onTapGesture { dismiss() }
             }
             .padding(.horizontal, 20).padding(.vertical, 10)
@@ -262,45 +628,36 @@ struct NoteEditionVue: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 18) {
-                    Image(systemName: "square.and.arrow.up").foregroundStyle(Color(hex: 0xE8A33D))
+                    Image(systemName: "square.and.arrow.up").foregroundStyle(notesJaune)
                         .onTapGesture { partageVisible = true }
                     Menu {
                         Button {
                             guard let i = index else { return }
-                            if epinglee {
-                                magasin.notes[i].section = "Aujourd'hui"
-                            } else {
-                                magasin.notes[i].section = "Épinglées"
-                            }
+                            magasin.notes[i].section = epinglee ? "Aujourd'hui" : "Épinglées"
                             Haptique.leger()
                         } label: {
-                            Label(epinglee ? "Désépingler" : "Épingler",
-                                  systemImage: epinglee ? "pin.slash" : "pin")
+                            Label(epinglee ? "Désépingler" : "Épingler", systemImage: epinglee ? "pin.slash" : "pin")
                         }
-                        Button { partageVisible = true } label: {
-                            Label("Partager", systemImage: "square.and.arrow.up")
-                        }
-                        Button(role: .destructive) {
-                            confirmerSuppression = true
-                        } label: {
-                            Label("Supprimer", systemImage: "trash")
-                        }
+                        Button { partageVisible = true } label: { Label("Partager", systemImage: "square.and.arrow.up") }
+                        Button(role: .destructive) { confirmerSuppression = true } label: { Label("Supprimer", systemImage: "trash") }
                     } label: {
-                        Image(systemName: "ellipsis.circle").foregroundStyle(Color(hex: 0xE8A33D))
+                        Image(systemName: "ellipsis.circle").foregroundStyle(notesJaune)
+                    }
+                    if champ != nil {
+                        Button("Terminé") { champ = nil }
+                            .font(.system(size: 17, weight: .semibold)).foregroundStyle(notesJaune)
                     }
                 }
             }
         }
         .alert("Supprimer la note ?", isPresented: $confirmerSuppression) {
             Button("Supprimer", role: .destructive) {
-                if let i = index {
-                    magasin.notes.remove(at: i)
-                }
+                magasin.supprimer([noteId])
                 dismiss()
             }
             Button("Annuler", role: .cancel) {}
         } message: {
-            Text("Cette note sera définitivement supprimée.")
+            Text("La note sera déplacée dans Suppressions récentes.")
         }
         .alert(titreOutil, isPresented: Binding(get: { alerteOutil != nil }, set: { if !$0 { alerteOutil = nil } })) {
             Button("OK", role: .cancel) {}
@@ -308,7 +665,7 @@ struct NoteEditionVue: View {
             Text(messageOutil)
         }
         .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Note") }
-        .tint(Color(hex: 0xE8A33D))
+        .tint(notesJaune)
         .preferredColorScheme(.dark)
     }
 

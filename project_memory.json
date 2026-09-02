@@ -1604,16 +1604,16 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "Retours 274 traités (WhatsApp crash, Safari signets/7 résultats/bande, partage réel partout D90, Notes Modifier/clavier, Calendrier bulles/position, localisation fr). BUILD 275 lancé ~19h05. 9/28 validées. Joachim : session 4 sur le 274 + capture d écran vraie app Notes attendue.",
+  "dernier_evenement": "Retours 274 traités (WhatsApp crash, Safari signets/7 résultats/bande, partage réel partout D90, Notes Modifier/clavier, Calendrier bulles/position, localisation fr). BUILD 275 VERT (18h41→18h45). 9/28 validées. Joachim : session 4 sur le 274 + capture d écran vraie app Notes attendue.",
   "en_attente": [
-   "Codemagic : build 275 en cours — vérifier VERT",
+   "Build 275 publié TestFlight ~18h50 — Joachim : checklist du 275 (13 points)",
    "Joachim : retours session 4 (Fichiers, Localiser, Santé, Cartes, Ma Banque) testée sur le 274 ; capture d écran de la vraie app Notes (Dossiers) pour le jaune",
    "Joachim : checklist du 275 (13 points) quand disponible",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
    "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/ ; passe finale Réglages ; ce que le joueur peut supprimer (Dictaphone, etc.)"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-02 19h05"
+  "derniere_maj": "2026-09-02 18h50"
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2708,7 +2708,7 @@
    "calendrier": "Capsules toolbar retirées (double bulle iOS 26) ; scrollPosition(id:) + scrollTargetLayout → changement de mode conserve le mois.",
    "horloge": "swipeActions « Supprimer » explicite + LOCALISATION FR du projet (project.yml developmentLanguage fr, CFBundleDevelopmentRegion fr, CFBundleLocalizations [fr], Sources/fr.lproj/Localizable.strings) → textes système en français dans toutes les apps.",
    "fichiers": "MagasinFichiers.ajoutes + ajouter(nom:genre:contenu:) ; FichierItem.contenu ; aperçu du texte ; micros retirés.",
-   "build": "275 lancé ~19h05 (contenu ci-dessus). Joachim teste la session 4 (Fichiers, Localiser, Santé, Cartes, Ma Banque) sur le 274 pendant ce temps."
+   "build": "275 = buildId 6a9851a5fc57b014bafea839, index 15, lancé 18h41, compilé 18h42-18h45, publication 18h45 → VERT du premier coup. Joachim teste la session 4 (Fichiers, Localiser, Santé, Cartes, Ma Banque) sur le 274 pendant ce temps."
   }
  }
 }

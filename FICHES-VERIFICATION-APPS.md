@@ -14,7 +14,7 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 ## 🔔 DERNIER BUILD — à vérifier en priorité
 > Cette section est MISE À JOUR À CHAQUE BUILD (règle D89, 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
-**Build : TestFlight n° 275 — lancé le 02/09 à 19h05 (disponible sur TestFlight ~15 min plus tard).** Retours du 274 + principe « toute action annoncée produit son résultat ». Précédent valide : 274 (02/09 17h57).
+**Build : TestFlight n° 275 — lancé le 02/09 à 18h41, compilé 18h42-18h45, publication TestFlight 18h45 (disponible ~10 min après).** Retours du 274 + principe « toute action annoncée produit son résultat ». Précédent valide : 274 (02/09 17h57).
 
 ### Ce que tu avais demandé (retours du 274)
 - WhatsApp : Gérer le stockage / Important / Notifications / Thème… dans une fiche contact → le jeu se ferme
@@ -56,8 +56,8 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 | Session | Apps | Build |
 |---|---|---|
 | RE-TEST | Messages · WhatsApp · Téléphone · Photos · Mail | TestFlight **272** (dehors) |
-| 2 | Safari (re-test) · Notes · Rappels · Calendrier | TestFlight **275** (02/09 19h05) |
-| 3 | Horloge · Dictaphone (Météo ✅, Calculatrice ✅) | TestFlight **275** (02/09 19h05) |
+| 2 | Safari (re-test) · Notes · Rappels · Calendrier | TestFlight **275** (02/09 18h41) |
+| 3 | Horloge · Dictaphone (Météo ✅, Calculatrice ✅) | TestFlight **275** (02/09 18h41) |
 | finale | Réglages (passe dédiée, D89) | dernier lot |
 | 4 | Fichiers · Localiser · Santé · Cartes · Ma Banque | lot session 4 |
 | 5 | Messenger · Instagram · Snapchat · Facebook | lot session 5 |

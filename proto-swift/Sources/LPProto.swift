@@ -370,7 +370,7 @@ struct EcranCapture: View {
         case "safari.fonfon": CaptureSafari(page: "fonfon", url: "chez-fonfon.com")
         case "safari.erreur": CaptureSafari(page: "erreur", url: "exemple.fr")
         case "safari.site": CaptureSafari(page: "site:Boulangerie du Griffon", url: "boulangeriedugriffon.fr")
-        case "safari.onglets": OngletsVue { _ in }
+        case "safari.onglets": OngletsVue(onglets: .constant(DonneesSafari.onglets), ongletsPrives: .constant([]), modePrive: .constant(false), ouvrir: { _ in }, nouveau: {}, fermer: { _ in })
         case "safari.historique": HistoriqueSafariVue()
         default: VerrouillageView()
         }

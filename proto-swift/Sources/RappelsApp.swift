@@ -235,7 +235,7 @@ struct RechercheRappelsVue: View {
                                 Circle().stroke(Color(hex: 0x8E8E93), lineWidth: 1.5).frame(width: 22, height: 22)
                             }
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(r.titre).font(.system(size: 16)).foregroundStyle(r.termine ? .secondary : .white)
+                                Text(r.titre).font(.system(size: 16)).foregroundStyle(r.termine ? Color.secondary : Color.white)
                                 Text(r.liste + (r.sousTexte.map { " · " + $0 } ?? "") + (r.termineTexte.map { " · " + $0 } ?? ""))
                                     .font(.system(size: 13)).foregroundStyle(.secondary)
                             }
@@ -370,7 +370,7 @@ struct FiltreVue: View {
                         VStack(alignment: .leading, spacing: 2) {
                             HStack(spacing: 6) {
                                 if r.urgent { Text("!!!").font(.system(size: 16, weight: .bold)).foregroundStyle(Color(hex: 0xE84D6B)) }
-                                Text(r.titre).font(.system(size: 16.5)).foregroundStyle(r.termine ? .secondary : .white)
+                                Text(r.titre).font(.system(size: 16.5)).foregroundStyle(r.termine ? Color.secondary : Color.white)
                             }
                             if let s = r.sousTexte {
                                 Text(s).font(.system(size: 14)).foregroundStyle(Color(hex: 0x0A84FF))

@@ -543,7 +543,7 @@ struct SafariVue: View {
                 } else {
                     Text(urlActive.isEmpty ? "Rechercher ou saisir une adresse" : urlActive)
                         .font(.system(size: 15))
-                        .foregroundStyle(urlActive.isEmpty ? .secondary : .white)
+                        .foregroundStyle(urlActive.isEmpty ? Color.secondary : Color.white)
                         .frame(maxWidth: .infinity)
                         .contentShape(Rectangle())
                         .onTapGesture { saisieActive = true; champFocalise = true; saisie = "" }

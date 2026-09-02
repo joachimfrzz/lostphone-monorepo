@@ -320,7 +320,7 @@ struct MoisVue: View {
                             VStack(spacing: 3) {
                                 Text("\(j)")
                                     .font(.system(size: 16, weight: estPresent ? .bold : .regular))
-                                    .foregroundStyle(estPresent ? .white : (c >= 5 ? .secondary : .white))
+                                    .foregroundStyle(estPresent ? .white : (c >= 5 ? Color.secondary : Color.white))
                                     .frame(width: 30, height: 30)
                                     .background(estPresent ? Color(hex: 0xFF453A) : .clear, in: Circle())
                                 if mode == .empile {

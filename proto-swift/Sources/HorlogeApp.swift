@@ -83,7 +83,7 @@ struct HorlogesMondeVue: View {
 
     private func libelleDecalage(_ v: VilleHorloge, _ maintenant: Date) -> String {
         let delta = v.decalageUTC - MagasinHorloge.parisUTC
-        let heureLocaleParis = Calendar.current.component(.hour, from: maintenant) + Calendar.current.component(.minute, from: maintenant) / 60.0
+        let heureLocaleParis = Double(Calendar.current.component(.hour, from: maintenant)) + Double(Calendar.current.component(.minute, from: maintenant)) / 60.0
         let heureVille = heureLocaleParis + delta
         let jour = heureVille < 0 ? "Hier" : (heureVille >= 24 ? "Demain" : "Aujourd'hui")
         let signe = delta >= 0 ? "+" : "−"

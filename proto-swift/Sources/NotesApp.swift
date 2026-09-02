@@ -65,12 +65,29 @@ final class MagasinNotes: ObservableObject {
     ]
     @Published var supprimees: [NoteItem] = []
 
-    let dossiers: [DossierNotes] = [
+    @Published var dossiers: [DossierNotes] = [
         DossierNotes(id: "iCloud (toutes)", icone: "folder", toutes: true),
         DossierNotes(id: "Notes", icone: "folder"),
         DossierNotes(id: "Recettes", icone: "folder"),
         DossierNotes(id: "Santé", icone: "folder"),
     ]
+    // v2 02/09 : Modifier réel — supprimer / renommer / créer un dossier
+    func supprimerDossier(_ nom: String) {
+        guard nom != "Notes" else { return }
+        dossiers.removeAll { $0.nom == nom }
+        for i in notes.indices where notes[i].dossier == nom { notes[i].dossier = "Notes" }
+    }
+    func renommerDossier(_ nom: String, en nouveau: String) {
+        let n = nouveau.trimmingCharacters(in: .whitespaces)
+        guard !n.isEmpty, let i = dossiers.firstIndex(where: { $0.nom == nom }), !dossiers.contains(where: { $0.nom == n }) else { return }
+        dossiers[i] = DossierNotes(id: n, icone: dossiers[i].icone)
+        for k in notes.indices where notes[k].dossier == nom { notes[k].dossier = n }
+    }
+    func ajouterDossier(_ nom: String) {
+        let n = nom.trimmingCharacters(in: .whitespaces)
+        guard !n.isEmpty, !dossiers.contains(where: { $0.nom == n }) else { return }
+        dossiers.append(DossierNotes(id: n, icone: "folder"))
+    }
 
     func compte(_ d: DossierNotes) -> Int {
         d.toutes ? notes.count : notes.filter { $0.dossier == d.nom }.count
@@ -101,6 +118,10 @@ struct NotesVue: View {
     @State private var recherche = ""
     @State private var nouveauDossierVisible = false
     @State private var nomNouveauDossier = ""
+    @State private var edition = false                 // v2 02/09 : Modifier RÉEL (dossiers)
+    @State private var dossierARenommer: DossierNotes? = nil
+    @State private var nomRenommage = ""
+    @FocusState private var rechercheFocalisee: Bool
 
     var body: some View {
         NavigationStack(path: $chemin) {
@@ -114,9 +135,11 @@ struct NotesVue: View {
                         HStack(spacing: 8) {
                             Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                             TextField("Recherche", text: $recherche).foregroundStyle(.white)
+                                .focused($rechercheFocalisee)
+                                .submitLabel(.search)
                             if !recherche.isEmpty {
                                 Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                                    .onTapGesture { recherche = "" }
+                                    .onTapGesture { recherche = ""; rechercheFocalisee = false }
                             }
                         }
                         .padding(.horizontal, 12).frame(height: 38)
@@ -126,8 +149,16 @@ struct NotesVue: View {
                             Text("iCloud").font(.system(size: 20, weight: .bold)).foregroundStyle(.white).padding(.top, 6)
                             VStack(spacing: 0) {
                                 ForEach(Array(magasin.dossiers.enumerated()), id: \.element.id) { i, d in
-                                    Button { chemin.append(d) } label: {
+                                    Button {
+                                        if edition { if !d.toutes { dossierARenommer = d; nomRenommage = d.nom } }
+                                        else { rechercheFocalisee = false; chemin.append(d) }
+                                    } label: {
                                         HStack(spacing: 12) {
+                                            if edition && !d.toutes {
+                                                // v2 02/09 : mode Modifier réel — pastille de suppression (le dossier part, ses notes restent dans « Notes »)
+                                                Image(systemName: "minus.circle.fill").font(.system(size: 22)).foregroundStyle(Color(hex: 0xFF453A))
+                                                    .onTapGesture { withAnimation { magasin.supprimerDossier(d.nom) } }
+                                            }
                                             Image(systemName: d.icone).font(.system(size: 18)).foregroundStyle(notesJaune).frame(width: 28)
                                             Text(d.nom).font(.system(size: 17)).foregroundStyle(.white)
                                             Spacer()
@@ -180,10 +211,19 @@ struct NotesVue: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Text("Modifier").font(.system(size: 17)).foregroundStyle(notesJaune).fixedSize()
-                        .onTapGesture { Haptique.leger() }
+                    // v2 02/09 : Modifier RÉEL
+                    Button(edition ? "OK" : "Modifier") { withAnimation { edition.toggle() } }
+                        .font(.system(size: 17, weight: edition ? .semibold : .regular)).foregroundStyle(notesJaune)
                 }
             }
+            .alert("Renommer le dossier", isPresented: Binding(get: { dossierARenommer != nil }, set: { if !$0 { dossierARenommer = nil } })) {
+                TextField("Nom", text: $nomRenommage)
+                Button("Annuler", role: .cancel) {}
+                Button("OK") { if let d = dossierARenommer { magasin.renommerDossier(d.nom, en: nomRenommage) } }
+            }
+            // v2 02/09 : un tap hors du champ masque le clavier (comportement naturel)
+            .simultaneousGesture(TapGesture().onEnded { rechercheFocalisee = false })
+            .scrollDismissesKeyboard(.interactively)
             .navigationDestination(for: DossierNotes.self) { d in
                 if d.nom == "Suppressions récentes" {
                     SuppressionsRecentesNotesVue()
@@ -196,7 +236,7 @@ struct NotesVue: View {
             }
             .alert("Nouveau dossier", isPresented: $nouveauDossierVisible) {
                 TextField("Nom", text: $nomNouveauDossier)
-                Button("Enregistrer") { nomNouveauDossier = "" }
+                Button("Enregistrer") { magasin.ajouterDossier(nomNouveauDossier); nomNouveauDossier = "" }
                 Button("Annuler", role: .cancel) { nomNouveauDossier = "" }
             }
         }
@@ -218,6 +258,7 @@ struct NotesListeVue: View {
     @State private var selection = Set<UUID>()
     @State private var galerie = false
     @State private var piecesJointesVisibles = false
+    @FocusState private var rechercheFocalisee: Bool
 
     private let ordreSections = ["Épinglées", "Aujourd'hui", "7 jours précédents", "30 jours précédents"]
 
@@ -303,9 +344,11 @@ struct NotesListeVue: View {
                         Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                         TextField("Recherche", text: $recherche)
                             .foregroundStyle(.white)
+                            .focused($rechercheFocalisee)
+                            .submitLabel(.search)
                         if !recherche.isEmpty {
                             Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                                .onTapGesture { recherche = "" }
+                                .onTapGesture { recherche = ""; rechercheFocalisee = false }
                         }
                     }
                     .padding(.horizontal, 14).frame(height: 42)
@@ -355,6 +398,8 @@ struct NotesListeVue: View {
             }
         }
         .sheet(isPresented: $piecesJointesVisibles) { PiecesJointesNotesVue(dossier: dossier.nom) }
+        .simultaneousGesture(TapGesture().onEnded { rechercheFocalisee = false })   // v2 02/09 : tap ailleurs = clavier masqué
+        .scrollDismissesKeyboard(.interactively)
         // D57 : porte fermée visible — la note verrouillée demande le code
         .alert("Note verrouillée", isPresented: $codeDemande) {
             Button("OK", role: .cancel) {}
@@ -664,7 +709,7 @@ struct NoteEditionVue: View {
         } message: {
             Text(messageOutil)
         }
-        .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Note") }
+        .sheet(isPresented: $partageVisible) { FeuillePartage(element: (index.map { magasin.notes[$0].titre } ?? "Note"), contenu: (index.map { magasin.notes[$0].titre + "\n" + magasin.notes[$0].corps } ?? ""), type: .note) }
         .tint(notesJaune)
         .preferredColorScheme(.dark)
     }

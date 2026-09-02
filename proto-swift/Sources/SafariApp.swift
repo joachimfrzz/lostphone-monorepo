@@ -188,6 +188,23 @@ enum CatalogueRecherches {
                     titre: "Annuaire des officiers de la Marine nationale — recherche",
                     extrait: "Aucun officier en activité ne correspond à « Delacroix, Marc ». Les personnels déployés restent joignables par les canaux officiels…",
                     page: "article:defense", url: "defense.gouv.fr"),
+                // v2 02/09 : les 4 résultats manquants (la page annonçait 7, n'en montrait que 3)
+                ResultatRecherche(site: "pagesjaunes.fr",
+                    titre: "DELACROIX Marc — 3 résultats en France",
+                    extrait: "Valenciennes (59), Bourges (18), Quimper (29). Aucun résultat à Toulon, Brest ou Lyon…",
+                    page: "article:pagesjaunes", url: "pagesjaunes.fr"),
+                ResultatRecherche(site: "facebook.com",
+                    titre: "Marc Delacroix — Profils | Facebook",
+                    extrait: "Afficher les profils des personnes qui s'appellent Marc Delacroix. 14 profils. Aucun n'indique la Marine nationale…",
+                    page: "article:fbprofils", url: "facebook.com"),
+                ResultatRecherche(site: "cybermalveillance.gouv.fr",
+                    titre: "Faux militaires en mission : reconnaître l'usurpation d'identité",
+                    extrait: "Les escrocs utilisent des photos volées d'officiers réels et des noms plausibles. Vérifiez toujours par un canal officiel…",
+                    page: "cyber", url: "cybermalveillance.gouv.fr"),
+                ResultatRecherche(site: "forum.doctissimo.fr",
+                    titre: "« Il s'appelait Marc, officier en mer » — témoignage",
+                    extrait: "Même prénom, même histoire de mission, même demande d'argent pour rentrer. Ne payez rien…",
+                    page: "forum", url: "forum.doctissimo.fr"),
             ]),
         "recette": Requete(
             affichee: "recette gratin courgettes mamie",
@@ -229,7 +246,9 @@ enum CatalogueRecherches {
         if r.contains("hôtel") || r.contains("hotel") || r.contains("vieux port") || r.contains("vieux-port") { return google("hotel") }
         if r.contains("lcl") || r.contains("bellecour") || r.contains("plafond") || r.contains("virement") { return google("lcl") }
         if r.contains("meetic") || r.contains("rencontre") { return google("meetic") }
-        if r.contains("delacroix") || r.contains("dlc.officier") || r.contains("marc.dlc") { return google("marc") }
+        let compact = r.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "-", with: "")
+        if r.contains("delacroix") || compact.contains("delacroix") || compact.contains("marquedelacroix")
+            || compact.contains("marcdelacroix") || r.contains("dlc.officier") || r.contains("marc.dlc") { return google("marc") }
         if r.contains("arnaque") || r.contains("sentimental") || r.contains("romance") || r.contains("officier") || r.contains("militaire") {
             return google("arnaque")
         }
@@ -422,6 +441,7 @@ struct SafariVue: View {
             Color(hex: 0x1C1C1E).ignoresSafeArea()
 
             // Page rendue (zoomable, ou version lecteur)
+            // v2 02/09 : la page défile SOUS la zone système (heure/batterie), jamais dedans
             ScrollView {
                 Group {
                     if lecteurActif, let l = LecteurSafari.contenu(pour: pageActive) {
@@ -474,6 +494,12 @@ struct SafariVue: View {
 
             BarreHome { dismiss() }
         }
+        .overlay(alignment: .top) {
+            // v2 02/09 : bande opaque de la zone système — le contenu passe dessous (comme Safari sous la barre d'état)
+            Color(hex: 0x1C1C1E).frame(height: 6).frame(maxWidth: .infinity)
+                .background(Color(hex: 0x1C1C1E).ignoresSafeArea(edges: .top))
+                .allowsHitTesting(false)
+        }
         .onAppear {
             // P3 : si une autre app (Plans, Mail…) a demandé une page, on l'ouvre
             if let (p, u) = Routeur.partage.consommerPage() { aller(page: p, url: u, titre: u) }
@@ -495,10 +521,10 @@ struct SafariVue: View {
                        fermer: { o in fermerOnglet(o) })
         }
         .sheet(isPresented: $historiqueVisible) {
-            HistoriqueSafariVue { e in
-                naviguer(e.titre)
-                historiqueVisible = false
-            }
+            // v2 02/09 : le bouton Livre ouvre les SIGNETS complets (Favoris / Liste de lecture / Historique), comme Safari
+            SignetsSafariVue(
+                ouvrirPage: { p, u, t in aller(page: p, url: u, titre: t); historiqueVisible = false },
+                ouvrirHistorique: { e in naviguer(e.titre); historiqueVisible = false })
         }
         .sheet(isPresented: $partageAlerte) { FeuillePartage(element: urlActive) }
     }
@@ -1463,6 +1489,145 @@ struct OngletsVue: View {
 }
 
 // ============================================================ HISTORIQUE (le composant d'enquête)
+// ============================================================ v2 02/09 — SIGNETS (Favoris / Liste de lecture / Historique)
+struct SignetsSafariVue: View {
+    @Environment(\.dismiss) private var dismiss
+    var ouvrirPage: (String, String, String) -> Void
+    var ouvrirHistorique: (EntreeHistorique) -> Void
+    @State private var onglet = 0
+    // Favoris de Sarah (mêmes que la page de démarrage) + dossiers
+    private let favoris: [(String, UInt, String, String, String)] = [
+        ("service-public — Escroquerie sentimentale", 0x000091, "servicepublic", "service-public.fr", "Escroquerie sentimentale : que faire ?"),
+        ("VesselFinder — MV Beaumont", 0x0E7490, "vessel", "vesselfinder.com", "MV Beaumont — VesselFinder"),
+        ("Chez Fonfon — Marseille", 0x1E5B8A, "fonfon", "chez-fonfon.com", "Chez Fonfon — Marseille"),
+        ("SNCF Connect — Lyon → Marseille", 0x6E1E78, "article:sncf", "sncf-connect.com", "Lyon → Marseille — SNCF Connect"),
+        ("LCL — Agence Bellecour", 0x00427A, "article:lclagence", "lcl.fr", "Agence LCL Bellecour"),
+        ("France Victimes", 0x8B2635, "victimes", "france-victimes.fr", "France Victimes"),
+    ]
+    // Liste de lecture : ce que Sarah a mis de côté (or narratif en creux)
+    private let lecture: [(String, String, String, String, String)] = [
+        ("Arnaque aux sentiments : les 7 signes qui doivent alerter", "france-victimes.fr", "victimes", "france-victimes.fr", "Arnaque aux sentiments — France Victimes"),
+        ("Il disait être officier en mer — témoignage", "forum.doctissimo.fr", "forum", "forum.doctissimo.fr", "Il disait être officier en mer — Doctissimo"),
+        ("Chez Fonfon — réserver une table", "chez-fonfon.com", "fonfon", "chez-fonfon.com", "Chez Fonfon — Marseille"),
+    ]
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                Picker("", selection: $onglet) {
+                    Image(systemName: "book").tag(0)
+                    Image(systemName: "eyeglasses").tag(1)
+                    Image(systemName: "clock").tag(2)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 6)
+                switch onglet {
+                case 1:
+                    List {
+                        ForEach(0..<lecture.count, id: \.self) { i in
+                            let l = lecture[i]
+                            HStack(spacing: 12) {
+                                RoundedRectangle(cornerRadius: 8).fill(Color(hex: 0x3A3A3C)).frame(width: 52, height: 40)
+                                    .overlay(Image(systemName: "doc.text").foregroundStyle(.secondary))
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(l.0).font(.system(size: 15)).foregroundStyle(.white).lineLimit(2)
+                                    Text(l.1).font(.system(size: 12.5)).foregroundStyle(.secondary)
+                                }
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture { ouvrirPage(l.2, l.3, l.4) }
+                            .listRowBackground(Color(hex: 0x2C2C2E))
+                        }
+                    }
+                    .scrollContentBackground(.hidden).background(Color(hex: 0x1C1C1E))
+                    .navigationTitle("Liste de lecture")
+                case 2:
+                    HistoriqueContenuVue(ouvrir: ouvrirHistorique)
+                        .navigationTitle("Historique")
+                default:
+                    List {
+                        Section {
+                            ForEach(0..<favoris.count, id: \.self) { i in
+                                let f = favoris[i]
+                                HStack(spacing: 12) {
+                                    RoundedRectangle(cornerRadius: 7).fill(Color(hex: f.1)).frame(width: 30, height: 30)
+                                        .overlay(Text(String(f.0.prefix(1))).font(.system(size: 13, weight: .bold)).foregroundStyle(.white))
+                                    Text(f.0).font(.system(size: 15)).foregroundStyle(.white).lineLimit(1)
+                                    Spacer()
+                                }
+                                .contentShape(Rectangle())
+                                .onTapGesture { ouvrirPage(f.2, f.3, f.4) }
+                                .listRowBackground(Color(hex: 0x2C2C2E))
+                            }
+                        } header: { Text("Favoris").font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary).textCase(nil) }
+                    }
+                    .scrollContentBackground(.hidden).background(Color(hex: 0x1C1C1E))
+                    .navigationTitle("Signets")
+                }
+            }
+            .background(Color(hex: 0x1C1C1E))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("OK") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF))
+                }
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+// Contenu de l'historique réutilisable (sans sa propre NavigationStack)
+struct HistoriqueContenuVue: View {
+    var ouvrir: (EntreeHistorique) -> Void
+    @State private var recherche = ""
+    private func couleurDomaine(_ url: String) -> UInt {
+        switch true {
+        case url.contains("google"): return 0x4285F4
+        case url.contains("vessel"): return 0x0E7490
+        case url.contains("service-public"): return 0x000091
+        case url.contains("victimes"): return 0x8B2635
+        case url.contains("fonfon"): return 0x1E5B8A
+        case url.contains("sncf"): return 0x6E1E78
+        default: return 0x5A5A5E
+        }
+    }
+    private func entrees(_ section: String) -> [EntreeHistorique] {
+        var l = DonneesSafari.historique.filter { $0.section == section }
+        if !recherche.isEmpty { l = l.filter { $0.titre.localizedCaseInsensitiveContains(recherche) } }
+        return l
+    }
+    var body: some View {
+        List {
+            ForEach(DonneesSafari.sectionsHistorique, id: \.self) { section in
+                let items = entrees(section)
+                if !items.isEmpty {
+                    Section {
+                        ForEach(items) { e in
+                            HStack(spacing: 10) {
+                                Circle().fill(Color(hex: couleurDomaine(e.url))).frame(width: 26, height: 26)
+                                    .overlay(Text(String(e.url.prefix(1)).uppercased()).font(.system(size: 12, weight: .bold)).foregroundStyle(.white))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(e.titre).font(.system(size: 15)).foregroundStyle(.white).lineLimit(2)
+                                    Text("\(e.url) · \(e.heure)").font(.system(size: 12.5)).foregroundStyle(.secondary)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .onTapGesture { ouvrir(e) }
+                            .listRowBackground(Color(hex: 0x2C2C2E))
+                        }
+                    } header: {
+                        Text(section).font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary).textCase(nil)
+                    }
+                }
+            }
+        }
+        .scrollContentBackground(.hidden)
+        .background(Color(hex: 0x1C1C1E))
+        .searchable(text: $recherche, placement: .navigationBarDrawer(displayMode: .always), prompt: "Rechercher l'historique")
+    }
+}
+
 struct HistoriqueSafariVue: View {
     @Environment(\.dismiss) private var dismiss
     var ouvrir: (EntreeHistorique) -> Void = { _ in }
@@ -1524,9 +1689,7 @@ struct HistoriqueSafariVue: View {
             .navigationTitle("Historique")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Text("Effacer").foregroundStyle(Color(hex: 0xFF453A)).fixedSize()
-                }
+                // v2 02/09 : bouton « Effacer » RETIRÉ (demande Joachim — l'historique peut porter des indices)
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("OK") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF))
                 }

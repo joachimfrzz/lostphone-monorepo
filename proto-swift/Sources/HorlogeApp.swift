@@ -118,8 +118,12 @@ struct HorlogesMondeVue: View {
                     .padding(.vertical, 4)
                     .listRowBackground(Color.black)
                     .listRowSeparatorTint(Color(hex: 0x2C2C2E))
+                    // v2 02/09 : balayage en FRANÇAIS (le « Delete » système venait de l'absence de localisation fr — corrigée aussi dans project.yml)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) { withAnimation { magasin.villes.removeAll { $0 == v } } } label: { Label("Supprimer", systemImage: "trash.fill") }
+                    }
                 }
-                // v2 : Modifier RÉEL — supprimer par balayage ou en mode édition, réordonner
+                // v2 : Modifier RÉEL — supprimer en mode édition, réordonner
                 .onDelete { idx in magasin.villes.remove(atOffsets: idx) }
                 .onMove { from, to in magasin.villes.move(fromOffsets: from, toOffset: to) }
             }

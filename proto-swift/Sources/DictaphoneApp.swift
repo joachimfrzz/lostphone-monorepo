@@ -481,7 +481,7 @@ struct ListeMemosVue: View {
         .sheet(isPresented: $enregListeVisible) {
             EnregistrementDictaVue(dossier: magasin.dossiers.contains(titre) ? titre : nil).presentationDetents([.height(280)])
         }
-        .sheet(isPresented: $partageVisible) { FeuillePartage(element: selectionIds.count > 1 ? "\(selectionIds.count) mémos vocaux" : "Mémo vocal") }
+        .sheet(isPresented: $partageVisible) { FeuillePartage(element: selectionIds.count > 1 ? "\(selectionIds.count) mémos vocaux" : "Mémo vocal", contenu: "Mémo vocal (audio)", type: .fichier) }
         .alert("Renommer", isPresented: Binding(get: { renommageId != nil }, set: { if !$0 { renommageId = nil } })) {
             TextField("Nom", text: $nouveauNom)
             Button("Annuler", role: .cancel) {}

@@ -3,13 +3,15 @@
 // menu contextuel complet, fiche Infos, recherche à jetons, tags, dossiers, aperçus réels.
 // D59 : contenu = données remplaçables ; or narratif en garniture (billet du 28, exercices kiné,
 // relevés LCL — chaque fichier recoupe une autre app, R3).
+// v2 02/09 : « Enregistrer dans Fichiers » depuis la feuille de partage crée un VRAI fichier ici
+// (Récents + dossier Documents, aperçu du contenu) ; micros retirés des recherches (règle Joachim).
 import SwiftUI
 
 // ============================================================ DONNÉES (remplaçables — D59)
 struct FichierItem: Identifiable {
     let id = UUID()
     var nom: String
-    var genre: String          // "pdf", "image", "zip", "dossier", "audio"
+    var genre: String          // "pdf", "image", "zip", "dossier", "audio", "txt", "webloc"
     var taille: String
     var date: String
     var creation: String = "10 août 2026 à 14:02"
@@ -18,6 +20,7 @@ struct FichierItem: Identifiable {
     var elements: Int = 0      // si dossier
     var tag: String? = nil
     var dossier: String? = nil // dossier parent
+    var contenu: String? = nil // v2 : texte réel d'un fichier enregistré par le joueur
 }
 
 enum DonneesFichiers {
@@ -53,8 +56,24 @@ final class MagasinFichiers: ObservableObject {
     static let partage = MagasinFichiers()
     @Published var supprimes: Set<UUID> = []
     @Published var renommages: [UUID: String] = [:]
-    var visibles: [FichierItem] { DonneesFichiers.tout.filter { !supprimes.contains($0.id) } }
+    // v2 : fichiers créés par le joueur (feuille de partage → « Enregistrer dans Fichiers »)
+    @Published var ajoutes: [FichierItem] = []
+    var tous: [FichierItem] { ajoutes + DonneesFichiers.tout }
+    var visibles: [FichierItem] { tous.filter { !supprimes.contains($0.id) } }
     func nom(_ f: FichierItem) -> String { renommages[f.id] ?? f.nom }
+
+    func ajouter(nom: String, genre: String, contenu: String) {
+        let f = DateFormatter(); f.locale = Locale(identifier: "fr_FR"); f.dateFormat = "d MMMM yyyy 'à' HH:mm"
+        let base = nom.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "/", with: "-")
+        var nomFinal = base.isEmpty ? "Sans titre" : base
+        var n = 2
+        while tous.contains(where: { $0.nom == nomFinal }) { nomFinal = "\(base) \(n)"; n += 1 }
+        let octets = max(1, contenu.utf8.count)
+        let taille = octets < 1024 ? "\(octets) o" : String(format: "%.0f Ko", Double(octets) / 1024)
+        ajoutes.insert(FichierItem(nom: nomFinal, genre: genre, taille: taille, date: "à l'instant",
+                                   creation: f.string(from: Date()), emplacement: "Sur mon iPhone",
+                                   dossier: "Documents", contenu: contenu), at: 0)
+    }
 }
 
 // ============================================================ APP
@@ -116,9 +135,10 @@ struct RecentsFichiersVue: View {
     @State private var infos: FichierItem? = nil
     @State private var renommageId: UUID? = nil
     @State private var nouveauNom = ""
-    @State private var partageVisible = false
+    @State private var partage: FichierItem? = nil
     @State private var selectionActive = false
     @State private var selectionIds: Set<UUID> = []
+    @FocusState private var rechercheFocalisee: Bool
 
     private var items: [FichierItem] {
         let base = magasin.visibles.filter { $0.genre != "dossier" }
@@ -146,8 +166,10 @@ struct RecentsFichiersVue: View {
                 }
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                    TextField("Rechercher", text: $recherche).foregroundStyle(.white)
-                    Image(systemName: "mic.fill").foregroundStyle(.secondary)
+                    TextField("Rechercher", text: $recherche).foregroundStyle(.white).focused($rechercheFocalisee).submitLabel(.search)
+                    if !recherche.isEmpty {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary).onTapGesture { recherche = ""; rechercheFocalisee = false }
+                    }
                 }
                 .padding(.horizontal, 12).frame(height: 38)
                 .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 11))
@@ -189,9 +211,11 @@ struct RecentsFichiersVue: View {
             }
             .padding(.horizontal, 16).padding(.top, 6)
         }
+        .simultaneousGesture(TapGesture().onEnded { rechercheFocalisee = false })
+        .scrollDismissesKeyboard(.interactively)
         .fullScreenCover(item: $apercu) { f in ApercuFichierVue(fichier: f) }
         .sheet(item: $infos) { f in InfosFichierVue(fichier: f) }
-        .sheet(isPresented: $partageVisible) { FeuillePartage(element: "1 document") }
+        .sheet(item: $partage) { f in FeuillePartage(element: magasin.nom(f), contenu: f.contenu ?? "", type: f.genre == "image" ? .photo : .fichier) }
         .alert("Renommer", isPresented: Binding(get: { renommageId != nil }, set: { if !$0 { renommageId = nil } })) {
             TextField("Nom", text: $nouveauNom)
             Button("Annuler", role: .cancel) {}
@@ -202,7 +226,7 @@ struct RecentsFichiersVue: View {
     @ViewBuilder
     private func menuFichier(_ f: FichierItem) -> some View {
         Button { apercu = f } label: { Label("Coup d'œil", systemImage: "eye") }
-        Button { partageVisible = true } label: { Label("Partager", systemImage: "square.and.arrow.up") }
+        Button { partage = f } label: { Label("Partager", systemImage: "square.and.arrow.up") }
         Button { infos = f } label: { Label("Lire les informations", systemImage: "info.circle") }
         Button { renommageId = f.id; nouveauNom = magasin.nom(f) } label: { Label("Renommer", systemImage: "pencil") }
         Button { } label: { Label("Compresser", systemImage: "archivebox") }
@@ -228,12 +252,17 @@ struct TuileFichier: View {
                     RoundedRectangle(cornerRadius: 6).fill(.white)
                         .frame(width: 74, height: 92)
                         .overlay(alignment: .top) {
-                            VStack(spacing: 3) {
-                                ForEach(0..<6, id: \.self) { _ in
-                                    Capsule().fill(Color(hex: 0xC9CDD4)).frame(height: 3).padding(.horizontal, 9)
+                            if let c = fichier.contenu, !c.isEmpty {
+                                Text(c).font(.system(size: 5)).foregroundStyle(.black.opacity(0.75))
+                                    .padding(6).lineLimit(12).frame(maxWidth: .infinity, alignment: .leading)
+                            } else {
+                                VStack(spacing: 3) {
+                                    ForEach(0..<6, id: \.self) { _ in
+                                        Capsule().fill(Color(hex: 0xC9CDD4)).frame(height: 3).padding(.horizontal, 9)
+                                    }
                                 }
+                                .padding(.top, 12)
                             }
-                            .padding(.top, 12)
                         }
                         .overlay(alignment: .bottomLeading) {
                             Text(fichier.genre.uppercased()).font(.system(size: 8, weight: .bold))
@@ -292,7 +321,6 @@ struct PartageFichiersVue: View {
                 Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                 Text("Rechercher").foregroundStyle(.secondary)
                 Spacer()
-                Image(systemName: "mic.fill").foregroundStyle(.secondary)
             }
             .padding(.horizontal, 12).frame(height: 38)
             .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 11))
@@ -323,7 +351,6 @@ struct ExplorerFichiersVue: View {
                         Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                         Text("Rechercher").foregroundStyle(.secondary)
                         Spacer()
-                        Image(systemName: "mic.fill").foregroundStyle(.secondary)
                     }
                     .padding(.horizontal, 12).frame(height: 38)
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 11))
@@ -508,7 +535,7 @@ struct TagFichiersVue: View {
 struct SuppressionsFichiersVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinFichiers.partage
-    private var supprimesListe: [FichierItem] { DonneesFichiers.tout.filter { magasin.supprimes.contains($0.id) } }
+    private var supprimesListe: [FichierItem] { magasin.tous.filter { magasin.supprimes.contains($0.id) } }
     var body: some View {
         NavigationStack {
             Group {
@@ -577,6 +604,16 @@ struct ApercuFichierVue: View {
                 Spacer()
                 if fichier.genre == "image", let pid = fichier.photoId, let img = ChargeurPhoto.image(pid) {
                     Image(uiImage: img).resizable().scaledToFit().frame(maxWidth: .infinity)
+                } else if let c = fichier.contenu, !c.isEmpty {
+                    // v2 : contenu RÉEL d'un fichier enregistré par le joueur (note, liste…)
+                    ScrollView {
+                        Text(c).font(.system(size: 15)).foregroundStyle(.black)
+                            .frame(maxWidth: .infinity, alignment: .topLeading)
+                            .padding(22)
+                    }
+                    .frame(maxHeight: 560)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 4))
+                    .padding(.horizontal, 22)
                 } else if fichier.genre == "pdf" {
                     // Page factice (le contenu réel arrive avec l'or narratif propre à chaque document)
                     VStack(alignment: .leading, spacing: 10) {
@@ -611,12 +648,13 @@ struct ApercuFichierVue: View {
                 .font(.system(size: 19)).foregroundStyle(Color(hex: 0x0A84FF))
                 .padding(.horizontal, 34).padding(.vertical, 12)
                 .background(.ultraThinMaterial)
+                .padding(.bottom, 22)
             }
 
             BarreHome { dismiss() }
         }
         .sheet(isPresented: $infosVisible) { InfosFichierVue(fichier: fichier) }
-        .sheet(isPresented: $partageVisible) { FeuillePartage(element: magasin.nom(fichier)) }
+        .sheet(isPresented: $partageVisible) { FeuillePartage(element: magasin.nom(fichier), contenu: fichier.contenu ?? "", type: fichier.genre == "image" ? .photo : .fichier) }
         .preferredColorScheme(.dark)
     }
 }
@@ -650,7 +688,7 @@ struct InfosFichierVue: View {
                         Spacer()
                     }
                     VStack(spacing: 0) {
-                        LigneInfoFichier(cle: "Type", valeur: fichier.genre == "image" ? "Image PNG" : fichier.genre.uppercased())
+                        LigneInfoFichier(cle: "Type", valeur: fichier.genre == "image" ? "Image PNG" : (fichier.genre == "txt" ? "Texte" : fichier.genre.uppercased()))
                         LigneInfoFichier(cle: "Taille", valeur: fichier.taille)
                         LigneInfoFichier(cle: "Création", valeur: fichier.creation)
                         LigneInfoFichier(cle: "Modification", valeur: fichier.creation)

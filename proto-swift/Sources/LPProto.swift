@@ -519,20 +519,42 @@ final class Routeur: ObservableObject {
 }
 
 // ============================================================ FEUILLE DE PARTAGE MAISON (anti-friction, 21/08)
-// Remplace les popups « partage impossible » : une vraie feuille de partage, locale.
+// v2 02/09 (principe Joachim : toute action annoncée produit son résultat ou une réaction cohérente) :
+// AirDrop → recherche puis « Aucun appareil à proximité » ; WhatsApp → choix du contact et VRAI envoi dans la
+// conversation ; Mail → ouvre un nouveau message ; Messages → ouvre l'app Messages ; Copier → presse-papiers RÉEL ;
+// Enregistrer dans Fichiers → le fichier APPARAÎT dans Fichiers (Récents + Documents) ; Imprimer → recherche
+// puis « Aucune imprimante AirPrint détectée ».
+enum TypePartage { case note, liste, fichier, lien, photo }
+
 struct FeuillePartage: View {
     @Environment(\.dismiss) private var dismiss
     var element: String = "1 élément"
+    var contenu: String = ""
+    var type: TypePartage = .fichier
     @State private var copie = false
+    @State private var enregistre = false
+    @State private var airdrop: String? = nil       // « Recherche… » → « Aucun appareil à proximité »
+    @State private var impression: String? = nil
+    @State private var choixWhatsApp = false
+    @State private var envoyeA: String? = nil
+
+    private var icone: String {
+        switch type { case .note: return "note.text"; case .liste: return "checklist"; case .lien: return "link"; case .photo: return "photo"; case .fichier: return "doc.fill" }
+    }
+    private var genreFichier: String {
+        switch type { case .note, .liste: return "txt"; case .lien: return "webloc"; case .photo: return "image"; case .fichier: return "pdf" }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
                 RoundedRectangle(cornerRadius: 10).fill(Color(hex: 0x2C2C2E))
                     .frame(width: 40, height: 40)
-                    .overlay(Image(systemName: "doc.fill").font(.system(size: 17)).foregroundStyle(.secondary))
+                    .overlay(Image(systemName: icone).font(.system(size: 17)).foregroundStyle(.secondary))
                 VStack(alignment: .leading, spacing: 2) {
                     Text(element).font(.system(size: 15, weight: .semibold)).foregroundStyle(.white).lineLimit(1)
-                    Text("Options ›").font(.system(size: 12.5)).foregroundStyle(.secondary)
+                    Text(contenu.isEmpty ? "Options ›" : String(contenu.prefix(60)).replacingOccurrences(of: "\n", with: " ") + " ›")
+                        .font(.system(size: 12.5)).foregroundStyle(.secondary).lineLimit(1)
                 }
                 Spacer()
                 Button { dismiss() } label: {
@@ -543,13 +565,66 @@ struct FeuillePartage: View {
             .padding(16)
             Divider().overlay(Color(hex: 0x2C2C2E))
 
-            HStack(spacing: 22) {
-                DestinatairePartage(nom: "AirDrop", symbole: "wifi", fond: 0x1C7CF5)
-                DestinatairePartage(nom: "Chloé", symbole: "message.fill", fond: 0x32D74B)
-                DestinatairePartage(nom: "Mail", symbole: "envelope.fill", fond: 0x0A84FF)
-                DestinatairePartage(nom: "WhatsApp", symbole: "phone.fill", fond: 0x25D366)
+            if let a = airdrop {
+                // AirDrop : recherche réelle d'appareils… il n'y en a aucun (Sarah est seule)
+                VStack(spacing: 10) {
+                    if a == "Recherche…" { ProgressView().tint(.white) } else { Image(systemName: "wifi.slash").font(.system(size: 26)).foregroundStyle(.secondary) }
+                    Text(a).font(.system(size: 15)).foregroundStyle(.white)
+                    if a != "Recherche…" {
+                        Text("Assurez-vous que l'appareil est à proximité, déverrouillé et que AirDrop est activé.")
+                            .font(.system(size: 12.5)).foregroundStyle(.secondary).multilineTextAlignment(.center).padding(.horizontal, 30)
+                    }
+                }
+                .frame(height: 96)
+            } else if let e = envoyeA {
+                VStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill").font(.system(size: 30)).foregroundStyle(Color(hex: 0x25D366))
+                    Text("Envoyé à \(e)").font(.system(size: 15)).foregroundStyle(.white)
+                }
+                .frame(height: 96)
+            } else if choixWhatsApp {
+                // Choix du destinataire WhatsApp — l'envoi est RÉEL (le message apparaît dans la conversation)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 18) {
+                        ForEach(["Chloé", "Maman", "Les filles 💃", "Thomas", "Marie kiné", "Marc ❤️"], id: \.self) { c in
+                            VStack(spacing: 6) {
+                                AvatarSilhouette(taille: 50, image: c == "Marc ❤️" ? "AvatarMarc" : nil)
+                                Text(c.components(separatedBy: " ").first ?? c).font(.system(size: 11)).foregroundStyle(.white.opacity(0.85))
+                            }
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                let f = DateFormatter(); f.dateFormat = "HH:mm"
+                                let texte = contenu.isEmpty ? element : "\(element)\n\(contenu)"
+                                EnvoisJoueur.partage.ajouter(c, .msgJoueur(String(texte.prefix(600)), f.string(from: Date())))
+                                Haptique.leger()
+                                withAnimation { envoyeA = c }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) { dismiss() }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 18)
+                }
+                .padding(.vertical, 18)
+            } else {
+                HStack(spacing: 22) {
+                    DestinatairePartage(nom: "AirDrop", symbole: "wifi", fond: 0x1C7CF5) {
+                        withAnimation { airdrop = "Recherche…" }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.4) { withAnimation { airdrop = "Aucun appareil à proximité" } }
+                    }
+                    DestinatairePartage(nom: "Messages", symbole: "message.fill", fond: 0x32D74B) {
+                        dismiss()
+                        Routeur.partage.allerMessages()
+                    }
+                    DestinatairePartage(nom: "Mail", symbole: "envelope.fill", fond: 0x0A84FF) {
+                        dismiss()
+                        Routeur.partage.allerMail(composePour: "")
+                    }
+                    DestinatairePartage(nom: "WhatsApp", symbole: "phone.fill", fond: 0x25D366) {
+                        withAnimation { choixWhatsApp = true }
+                    }
+                }
+                .padding(.vertical, 18)
             }
-            .padding(.vertical, 18)
             Divider().overlay(Color(hex: 0x2C2C2E))
 
             VStack(spacing: 0) {
@@ -561,39 +636,59 @@ struct FeuillePartage: View {
                 .padding(.horizontal, 18).padding(.vertical, 13)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    copie = true
+                    UIPasteboard.general.string = contenu.isEmpty ? element : contenu   // presse-papiers RÉEL
+                    copie = true; Haptique.leger()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { dismiss() }
                 }
                 Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 18)
                 HStack {
-                    Text("Enregistrer dans Fichiers").foregroundStyle(.white)
+                    Text(enregistre ? "Enregistré dans Fichiers › Documents" : "Enregistrer dans Fichiers").foregroundStyle(enregistre ? Color.secondary : Color.white)
                     Spacer()
-                    Image(systemName: "folder").foregroundStyle(.secondary)
+                    Image(systemName: enregistre ? "checkmark" : "folder").foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 18).padding(.vertical, 13)
                 .contentShape(Rectangle())
-                .onTapGesture { dismiss() }
+                .onTapGesture {
+                    guard !enregistre else { return }
+                    MagasinFichiers.partage.ajouter(nom: element, genre: genreFichier, contenu: contenu)   // le fichier APPARAÎT dans Fichiers
+                    enregistre = true; Haptique.leger()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { dismiss() }
+                }
+                Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 18)
+                HStack {
+                    Text(impression ?? "Imprimer").foregroundStyle(impression == nil ? Color.white : Color.secondary)
+                    Spacer()
+                    Image(systemName: "printer").foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 18).padding(.vertical, 13)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    guard impression == nil else { return }
+                    impression = "Recherche d'imprimantes…"
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { impression = "Aucune imprimante AirPrint détectée" }
+                }
             }
             Spacer()
         }
         .background(Color(hex: 0x1C1C1E))
-        .presentationDetents([.height(320)])
+        .presentationDetents([.height(372)])
         .preferredColorScheme(.dark)
     }
 }
 
 struct DestinatairePartage: View {
-    @Environment(\.dismiss) private var dismiss
     let nom: String
     let symbole: String
     let fond: UInt
+    var action: () -> Void = {}
     var body: some View {
         VStack(spacing: 6) {
             Circle().fill(Color(hex: fond)).frame(width: 54, height: 54)
                 .overlay(Image(systemName: symbole).font(.system(size: 21)).foregroundStyle(.white))
             Text(nom).font(.system(size: 11)).foregroundStyle(.white.opacity(0.85))
         }
-        .onTapGesture { dismiss() }
+        .contentShape(Rectangle())
+        .onTapGesture { action() }
     }
 }
 

@@ -1,6 +1,9 @@
 // WhatsApp iOS 26 — AUDIO RÉEL et APPELS ÉCOUTABLES (itération 7, D52)
 // Vocaux : vraie lecture + transcription dépliable (comme le vrai WhatsApp).
 // Appels audio : écran d'appel avec voix + transcription. Appels vidéo interactifs : écartés (D52).
+// v2 02/09 (retour Joachim, build 274) : CRASH « toute option de la fiche contact ferme le jeu » — cause :
+// le dictionnaire ContenuReglages.ecrans contenait des CLÉS EN DOUBLE (« Thème de la discussion »,
+// « Messages éphémères ») → Swift plante fatalement à la première lecture. Clés fusionnées.
 import SwiftUI
 import AVFoundation
 
@@ -15,6 +18,7 @@ final class LecteurAudio: NSObject, ObservableObject, AVAudioPlayerDelegate {
     func bascule(_ fichier: String) {
         if fichierActif == fichier { arret(); return }
         arret()
+        guard !fichier.isEmpty else { return }   // jamais de nom vide (iOS renverrait un mp3 arbitraire)
         let url = Bundle.main.url(forResource: fichier, withExtension: "mp3")
             ?? Bundle.main.url(forResource: fichier, withExtension: "mp3", subdirectory: "Ressources")
         guard let url else { return }
@@ -309,6 +313,9 @@ enum EcranVide {
 }
 
 enum ContenuReglages {
+    // ⚠️ PIÈGE SWIFT (crash build 274) : un littéral de dictionnaire avec une clé en DOUBLE plante
+    // fatalement à l'exécution (« Dictionary literal contains duplicate keys ») dès la première lecture.
+    // Chaque clé ci-dessous est UNIQUE — vérifié par le test `clesUniques` au chargement (debug).
     static let ecrans: [String: [LigneReglage]] = [
         "Notifications": [.interrupteur("Afficher les notifications", true),
                           .valeur("Son", "Note"),
@@ -329,7 +336,10 @@ enum ContenuReglages {
         "Enregistrer (Photos)": [.valeur("Enregistrer dans Photos", "Par défaut"),
                                  .interrupteur("Enregistrer les médias entrants", false)],
         "Thème de la discussion": [.valeur("Thème", "Par défaut"),
-                                   .valeur("Fond d'écran", "Sombre")],
+                                   .valeur("Fond d'écran", "Sombre"),
+                                   .navigation("Choisir un fond d'écran")],
+        "Choisir un fond d'écran": [.valeur("Fond actuel", "Sombre (par défaut)"),
+                                    .interrupteur("Assombrir le fond", true)],
         "Messages éphémères": [.valeur("Durée des nouveaux messages", "Désactivés"),
                                .interrupteur("Appliquer aux nouvelles discussions", false)],
         "Important": [.valeur("Messages importants", "Aucun")],
@@ -353,9 +363,6 @@ enum ContenuReglages {
         "Aide": [.navigation("Centre d'aide"),
                  .navigation("Nous contacter"),
                  .navigation("Conditions et confidentialité")],
-        "Thème de la discussion": [.valeur("Thème", "Par défaut"),
-                                   .navigation("Choisir un fond d'écran")],
-        "Messages éphémères": [.valeur("Durée", "Désactivés")],
     ]
 }
 

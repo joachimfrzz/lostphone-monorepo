@@ -102,6 +102,7 @@ struct CalendrierVue: View {
     @State private var conflitsVisible = false
     @State private var invitationsVisible = false
     @State private var echellePincement: CGFloat = 1
+    @State private var moisVisible: String? = nil   // v2 02/09 : mois réellement affiché (changement de mode = on y reste)
 
     // Période couverte : février 2025 → décembre 2026
     private let moisListe: [(Int, Int)] = {
@@ -138,15 +139,25 @@ struct CalendrierVue: View {
                                         .id("\(a)-\(m)")
                                 }
                             }
+                            .scrollTargetLayout()
                             .padding(.horizontal, 12)
                         }
+                        .scrollPosition(id: $moisVisible, anchor: .top)
                         .contentMargins(.top, 48, for: .scrollContent)
                         .onAppear {
                             var t = Transaction(); t.disablesAnimations = true
-                            withTransaction(t) { defileur.scrollTo("\(moisCible.0)-\(moisCible.1)", anchor: .top) }
+                            withTransaction(t) { moisVisible = "\(moisCible.0)-\(moisCible.1)" }
                         }
                         .onChange(of: allerAujourdhui) { _, _ in
-                            withAnimation(.easeInOut(duration: 0.3)) { defileur.scrollTo("\(jeuAnnee)-\(jeuMois)", anchor: .top) }
+                            withAnimation(.easeInOut(duration: 0.3)) { moisVisible = "\(jeuAnnee)-\(jeuMois)" }
+                        }
+                        .onChange(of: mode) { _, _ in
+                            // v2 02/09 : changer Compact/Empilé/Liste NE déplace PLUS la période consultée
+                            let cible = moisVisible ?? "\(moisCible.0)-\(moisCible.1)"
+                            DispatchQueue.main.async {
+                                var t = Transaction(); t.disablesAnimations = true
+                                withTransaction(t) { defileur.scrollTo(cible, anchor: .top); moisVisible = cible }
+                            }
                         }
                         .simultaneousGesture(MagnificationGesture().onEnded { v in
                             // v2 : pincer sur le mois → année ; écarter → mode Liste (détails), comme iOS
@@ -197,8 +208,7 @@ struct CalendrierVue: View {
                             Text(vueAnnee ? nomsMois[jeuMois] : "2026").font(.system(size: 16))
                         }
                         .foregroundStyle(.white)
-                        .padding(.horizontal, 12).padding(.vertical, 7)
-                        .background(Color(hex: 0x1C1C1E), in: Capsule())
+                        // v2 02/09 : plus de capsule maison — iOS 26 en dessine déjà une (double bulle)
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -222,8 +232,6 @@ struct CalendrierVue: View {
                             .onTapGesture { creation = true }
                     }
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 14).padding(.vertical, 8)
-                    .background(Color(hex: 0x1C1C1E), in: Capsule())
                 }
             }
             .sheet(isPresented: $creation) { NouvelEvenementVue() }

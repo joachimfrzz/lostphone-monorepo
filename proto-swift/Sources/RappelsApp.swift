@@ -434,7 +434,7 @@ struct FiltreVue: View {
         .contentShape(Rectangle())
         .onTapGesture { saisieActive = true }
         .sheet(item: $detail) { r in DetailRappelVue(rappelId: r.id) }
-        .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Liste « \(titre) »") }
+        .sheet(isPresented: $partageVisible) { FeuillePartage(element: "Liste « \(titre) »", contenu: items.map { "• " + $0.titre }.joined(separator: "\n"), type: .liste) }
     }
 }
 

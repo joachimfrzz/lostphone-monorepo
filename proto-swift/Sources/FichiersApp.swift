@@ -211,7 +211,7 @@ struct RecentsFichiersVue: View {
                                     if selectionActive {
                                         Image(systemName: selectionIds.contains(f.id) ? "checkmark.circle.fill" : "circle")
                                             .font(.system(size: 22)).foregroundStyle(selectionIds.contains(f.id) ? Color(hex: 0x0A84FF) : .white)
-                                            .background(Circle().fill(.black.opacity(0.4)))
+                                            .background(Circle().fill(Color.black.opacity(0.4)))
                                             .offset(x: 6, y: -6)
                                     }
                                 }
@@ -636,10 +636,11 @@ struct SuppressionsFichiersVue: View {
                                 HStack(spacing: 10) {
                                     LigneFichier(fichier: f, chevron: false)
                                     // v3 02/09 : Récupérer RÉEL et explicite (la flèche muette est remplacée par un vrai bouton)
-                                    Button("Récupérer") { withAnimation { magasin.supprimes.remove(f.id) } }
-                                        .font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(hex: 0x0A84FF))
-                                        .padding(.horizontal, 12).padding(.vertical, 7)
-                                        .background(Color(hex: 0x1C1C1E), in: Capsule())
+                                    Button { withAnimation { magasin.supprimes.remove(f.id) } } label: {
+                                        Text("Récupérer").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(hex: 0x0A84FF))
+                                            .padding(.horizontal, 12).padding(.vertical, 7)
+                                            .background(Capsule().fill(Color(hex: 0x1C1C1E)))
+                                    }
                                 }
                                 .contextMenu {
                                     Button { magasin.supprimes.remove(f.id) } label: { Label("Récupérer", systemImage: "arrow.uturn.backward") }

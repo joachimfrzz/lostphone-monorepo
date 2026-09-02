@@ -181,7 +181,7 @@ struct EcranCapture: View {
         case "cartes.transaction": TransactionVue(transaction: DonneesCartes.transactions[0])
         case "cartes.billet": BilletOuvertVue()
         case "cartes.ajout": AjoutCarteVue()
-        case "cartes.reglages": ReglagesCartesVue()
+        case "cartes.reglages": RechercheCartesVue()
         default: CartesVueWallet()
         }
     }

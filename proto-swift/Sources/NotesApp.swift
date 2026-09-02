@@ -4,11 +4,49 @@
 // v2 session 2 (02/09, retours Joachim) : niveau DOSSIERS racine (le retour ne quitte plus l'app),
 // teinte = JAUNE système Notes (plus l'ambre), titres de notes en GRAS (première ligne = titre),
 // micro retiré, menu … RÉEL (pièces jointes, sélection, galerie), barres remontées au-dessus de la capsule home.
+// v3 (02/09 soir, vidéo ScreenRecording 18-47 de la vraie app Notes iOS 26 sombre) :
+// JAUNE MESURÉ AU PIXEL = 0xDEA40B, et il ne colore QUE les icônes de dossier, le chevron de section et les liens.
+// Tous les boutons (retour, Partager, …, Modifier, nouveau dossier, barre d'outils d'édition, composer) sont BLANCS
+// sur capsule/cercle sombre (verre iOS 26). Racine Dossiers : recherche EN BAS, nouveau dossier + Modifier EN HAUT.
 import SwiftUI
 
-// Jaune Notes iOS (mode sombre) — remplace l'ambre 0xE8A33D
-let notesJaune = Color(hex: 0xFFD60A)
+// Jaune Notes iOS 26 mode sombre — mesuré sur la vidéo de Joachim (02/09) : 0xDEA40B (remplace 0xFFD60A)
+let notesJaune = Color(hex: 0xDEA40B)
 let notesFondCellule = Color(hex: 0x1C1C1E)
+// Fond des boutons « verre » (capsules et cercles de la barre de navigation / barre basse)
+let notesFondVerre = Color(hex: 0x2A2A2C)
+
+// Bouton rond « verre » iOS 26 : icône BLANCHE sur cercle sombre (retour, Partager, …, nouveau dossier, composer)
+struct BoutonVerreNotes: View {
+    let systeme: String
+    var taille: CGFloat = 17
+    var poids: Font.Weight = .semibold
+    var diametre: CGFloat = 40
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: systeme).font(.system(size: taille, weight: poids)).foregroundStyle(.white)
+                .frame(width: diametre, height: diametre)
+                .background(notesFondVerre, in: Circle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// Capsule « verre » texte (Modifier / OK / Terminé) : texte BLANC
+struct CapsuleVerreNotes: View {
+    let titre: String
+    var poids: Font.Weight = .regular
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            Text(titre).font(.system(size: 17, weight: poids)).foregroundStyle(.white)
+                .padding(.horizontal, 16).frame(height: 40)
+                .background(notesFondVerre, in: Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+}
 
 // ============================================================ DONNÉES (remplaçables — D59)
 struct NoteItem: Identifiable {
@@ -131,22 +169,15 @@ struct NotesVue: View {
                     VStack(alignment: .leading, spacing: 14) {
                         Text("Dossiers").font(.system(size: 34, weight: .bold)).foregroundStyle(.white)
                             .padding(.top, 4)
-                        // Barre de recherche (SANS micro — inutile dans le jeu)
-                        HStack(spacing: 8) {
-                            Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                            TextField("Recherche", text: $recherche).foregroundStyle(.white)
-                                .focused($rechercheFocalisee)
-                                .submitLabel(.search)
-                            if !recherche.isEmpty {
-                                Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                                    .onTapGesture { recherche = ""; rechercheFocalisee = false }
-                            }
-                        }
-                        .padding(.horizontal, 12).frame(height: 38)
-                        .background(notesFondCellule, in: RoundedRectangle(cornerRadius: 12))
 
                         if recherche.isEmpty {
-                            Text("iCloud").font(.system(size: 20, weight: .bold)).foregroundStyle(.white).padding(.top, 6)
+                            // v3 : en-tête de section « iCloud » + chevron JAUNE (comme la vraie app)
+                            HStack {
+                                Text("iCloud").font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
+                                Spacer()
+                                Image(systemName: "chevron.down").font(.system(size: 13, weight: .semibold)).foregroundStyle(notesJaune)
+                            }
+                            .padding(.top, 6).padding(.trailing, 6)
                             VStack(spacing: 0) {
                                 ForEach(Array(magasin.dossiers.enumerated()), id: \.element.id) { i, d in
                                     Button {
@@ -159,6 +190,7 @@ struct NotesVue: View {
                                                 Image(systemName: "minus.circle.fill").font(.system(size: 22)).foregroundStyle(Color(hex: 0xFF453A))
                                                     .onTapGesture { withAnimation { magasin.supprimerDossier(d.nom) } }
                                             }
+                                            // v3 : SEUL élément jaune de la rangée = l'icône de dossier (mesuré 0xDEA40B)
                                             Image(systemName: d.icone).font(.system(size: 18)).foregroundStyle(notesJaune).frame(width: 28)
                                             Text(d.nom).font(.system(size: 17)).foregroundStyle(.white)
                                             Spacer()
@@ -186,34 +218,37 @@ struct NotesVue: View {
                             // Recherche globale réelle depuis la racine
                             ResultatsRechercheNotes(recherche: recherche) { n in chemin.append(n) }
                         }
-                        Spacer(minLength: 100)
+                        Spacer(minLength: 110)
                     }
                     .padding(.horizontal, 16)
                 }
 
-                // Barre basse : nouveau dossier + nouvelle note — REMONTÉE au-dessus de la capsule home (v2)
-                HStack {
-                    Button { nouveauDossierVisible = true } label: {
-                        Image(systemName: "folder.badge.plus").font(.system(size: 20)).foregroundStyle(notesJaune)
-                            .frame(width: 44, height: 44)
-                    }
-                    Spacer()
-                    Button {
-                        chemin.append(magasin.nouvelle())
-                    } label: {
-                        Image(systemName: "square.and.pencil").font(.system(size: 20)).foregroundStyle(notesJaune)
-                            .frame(width: 44, height: 44)
+                // v3 : barre basse = RECHERCHE en capsule (comme la vraie racine Dossiers) — SANS micro (règle Joachim)
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+                    TextField("Recherche", text: $recherche).foregroundStyle(.white)
+                        .focused($rechercheFocalisee)
+                        .submitLabel(.search)
+                    if !recherche.isEmpty {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                            .onTapGesture { recherche = ""; rechercheFocalisee = false }
                     }
                 }
-                .padding(.horizontal, 14).padding(.bottom, 26)
+                .padding(.horizontal, 14).frame(height: 44)
+                .background(notesFondVerre, in: Capsule())
+                .padding(.horizontal, 16).padding(.bottom, 26)
 
                 BarreHome { dismiss() }
             }
             .toolbar {
+                // v3 : nouveau dossier (cercle) + Modifier (capsule), BLANCS — comme la vraie app
                 ToolbarItem(placement: .topBarTrailing) {
-                    // v2 02/09 : Modifier RÉEL
-                    Button(edition ? "OK" : "Modifier") { withAnimation { edition.toggle() } }
-                        .font(.system(size: 17, weight: edition ? .semibold : .regular)).foregroundStyle(notesJaune)
+                    HStack(spacing: 10) {
+                        BoutonVerreNotes(systeme: "folder.badge.plus", taille: 16) { nouveauDossierVisible = true }
+                        CapsuleVerreNotes(titre: edition ? "OK" : "Modifier", poids: edition ? .semibold : .regular) {
+                            withAnimation { edition.toggle() }
+                        }
+                    }
                 }
             }
             .alert("Renommer le dossier", isPresented: Binding(get: { dossierARenommer != nil }, set: { if !$0 { dossierARenommer = nil } })) {
@@ -280,6 +315,8 @@ struct NotesListeVue: View {
                 VStack(alignment: .leading, spacing: 18) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(dossier.nom).font(.system(size: 34, weight: .bold)).foregroundStyle(.white)
+                        // v3 : sous-titre « N notes » comme la vraie app
+                        Text("\(duDossier.count) note\(duDossier.count > 1 ? "s" : "")").font(.system(size: 15)).foregroundStyle(.secondary)
                     }
                     .padding(.top, 2)
 
@@ -291,7 +328,7 @@ struct NotesListeVue: View {
                                     Text(section).font(.system(size: 20, weight: .bold)).foregroundStyle(.white)
                                     Spacer()
                                     if section == "Épinglées" {
-                                        Image(systemName: "chevron.down").font(.system(size: 12, weight: .semibold)).foregroundStyle(.secondary)
+                                        Image(systemName: "chevron.down").font(.system(size: 12, weight: .semibold)).foregroundStyle(notesJaune)
                                     }
                                 }
                                 if galerie {
@@ -323,7 +360,7 @@ struct NotesListeVue: View {
             if modeSelection {
                 HStack {
                     Button("Déplacer") { Haptique.leger() }
-                        .foregroundStyle(selection.isEmpty ? .secondary : notesJaune).disabled(selection.isEmpty)
+                        .foregroundStyle(selection.isEmpty ? .secondary : .white).disabled(selection.isEmpty)
                     Spacer()
                     Text(selection.isEmpty ? "Sélectionner des notes" : "\(selection.count) sélectionnée\(selection.count > 1 ? "s" : "")")
                         .font(.system(size: 15)).foregroundStyle(.white)
@@ -351,38 +388,27 @@ struct NotesListeVue: View {
                                 .onTapGesture { recherche = ""; rechercheFocalisee = false }
                         }
                     }
-                    .padding(.horizontal, 14).frame(height: 42)
-                    .background(notesFondCellule, in: Capsule())
-                    Button {
+                    .padding(.horizontal, 14).frame(height: 44)
+                    .background(notesFondVerre, in: Capsule())
+                    // v3 : composer = icône BLANCHE sur cercle sombre (plus de jaune)
+                    BoutonVerreNotes(systeme: "square.and.pencil", taille: 18, poids: .regular, diametre: 44) {
                         ouvrir(magasin.nouvelle(dossier: dossier.toutes ? "Notes" : dossier.nom))
-                    } label: {
-                        Image(systemName: "square.and.pencil")
-                            .font(.system(size: 19)).foregroundStyle(notesJaune)
-                            .frame(width: 44, height: 44)
-                            .background(notesFondCellule, in: Circle())
                     }
                 }
                 .padding(.horizontal, 16).padding(.bottom, 26)
             }
 
-            BarreHome { dismiss() }   // capsule = retour ACCUEIL ; le chevron « Dossiers » = navigation interne
+            BarreHome { dismiss() }   // capsule = retour ACCUEIL ; le chevron = navigation interne
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                // v2 : le retour reste DANS Notes (pop vers Dossiers), il ne quitte plus l'app
-                Button { dismiss() } label: {
-                    HStack(spacing: 3) {
-                        Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold))
-                        Text("Dossiers").font(.system(size: 17))
-                    }
-                    .foregroundStyle(notesJaune)
-                }
+                // v3 : retour iOS 26 = chevron BLANC seul dans un cercle sombre (plus de texte « Dossiers », plus de jaune) ; reste DANS Notes
+                BoutonVerreNotes(systeme: "chevron.left") { dismiss() }
             }
             ToolbarItem(placement: .topBarTrailing) {
                 if modeSelection {
-                    Button("Terminé") { modeSelection = false; selection.removeAll() }
-                        .font(.system(size: 17, weight: .semibold)).foregroundStyle(notesJaune)
+                    CapsuleVerreNotes(titre: "Terminé", poids: .semibold) { modeSelection = false; selection.removeAll() }
                 } else {
                     Menu {
                         // v2 : les 3 entrées font quelque chose de RÉEL
@@ -392,7 +418,9 @@ struct NotesListeVue: View {
                             Label(galerie ? "Afficher en liste" : "Afficher en galerie", systemImage: galerie ? "list.bullet" : "square.grid.2x2")
                         }
                     } label: {
-                        Image(systemName: "ellipsis.circle").foregroundStyle(notesJaune)
+                        Image(systemName: "ellipsis").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                            .frame(width: 40, height: 40)
+                            .background(notesFondVerre, in: Circle())
                     }
                 }
             }
@@ -529,7 +557,7 @@ struct PiecesJointesNotesVue: View {
             }
             .navigationTitle("Pièces jointes")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("OK") { dismiss() }.foregroundStyle(notesJaune) } }
+            .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("OK") { dismiss() }.foregroundStyle(.white) } }
         }
         .preferredColorScheme(.dark)
     }
@@ -582,13 +610,8 @@ struct SuppressionsRecentesNotesVue: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button { dismiss() } label: {
-                    HStack(spacing: 3) {
-                        Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold))
-                        Text("Dossiers").font(.system(size: 17))
-                    }
-                    .foregroundStyle(notesJaune)
-                }
+                // v3 : retour = cercle verre, chevron blanc
+                BoutonVerreNotes(systeme: "chevron.left") { dismiss() }
             }
         }
         .preferredColorScheme(.dark)
@@ -597,6 +620,8 @@ struct SuppressionsRecentesNotesVue: View {
 
 // ============================================================ ÉDITION (persistante — D51)
 // v2 : première ligne = TITRE en gras 28 pt (comme Notes), date centrée en tête, « Terminé » pendant la saisie.
+// v3 : barre d'outils basse = capsule verre à 4 icônes BLANCHES (liste, trombone, A, marquage) + composer en cercle séparé ;
+// retour / Partager / … = cercles verre blancs. Le jaune ne sert plus qu'aux liens (aucun ici).
 struct NoteEditionVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinNotes.partage
@@ -653,44 +678,52 @@ struct NoteEditionVue: View {
                 magasin.notes[i].corps = c
             }
 
-            // Barre d'outils basse (icônes de la référence — réponses catalogue)
-            HStack(spacing: 30) {
-                ForEach(["textformat", "checklist", "tablecells", "paperclip", "pencil.tip.crop.circle"], id: \.self) { s in
-                    Image(systemName: s)
-                        .font(.system(size: 19)).foregroundStyle(notesJaune)
-                        .onTapGesture { alerteOutil = s }
+            // v3 : barre d'outils basse iOS 26 — capsule verre 4 icônes blanches + composer séparé (ordre de la vraie app)
+            HStack(spacing: 12) {
+                HStack(spacing: 0) {
+                    ForEach(["checklist", "paperclip", "textformat.alt", "pencil.tip.crop.circle"], id: \.self) { s in
+                        Image(systemName: s)
+                            .font(.system(size: 19)).foregroundStyle(.white)
+                            .frame(maxWidth: .infinity).frame(height: 48)
+                            .contentShape(Rectangle())
+                            .onTapGesture { alerteOutil = s }
+                    }
                 }
-                Spacer()
-                Image(systemName: "square.and.pencil")
-                    .font(.system(size: 19)).foregroundStyle(notesJaune)
-                    .onTapGesture { dismiss() }
+                .padding(.horizontal, 6)
+                .background(notesFondVerre, in: Capsule())
+                BoutonVerreNotes(systeme: "square.and.pencil", taille: 18, poids: .regular, diametre: 48) { dismiss() }
             }
-            .padding(.horizontal, 20).padding(.vertical, 10)
-            .background(Color(hex: 0x111111))
+            .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 12)
+            .background(Color.black)
         }
         .background(Color.black)
+        .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                BoutonVerreNotes(systeme: "chevron.left") { dismiss() }
+            }
             ToolbarItem(placement: .topBarTrailing) {
-                HStack(spacing: 18) {
-                    Image(systemName: "square.and.arrow.up").foregroundStyle(notesJaune)
-                        .onTapGesture { partageVisible = true }
-                    Menu {
-                        Button {
-                            guard let i = index else { return }
-                            magasin.notes[i].section = epinglee ? "Aujourd'hui" : "Épinglées"
-                            Haptique.leger()
-                        } label: {
-                            Label(epinglee ? "Désépingler" : "Épingler", systemImage: epinglee ? "pin.slash" : "pin")
-                        }
-                        Button { partageVisible = true } label: { Label("Partager", systemImage: "square.and.arrow.up") }
-                        Button(role: .destructive) { confirmerSuppression = true } label: { Label("Supprimer", systemImage: "trash") }
-                    } label: {
-                        Image(systemName: "ellipsis.circle").foregroundStyle(notesJaune)
-                    }
+                HStack(spacing: 10) {
                     if champ != nil {
-                        Button("Terminé") { champ = nil }
-                            .font(.system(size: 17, weight: .semibold)).foregroundStyle(notesJaune)
+                        CapsuleVerreNotes(titre: "Terminé", poids: .semibold) { champ = nil }
+                    } else {
+                        BoutonVerreNotes(systeme: "square.and.arrow.up", taille: 16) { partageVisible = true }
+                        Menu {
+                            Button {
+                                guard let i = index else { return }
+                                magasin.notes[i].section = epinglee ? "Aujourd'hui" : "Épinglées"
+                                Haptique.leger()
+                            } label: {
+                                Label(epinglee ? "Désépingler" : "Épingler", systemImage: epinglee ? "pin.slash" : "pin")
+                            }
+                            Button { partageVisible = true } label: { Label("Partager", systemImage: "square.and.arrow.up") }
+                            Button(role: .destructive) { confirmerSuppression = true } label: { Label("Supprimer", systemImage: "trash") }
+                        } label: {
+                            Image(systemName: "ellipsis").font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                                .frame(width: 40, height: 40)
+                                .background(notesFondVerre, in: Circle())
+                        }
                     }
                 }
             }

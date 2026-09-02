@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-02T17:25:00+02:00",
+  "date_derniere_maj": "2026-09-02T17:08:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1604,16 +1604,16 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "Retours session 2 codés (Notes réécrite, Rappels, Calendrier ; Safari déjà corrigé dans le repo). D89 : section « Dernier build » instituée dans la fiche (préremplie) ; Réglages reportée en passe finale. EN ATTENTE : GO Joachim pour le build de lot session 2.",
+  "dernier_evenement": "Session 3 en cours de test par Joachim sur le 272 (Horloge, Météo, Calculatrice, Dictaphone). Le build de lot embarquera S2+S3. Code S2 poussé (5b2ed423).",
   "en_attente": [
-   "Joachim : GO pour le build de lot session 2 (embarque : fix WhatsApp, Safari 31/08, Notes v2, Rappels v2, Calendrier v2)",
+   "Joachim : retours session 3 (Horloge, Météo, Calculatrice, Dictaphone) → agent code → GO → build lot S2+S3",
    "Agent au build : mettre à jour la section Dernier build (numéro réel + heure) et republier la page",
    "Joachim : dérouler la checklist « À vérifier dans ce build »",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
    "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-02 17h25"
+  "derniere_maj": "2026-09-02 17h08"
  },
  "workflow_memoire_persistante": {
   "institue_par": "Décision utilisateur D15 (2026-07-20). INSTRUCTION PERMANENTE.",
@@ -2677,6 +2677,7 @@
    "piege_generalise": "BarreHome (19 pt de haut, 150 pt de large, centrée) : toute barre d app posée à moins de ~20 pt du bas est partiellement recouverte au centre → le tap va à l accueil. Règle : barres basses d app à .padding(.bottom, ≥ 24).",
    "reglages": "REPORTÉE (D89).",
    "build": "PAS ENCORE LANCÉ — code poussé ; build de lot session 2 sur GO de Joachim. Fiche « Dernier build » préremplie avec le contenu prévu."
-  }
+  },
+  "session3_plan_2026_09_02": "17h05 — Joachim : session 3 (Horloge, Météo, Calculatrice, Dictaphone) testée sur le build 272 AVANT de builder → UN SEUL build de lot sessions 2+3. En attente de ses retours."
  }
 }

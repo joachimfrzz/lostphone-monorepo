@@ -15,7 +15,7 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 > Cette section est MISE À JOUR À CHAQUE BUILD (règle instituée le 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
 **Build disponible sur TestFlight : n° 272 — généré le 31/08 vers 17h00.**
-**Prochain build : EN PRÉPARATION (lot session 2) — le contenu ci-dessous est ce qu'il embarquera ; il partira sur ton GO.**
+**Prochain build : EN PRÉPARATION (lot sessions 2 + 3) — décision Joachim 02/09 17h05 : la session 3 (Horloge, Météo, Calculatrice, Dictaphone) est testée sur le 272 AVANT le build ; ses correctifs s'ajouteront à la liste ci-dessous. Le build partira sur ton GO.**
 
 ### Ce que tu avais demandé (avant ce build)
 - WhatsApp : le tap sur une conversation ouvrait les infos du contact/groupe au lieu de la discussion
@@ -55,8 +55,9 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 | Session | Apps | Build |
 |---|---|---|
 | RE-TEST | Messages · WhatsApp · Téléphone · Photos · Mail | TestFlight **272** (dehors) |
-| 2 | Safari (re-test) · Notes · Rappels · Calendrier · Réglages | lot session 2 (à venir) |
-| 3 | Horloge · Météo · Calculatrice · Dictaphone | lot session 3 |
+| 2 | Safari (re-test) · Notes · Rappels · Calendrier | build lot S2+S3 (à venir) |
+| 3 | Horloge · Météo · Calculatrice · Dictaphone | build lot S2+S3 (à venir) |
+| finale | Réglages (passe dédiée, D89) | dernier lot |
 | 4 | Fichiers · Localiser · Santé · Cartes · Ma Banque | lot session 4 |
 | 5 | Messenger · Instagram · Snapchat · Facebook | lot session 5 |
 | 6 | X · ChatGPT · Spotify · YouTube | lot session 6 |

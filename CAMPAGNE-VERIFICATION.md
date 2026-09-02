@@ -16,7 +16,7 @@ l'app suivante pendant que l'agent code le lot précédent.
 pixel (vs références S1-S6 + photos) · touchers (D82 : A faire-marcher > B message crédible > C retirer) ·
 navigation & gestes · contenu narratif Sarah · animations.
 
-**Fiches de vérification par app** : dossier `fiches-verification/` (une fiche ≤5 min par app, sessions 2-6).
+**Fiches de vérification détaillées des 28 apps** : `FICHES-VERIFICATION-APPS.md` (fichier unique, 02/09). Le dossier `fiches-verification/` (01/09) est remplacé — conservé une itération, suppression sur arbitrage.
 
 ## Ordre & état (à jour du 01/09/2026)
 | # | App | État |

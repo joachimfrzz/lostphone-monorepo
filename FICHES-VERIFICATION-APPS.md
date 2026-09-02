@@ -14,51 +14,41 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 ## 🔔 DERNIER BUILD — à vérifier en priorité
 > Cette section est MISE À JOUR À CHAQUE BUILD (règle D89, 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
-**Build : TestFlight n° 274 — lancé le 02/09 à 17h47, compilé à partir de 17h51 (disponible sur TestFlight ~10 min après la fin).** Lot **sessions 2 + 3** + fix WhatsApp. Le 273 (17h36) a échoué à la compilation (4 erreurs corrigées, dont 2 héritées du code Safari du 31/08) — il n'apparaîtra pas sur TestFlight. Précédent build valide : 272 (31/08 17h00).
+**Build : TestFlight n° 275 — lancé le 02/09 à 19h05 (disponible sur TestFlight ~15 min plus tard).** Retours du 274 + principe « toute action annoncée produit son résultat ». Précédent valide : 274 (02/09 17h57).
 
-### Ce que tu avais demandé (avant ce build)
-- WhatsApp : le tap sur une conversation ouvrait les infos du contact/groupe au lieu de la discussion
-- Safari : barre home qui vole les 5 boutons du bas ; bouton aA mort ; sites trop peu détaillés (reporté au chantier histoires)
-- Notes : couleurs pas fidèles ; titres pas en gras ; menu … à 3 entrées mortes ; micro dans la recherche ; niveau Dossiers manquant ; Retour qui quitte l'app
-- Rappels : Recherche et … ne font rien
-- Calendrier : Aujourd'hui ne fait rien ; bouton « carré + 2 barres » mort ; transition Année → Mois qui se recale ; zoom entre granularités
-- Horloge : ville choisie incliquable (pas ajoutée) ; Modifier mort dans Horloges, Alarmes et Minuteurs ; retirer le « + » des Minuteurs
-- Dictaphone : un nouvel enregistrement de 1 s lisait le mémo « Idée photo » (14 s) à sa place ; Sélectionner, Recherche et Modifier morts
-- Météo, Calculatrice : ✅ VALIDÉES (rien à modifier) · Réglages : REPORTÉ en passe dédiée finale
+### Ce que tu avais demandé (retours du 274)
+- WhatsApp : Gérer le stockage / Important / Notifications / Thème… dans une fiche contact → le jeu se ferme
+- Safari : Livre = seulement l'historique (il manque Favoris et Liste de lecture) ; retirer « Effacer » ; le contenu remonte dans la zone heure/batterie ; « Marc Delacroix » : 3 résultats au lieu de 7
+- Notes : jaune pas fidèle ; feuille de partage sans conséquence ; Modifier (dossiers) mort ; clavier qui reste après une recherche
+- Rappels : feuille de partage sans conséquence
+- Calendrier : double bulle sur le bouton retour ; changer Compact/Empilé déplace la période consultée
+- Horloge : « Delete » en anglais au balayage ; plus généralement aucun texte anglais
+- Dictaphone : RAS (mémo « banque » supprimé par toi lors du test — rien à corriger) ; suppressions : ne rien changer pour l'instant
+- Validées : Horloge, Dictaphone (Météo, Calculatrice déjà validées) → 9/28
 
 ### Ce qui a été modifié dans ce build
-- WhatsApp : lien caché par rangée supprimé ; « Infos du contact » route par une destination unique
-- Safari : correctifs du 31/08 enfin embarqués (ils n'étaient PAS dans le 272) — zone tactile home réduite à la capsule (~150 pt, pour les 29 apps), barre d'outils remontée, aA = vrai menu (zoom 70–130 %, lecteur, masquer la barre), onglets réels, recherche contrôlée
-- Notes : teinte jaune système, titre de note en gras 28 pt + date en tête, racine = Dossiers (iCloud (toutes) / Notes / Recettes / Santé / Suppressions récentes), Retour = retour aux Dossiers, micro retiré, menu … réel (Pièces jointes / Sélectionner + Supprimer réel / Galerie), barres remontées
-- Rappels : Recherche réelle, menu … réel (Modifier les listes / Modèles), Nouvelle liste crée vraiment la liste, menu … des listes (Afficher les terminés / Trier par)
-- Calendrier : Aujourd'hui réel, bouton d'affichage = Compact / Empilé / Liste, transition Année → Mois en un seul positionnement, pincer = Année, écarter = Liste
-- Horloge : la ville choisie s'AJOUTE vraiment avec sa vraie heure et son décalage ; Modifier réel dans Horloges (supprimer/réordonner), Alarmes (pastilles de suppression), Minuteurs (retirer des récents) ; « + » des Minuteurs retiré
-- Dictaphone : un nouvel enregistrement crée un VRAI fichier audio de la durée exacte (lecture de 1 s pour 1 s, barre et ±15 s cohérents — le contenu est silencieux : le jeu n'active pas le micro, sinon iOS afficherait « Lost Phone souhaite accéder au micro ») ; Sélectionner réel (cocher → Partager / Supprimer) ; Recherche réelle ; Modifier réel sur les dossiers (supprimer / renommer) ; menu … : Déplacer vers un dossier
-- Transversal : barres du bas de Notes, Rappels, Calendrier, Dictaphone remontées au-dessus de la capsule home (même famille de bug que Safari)
+- WhatsApp : CAUSE du crash = deux clés en double dans le dictionnaire des sous-réglages (« Thème de la discussion », « Messages éphémères ») → Swift plante à la première lecture. Fusionnées. Toutes les options de fiche ouvrent leur écran.
+- Safari : bouton Livre = Signets à 3 onglets (Favoris / Liste de lecture / Historique) ; « Effacer » retiré de l'historique ; les 4 résultats manquants de « Marc Delacroix officier marine » ajoutés (7 réels : chauffagiste, promo 1988, annuaire Marine vide, PagesJaunes, profils Facebook, Cybermalveillance, témoignage) ; la recherche accepte la dictée « marc/marque de la croix » ; bande opaque sous la zone système, la page défile dessous
+- Feuille de partage (Notes, Rappels, Fichiers, Dictaphone, Safari…) : AirDrop → recherche puis « Aucun appareil à proximité » ; WhatsApp → choix du contact et le message APPARAÎT dans sa conversation ; Mail → ouvre un nouveau message ; Messages → ouvre Messages ; Copier → presse-papiers réel ; Enregistrer dans Fichiers → le fichier APPARAÎT dans Fichiers (Récents + Documents, aperçu du texte) ; Imprimer → recherche puis « Aucune imprimante AirPrint détectée »
+- Notes : Modifier réel (pastille rouge = supprimer un dossier, tap = renommer ; Nouveau dossier crée vraiment) ; un tap hors du champ masque le clavier ; JAUNE : inchangé en attendant ta capture d'écran de la vraie app Notes (je prélèverai la couleur exacte)
+- Calendrier : plus de capsule maison dans la barre (iOS 26 en met déjà une → double bulle) ; changer Compact/Empilé/Liste garde le mois consulté
+- Horloge : balayage « Supprimer » explicite en français ; PROJET localisé en français (langue de développement fr + fr.lproj) → tous les textes système (Supprimer, Annuler, OK…) sortent en français dans TOUTES les apps
+- Fichiers : reçoit les fichiers enregistrés depuis la feuille de partage ; micro retiré des recherches
 
 ### ✅ À VÉRIFIER DANS CE BUILD (checklist)
-- [ ] WhatsApp — tap sur Marc, Chloé, Les filles, Maman : la CONVERSATION s'ouvre (pas les infos) ; balayage → Plus → Infos du contact ouvre bien les infos
-- [ ] Safari — les 5 boutons du bas (◁ ▷ partage livre onglets) répondent sans quitter l'app ; le tap sur la capsule centrale ramène à l'accueil
-- [ ] Safari — aA ouvre un menu : Agrandir/Réduire le texte change vraiment la taille ; Masquer la barre d'outils laisse une pilule URL
-- [ ] Safari — + ouvre un onglet, × ferme, compteur juste ; recherche « Marc Delacroix officier marine » → 7 résultats qui ne collent pas
-- [ ] Notes — ouverture sur DOSSIERS ; iCloud (toutes) → liste ; chevron « Dossiers » revient aux dossiers (ne quitte PAS l'app) ; capsule home = accueil
-- [ ] Notes — couleur jaune sur tous les boutons ; titres en gras dans la liste ; dans une note : titre gras 28 pt, date au-dessus
-- [ ] Notes — plus de micro ; menu … : Pièces jointes / Sélectionner (cocher 2 notes → Supprimer → Suppressions récentes → Récupérer) / Galerie
-- [ ] Notes — créer une note depuis Dossiers ET depuis une liste ; elle persiste après retour
-- [ ] Rappels — loupe → recherche « RIB » trouve « Imprimer le RIB » ; … → Modifier les listes (glisser pour réordonner) ; Nouvelle liste « Vacances » apparaît dans Mes listes
-- [ ] Rappels — dans une liste : … → Afficher les terminés / Trier par titre
-- [ ] Calendrier — Aujourd'hui depuis un autre mois → revient sur Août 2026 (17 en rouge) ; depuis l'Année aussi
-- [ ] Calendrier — bouton carré + barres → Compact (points) / Empilé (titres) / Liste (évènements sous la grille)
-- [ ] Calendrier — Année → tap sur Mai → Mai s'affiche DIRECTEMENT bien positionné, sans saut
-- [ ] Calendrier — pincer sur le mois → Année ; écarter → Liste
-- [ ] Horloge — Horloges : + → choisir « Alger » → Alger apparaît avec « Aujourd'hui, −1 h » et sa vraie heure ; Modifier → pastille rouge supprime, poignée réordonne ; OK
-- [ ] Horloge — Alarmes : Modifier → pastilles rouges sur les alarmes (pas sur Sommeil | Réveil) ; supprimer une alarme ; OK
-- [ ] Horloge — Minuteurs : plus de « + » en haut à droite ; Modifier → pastilles rouges retirent des Récents ; OK
-- [ ] Dictaphone — bouton rouge → enregistrer ~3 s → stop : « Nouvel enregistrement 15 » 0:03 ; Play → la lecture dure 3 s (barre qui avance, chrono 00:03 puis stop), PAS le mémo « Idée photo »
-- [ ] Dictaphone — Sélectionner → cocher un mémo → corbeille supprime ; Annuler sort du mode
-- [ ] Dictaphone — loupe → taper « banque » → seul le mémo bancaire reste ; × ferme
-- [ ] Dictaphone — écran Mémos vocaux → Modifier → pastille rouge sur « Idées photo », tap sur le nom = Renommer ; OK
-- [ ] Régression — Messages, Téléphone, Photos, Mail, Météo, Calculatrice : un tour rapide, rien ne doit avoir bougé
+- [ ] WhatsApp — fiche de Marc (balayage → Plus → Infos) : Gérer le stockage, Important, Notifications, Thème de la discussion, Verrouiller, Confidentialité avancée, Médias : CHAQUE option ouvre son écran, le jeu ne se ferme jamais ; idem depuis la fiche du groupe Les filles
+- [ ] Safari — Livre : 3 onglets Favoris / Liste de lecture / Historique ; un favori s'ouvre ; une page de la liste de lecture s'ouvre ; plus de bouton Effacer
+- [ ] Safari — faire défiler une page longue : le contenu passe SOUS la zone heure/batterie, jamais dedans
+- [ ] Safari — recherche « Marc Delacroix officier marine » (ou dictée « marque de la croix ») → 7 résultats, chacun s'ouvre
+- [ ] Partage (Notes → une note → partager) : AirDrop cherche puis « Aucun appareil à proximité » ; WhatsApp → Chloé → le texte de la note est dans la conversation Chloé ; Copier → coller dans une autre app (Notes) fonctionne ; Enregistrer dans Fichiers → ouvrir Fichiers → le fichier est dans Récents et dans Documents, son aperçu montre le texte ; Imprimer → « Aucune imprimante AirPrint détectée » ; Mail → un nouveau message s'ouvre
+- [ ] Partage — même feuille depuis Rappels (liste Courses) : Enregistrer dans Fichiers crée « Liste « Courses » » avec les articles
+- [ ] Notes — Dossiers → Modifier : pastille rouge sur Recettes/Santé supprime (les notes passent dans Notes), tap sur un nom = Renommer ; Nouveau dossier (icône dossier +) crée un dossier ; OK
+- [ ] Notes — lancer une recherche, taper un mot, toucher ailleurs → le clavier disparaît
+- [ ] Calendrier — bouton « ‹ 2026 » / « ‹ Août » : UNE seule bulle
+- [ ] Calendrier — aller sur Mai, passer Compact → Empilé → Liste : on reste sur Mai
+- [ ] Horloge — balayer une ville → « Supprimer » (en français) ; Modifier → pastille rouge puis bouton rouge « Supprimer »
+- [ ] Toutes apps — chasse aux mots anglais (Delete, Done, Cancel…) : tout doit être en français
+- [ ] Régression — Messages, Téléphone, Photos, Mail, Météo, Calculatrice, Horloge, Dictaphone : tour rapide
 
 ---
 
@@ -66,8 +56,8 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 | Session | Apps | Build |
 |---|---|---|
 | RE-TEST | Messages · WhatsApp · Téléphone · Photos · Mail | TestFlight **272** (dehors) |
-| 2 | Safari (re-test) · Notes · Rappels · Calendrier | TestFlight **274** (02/09 17h47) |
-| 3 | Horloge · Dictaphone (Météo ✅, Calculatrice ✅) | TestFlight **274** (02/09 17h47) |
+| 2 | Safari (re-test) · Notes · Rappels · Calendrier | TestFlight **275** (02/09 19h05) |
+| 3 | Horloge · Dictaphone (Météo ✅, Calculatrice ✅) | TestFlight **275** (02/09 19h05) |
 | finale | Réglages (passe dédiée, D89) | dernier lot |
 | 4 | Fichiers · Localiser · Santé · Cartes · Ma Banque | lot session 4 |
 | 5 | Messenger · Instagram · Snapchat · Facebook | lot session 5 |

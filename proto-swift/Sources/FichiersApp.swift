@@ -153,9 +153,8 @@ struct RecentsFichiersVue: View {
                     Text("Récents").font(.system(size: 30, weight: .bold)).foregroundStyle(.white)
                     Spacer()
                     Menu {
-                        Button { selectionActive.toggle() } label: { Label(selectionActive ? "Terminer" : "Sélectionner", systemImage: "checkmark.circle") }
-                        Button { } label: { Label("Scanner des documents", systemImage: "doc.viewfinder") }
-                        Button { } label: { Label("Se connecter au serveur", systemImage: "server.rack") }
+                        // v3 02/09 : Sélectionner RÉEL ; « Scanner des documents » et « Se connecter au serveur » RETIRÉS (sans intérêt dans le jeu — Joachim)
+                        Button { withAnimation { selectionActive.toggle(); if !selectionActive { selectionIds.removeAll() } } } label: { Label(selectionActive ? "Terminer" : "Sélectionner", systemImage: "checkmark.circle") }
                         Divider()
                         Button { enListe = false } label: { Label("Icônes", systemImage: enListe ? "square.grid.2x2" : "checkmark") }
                         Button { enListe = true } label: { Label("Liste", systemImage: enListe ? "checkmark" : "list.bullet") }
@@ -191,10 +190,16 @@ struct RecentsFichiersVue: View {
                 } else if enListe {
                     VStack(spacing: 0) {
                         ForEach(items) { f in
-                            LigneFichier(fichier: f)
+                            HStack(spacing: 10) {
+                                if selectionActive {
+                                    Image(systemName: selectionIds.contains(f.id) ? "checkmark.circle.fill" : "circle")
+                                        .font(.system(size: 22)).foregroundStyle(selectionIds.contains(f.id) ? Color(hex: 0x0A84FF) : .secondary)
+                                }
+                                LigneFichier(fichier: f)
+                            }
                                 .contentShape(Rectangle())
-                                .onTapGesture { apercu = f }
-                                .contextMenu { menuFichier(f) }
+                                .onTapGesture { if selectionActive { basculer(f) } else { apercu = f } }
+                                .contextMenu { if !selectionActive { menuFichier(f) } }
                             Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 52)
                         }
                     }
@@ -202,8 +207,16 @@ struct RecentsFichiersVue: View {
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14), GridItem(.flexible())], spacing: 18) {
                         ForEach(items) { f in
                             TuileFichier(fichier: f)
-                                .onTapGesture { apercu = f }
-                                .contextMenu { menuFichier(f) }
+                                .overlay(alignment: .topTrailing) {
+                                    if selectionActive {
+                                        Image(systemName: selectionIds.contains(f.id) ? "checkmark.circle.fill" : "circle")
+                                            .font(.system(size: 22)).foregroundStyle(selectionIds.contains(f.id) ? Color(hex: 0x0A84FF) : .white)
+                                            .background(Circle().fill(.black.opacity(0.4)))
+                                            .offset(x: 6, y: -6)
+                                    }
+                                }
+                                .onTapGesture { if selectionActive { basculer(f) } else { apercu = f } }
+                                .contextMenu { if !selectionActive { menuFichier(f) } }
                         }
                     }
                 }
@@ -213,6 +226,28 @@ struct RecentsFichiersVue: View {
         }
         .simultaneousGesture(TapGesture().onEnded { rechercheFocalisee = false })
         .scrollDismissesKeyboard(.interactively)
+        .overlay(alignment: .bottom) {
+            if selectionActive {
+                // v3 02/09 : barre d'actions du mode Sélectionner (Partager / Supprimer réels)
+                HStack {
+                    Button { if let f = items.first(where: { selectionIds.contains($0.id) }) { partage = f } } label: {
+                        Image(systemName: "square.and.arrow.up").font(.system(size: 20)).foregroundStyle(selectionIds.isEmpty ? .secondary : Color(hex: 0x0A84FF))
+                    }.disabled(selectionIds.isEmpty)
+                    Spacer()
+                    Text(selectionIds.isEmpty ? "Sélectionner des éléments" : "\(selectionIds.count) sélectionné\(selectionIds.count > 1 ? "s" : "")").font(.system(size: 15)).foregroundStyle(.white)
+                    Spacer()
+                    Button {
+                        withAnimation { for id in selectionIds { magasin.supprimes.insert(id) } }
+                        selectionIds.removeAll(); selectionActive = false
+                    } label: {
+                        Image(systemName: "trash").font(.system(size: 20)).foregroundStyle(selectionIds.isEmpty ? .secondary : Color(hex: 0xFF453A))
+                    }.disabled(selectionIds.isEmpty)
+                }
+                .padding(.horizontal, 22).padding(.vertical, 14)
+                .background(.ultraThinMaterial)
+                .padding(.bottom, 90)
+            }
+        }
         .fullScreenCover(item: $apercu) { f in ApercuFichierVue(fichier: f) }
         .sheet(item: $infos) { f in InfosFichierVue(fichier: f) }
         .sheet(item: $partage) { f in FeuillePartage(element: magasin.nom(f), contenu: f.contenu ?? "", type: f.genre == "image" ? .photo : .fichier) }
@@ -223,14 +258,17 @@ struct RecentsFichiersVue: View {
         }
     }
 
+    private func basculer(_ f: FichierItem) {
+        if selectionIds.contains(f.id) { selectionIds.remove(f.id) } else { selectionIds.insert(f.id) }
+    }
+
     @ViewBuilder
     private func menuFichier(_ f: FichierItem) -> some View {
         Button { apercu = f } label: { Label("Coup d'œil", systemImage: "eye") }
         Button { partage = f } label: { Label("Partager", systemImage: "square.and.arrow.up") }
         Button { infos = f } label: { Label("Lire les informations", systemImage: "info.circle") }
         Button { renommageId = f.id; nouveauNom = magasin.nom(f) } label: { Label("Renommer", systemImage: "pencil") }
-        Button { } label: { Label("Compresser", systemImage: "archivebox") }
-        Button { } label: { Label("Dupliquer", systemImage: "plus.square.on.square") }
+        // v3 02/09 : Compresser / Dupliquer RETIRÉS (sans intérêt dans le jeu — Joachim)
         Button(role: .destructive) { magasin.supprimes.insert(f.id) } label: { Label("Supprimer", systemImage: "trash") }
     }
 }
@@ -286,6 +324,7 @@ struct TuileFichier: View {
 struct LigneFichier: View {
     @ObservedObject private var magasin = MagasinFichiers.partage
     let fichier: FichierItem
+    var chevron: Bool = true
     var body: some View {
         HStack(spacing: 12) {
             if fichier.genre == "dossier" {
@@ -302,7 +341,7 @@ struct LigneFichier: View {
                     .font(.system(size: 12)).foregroundStyle(.secondary)
             }
             Spacer()
-            Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(.secondary)
+            if chevron { Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(.secondary) }
         }
         .padding(.vertical, 8)
     }
@@ -341,6 +380,7 @@ struct ExplorerFichiersVue: View {
     @State private var dossierOuvert: FichierItem? = nil
     @State private var tagOuvert: String? = nil
     @State private var supprimesVisible = false
+    @State private var emplacementOuvert: String? = nil   // v3 02/09 : emplacements RÉELS
 
     var body: some View {
         NavigationStack {
@@ -386,9 +426,9 @@ struct ExplorerFichiersVue: View {
                     }
                     .padding(.top, 4)
                     VStack(spacing: 0) {
-                        LigneEmplacement(symbole: "iphone", nom: "Sur mon iPhone")
+                        LigneEmplacement(symbole: "iphone", nom: "Sur mon iPhone").contentShape(Rectangle()).onTapGesture { emplacementOuvert = "Sur mon iPhone" }
                         Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 40)
-                        LigneEmplacement(symbole: "icloud.fill", nom: "iCloud Drive")
+                        LigneEmplacement(symbole: "icloud.fill", nom: "iCloud Drive").contentShape(Rectangle()).onTapGesture { emplacementOuvert = "iCloud Drive" }
                         Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 40)
                         HStack(spacing: 10) {
                             Image(systemName: "trash").font(.system(size: 16)).foregroundStyle(.secondary)
@@ -431,6 +471,49 @@ struct ExplorerFichiersVue: View {
                 TagFichiersVue(tag: tagOuvert ?? "")
             }
             .sheet(isPresented: $supprimesVisible) { SuppressionsFichiersVue() }
+            .sheet(isPresented: Binding(get: { emplacementOuvert != nil }, set: { if !$0 { emplacementOuvert = nil } })) {
+                EmplacementFichiersVue(emplacement: emplacementOuvert ?? "Sur mon iPhone")
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+// v3 02/09 — Emplacement ouvert (Sur mon iPhone / iCloud Drive) : dossiers + fichiers RÉELS de cet emplacement
+struct EmplacementFichiersVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var magasin = MagasinFichiers.partage
+    let emplacement: String
+    @State private var apercu: FichierItem? = nil
+    @State private var dossierOuvert: FichierItem? = nil
+    private var dossiers: [FichierItem] {
+        let noms = Set(magasin.visibles.filter { $0.emplacement == emplacement && $0.genre != "dossier" }.compactMap { $0.dossier })
+        return magasin.visibles.filter { $0.genre == "dossier" && noms.contains($0.nom) }
+    }
+    private var fichiers: [FichierItem] { magasin.visibles.filter { $0.emplacement == emplacement && $0.genre != "dossier" && $0.dossier == nil } }
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                if dossiers.isEmpty && fichiers.isEmpty {
+                    VStack(spacing: 8) {
+                        Image(systemName: emplacement == "iCloud Drive" ? "icloud" : "iphone").font(.system(size: 42)).foregroundStyle(.secondary)
+                        Text("Aucun élément").font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
+                    }
+                    .frame(maxWidth: .infinity).padding(.top, 120)
+                } else {
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14), GridItem(.flexible())], spacing: 18) {
+                        ForEach(dossiers) { d in TuileFichier(fichier: d).onTapGesture { dossierOuvert = d } }
+                        ForEach(fichiers) { f in TuileFichier(fichier: f).onTapGesture { apercu = f } }
+                    }
+                    .padding(16)
+                }
+            }
+            .background(Color.black)
+            .navigationTitle(emplacement)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("OK") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF)) } }
+            .fullScreenCover(item: $apercu) { f in ApercuFichierVue(fichier: f) }
+            .sheet(item: $dossierOuvert) { d in DossierFichiersVue(dossier: d) }
         }
         .preferredColorScheme(.dark)
     }
@@ -550,10 +633,17 @@ struct SuppressionsFichiersVue: View {
                     ScrollView {
                         VStack(spacing: 0) {
                             ForEach(supprimesListe) { f in
-                                LigneFichier(fichier: f)
-                                    .contextMenu {
-                                        Button { magasin.supprimes.remove(f.id) } label: { Label("Récupérer", systemImage: "arrow.uturn.backward") }
-                                    }
+                                HStack(spacing: 10) {
+                                    LigneFichier(fichier: f, chevron: false)
+                                    // v3 02/09 : Récupérer RÉEL et explicite (la flèche muette est remplacée par un vrai bouton)
+                                    Button("Récupérer") { withAnimation { magasin.supprimes.remove(f.id) } }
+                                        .font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(hex: 0x0A84FF))
+                                        .padding(.horizontal, 12).padding(.vertical, 7)
+                                        .background(Color(hex: 0x1C1C1E), in: Capsule())
+                                }
+                                .contextMenu {
+                                    Button { magasin.supprimes.remove(f.id) } label: { Label("Récupérer", systemImage: "arrow.uturn.backward") }
+                                }
                                 Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 52)
                             }
                         }
@@ -664,6 +754,7 @@ struct InfosFichierVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinFichiers.partage
     let fichier: FichierItem
+    @State private var ouvert = false   // v3 02/09 : « Ouvrir » ouvre VRAIMENT le fichier
 
     var body: some View {
         NavigationStack {
@@ -680,10 +771,12 @@ struct InfosFichierVue: View {
                         VStack(alignment: .leading, spacing: 3) {
                             Text(magasin.nom(fichier)).font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
                             Text("\(fichier.genre.uppercased()) · \(fichier.taille)").font(.system(size: 13)).foregroundStyle(.secondary)
-                            Text("Ouvrir").font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
-                                .padding(.horizontal, 14).padding(.vertical, 5)
-                                .background(Color(hex: 0x0A84FF), in: Capsule())
-                                .padding(.top, 3)
+                            Button { ouvert = true } label: {
+                                Text("Ouvrir").font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
+                                    .padding(.horizontal, 14).padding(.vertical, 5)
+                                    .background(Color(hex: 0x0A84FF), in: Capsule())
+                            }
+                            .padding(.top, 3)
                         }
                         Spacer()
                     }
@@ -713,6 +806,7 @@ struct InfosFichierVue: View {
                 }
             }
         }
+        .fullScreenCover(isPresented: $ouvert) { ApercuFichierVue(fichier: fichier) }
         .preferredColorScheme(.dark)
         .presentationDetents([.medium, .large])
     }

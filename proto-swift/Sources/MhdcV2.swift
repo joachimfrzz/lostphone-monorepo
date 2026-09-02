@@ -147,7 +147,6 @@ struct MeteoLieuxV2Vue: View {
                 Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                 Text("Ville ou aéroport").foregroundStyle(.secondary)
                 Spacer()
-                Image(systemName: "mic.fill").foregroundStyle(.secondary)
             }
             .font(.system(size: 16))
             .padding(.horizontal, 12).padding(.vertical, 9)

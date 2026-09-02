@@ -389,7 +389,6 @@ struct MsgrConversationVue: View {
                     .contentShape(Rectangle())
                     .onTapGesture { appelVisible = true }
                 Image(systemName: "photo").font(.system(size: 20)).foregroundStyle(Color(hex: msgrBleu))
-                Image(systemName: "mic.fill").font(.system(size: 20)).foregroundStyle(Color(hex: msgrBleu))
                 TextField("Aa", text: $saisie)
                     .font(.system(size: 15)).foregroundStyle(.white)
                     .padding(.horizontal, 12).padding(.vertical, 7)

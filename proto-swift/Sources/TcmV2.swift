@@ -135,7 +135,6 @@ struct MessagesConvV2Vue: View {
                 HStack {
                     Text("Message texte • RCS").font(.system(size: 16)).foregroundStyle(.secondary.opacity(0.7))
                     Spacer()
-                    Image(systemName: "mic.fill").foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 14).padding(.vertical, 8)
                 .background(Color(white: 0.14), in: Capsule())

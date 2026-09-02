@@ -2,6 +2,8 @@
 // D51-2 : recherche, à proximité, fiche lieu complète, itinéraires multimodes avec alternatives,
 // navigation guidée (mode clair). R3 : les Récents de Sarah = agence LCL, Western Union Part-Dieu,
 // le kiné, la gare Part-Dieu (le billet du 28). L'historique de déplacement raconte tout.
+// v3 02/09 : Plans s'ouvre DIRECTEMENT sur l'itinéraire demandé par Localiser (Routeur.consommerItineraire) ;
+// micro retiré de la barre de recherche (règle Joachim) ; « Ajouter » (lieu rapide) retiré (bouton mort).
 import SwiftUI
 import MapKit
 
@@ -54,6 +56,7 @@ struct PlansVue: View {
     @State private var itineraireVers: LieuPlan? = nil
     @State private var navigationActive: LieuPlan? = nil
     @State private var itineraireRapideVisible = false
+    @FocusState private var champRecherche: Bool
 
     private var resultats: [LieuPlan] {
         let tous = DonneesPlans.proximite + DonneesPlans.recents
@@ -121,8 +124,13 @@ struct PlansVue: View {
                         Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                         TextField("Plans d'Apple", text: $recherche)
                             .foregroundStyle(.white)
+                            .focused($champRecherche)
+                            .submitLabel(.search)
                             .onTapGesture { rechercheActive = true }
-                        Image(systemName: "mic.fill").foregroundStyle(.secondary)
+                        if !recherche.isEmpty {
+                            Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary).onTapGesture { recherche = ""; champRecherche = false }
+                        }
+                        // v3 : micro retiré (le joueur n'utilise pas la voix)
                     }
                     .padding(.horizontal, 12).frame(height: 40)
                     .background(Color(hex: 0x2C2C2E), in: RoundedRectangle(cornerRadius: 11))
@@ -134,7 +142,7 @@ struct PlansVue: View {
                 if !recherche.isEmpty {
                     VStack(spacing: 0) {
                         ForEach(resultats) { l in
-                            Button { lieuOuvert = l; recherche = "" } label: {
+                            Button { lieuOuvert = l; recherche = ""; champRecherche = false } label: {
                                 HStack(spacing: 12) {
                                     Circle().fill(Color(hex: 0xE8873D)).frame(width: 34, height: 34)
                                         .overlay(Image(systemName: l.categorie).font(.system(size: 14)).foregroundStyle(.white))
@@ -170,7 +178,7 @@ struct PlansVue: View {
                             LieuRapide(symbole: "tram.fill", couleur: 0x0A84FF, nom: "Transports", sous: "À proximité") {
                                 lieuOuvert = DonneesPlans.recents[1]
                             }
-                            LieuRapide(symbole: "plus", couleur: 0x3A3A3C, nom: "Ajouter", sous: "") { }
+                            // v3 : « Ajouter » retiré (bouton sans action — D82/D90)
                         }
                         HStack {
                             Text("Récents").font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
@@ -188,7 +196,7 @@ struct PlansVue: View {
                                         Text(l.sousTitre).font(.system(size: 12.5)).foregroundStyle(.secondary)
                                     }
                                     Spacer()
-                                    Image(systemName: "ellipsis").font(.system(size: 14)).foregroundStyle(.secondary)
+                                    Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(.secondary)
                                 }
                                 .padding(.vertical, 3)
                             }
@@ -200,10 +208,23 @@ struct PlansVue: View {
             }
             .frame(maxHeight: recherche.isEmpty ? 330 : 380, alignment: .top)
             .background(.ultraThinMaterial, in: UnevenRoundedRectangle(topLeadingRadius: 20, topTrailingRadius: 20))
+            .simultaneousGesture(TapGesture().onEnded { if !recherche.isEmpty { return }; champRecherche = false })
 
             BarreHome { dismiss() }
         }
         .preferredColorScheme(.dark)
+        .onAppear {
+            // v3 : demande d'itinéraire venue de Localiser (personne / appareil / objet) → Plans s'ouvre dessus
+            if let i = Routeur.partage.consommerItineraire() {
+                let lieu = LieuPlan(nom: i.nom, sousTitre: "Position partagée", categorie: "person.fill",
+                                    horaires: "—", distance: distanceDepuisMoi(i.lat, i.lon), lat: i.lat, lon: i.lon)
+                withAnimation {
+                    position = .region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: (45.7660 + i.lat) / 2, longitude: (4.8350 + i.lon) / 2),
+                                                          span: MKCoordinateSpan(latitudeDelta: max(0.02, abs(45.7660 - i.lat) * 2.4), longitudeDelta: max(0.02, abs(4.8350 - i.lon) * 2.4))))
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { itineraireVers = lieu }
+            }
+        }
         .sheet(item: $lieuOuvert) { l in
             FicheLieuVue(lieu: l) { itineraireVers = l; lieuOuvert = nil }
         }
@@ -218,6 +239,11 @@ struct PlansVue: View {
                 ItinerairePlanVue(lieu: premier) { navigationActive = premier; itineraireRapideVisible = false }
             }
         }
+    }
+
+    private func distanceDepuisMoi(_ lat: Double, _ lon: Double) -> String {
+        let d = CLLocation(latitude: 45.7660, longitude: 4.8350).distance(from: CLLocation(latitude: lat, longitude: lon))
+        return d < 1000 ? "\(Int(d)) m" : String(format: "%.1f km", d / 1000).replacingOccurrences(of: ".", with: ",")
     }
 }
 
@@ -251,7 +277,6 @@ struct FicheLieuVue: View {
     @Environment(\.dismiss) private var dismiss
     let lieu: LieuPlan
     let itineraire: () -> Void
-    @State private var alerte: String? = nil
     @State private var noterVisible = false
 
     var body: some View {
@@ -334,25 +359,7 @@ struct FicheLieuVue: View {
         }
         .preferredColorScheme(.dark)
         .presentationDetents([.medium])
-        .alert(titreAlerte, isPresented: Binding(get: { alerte != nil }, set: { if !$0 { alerte = nil } })) {
-            Button("OK", role: .cancel) {}
-        } message: { Text(messageAlerte) }
         .sheet(isPresented: $noterVisible) { NoterLieuVue(nom: lieu.nom) }
-    }
-
-    private var titreAlerte: String {
-        switch alerte {
-        case "appel": return lieu.nom
-        case "web": return "Safari"
-        default: return "Noter ce lieu"
-        }
-    }
-    private var messageAlerte: String {
-        switch alerte {
-        case "appel": return "Ouvrez l'app Téléphone pour appeler ce lieu."
-        case "web": return ErreurLambda.reponse("app.attente")
-        default: return "Connectez-vous avec votre compte Apple pour noter ce lieu."
-        }
     }
 }
 
@@ -485,7 +492,8 @@ struct NavigationGuideeVue: View {
         _position = State(initialValue: .region(
             MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: (45.7660 + lieu.lat) / 2,
                                                               longitude: (4.8350 + lieu.lon) / 2),
-                               span: MKCoordinateSpan(latitudeDelta: 0.025, longitudeDelta: 0.025))))
+                               span: MKCoordinateSpan(latitudeDelta: max(0.025, abs(45.7660 - lieu.lat) * 2.2),
+                                                      longitudeDelta: max(0.025, abs(4.8350 - lieu.lon) * 2.2)))))
     }
 
     var body: some View {

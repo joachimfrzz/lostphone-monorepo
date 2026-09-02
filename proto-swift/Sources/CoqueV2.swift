@@ -404,7 +404,6 @@ struct SpotlightV2View: View {
                     Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                     Text("Recherche").font(.system(size: 17)).foregroundStyle(.secondary)
                     Spacer()
-                    Image(systemName: "mic.fill").foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 14).padding(.vertical, 11)
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))

@@ -2,8 +2,13 @@
 // D51-2 : pile de cartes, carte ouverte + transactions, DÉTAIL avec mini-carte Plans du lieu,
 // menu réglages, flux d'ajout, pass. R3 : la carte LCL •••• 4417 = celle de Ma Banque ;
 // les transactions recoupent les opérations bancaires ; le billet du 28 août = le pass.
+// v3 02/09 (retours Joachim, session 4) : QR code et code-barres RÉELS (CoreImage : un vrai QR lisible
+// et un vrai Code 128) ; cartes redessinées (puce, hologramme, trame, logos, bande magnétique) ;
+// boutons « … » retirés (le joueur n'a pas à supprimer ses cartes) ; micro absent.
 import SwiftUI
 import MapKit
+import CoreImage
+import CoreImage.CIFilterBuiltins
 
 // ============================================================ DONNÉES (remplaçables — D59)
 struct TransactionCarte: Identifiable {
@@ -31,13 +36,69 @@ enum DonneesCartes {
     ]
 }
 
+// ============================================================ CODES RÉELS (CoreImage) — v3
+// Un QR code et un code-barres VRAIS : générés par le système, donc visuellement indiscernables des vrais
+// (et lisibles par un lecteur). Le contenu encodé reste fictif (référence de billet, n° client).
+enum CodesReels {
+    private static let ctx = CIContext()
+    static func qr(_ texte: String, taille: CGFloat = 300) -> UIImage? {
+        let f = CIFilter.qrCodeGenerator()
+        f.message = Data(texte.utf8)
+        f.correctionLevel = "M"
+        guard let out = f.outputImage else { return nil }
+        let echelle = taille / out.extent.width
+        let agrandie = out.transformed(by: CGAffineTransform(scaleX: echelle, y: echelle))
+        guard let cg = ctx.createCGImage(agrandie, from: agrandie.extent) else { return nil }
+        return UIImage(cgImage: cg)
+    }
+    static func code128(_ texte: String, largeur: CGFloat = 640, hauteur: CGFloat = 160) -> UIImage? {
+        let f = CIFilter.code128BarcodeGenerator()
+        f.message = Data(texte.utf8)
+        f.quietSpace = 4
+        guard let out = f.outputImage else { return nil }
+        let sx = largeur / out.extent.width, sy = hauteur / out.extent.height
+        let agrandie = out.transformed(by: CGAffineTransform(scaleX: sx, y: sy))
+        guard let cg = ctx.createCGImage(agrandie, from: agrandie.extent) else { return nil }
+        return UIImage(cgImage: cg)
+    }
+}
+
+struct QRCodeVue: View {
+    let contenu: String
+    var taille: CGFloat = 150
+    var body: some View {
+        RoundedRectangle(cornerRadius: 8).fill(.white)
+            .frame(width: taille, height: taille)
+            .overlay {
+                if let img = CodesReels.qr(contenu, taille: taille * 3) {
+                    Image(uiImage: img).interpolation(.none).resizable().scaledToFit().padding(taille * 0.06)
+                }
+            }
+    }
+}
+
+struct CodeBarresVue: View {
+    let contenu: String
+    var body: some View {
+        VStack(spacing: 6) {
+            if let img = CodesReels.code128(contenu) {
+                Image(uiImage: img).interpolation(.none).resizable().scaledToFit()
+                    .frame(height: 80)
+                    .padding(.horizontal, 10).padding(.vertical, 8)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 6))
+            }
+            Text(contenu.enumerated().map { $0.offset > 0 && $0.offset % 4 == 0 ? " \($0.element)" : String($0.element) }.joined())
+                .font(.system(size: 12, weight: .medium, design: .monospaced)).foregroundStyle(.secondary)
+        }
+    }
+}
+
 // ============================================================ APP
 struct CartesVueWallet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var carteOuverte = false
     @State private var billetOuvert = false
     @State private var ajoutVisible = false
-    @State private var reglagesVisibles = false
     @State private var fideliteOuverte = false
     @State private var rechercheVisible = false
 
@@ -52,7 +113,7 @@ struct CartesVueWallet: View {
                         HStack(spacing: 14) {
                             Image(systemName: "plus").onTapGesture { ajoutVisible = true }
                             Image(systemName: "magnifyingglass").onTapGesture { rechercheVisible = true }
-                            Image(systemName: "ellipsis").onTapGesture { reglagesVisibles = true }
+                            // v3 : « … » retiré (réglages sans intérêt de jeu — Joachim)
                         }
                         .font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
                     }
@@ -82,58 +143,129 @@ struct CartesVueWallet: View {
         .fullScreenCover(isPresented: $billetOuvert) { BilletOuvertVue() }
         .fullScreenCover(isPresented: $fideliteOuverte) { CarteFideliteOuverteVue() }
         .sheet(isPresented: $ajoutVisible) { AjoutCarteVue() }
-        .sheet(isPresented: $reglagesVisibles) { ReglagesCartesVue() }
         .sheet(isPresented: $rechercheVisible) { RechercheCartesVue() }
         .preferredColorScheme(.dark)
     }
 }
 
-// ============================================================ LES CARTES
+// ============================================================ LES CARTES (v3 : redessinées comme de vraies cartes Wallet)
+// Trame fine, puce EMV, hologramme, sans-contact, numéros embossés — éléments d'une vraie carte bancaire.
+struct TrameCarte: View {
+    var body: some View {
+        GeometryReader { geo in
+            Path { p in
+                var y: CGFloat = -geo.size.height
+                while y < geo.size.height * 2 {
+                    p.move(to: CGPoint(x: 0, y: y)); p.addLine(to: CGPoint(x: geo.size.width, y: y + geo.size.height * 0.9))
+                    y += 11
+                }
+            }
+            .stroke(Color.white.opacity(0.05), lineWidth: 1)
+        }
+        .allowsHitTesting(false)
+    }
+}
+
+struct PuceEMV: View {
+    var body: some View {
+        RoundedRectangle(cornerRadius: 4)
+            .fill(LinearGradient(colors: [Color(hex: 0xE8D48B), Color(hex: 0xB89A3C), Color(hex: 0xF0E2A8)], startPoint: .topLeading, endPoint: .bottomTrailing))
+            .frame(width: 34, height: 26)
+            .overlay(
+                Path { p in
+                    p.move(to: CGPoint(x: 0, y: 9)); p.addLine(to: CGPoint(x: 34, y: 9))
+                    p.move(to: CGPoint(x: 0, y: 17)); p.addLine(to: CGPoint(x: 34, y: 17))
+                    p.move(to: CGPoint(x: 12, y: 0)); p.addLine(to: CGPoint(x: 12, y: 26))
+                    p.move(to: CGPoint(x: 22, y: 0)); p.addLine(to: CGPoint(x: 22, y: 26))
+                }
+                .stroke(Color(hex: 0x8A6E1E).opacity(0.7), lineWidth: 0.8)
+            )
+    }
+}
+
+struct SansContact: View {
+    var body: some View {
+        Image(systemName: "wave.3.right").font(.system(size: 15, weight: .medium)).foregroundStyle(.white.opacity(0.85))
+    }
+}
+
 struct CarteLCLVue: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 14)
-            .fill(LinearGradient(colors: [Color(hex: 0x123E6B), Color(hex: 0x0A2340)],
+            .fill(LinearGradient(colors: [Color(hex: 0x1B4F8F), Color(hex: 0x0E2C55), Color(hex: 0x081B36)],
                                  startPoint: .topLeading, endPoint: .bottomTrailing))
             .frame(height: 190)
+            .overlay(TrameCarte().clipShape(RoundedRectangle(cornerRadius: 14)))
             .overlay(alignment: .topLeading) {
-                Text("LCL").font(.system(size: 19, weight: .heavy)).italic().foregroundStyle(.white).padding(14)
-            }
-            .overlay(alignment: .topTrailing) {
-                Text("VISA").font(.system(size: 15, weight: .bold)).italic().foregroundStyle(.white.opacity(0.9)).padding(14)
-            }
-            .overlay(alignment: .bottomLeading) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("•••• 4417").font(.system(size: 14, weight: .semibold)).foregroundStyle(.white.opacity(0.9))
-                    Text("SARAH LEVASSEUR").font(.system(size: 11, weight: .medium)).kerning(1).foregroundStyle(.white.opacity(0.75))
+                HStack(spacing: 8) {
+                    Text("LCL").font(.system(size: 20, weight: .heavy)).italic().foregroundStyle(.white)
+                    Text("Visa Classic").font(.system(size: 11, weight: .medium)).foregroundStyle(.white.opacity(0.7)).padding(.top, 4)
                 }
                 .padding(14)
             }
-            .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
+            .overlay(alignment: .topTrailing) {
+                SansContact().padding(16)
+            }
+            .overlay(alignment: .leading) {
+                PuceEMV().padding(.leading, 14).offset(y: 4)
+            }
+            .overlay(alignment: .bottomLeading) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("•••• •••• •••• 4417").font(.system(size: 15, weight: .semibold, design: .monospaced)).foregroundStyle(.white.opacity(0.95)).kerning(1)
+                    HStack {
+                        Text("SARAH LEVASSEUR").font(.system(size: 11, weight: .medium)).kerning(1.2).foregroundStyle(.white.opacity(0.8))
+                        Spacer()
+                        Text("EXP 08/28").font(.system(size: 10, weight: .medium)).foregroundStyle(.white.opacity(0.7))
+                    }
+                }
+                .padding(14)
+            }
+            .overlay(alignment: .bottomTrailing) {
+                Text("VISA").font(.system(size: 20, weight: .heavy)).italic().foregroundStyle(.white).padding(14).padding(.bottom, 26)
+            }
+            .shadow(color: .black.opacity(0.55), radius: 8, y: 4)
     }
 }
 
 struct CarteFideliteVue: View {
     var body: some View {
         RoundedRectangle(cornerRadius: 14)
-            .fill(LinearGradient(colors: [Color(hex: 0x8B5CF6), Color(hex: 0x5B21B6)],
+            .fill(LinearGradient(colors: [Color(hex: 0x9D6BFF), Color(hex: 0x6D3BD9), Color(hex: 0x4A1F9E)],
                                  startPoint: .topLeading, endPoint: .bottomTrailing))
             .frame(height: 190)
+            .overlay(TrameCarte().clipShape(RoundedRectangle(cornerRadius: 14)))
             .overlay(alignment: .topLeading) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Phox Photo").font(.system(size: 17, weight: .bold)).foregroundStyle(.white)
-                    Text("Carte de fidélité").font(.system(size: 11)).foregroundStyle(.white.opacity(0.75))
+                HStack(spacing: 10) {
+                    RoundedRectangle(cornerRadius: 8).fill(.white).frame(width: 34, height: 34)
+                        .overlay(Image(systemName: "camera.aperture").font(.system(size: 18, weight: .semibold)).foregroundStyle(Color(hex: 0x6D3BD9)))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Phox Photo").font(.system(size: 17, weight: .bold)).foregroundStyle(.white)
+                        Text("Carte de fidélité").font(.system(size: 11)).foregroundStyle(.white.opacity(0.75))
+                    }
                 }
                 .padding(14)
             }
-            .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
+            .overlay(alignment: .bottomLeading) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("MEMBRE").font(.system(size: 9, weight: .semibold)).kerning(1).foregroundStyle(.white.opacity(0.6))
+                    Text("Sarah Levasseur").font(.system(size: 14, weight: .semibold)).foregroundStyle(.white)
+                }
+                .padding(14)
+            }
+            .overlay(alignment: .bottomTrailing) {
+                VStack(alignment: .trailing, spacing: 3) {
+                    Text("POINTS").font(.system(size: 9, weight: .semibold)).kerning(1).foregroundStyle(.white.opacity(0.6))
+                    Text("1 240").font(.system(size: 18, weight: .bold)).foregroundStyle(.white)
+                }
+                .padding(14)
+            }
+            .shadow(color: .black.opacity(0.55), radius: 8, y: 4)
     }
 }
 
-// ============================================================ CARTE FIDÉLITÉ OUVERTE (Phox Photo — patron LCL)
+// ============================================================ CARTE FIDÉLITÉ OUVERTE (Phox Photo)
 struct CarteFideliteOuverteVue: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var menuVisible = false
-    @State private var signalementEnvoye = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -146,52 +278,21 @@ struct CarteFideliteOuverteVue: View {
                                 .frame(width: 30, height: 30).background(Color(hex: 0x2C2C2E), in: Circle())
                         }
                         Spacer()
-                        Image(systemName: "ellipsis").font(.system(size: 16)).foregroundStyle(.white)
-                            .frame(width: 30, height: 30).background(Color(hex: 0x2C2C2E), in: Circle())
-                            .onTapGesture { menuVisible = true }
+                        // v3 : « … » retiré (menu au milieu de l'écran + « Supprimer la carte » sans intérêt de jeu)
                     }
                     .padding(.horizontal, 16).padding(.top, 8)
 
-                    // Carte fidélité agrandie (même patron que CarteLCLVue)
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(LinearGradient(colors: [Color(hex: 0x8B5CF6), Color(hex: 0x5B21B6)],
-                                             startPoint: .topLeading, endPoint: .bottomTrailing))
-                        .frame(height: 190)
-                        .overlay(alignment: .topLeading) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Phox Photo").font(.system(size: 17, weight: .bold)).foregroundStyle(.white)
-                                Text("Carte de fidélité").font(.system(size: 11)).foregroundStyle(.white.opacity(0.75))
-                            }
-                            .padding(14)
-                        }
-                        .overlay(alignment: .bottomLeading) {
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text("N° client : 4821 0037 6294").font(.system(size: 14, weight: .semibold)).foregroundStyle(.white.opacity(0.9))
-                                Text("Points : 1 240 pts").font(.system(size: 11, weight: .medium)).foregroundStyle(.white.opacity(0.75))
-                            }
-                            .padding(14)
-                        }
-                        .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
-                        .padding(.horizontal, 16)
+                    CarteFideliteVue().padding(.horizontal, 16)
 
-                    // Code-barres factice (EAN-13 décoratif)
+                    // v3 : CODE-BARRES RÉEL (Code 128) — celui qu'on scanne en caisse
                     VStack(spacing: 10) {
                         Text("Présentez ce code en caisse").font(.system(size: 13)).foregroundStyle(.secondary)
-                        HStack(spacing: 0) {
-                            ForEach(0..<65, id: \.self) { i in
-                                Rectangle()
-                                    .fill((i * 3 + i % 7 + i / 5) % 4 == 0 ? Color.white : Color(hex: 0x2C2C2E))
-                                    .frame(width: (i % 3 == 0) ? 3 : 2, height: 80)
-                            }
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 2))
-                        Text("4 821 0037 6294 5").font(.system(size: 11)).foregroundStyle(.secondary).monospacedDigit()
+                        CodeBarresVue(contenu: "482100376294")
                     }
                     .padding(16)
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
                     .padding(.horizontal, 16)
 
-                    // Infos solde points
                     VStack(spacing: 0) {
                         HStack {
                             Text("Points acquis").font(.system(size: 14)).foregroundStyle(.white)
@@ -213,6 +314,13 @@ struct CarteFideliteOuverteVue: View {
                             Text("260 pts pour 15 €").font(.system(size: 14)).foregroundStyle(.secondary)
                         }
                         .padding(14)
+                        Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 14)
+                        HStack {
+                            Text("Dernier passage").font(.system(size: 14)).foregroundStyle(.white)
+                            Spacer()
+                            Text("Phox Lyon Cordeliers · 31/07").font(.system(size: 14)).foregroundStyle(.secondary)
+                        }
+                        .padding(14)
                     }
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
                     .padding(.horizontal, 16)
@@ -222,11 +330,6 @@ struct CarteFideliteOuverteVue: View {
             }
 
             BarreHome { dismiss() }
-        }
-        .confirmationDialog("Carte Phox Photo", isPresented: $menuVisible) {
-            Button("Informations sur la carte") { }
-            Button("Supprimer la carte", role: .destructive) { dismiss() }
-            Button("Annuler", role: .cancel) {}
         }
         .preferredColorScheme(.dark)
     }
@@ -282,18 +385,24 @@ struct BilletSNCFVue: View {
     var compact: Bool = false
     var body: some View {
         RoundedRectangle(cornerRadius: 14)
-            .fill(LinearGradient(colors: [Color(hex: 0x6E1E78), Color(hex: 0x43104A)],
+            .fill(LinearGradient(colors: [Color(hex: 0x8A2C9E), Color(hex: 0x5E1A6E), Color(hex: 0x3A0F45)],
                                  startPoint: .topLeading, endPoint: .bottomTrailing))
             .frame(height: compact ? 190 : 400)
+            .overlay(TrameCarte().clipShape(RoundedRectangle(cornerRadius: 14)))
             .overlay(alignment: .topLeading) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("TGV INOUI").font(.system(size: 16, weight: .heavy)).foregroundStyle(.white)
-                    Text("Lyon Part-Dieu → Marseille St-Charles").font(.system(size: 12)).foregroundStyle(.white.opacity(0.85))
-                    Text("Ven. 28 août · 08:04").font(.system(size: 12, weight: .semibold)).foregroundStyle(.white.opacity(0.9))
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("TGV INOUI").font(.system(size: 16, weight: .heavy)).foregroundStyle(.white)
+                        Text("Lyon Part-Dieu → Marseille St-Charles").font(.system(size: 12)).foregroundStyle(.white.opacity(0.85))
+                        Text("Ven. 28 août · 08:04").font(.system(size: 12, weight: .semibold)).foregroundStyle(.white.opacity(0.9))
+                    }
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 6).fill(.white).frame(width: 40, height: 22)
+                        .overlay(Text("SNCF").font(.system(size: 10, weight: .heavy)).italic().foregroundStyle(Color(hex: 0x8A2C9E)))
                 }
                 .padding(14)
             }
-            .shadow(color: .black.opacity(0.5), radius: 8, y: 4)
+            .shadow(color: .black.opacity(0.55), radius: 8, y: 4)
     }
 }
 
@@ -313,8 +422,7 @@ struct CarteOuverteVue: View {
                                 .frame(width: 30, height: 30).background(Color(hex: 0x2C2C2E), in: Circle())
                         }
                         Spacer()
-                        Image(systemName: "ellipsis").font(.system(size: 16)).foregroundStyle(.white)
-                            .frame(width: 30, height: 30).background(Color(hex: 0x2C2C2E), in: Circle())
+                        // v3 : « … » retiré (Joachim)
                     }
                     .padding(.horizontal, 16).padding(.top, 8)
 
@@ -384,7 +492,6 @@ struct TransactionVue: View {
                     }
                     .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
 
-                    // Mini-carte du lieu du paiement (le beau détail de la référence)
                     if transaction.ville != "Achat en ligne" {
                         Map(initialPosition: .region(MKCoordinateRegion(
                             center: CLLocationCoordinate2D(latitude: transaction.lat, longitude: transaction.lon),
@@ -453,15 +560,17 @@ struct BilletOuvertVue: View {
                 .padding(.horizontal, 16).padding(.top, 8)
 
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(LinearGradient(colors: [Color(hex: 0x6E1E78), Color(hex: 0x43104A)],
+                    .fill(LinearGradient(colors: [Color(hex: 0x8A2C9E), Color(hex: 0x5E1A6E), Color(hex: 0x3A0F45)],
                                          startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .frame(height: 470)
+                    .frame(height: 490)
+                    .overlay(TrameCarte().clipShape(RoundedRectangle(cornerRadius: 16)))
                     .overlay {
                         VStack(spacing: 12) {
                             HStack {
                                 Text("TGV INOUI 6173").font(.system(size: 17, weight: .heavy)).foregroundStyle(.white)
                                 Spacer()
-                                Text("SNCF").font(.system(size: 14, weight: .bold)).italic().foregroundStyle(.white.opacity(0.85))
+                                RoundedRectangle(cornerRadius: 6).fill(.white).frame(width: 44, height: 24)
+                                    .overlay(Text("SNCF").font(.system(size: 11, weight: .heavy)).italic().foregroundStyle(Color(hex: 0x8A2C9E)))
                             }
                             HStack {
                                 VStack(alignment: .leading, spacing: 2) {
@@ -489,21 +598,8 @@ struct BilletOuvertVue: View {
                                 ChampBillet(cle: "RÉF.", valeur: "QVRTGB")
                             }
                             Spacer()
-                            // QR factice (motif déterministe)
-                            RoundedRectangle(cornerRadius: 8).fill(.white)
-                                .frame(width: 150, height: 150)
-                                .overlay {
-                                    VStack(spacing: 2) {
-                                        ForEach(0..<15, id: \.self) { l in
-                                            HStack(spacing: 2) {
-                                                ForEach(0..<15, id: \.self) { c in
-                                                    Rectangle().fill((l * 7 + c * 13 + l * c) % 3 == 0 ? .black : .white)
-                                                        .frame(width: 7, height: 7)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                            // v3 : VRAI QR code (contenu : référence du billet fictif)
+                            QRCodeVue(contenu: "SNCF|TGV6173|20260828|0804|LYD-MSC|V12P74|LEVASSEUR SARAH|QVRTGB", taille: 170)
                             Text("Présentez ce code au contrôle").font(.system(size: 11)).foregroundStyle(.white.opacity(0.7))
                         }
                         .padding(18)
@@ -535,6 +631,7 @@ struct AjoutCarteVue: View {
     @State private var etape = 0
     @State private var numero = ""
     @State private var refus = false
+    @FocusState private var champActif: Bool
 
     var body: some View {
         NavigationStack {
@@ -558,13 +655,13 @@ struct AjoutCarteVue: View {
                     VStack(spacing: 0) {
                         HStack {
                             Text("Numéro").font(.system(size: 14)).foregroundStyle(.secondary).frame(width: 76, alignment: .leading)
-                            TextField("", text: $numero).foregroundStyle(.white).keyboardType(.numberPad)
+                            TextField("", text: $numero).foregroundStyle(.white).keyboardType(.numberPad).focused($champActif)
                         }
                         .padding(14)
                     }
                     .background(Color(hex: 0x2C2C2E), in: RoundedRectangle(cornerRadius: 12))
                     .padding(.horizontal, 16).padding(.top, 16)
-                    Button { refus = true } label: {
+                    Button { champActif = false; refus = true } label: {
                         Text("Continuer").font(.system(size: 16, weight: .semibold)).foregroundStyle(.white)
                             .frame(maxWidth: .infinity).padding(.vertical, 13)
                             .background(numero.count >= 8 ? Color(hex: 0x0A84FF) : Color(hex: 0x3A3A3C), in: RoundedRectangle(cornerRadius: 12))
@@ -575,14 +672,19 @@ struct AjoutCarteVue: View {
                 }
             }
             .background(Color.black)
+            .contentShape(Rectangle())
+            .onTapGesture { champActif = false }
             .navigationTitle("Ajouter une carte")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Annuler") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF))
                 }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("OK") { champActif = false }.foregroundStyle(Color(hex: 0x0A84FF))
+                }
             }
-            // Comportement iOS fidèle quand l'émetteur refuse (aucun réseau bancaire n'acceptera une carte fictive)
             .alert("Carte non ajoutée", isPresented: $refus) {
                 Button("OK", role: .cancel) { dismiss() }
             } message: {
@@ -590,69 +692,5 @@ struct AjoutCarteVue: View {
             }
         }
         .preferredColorScheme(.dark)
-    }
-}
-
-// ============================================================ RÉGLAGES (menu ... — bascules réelles)
-struct ReglagesCartesVue: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var notifications = true
-    @State private var remplissage = true
-
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 12) {
-                    VStack(spacing: 0) {
-                        HStack {
-                            Text("Commandes").font(.system(size: 15)).foregroundStyle(.white)
-                            Spacer()
-                            Text("Aucune").font(.system(size: 14)).foregroundStyle(.secondary)
-                        }
-                        .padding(14)
-                        Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 14)
-                        HStack {
-                            Text("Paiements préautorisés").font(.system(size: 15)).foregroundStyle(.white)
-                            Spacer()
-                            Text("Aucun").font(.system(size: 14)).foregroundStyle(.secondary)
-                        }
-                        .padding(14)
-                        Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 14)
-                        HStack {
-                            Text("Remplissage automatique").font(.system(size: 15)).foregroundStyle(.white)
-                            Spacer()
-                            Toggle("", isOn: $remplissage).labelsHidden().tint(Color(hex: 0x32D74B))
-                        }
-                        .padding(14)
-                        Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 14)
-                        HStack {
-                            Text("Notifications").font(.system(size: 15)).foregroundStyle(.white)
-                            Spacer()
-                            Toggle("", isOn: $notifications).labelsHidden().tint(Color(hex: 0x32D74B))
-                        }
-                        .padding(14)
-                        Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 14)
-                        HStack {
-                            Text("Expirées").font(.system(size: 15)).foregroundStyle(.white)
-                            Spacer()
-                            Text("0 carte").font(.system(size: 14)).foregroundStyle(.secondary)
-                        }
-                        .padding(14)
-                    }
-                    .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 14))
-                }
-                .padding(16)
-            }
-            .background(Color.black)
-            .navigationTitle("Cartes et Apple Pay")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("OK") { dismiss() }.foregroundStyle(Color(hex: 0x0A84FF))
-                }
-            }
-        }
-        .preferredColorScheme(.dark)
-        .presentationDetents([.medium])
     }
 }

@@ -2,6 +2,9 @@
 // Style calé sur les captures validées P57 (virement refusé plafond) et P58 (RIB) : LCL, bleu #00184D.
 // R3 : le RIB, le refus de virement, le bénéficiaire OKAFOR, le RDV Bellecour 11h30 — tout se recoupe.
 // D51 : utilisable de A à Z (virement simulable avec vrai refus de plafond, historique vivant).
+// v3 02/09 (retours Joachim, session 4) : virement = conséquence RÉELLE et PERSISTANTE sur le solde (affiché
+// immédiatement, « Solde après opération » dans la confirmation) ; le pavé numérique se ferme d'un tap ailleurs
+// ou par « OK » ; détail d'une opération au tap (référence, catégorie, solde après) ; Partager le RIB réel.
 import SwiftUI
 
 // ============================================================ DONNÉES (remplaçables — D59)
@@ -12,6 +15,8 @@ struct Operation: Identifiable {
     var date: String
     var montant: Double        // négatif = débit
     var refusee: Bool = false
+    var reference: String = ""
+    var categorie: String = ""
 }
 
 final class MagasinBanque: ObservableObject {
@@ -20,27 +25,27 @@ final class MagasinBanque: ObservableObject {
     @Published var soldeLivretA: Double = 85.00
     @Published var operations: [Operation] = [
         Operation(libelle: "VIREMENT ÉMIS", sousLibelle: "M. OKAFOR AGENT MARITIME — CAUTION + FRAIS AGENT",
-                  date: "16/08/2026", montant: -4850.00, refusee: true),
+                  date: "16/08/2026", montant: -4850.00, refusee: true, reference: "VIR-2608160921-7845", categorie: "Virement externe (SEPA)"),
         Operation(libelle: "VIREMENT REÇU", sousLibelle: "Depuis Livret A",
-                  date: "15/08/2026", montant: 3000.00),
+                  date: "15/08/2026", montant: 3000.00, reference: "VIR-2608151902-3310", categorie: "Virement interne"),
         Operation(libelle: "RETRAIT DAB", sousLibelle: "LCL BELLECOUR 15/08 18:32",
-                  date: "15/08/2026", montant: -300.00),
+                  date: "15/08/2026", montant: -300.00, reference: "DAB-00550-1832", categorie: "Retrait d'espèces"),
         Operation(libelle: "CARTE", sousLibelle: "PHARMACIE DU PARC LYON",
-                  date: "12/08/2026", montant: -23.90),
+                  date: "12/08/2026", montant: -23.90, reference: "CB-4417-120826-01", categorie: "Santé"),
         Operation(libelle: "CARTE", sousLibelle: "CARREFOUR CITY LYON 1ER",
-                  date: "11/08/2026", montant: -41.37),
+                  date: "11/08/2026", montant: -41.37, reference: "CB-4417-110826-02", categorie: "Alimentation"),
         Operation(libelle: "PRLV SEPA", sousLibelle: "LOYER AGENCE BEAULIEU IMMO",
-                  date: "05/08/2026", montant: -745.00),
+                  date: "05/08/2026", montant: -745.00, reference: "PRLV-FR12ZZZ405-0805", categorie: "Logement"),
         Operation(libelle: "VIREMENT REÇU", sousLibelle: "SALAIRE — ATELIER GRAPHIK LYON",
-                  date: "01/08/2026", montant: 2180.00),
+                  date: "01/08/2026", montant: 2180.00, reference: "VIR-SAL-072026", categorie: "Revenus"),
         Operation(libelle: "CARTE", sousLibelle: "KINÉ M. DUPRÉ — TIERS PAYANT",
-                  date: "23/07/2026", montant: -8.50),
+                  date: "23/07/2026", montant: -8.50, reference: "CB-4417-230726-01", categorie: "Santé"),
         Operation(libelle: "VIREMENT REÇU", sousLibelle: "Depuis Livret A",
-                  date: "20/07/2026", montant: 2000.00),
+                  date: "20/07/2026", montant: 2000.00, reference: "VIR-2607201044-3310", categorie: "Virement interne"),
         Operation(libelle: "CARTE", sousLibelle: "WESTERN UNION LYON PART-DIEU",
-                  date: "13/06/2026", montant: -850.00),
+                  date: "13/06/2026", montant: -850.00, reference: "CB-4417-130626-01", categorie: "Transfert d'argent"),
         Operation(libelle: "VIREMENT ÉMIS", sousLibelle: "M. OKAFOR AGENT MARITIME — CONNEXION SATELLITE",
-                  date: "08/05/2026", montant: -300.00),
+                  date: "08/05/2026", montant: -300.00, reference: "VIR-2605081547-7845", categorie: "Virement externe (SEPA)"),
     ]
     @Published var beneficiaires: [(String, String)] = [
         ("M. OKAFOR AGENT MARITIME", "FR76 •••• •••• •••• 5308"),
@@ -48,19 +53,27 @@ final class MagasinBanque: ObservableObject {
         ("Chloé", "FR76 •••• •••• •••• 8842"),
     ]
     let plafondVirement7j: Double = 3000
-    var virementsSur7j: Double = 0   // rien d'abouti sur la fenêtre courante
+    @Published var virementsSur7j: Double = 0   // rien d'abouti sur la fenêtre courante
 
-    func virer(_ montant: Double, vers beneficiaire: String) -> Bool {
+    /// v3 : le virement a une conséquence RÉELLE et PERSISTANTE (solde + historique), ou un refus RÉEL (plafond / solde).
+    /// Retour : (accepté, motif de refus éventuel)
+    func virer(_ montant: Double, vers beneficiaire: String) -> (Bool, String?) {
+        let ref = "VIR-" + String(Int(Date().timeIntervalSince1970) % 100_000_000) + "-7845"
         if virementsSur7j + montant > plafondVirement7j {
-            operations.insert(Operation(libelle: "VIREMENT ÉMIS", sousLibelle: beneficiaire,
-                                        date: "17/08/2026", montant: -montant, refusee: true), at: 0)
-            return false
+            operations.insert(Operation(libelle: "VIREMENT ÉMIS", sousLibelle: beneficiaire, date: "17/08/2026",
+                                        montant: -montant, refusee: true, reference: ref, categorie: "Virement externe (SEPA)"), at: 0)
+            return (false, "plafond")
+        }
+        if montant > soldeCourant + 200 {   // découvert autorisé 200 €
+            operations.insert(Operation(libelle: "VIREMENT ÉMIS", sousLibelle: beneficiaire, date: "17/08/2026",
+                                        montant: -montant, refusee: true, reference: ref, categorie: "Virement externe (SEPA)"), at: 0)
+            return (false, "solde")
         }
         virementsSur7j += montant
         soldeCourant -= montant
-        operations.insert(Operation(libelle: "VIREMENT ÉMIS", sousLibelle: beneficiaire,
-                                    date: "17/08/2026", montant: -montant), at: 0)
-        return true
+        operations.insert(Operation(libelle: "VIREMENT ÉMIS", sousLibelle: beneficiaire, date: "17/08/2026",
+                                    montant: -montant, reference: ref, categorie: "Virement externe (SEPA)"), at: 0)
+        return (true, nil)
     }
 }
 
@@ -127,6 +140,17 @@ struct ComptesVue: View {
     @ObservedObject private var magasin = MagasinBanque.partage
     @State private var ribVisible = false
     @State private var livretVisible = false
+    @State private var operationOuverte: Operation? = nil   // v3 : détail d'opération
+
+    /// Solde du compte APRÈS chaque opération (recalculé en remontant depuis le solde actuel)
+    private func soldeApres(_ op: Operation) -> Double {
+        var solde = magasin.soldeCourant
+        for o in magasin.operations {
+            if o.id == op.id { return solde }
+            if !o.refusee { solde -= o.montant }
+        }
+        return solde
+    }
 
     var body: some View {
         NavigationStack {
@@ -142,6 +166,7 @@ struct ComptesVue: View {
                         Text("MME SARAH LEVASSEUR").font(.system(size: 11)).foregroundStyle(.white.opacity(0.7))
                         Text(euros(magasin.soldeCourant))
                             .font(.system(size: 34, weight: .bold)).foregroundStyle(.white)
+                            .contentTransition(.numericText())
                         HStack(spacing: 10) {
                             Button { ribVisible = true } label: {
                                 Text("Mon RIB").font(.system(size: 13, weight: .semibold))
@@ -196,8 +221,11 @@ struct ComptesVue: View {
                                     .font(.system(size: 15, weight: .semibold)).monospacedDigit()
                                     .foregroundStyle(op.refusee ? Color(hex: 0x9AA0AC) : (op.montant > 0 ? Color(hex: 0x1E9E46) : Color(hex: 0x1A1A2E)))
                                     .strikethrough(op.refusee)
+                                Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(Color(hex: 0xB0B5C0)).padding(.top, 3)
                             }
                             .padding(.vertical, 9)
+                            .contentShape(Rectangle())
+                            .onTapGesture { operationOuverte = op }   // v3 : détail
                             Divider()
                         }
                     }
@@ -213,6 +241,76 @@ struct ComptesVue: View {
             .toolbarColorScheme(.dark, for: .navigationBar)
             .sheet(isPresented: $ribVisible) { RIBVue() }
             .sheet(isPresented: $livretVisible) { BanqueLivretAVue(solde: magasin.soldeLivretA) }
+            .sheet(item: $operationOuverte) { op in DetailOperationVue(operation: op, soldeApres: soldeApres(op)) }
+        }
+    }
+}
+
+extension Operation: Hashable {
+    static func == (a: Operation, b: Operation) -> Bool { a.id == b.id }
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+}
+
+// v3 — Détail d'une opération (Joachim : « pouvoir cliquer sur certaines opérations pour en savoir plus »)
+struct DetailOperationVue: View {
+    @Environment(\.dismiss) private var dismiss
+    let operation: Operation
+    let soldeApres: Double
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    VStack(spacing: 4) {
+                        Text((operation.montant > 0 ? "+" : "") + euros(operation.montant))
+                            .font(.system(size: 36, weight: .bold))
+                            .foregroundStyle(operation.refusee ? Color(hex: 0xD93025) : (operation.montant > 0 ? Color(hex: 0x1E9E46) : Color(hex: 0x1A1A2E)))
+                            .strikethrough(operation.refusee)
+                        Text(operation.sousLibelle).font(.system(size: 14)).foregroundStyle(Color(hex: 0x6E7480)).multilineTextAlignment(.center)
+                        if operation.refusee {
+                            Text("OPÉRATION REFUSÉE").font(.system(size: 11, weight: .bold)).foregroundStyle(.white)
+                                .padding(.horizontal, 10).padding(.vertical, 4).background(Color(hex: 0xD93025), in: Capsule())
+                        }
+                    }
+                    .padding(.top, 10)
+                    VStack(spacing: 0) {
+                        LigneDetailOp(cle: "Type", valeur: operation.libelle.capitalized)
+                        LigneDetailOp(cle: "Date d'opération", valeur: operation.date)
+                        LigneDetailOp(cle: "Date de valeur", valeur: operation.date)
+                        LigneDetailOp(cle: "Catégorie", valeur: operation.categorie.isEmpty ? "Autre" : operation.categorie)
+                        LigneDetailOp(cle: "Référence", valeur: operation.reference.isEmpty ? "—" : operation.reference)
+                        LigneDetailOp(cle: "Compte", valeur: "Compte de dépôt •••• 7845")
+                        LigneDetailOp(cle: operation.refusee ? "Motif" : "Solde après opération",
+                                      valeur: operation.refusee ? "Plafond de virement dépassé (3 000 € / 7 j)" : euros(soldeApres), derniere: true)
+                    }
+                    .background(Color(hex: 0xF9FAFC), in: RoundedRectangle(cornerRadius: 14))
+                    if operation.libelle.hasPrefix("VIREMENT ÉMIS") && !operation.refusee {
+                        Text("Virement SEPA exécuté. Délai de réception habituel : 1 jour ouvré.")
+                            .font(.system(size: 12.5)).foregroundStyle(Color(hex: 0x6E7480)).multilineTextAlignment(.center)
+                    }
+                }
+                .padding(16)
+            }
+            .background(Color.white)
+            .navigationTitle("Détail de l'opération")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("OK") { dismiss() }.foregroundStyle(lclBleu) } }
+        }
+        .preferredColorScheme(.light)
+        .presentationDetents([.medium, .large])
+    }
+}
+
+struct LigneDetailOp: View {
+    let cle: String; let valeur: String; var derniere: Bool = false
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .top) {
+                Text(cle).font(.system(size: 14)).foregroundStyle(Color(hex: 0x6E7480))
+                Spacer()
+                Text(valeur).font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(hex: 0x1A1A2E)).multilineTextAlignment(.trailing)
+            }
+            .padding(14)
+            if !derniere { Divider().padding(.leading, 14) }
         }
     }
 }
@@ -220,6 +318,8 @@ struct ComptesVue: View {
 // RIB — IDENTIQUE à la capture P58 (cohérence croisée R3)
 struct RIBVue: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var copie = false
+    @State private var partageVisible = false
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -235,13 +335,15 @@ struct RIBVue: View {
                     Groupe(titre: "BIC", valeur: "CRLYFRPP")
                     Groupe(titre: "DOMICILIATION", valeur: "LCL LYON REPUBLIQUE (00550)")
                     HStack(spacing: 12) {
-                        Text("Copier l'IBAN").font(.system(size: 14, weight: .semibold)).foregroundStyle(lclBleu)
+                        Text(copie ? "IBAN copié" : "Copier l'IBAN").font(.system(size: 14, weight: .semibold)).foregroundStyle(lclBleu)
                             .frame(maxWidth: .infinity).padding(.vertical, 12)
                             .background(Color(hex: 0xF2F4F8), in: RoundedRectangle(cornerRadius: 12))
-                            .onTapGesture { UIPasteboard.general.string = "FR76 3000 2005 5000 0015 7845 Z02" }
+                            .onTapGesture { UIPasteboard.general.string = "FR76 3000 2005 5000 0015 7845 Z02"; copie = true; Haptique.leger() }
+                        // v3 : Partager RÉEL (feuille de partage maison, avec le RIB en contenu)
                         Text("Partager").font(.system(size: 14, weight: .semibold)).foregroundStyle(lclBleu)
                             .frame(maxWidth: .infinity).padding(.vertical, 12)
                             .background(Color(hex: 0xF2F4F8), in: RoundedRectangle(cornerRadius: 12))
+                            .onTapGesture { partageVisible = true }
                     }
                 }
                 .padding(20)
@@ -253,6 +355,11 @@ struct RIBVue: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("OK") { dismiss() }.foregroundStyle(lclBleu)
                 }
+            }
+            .sheet(isPresented: $partageVisible) {
+                FeuillePartage(element: "RIB — Sarah Levasseur",
+                               contenu: "Relevé d'Identité Bancaire\nTitulaire : MME SARAH LEVASSEUR\nIBAN : FR76 3000 2005 5000 0015 7845 Z02\nBIC : CRLYFRPP\nDomiciliation : LCL LYON REPUBLIQUE (00550)",
+                               type: .fichier)
             }
         }
         .preferredColorScheme(.light)
@@ -278,12 +385,25 @@ struct VirementsVue: View {
     @State private var beneficiaire = "M. OKAFOR AGENT MARITIME"
     @State private var montantTexte = ""
     @State private var resultat: Bool? = nil
+    @State private var motifRefus: String? = nil
+    @State private var montantVire: Double = 0
+    @FocusState private var montantActif: Bool   // v3 : pavé numérique masquable
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     Text("Effectuer un virement").font(.system(size: 19, weight: .bold)).foregroundStyle(Color(hex: 0x1A1A2E))
+
+                    // Rappel du solde disponible (le virement s'y répercute immédiatement)
+                    HStack {
+                        Text("Compte de dépôt •••• 7845").font(.system(size: 13)).foregroundStyle(Color(hex: 0x6E7480))
+                        Spacer()
+                        Text("Solde : " + euros(magasin.soldeCourant)).font(.system(size: 13, weight: .semibold)).foregroundStyle(Color(hex: 0x1A1A2E))
+                            .contentTransition(.numericText())
+                    }
+                    .padding(12)
+                    .background(Color(hex: 0xF2F4F8), in: RoundedRectangle(cornerRadius: 12))
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("BÉNÉFICIAIRE").font(.system(size: 11, weight: .semibold)).foregroundStyle(Color(hex: 0x6E7480))
@@ -311,6 +431,7 @@ struct VirementsVue: View {
                         HStack {
                             TextField("0,00", text: $montantTexte)
                                 .keyboardType(.decimalPad)
+                                .focused($montantActif)
                                 .font(.system(size: 26, weight: .bold))
                                 .foregroundStyle(Color(hex: 0x1A1A2E))
                             Text("€").font(.system(size: 22, weight: .semibold)).foregroundStyle(Color(hex: 0x6E7480))
@@ -323,10 +444,13 @@ struct VirementsVue: View {
                         .font(.system(size: 12.5)).foregroundStyle(Color(hex: 0x6E7480))
 
                     Button {
+                        montantActif = false
                         let m = Double(montantTexte.replacingOccurrences(of: ",", with: ".")
                                                   .replacingOccurrences(of: " ", with: "")) ?? 0
                         guard m > 0 else { return }
-                        resultat = magasin.virer(m, vers: beneficiaire)
+                        let (ok, motif) = magasin.virer(m, vers: beneficiaire)
+                        withAnimation { resultat = ok; motifRefus = motif; montantVire = m }
+                        Haptique.leger()
                         montantTexte = ""
                     } label: {
                         Text("Valider le virement").font(.system(size: 16, weight: .bold)).foregroundStyle(.white)
@@ -345,7 +469,19 @@ struct VirementsVue: View {
                             Text(r ? "Virement enregistré" : "Virement refusé")
                                 .font(.system(size: 18, weight: .bold))
                                 .foregroundStyle(r ? Color(hex: 0x1E9E46) : Color(hex: 0xD93025))
-                            if !r {
+                            if r {
+                                // v3 : la conséquence est visible ICI aussi
+                                VStack(spacing: 4) {
+                                    Text("\(euros(montantVire)) vers \(beneficiaire)").font(.system(size: 13)).foregroundStyle(Color(hex: 0x6E7480))
+                                    Text("Solde après opération : \(euros(magasin.soldeCourant))").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(hex: 0x1A1A2E))
+                                    Text("Exécution : 1 jour ouvré. L'opération apparaît dans « Dernières opérations ».").font(.system(size: 12)).foregroundStyle(Color(hex: 0x8A909C)).multilineTextAlignment(.center)
+                                }
+                            } else if motifRefus == "solde" {
+                                Text("Solde insuffisant. Le montant demandé dépasse le solde disponible et le découvert autorisé (200 €).")
+                                    .font(.system(size: 13)).foregroundStyle(Color(hex: 0x7A5D12))
+                                    .padding(12)
+                                    .background(Color(hex: 0xFFF8E8), in: RoundedRectangle(cornerRadius: 12))
+                            } else {
                                 Text("Plafond de virement dépassé. Votre plafond est fixé à 3 000 € sur 7 jours glissants. Pour effectuer cette opération, augmentez votre plafond ou rendez-vous en agence.")
                                     .font(.system(size: 13)).foregroundStyle(Color(hex: 0x7A5D12))
                                     .padding(12)
@@ -362,11 +498,20 @@ struct VirementsVue: View {
                 .padding(16)
             }
             .background(Color.white)
+            .scrollDismissesKeyboard(.interactively)
+            // v3 : un tap hors du champ ferme le pavé numérique ; bouton « OK » au-dessus du clavier
+            .simultaneousGesture(TapGesture().onEnded { montantActif = false })
             .navigationTitle("Virements")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(lclBleu, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("OK") { montantActif = false }.font(.system(size: 16, weight: .semibold)).foregroundStyle(lclBleu)
+                }
+            }
         }
     }
 }
@@ -507,8 +652,8 @@ struct MessageBanque: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                if nonLu { Circle().fill(lclBleu).frame(width: 8, height: 8) }
-                Text(objet).font(.system(size: 15, weight: nonLu ? .bold : .semibold)).foregroundStyle(Color(hex: 0x1A1A2E))
+                if nonLu && !ouvert { Circle().fill(lclBleu).frame(width: 8, height: 8) }
+                Text(objet).font(.system(size: 15, weight: nonLu && !ouvert ? .bold : .semibold)).foregroundStyle(Color(hex: 0x1A1A2E))
                 Spacer()
                 Text(date).font(.system(size: 12)).foregroundStyle(Color(hex: 0x6E7480))
             }
@@ -535,9 +680,10 @@ struct BanqueLivretAVue: View {
         String(format: "%.2f €", v).replacingOccurrences(of: ".", with: ",")
     }
     private let historique: [(String, String, Double)] = [
-        ("VIREMENT VERS LIVRET A", "Compte courant", -200.0),
+        ("VIREMENT VERS COMPTE COURANT", "15/08/2026", -3000.0),
+        ("VIREMENT VERS COMPTE COURANT", "20/07/2026", -2000.0),
         ("INTÉRÊTS 2026", "Crédit d'intérêts", 1.85),
-        ("VIREMENT DEPUIS LIVRET A", "Compte courant", 150.0),
+        ("VIREMENT DEPUIS COMPTE COURANT", "Épargne mensuelle", 150.0),
         ("INTÉRÊTS 2025", "Crédit d'intérêts", 2.12),
     ]
     var body: some View {
@@ -562,7 +708,7 @@ struct BanqueLivretAVue: View {
                                     Text(op.1).font(.system(size: 12)).foregroundStyle(Color(hex: 0x6E7480))
                                 }
                                 Spacer()
-                                Text(euros(abs(op.2))).font(.system(size: 14, weight: .semibold))
+                                Text((op.2 > 0 ? "+" : "−") + euros(abs(op.2))).font(.system(size: 14, weight: .semibold))
                                     .foregroundStyle(op.2 > 0 ? Color(hex: 0x1E9E46) : Color(hex: 0x1A1A2E))
                             }
                             .padding(.vertical, 8)

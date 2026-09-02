@@ -82,12 +82,6 @@ struct ChatGPTVue: View {
                     TextField("", text: $saisie, prompt: Text("Demander à ChatGPT").foregroundStyle(.gray))
                         .font(.system(size: 15)).foregroundStyle(.white)
                         .onSubmit { convVisible = true }
-                    Image(systemName: "mic.fill").font(.system(size: 17)).foregroundStyle(.white)
-                    Image(systemName: "waveform").font(.system(size: 16)).foregroundStyle(.black)
-                        .frame(width: 34, height: 34)
-                        .background(Color.white, in: Circle())
-                        .contentShape(Circle())
-                        .onTapGesture { convVisible = true }
                 }
                 .padding(.horizontal, 14).padding(.vertical, 9)
                 .background(Color(hex: gptCarte), in: RoundedRectangle(cornerRadius: 26))

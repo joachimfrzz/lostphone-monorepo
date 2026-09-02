@@ -38,3 +38,9 @@ if [ -f outils/icones-apps.tar.b64 ]; then
   tar xf /tmp/icones.tar
   echo "Icônes d'apps restaurées ($(tar tf /tmp/icones.tar | wc -l | tr -d ' ') fichiers)."
 fi
+# v3 02/09 : Memoji des personnes de Localiser (Chloé, Maman, Sarah) — générés, style Apple Memoji
+if [ -f outils/memoji.tar.b64 ]; then
+  python3 -c "import base64; open('/tmp/memoji.tar','wb').write(base64.b64decode(open('outils/memoji.tar.b64').read()))"
+  tar xf /tmp/memoji.tar
+  echo "Memoji restaurés ($(tar tf /tmp/memoji.tar | wc -l | tr -d ' ') images)."
+fi

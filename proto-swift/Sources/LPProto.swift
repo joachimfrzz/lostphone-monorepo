@@ -447,7 +447,12 @@ struct CoquilleSarah: ViewModifier {
             .persistentSystemOverlays(.hidden)
             .defersSystemGestures(on: .bottom)
             .overlay(alignment: .top) {
+                // v2 02/09 (retour Joachim, Safari puis Santé) : la zone système n'est PLUS traversée par le contenu
+                // qui défile — bande de matériau (comme la barre d'état iOS au-dessus d'une liste) sous l'heure/batterie.
                 BarreSarah(claire: claire)
+                    .background(
+                        (claire ? AnyShapeStyle(.ultraThinMaterial) : AnyShapeStyle(Color.black.opacity(0.72)))
+                    )
                     .ignoresSafeArea(edges: .top)
             }
     }
@@ -495,6 +500,7 @@ final class Routeur: ObservableObject {
     var pageSafari: String? = nil
     var urlSafari: String? = nil
     var mailCompose: String? = nil   // v2 correctifs 31/08 : composer préadressé
+    var itineraire: (nom: String, lat: Double, lon: Double)? = nil   // v3 02/09 : Localiser → Plans avec la destination
 
     func allerTelephone(_ numero: String) {
         numeroAppel = numero; cible = .telephone; demande += 1
@@ -503,6 +509,11 @@ final class Routeur: ObservableObject {
         pageSafari = page; urlSafari = url; cible = .safari; demande += 1
     }
     func allerPlans() { cible = .plans; demande += 1 }
+    // v3 02/09 : ouvre Plans DIRECTEMENT sur l'itinéraire vers une personne/un appareil (demande Joachim, Localiser)
+    func allerPlans(itineraireVers nom: String, lat: Double, lon: Double) {
+        itineraire = (nom, lat, lon); cible = .plans; demande += 1
+    }
+    func consommerItineraire() -> (nom: String, lat: Double, lon: Double)? { let i = itineraire; itineraire = nil; return i }
     func allerMail() { cible = .mail; demande += 1 }
     // v2 correctifs 31/08 : ouvre Mail directement sur un nouveau message préadressé
     func allerMail(composePour adresse: String) {

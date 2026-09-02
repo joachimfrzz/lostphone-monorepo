@@ -200,7 +200,6 @@ struct TelRecentsVue: View {
                 TextField("", text: $recherche,
                           prompt: Text("Recherche").foregroundStyle(telTexte2))
                     .foregroundStyle(telTexte).font(.system(size: 17))
-                Image(systemName: "mic.fill").foregroundStyle(telTexte2).font(.system(size: 15))
             }
             .padding(.horizontal, 12).frame(height: 38)
             .background(telChamp, in: RoundedRectangle(cornerRadius: 12))
@@ -717,7 +716,6 @@ struct TelContactsVue: View {
                 TextField("", text: $recherche,
                           prompt: Text("Recherche").foregroundStyle(telTexte2))
                     .foregroundStyle(telTexte).font(.system(size: 17))
-                Image(systemName: "mic.fill").foregroundStyle(telTexte2).font(.system(size: 15))
             }
             .padding(.horizontal, 12).frame(height: 38)
             .background(telChamp, in: RoundedRectangle(cornerRadius: 12))

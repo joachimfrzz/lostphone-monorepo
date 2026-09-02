@@ -238,8 +238,6 @@ struct SnapConversationVue: View {
                         if !saisie.isEmpty { envoyes.append(saisie); saisie = "" }
                     }
                 Circle().fill(Color(hex: 0xF0F0F0)).frame(width: 36, height: 36)
-                    .overlay(Image(systemName: "mic.fill").font(.system(size: 15)).foregroundStyle(.black))
-                Circle().fill(Color(hex: 0xF0F0F0)).frame(width: 36, height: 36)
                     .overlay(Text("🙂").font(.system(size: 17)))
             }
             .padding(.horizontal, 12).padding(.vertical, 8)

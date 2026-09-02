@@ -614,42 +614,44 @@ struct TagFichiersVue: View {
     }
 }
 
-// Suppressions récentes
+// Suppressions récentes — v3 : bouton Récupérer RÉEL (structure simplifiée pour le compilateur)
+struct LigneSupprimeeFichier: View {
+    let fichier: FichierItem
+    let recuperer: () -> Void
+    var body: some View {
+        HStack(spacing: 10) {
+            LigneFichier(fichier: fichier, chevron: false)
+            Button(action: recuperer) {
+                Text("Récupérer")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color(hex: 0x0A84FF))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 7)
+                    .background(Capsule().fill(Color(hex: 0x1C1C1E)))
+            }
+        }
+    }
+}
+
 struct SuppressionsFichiersVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var magasin = MagasinFichiers.partage
     private var supprimesListe: [FichierItem] { magasin.tous.filter { magasin.supprimes.contains($0.id) } }
     var body: some View {
         NavigationStack {
-            Group {
+            ScrollView {
                 if supprimesListe.isEmpty {
-                    VStack(spacing: 10) {
-                        Text("Les éléments récemment supprimés peuvent être effacés définitivement par votre fournisseur de stockage.")
-                            .font(.system(size: 13)).foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center).padding(.horizontal, 36)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    Text("Les éléments récemment supprimés peuvent être effacés définitivement par votre fournisseur de stockage.")
+                        .font(.system(size: 13)).foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center).padding(.horizontal, 36).padding(.top, 120)
                 } else {
-                    ScrollView {
-                        VStack(spacing: 0) {
-                            ForEach(supprimesListe) { f in
-                                HStack(spacing: 10) {
-                                    LigneFichier(fichier: f, chevron: false)
-                                    // v3 02/09 : Récupérer RÉEL et explicite (la flèche muette est remplacée par un vrai bouton)
-                                    Button { withAnimation { magasin.supprimes.remove(f.id) } } label: {
-                                        Text("Récupérer").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color(hex: 0x0A84FF))
-                                            .padding(.horizontal, 12).padding(.vertical, 7)
-                                            .background(Capsule().fill(Color(hex: 0x1C1C1E)))
-                                    }
-                                }
-                                .contextMenu {
-                                    Button { magasin.supprimes.remove(f.id) } label: { Label("Récupérer", systemImage: "arrow.uturn.backward") }
-                                }
-                                Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 52)
-                            }
+                    VStack(spacing: 0) {
+                        ForEach(supprimesListe) { f in
+                            LigneSupprimeeFichier(fichier: f) { withAnimation { _ = magasin.supprimes.remove(f.id) } }
+                            Divider().overlay(Color(hex: 0x2C2C2E)).padding(.leading, 52)
                         }
-                        .padding(.horizontal, 16)
                     }
+                    .padding(.horizontal, 16)
                 }
             }
             .background(Color.black)

@@ -360,7 +360,7 @@ struct NotesListeVue: View {
             if modeSelection {
                 HStack {
                     Button("Déplacer") { Haptique.leger() }
-                        .foregroundStyle(selection.isEmpty ? .secondary : .white).disabled(selection.isEmpty)
+                        .foregroundStyle(selection.isEmpty ? Color.secondary : Color.white).disabled(selection.isEmpty)
                     Spacer()
                     Text(selection.isEmpty ? "Sélectionner des notes" : "\(selection.count) sélectionnée\(selection.count > 1 ? "s" : "")")
                         .font(.system(size: 15)).foregroundStyle(.white)
@@ -369,7 +369,7 @@ struct NotesListeVue: View {
                         withAnimation { magasin.supprimer(selection) }
                         selection.removeAll(); modeSelection = false
                     }
-                    .foregroundStyle(selection.isEmpty ? .secondary : Color(hex: 0xFF453A)).disabled(selection.isEmpty)
+                    .foregroundStyle(selection.isEmpty ? Color.secondary : Color(hex: 0xFF453A)).disabled(selection.isEmpty)
                 }
                 .font(.system(size: 17))
                 .padding(.horizontal, 16).padding(.vertical, 12)
@@ -447,7 +447,7 @@ struct NotesListeVue: View {
             HStack(spacing: 12) {
                 if modeSelection {
                     Image(systemName: selection.contains(n.id) ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: 22)).foregroundStyle(selection.contains(n.id) ? notesJaune : .secondary)
+                        .font(.system(size: 22)).foregroundStyle(selection.contains(n.id) ? notesJaune : Color.secondary)
                 }
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 6) {

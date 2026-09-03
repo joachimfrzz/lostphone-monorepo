@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-03T15:20:00+02:00",
+  "date_derniere_maj": "2026-09-03T17:45:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1604,17 +1604,16 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "03/09 15h17 — BUILD 279 VERT et publié (refonte complète des 4 sociales + Notes v3). Attente : checklist 279 (15 points) + tournage complémentaire. 03/09 15h10 — Miroir 4 sociales VERT, build TestFlight 279 lancé. 03/09 14h50 — Les 4 sociales v3 poussées (Messenger compile ; Instagram/Snapchat/Facebook en compilation miroir). 03/09 11h12 — GO D91. Refonte Messenger lancée. 03/09 11h10 — Audit des 4 sociales livré (page + docs/audit-sociales/). Diagnostic : code générique, pas la vidéo. RECO refonte en lot + tournage 25 min demandé. 03/09 10h43 — Retours session 5 : D91 reprise globale des 4 sociales. Agent lance l audit contre les références archivées. 278 validé 16/16 (20h10) → 14/28 validées. Prochaine étape Joachim : checklist 275 (13 points) sur le 278, puis session 5. Agent : écarts Notes au-delà du jaune (vidéo), Notes v3 en attente de build. Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
+  "dernier_evenement": "03/09 17h45 — Retours 279 reçus, D92 actée, lot 280 lancé. Joachim filme la vague A pendant ce temps. 03/09 15h17 — BUILD 279 VERT et publié (refonte complète des 4 sociales + Notes v3). Attente : checklist 279 (15 points) + tournage complémentaire. 03/09 15h10 — Miroir 4 sociales VERT, build TestFlight 279 lancé. 03/09 14h50 — Les 4 sociales v3 poussées (Messenger compile ; Instagram/Snapchat/Facebook en compilation miroir). 03/09 11h12 — GO D91. Refonte Messenger lancée. 03/09 11h10 — Audit des 4 sociales livré (page + docs/audit-sociales/). Diagnostic : code générique, pas la vidéo. RECO refonte en lot + tournage 25 min demandé. 03/09 10h43 — Retours session 5 : D91 reprise globale des 4 sociales. Agent lance l audit contre les références archivées. 278 validé 16/16 (20h10) → 14/28 validées. Prochaine étape Joachim : checklist 275 (13 points) sur le 278, puis session 5. Agent : écarts Notes au-delà du jaune (vidéo), Notes v3 en attente de build. Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
   "en_attente": [
-   "Joachim : checklist du 279 (15 points : 4 sociales v3 + Notes v3) — TestFlight ~15h30",
-   "Joachim : tournage complémentaire 20 prises (liste SYNTHESE.md) — toujours attendu",
-   "Notes v3 codée, PAS buildée — part avec le build de lot",
-   "Statut 275 (13 points) : non confirmé explicitement",
+   "AGENT : lot 280 = corrections D92 des 4 sociales (4 correcteurs) → miroir → TestFlight 280",
+   "Joachim : filme la VAGUE A (Tinder, SNCF Connect, PayPal, FaceTime, LinkedIn, Uber, App Store, Musique — 2-3 min chacune, D71 lecture seule) → SwissTransfer",
+   "Notes v3 dans le 279 : verdict Joachim non donné",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
    "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/ ; passe finale Réglages ; ce que le joueur peut supprimer"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-03 15h20",
+  "derniere_maj": "2026-09-03 17h45",
   "fil_hyperagent_actif": "https://hyperagent.com/thread/cmtkd5ab005h206ad1tpral2j (depuis le 02/09 19h25 ; précédent cmtim40hr08lo06ad89ww6nja figé)"
  },
  "workflow_memoire_persistante": {
@@ -2119,6 +2118,12 @@
    "titre": "Reprise GLOBALE des 4 apps sociales (Messenger, Instagram, Snapchat, Facebook) au niveau du reste du téléphone",
    "date": "2026-09-03",
    "contenu": "Décision Joachim (10h43, retours session 5 sur le build 278) : les 4 sociales sont nettement en dessous du reste ; on ne corrige pas point par point, on les reprend dans leur ensemble avec l objectif du niveau de qualité et de ressemblance atteint sur les autres apps. Méthode : audit agent complet contre SES enregistrements archivés (D67), écarts listés, écrans manquants demandés en une fois, refonte en lot, boucle miroir D63, puis un seul build TestFlight. Ses retours détaillés Messenger/Instagram servent de cahier des charges minimal, pas de périmètre.",
+   "statut": "actée"
+  },
+  "D92": {
+   "titre": "JUSTE MILIEU des apps sociales : moins de fonctions, mais chaque affordance a une conséquence",
+   "date": "2026-09-03",
+   "contenu": "Décision Joachim (17h38, retours 279) : les sociales doivent donner l impression d être de vraies apps et permettre d explorer ce qui sert aux histoires, sans reconstruire 100 % de Facebook/Instagram/Messenger/Snapchat. Moins de fonctionnalités mais cohérentes : compteurs = contenu accessible, action = état qui change et persiste, navigation = bonne destination ; sinon on retire (D82-C). Pas d usine à gaz pour une petite interaction (représentation simple). Signaler à Joachim tout élément retiré qui pourrait servir plus tard. Aucun message/feuille ne survit à l écran qui l a ouvert. Retours détaillés par app : docs/audit-sociales/retours-279.md.",
    "statut": "actée"
   }
  },
@@ -2828,6 +2833,11 @@
    "contenu": "Refonte D91 des 4 sociales (Messenger, Instagram, Snapchat, Facebook) + Notes v3",
    "fiche": "Dernier build = 279, 15 points",
    "attente": "retours Joachim"
+  },
+  "retours_279_2026_09_03": {
+   "heure": "17h38",
+   "resume": "Messenger « plutôt pas mal » (simplifier fiche/menu, retirer vocal et +, Voir tout/Voir plus, profil Facebook réel depuis Messenger). Facebook « davantage de corrections » : BUG barre home confondue avec celle de l iPhone (sortie de l app), Quoi de neuf, stories suggérées, cohérence commentaires (36 vs 4, réponses hors connexion + message global collant), partage vers Messenger réel, reels (auteur → profil), rejoindre un groupe réel, profil épuré + 5 amis / 3 publications cliquables, retour profil tiers. Instagram « plutôt bien visuellement » : retirer ≡, partage simple ou retiré, sélecteur de flux réel, lien de bio réel, création cohérente ou retirée, DM (scroll bas, réactions, appels, barre épurée, aperçu mis à jour, bug vocal collant), recherche cliquable, followers/suivis listés, profil 2 onglets, viewer story épuré + message avec story intégrée. Snapchat « plus gros problème de conception » : simplifier l ensemble (carte, liste, conversation, profil, amis, caméra).",
+   "fichier": "docs/audit-sociales/retours-279.md"
   }
  }
 }

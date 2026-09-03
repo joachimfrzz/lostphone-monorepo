@@ -623,6 +623,16 @@ final class Routeur: ObservableObject {
     // l'app Facebook de la coque, et réciproquement.
     func allerFacebook() { cible = .facebook; demande += 1 }
     func allerMessenger() { cible = .messenger; demande += 1 }
+    // D92 03/09 : cohérence Messenger → Facebook — ouvre Facebook DIRECTEMENT sur le profil d'une personne
+    // (nom affiché, ex. « Vincent Berthier »). FacebookVue consomme la demande à l'apparition.
+    var profilFacebookDemande: String? = nil
+    func allerFacebook(profil nom: String) { profilFacebookDemande = nom; cible = .facebook; demande += 1 }
+    func consommerProfilFacebook() -> String? { let n = profilFacebookDemande; profilFacebookDemande = nil; return n }
+    // D92 03/09 : cohérence Facebook → Messenger — ouvre Messenger DIRECTEMENT sur une conversation
+    // (nom Facebook du contact) après un partage de publication.
+    var conversationMessengerDemande: String? = nil
+    func allerMessenger(conversation nom: String) { conversationMessengerDemande = nom; cible = .messenger; demande += 1 }
+    func consommerConversationMessenger() -> String? { let n = conversationMessengerDemande; conversationMessengerDemande = nil; return n }
     func consommerNumero() -> String? { let n = numeroAppel; numeroAppel = nil; return n }
     func consommerMailCompose() -> String? { let a = mailCompose; mailCompose = nil; return a }
     func consommerPage() -> (String, String)? {

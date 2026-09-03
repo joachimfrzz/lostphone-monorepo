@@ -14,36 +14,28 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 ## 🔔 DERNIER BUILD — à vérifier en priorité
 > Cette section est MISE À JOUR À CHAQUE BUILD (règle D89, 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
-**Build : TestFlight n° 279 — lancé le 03/09 à 15h08 (disponible ~20 min après).** Contenu : **les 4 apps sociales reconstruites en entier** (D91 : Messenger, Instagram, Snapchat, Facebook — chacune réécrite contre tes vidéos et son rapport d'audit) + **Notes v3** (jaune mesuré `#DEA40B`, boutons blancs sur verre, recherche en bas des Dossiers). Le 278 (session 4 + globaux) est validé 16/16 ; le 275 (13 points) reste à confirmer si ce n'est pas fait.
+**Build : TestFlight n° 280 — lancé le 03/09 à 18h45, publication ~19h00 (disponible ~10-15 min après).** Lot **D92 « juste milieu »** : tes retours du 279 appliqués aux quatre sociales — simplification, cohérence des compteurs et des états, ponts Messenger ⇄ Facebook, et le bug de la barre home de Facebook. Notes v3 inchangée (verdict toujours attendu).
 
-### Ce que tu avais demandé
-- Verdict du 03/09 : les 4 sociales « nettement moins abouties que le reste » → reprise globale, pas des retouches. Tes points Messenger (noms Facebook, non-lu, logo Facebook → app Facebook, notes/stories, espacement, appel vidéo distinct, réactions, Rappeler, boutons du bas, menu +, Ajouter comme ami, menu épuré, archives ouvrables, Communautés) et Instagram (stories centrées et fermables, cerclage, notifs → profil, logique « Vu », bulles, caméra DM retirée, flèche retirée, icônes de post) sont tous traités.
-- Notes : le jaune et les boutons blancs mesurés sur ta vidéo.
-
-### Ce qui a changé — en une ligne par app
-- **Messenger** : réécrit (4 350 lignes). État réel (lu/non-lu, réactions, archives), mesures de ta vidéo (bulles `#1260FF`/`#2C2B30`, avatar 58 pt, espacement par blocs), barre de saisie dans le bon ordre, appel vocal ≠ appel vidéo, réactions par appui long, menu sans Rencontres/Événements/Reels, archive et Communautés réelles, logo f → Facebook.
-- **Instagram** : réécrit (3 650 lignes). Coquille iOS 26 : capsule d'onglets flottante, en-tête « Pour vous ⌄ », accent `#3C51FC`, anneau de story au bon dégradé, icônes de post maison, story fermable (✕ 44 pt ou glissé bas), commentaires et partage fidèles, DM à bulles dégradées, « Vu » sous ton dernier message seulement.
-- **Snapchat** : réécrit (3 150 lignes). Profil complet, Spotlight en fil vertical, Caméra à 4 étages, Chat avec FAB jaune et vrais pictogrammes de statut, conversation aux couleurs mesurées, carte verte avec 4 boutons, Découvrir en deux registres.
-- **Facebook** : réécrit (4 760 lignes). ☰ tiroir latéral, 6ᵉ onglet Profil, post en détail + commentaires pleine page (propres à chaque post), feuille de partage réelle, bleu `#0C59FD`, séparateurs 4 pt, « Rejoindre » bleu plein, Reels sombre, notifications qui ouvrent le post dans la pile (plus de piège), éclair → Messenger.
-- **Notes v3** : jaune `#DEA40B` réservé aux dossiers/chevrons, tout le reste blanc sur verre, recherche en bas de Dossiers, sous-titre « N notes ».
-- Ce qui dépend d'écrans jamais filmés est sobre et marqué à retoucher après ton tournage (liste dans docs/audit-sociales/SYNTHESE.md).
+### Ce que tu avais demandé (retours du 279) → ce qui a été fait
+- **Messenger** : vocal et + retirés du composeur ; fiche allégée (Ajouter, Personnaliser, Créer un groupe, Paramètres des moments, Modifier nom/image, albums, partage retirés) ; viewer de story sans ⋯ ni son ; menu sans Changer de profil ni Communautés ; **Voir tout / Voir plus** ouvrent de vraies listes ; « Voir le profil Facebook » ouvre Facebook **sur la bonne personne**.
+- **Facebook** : **barre home corrigée à la racine** (plus aucune feuille/cover : tout est en calques sous la capsule, capsule dans la zone sûre, tiroir dessiné sous les barres) ; compteurs de commentaires = commentaires réels, réponses réellement dépliables, **plus de message « hors connexion »** ; Rejoindre un groupe bascule et le groupe apparaît dans Vos groupes ; auteur d'un reel → profil ; stories suggérées épurées et profil ouvrable ; profil de Sarah épuré, « N amis » et « N publications » → listes ; retour depuis un profil tiers ; « Quoi de neuf ? » = composer minimal (le post apparaît en tête du fil et dans le profil) ; **partage vers Messenger** → carte du post dans la conversation Messenger.
+- **Instagram** : ≡ retirés (posts, reels, recherche) ; Republier retiré ; partage d'un post RÉEL (carte dans la DM) ; sélecteur Pour vous / Suivi(e)s / Favoris filtre ; **lien de bio → navigateur intégré** (page portfolio) ; DM : ouverture en bas, appui long → réactions, appels audio/vidéo, barre = champ + caméra, aperçu mis à jour, plus d'état vocal collant, nouveau message réel ; recherche : tuiles → détail ; profils : **followers / suivis → listes réelles** (+ « et N autres » pour les grands comptes), 2 onglets, Modifier/Partager réels ; menu ≡ = Paramètres, Enregistrements, Archives ; viewer story épuré, message depuis une story → DM avec la story intégrée.
+- **Snapchat** : **simplifié de moitié** (3 148 → 2 606 lignes) : liste fidèle sans caméras, composeur caméra + champ + emoji, appels audio/vidéo, fiche ami ouvrable, carte sans Souvenirs/Tendances/Footsteps/stockage avec un avatar par ami et recentrage pour tous, profil simple (sarah.lvsr, avatar visible, listes = compteurs, demandes d'ami à jour partout), caméra réduite, plus de Snapchat+/Spotlight-profil/Anniversaire/Snapcode ni libellés bizarres.
 
 ### ✅ À VÉRIFIER DANS CE BUILD (checklist)
-- [ ] Messenger — liste : noms Facebook (Sylvie Lavisse, pas « Maman ») ; ouvrir Chloé (non lue) → retour : plus de point bleu
-- [ ] Messenger — conversation Chloé : espacement des bulles, avatar à gauche des messages reçus, « Appel vocal manqué » → Rappeler lance l'appel ; bouton vidéo → écran d'appel vidéo distinct
-- [ ] Messenger — barre du bas : + (menu réel), photo → viseur, image → pellicule → envoi, micro (appui long) → vocal, pouce → 👍 ; appui long sur un message → réactions
-- [ ] Messenger — logo f (haut) → ouvre Facebook ; Menu → Archive → la conversation archivée s'ouvre ; Communautés ; Notifications → « Ajouter comme ami(e) » bascule
-- [ ] Instagram — feed : « Pour vous ⌄ » (plus de « Instagram » ni de flèche), stories alignées et cerclage jaune→violet ; ouvrir une story → ✕ ou glisser vers le bas ferme, la capsule home reste accessible
-- [ ] Instagram — post : icônes cœur / bulle / triangle / signet, compteurs à côté ; double-tap = j'aime ; commentaire → feuille ; partage → feuille
-- [ ] Instagram — DM : plus de caméra à droite des lignes ; conversation Chloé : bulles dégradées, « Vu » sous ton dernier message ; notifications (cœur) → tap sur un profil l'ouvre
-- [ ] Snapchat — Chat : filtres en texte, FAB jaune → Nouveau Chat, statuts (bulle bleue / triangle / carré violet) ; conversation Sacha : bandeau gris, horodatages
-- [ ] Snapchat — Bitmoji d'en-tête → Profil complet ; Spotlight défile verticalement, cœur qui compte ; Caméra : colonne d'icônes, Lenses, onglets ; capture → édition → Envoyer à…
-- [ ] Snapchat — carte : fond vert, 4 boutons à droite qui répondent, tap sur une épingle → vue 3D
-- [ ] Facebook — ☰ en haut à gauche ouvre le tiroir Menu ; 6ᵉ onglet = ton profil ; badge rouge sur Reels ; Reels en barre sombre
-- [ ] Facebook — tap sur un post ou « Commenter » → page détail avec SES commentaires ; Répondre / 👍 / composer envoie ; Partager → feuille (Partager maintenant, Envoyer dans Messenger → Messenger)
-- [ ] Facebook — Notifications : tap → ouvre le post, retour normal (plus de second fil) ; Groupes → Rejoindre bleu plein bascule ; Ami(e)s → Confirmer / Supprimer ; éclair (haut droite) → Messenger
-- [ ] Notes — jaune plus doux réservé aux dossiers, boutons blancs, recherche en bas des Dossiers
-- [ ] Régression rapide — WhatsApp, Téléphone, Photos, Mail, Fichiers, Localiser, Wallet, Ma Banque
+- [ ] Facebook — depuis n'importe quel écran (fil, post, commentaires, Reels, Groupes, tiroir ☰, partage, story) : la fausse capsule home est visible et ramène à l'accueil du JEU, jamais à ton iPhone
+- [ ] Facebook — post → commentaires : le compteur = ce que tu vois ; « Voir les réponses » les déplie ; aucun message « hors connexion » nulle part ensuite
+- [ ] Facebook — Rejoindre un groupe → bascule + visible dans « Vos groupes » ; auteur d'un reel → son profil ; retour depuis un profil tiers
+- [ ] Facebook — profil de Sarah : plus de stylo / croix / ⋯ / flèches / Créer en direct / Gérer ; « 5 amis » et « 3 publications » s'ouvrent
+- [ ] Facebook → Messenger — Partager un post → Envoyer dans Messenger → la carte du post est dans la conversation
+- [ ] Messenger → Facebook — notifications → « Voir le profil Facebook » → Facebook s'ouvre SUR cette personne
+- [ ] Messenger — composeur sans vocal ni + ; fiche allégée ; menu sans Changer de profil / Communautés ; Invitations : Voir tout et Voir plus ouvrent des listes
+- [ ] Instagram — DM : la conversation s'ouvre en bas ; appui long → réaction ; appels audio et vidéo ; envoyer un message → l'aperçu de la liste change ; plus d'interface vocale
+- [ ] Instagram — profil (le tien et un autre) : followers et suivis → listes ; 2 onglets ; lien de bio → page dans le navigateur intégré
+- [ ] Instagram — partager un post à quelqu'un → il apparaît dans sa DM ; envoyer un message depuis une story → la story est dans la DM
+- [ ] Instagram — recherche : une tuile s'ouvre ; feed : plus de ≡ ni de Republier ; Pour vous / Suivi(e)s change le fil
+- [ ] Snapchat — liste sans caméras ; conversation : appels, fiche ami, composeur simple ; carte : un avatar par ami, chacun recentre ; profil : amis / meilleurs amis / demandes cohérents ; caméra simple
+- [ ] Régression rapide — Notes v3 (jaune, boutons blancs) si pas encore jugée
 
 ---
 

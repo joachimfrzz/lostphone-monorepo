@@ -18,7 +18,7 @@ navigation & gestes · contenu narratif Sarah · animations.
 
 **Fiches de vérification détaillées des 28 apps** : `FICHES-VERIFICATION-APPS.md` (fichier unique, 02/09). Le dossier `fiches-verification/` (01/09) est remplacé — conservé une itération, suppression sur arbitrage.
 
-## Ordre & état (à jour du 03/09/2026 15h10 — 14/28 validées)
+## Ordre & état (à jour du 03/09/2026 18h45 — 14/28 validées)
 | # | App | État |
 |---|---|---|
 | 1 | Coque (verrouillage+accueil) | ✅ VALIDÉE 30/08 18h02 (v3 : « c'est parfait ») |
@@ -39,9 +39,9 @@ navigation & gestes · contenu narratif Sarah · animations.
 | 18 | Santé | ✅ VALIDÉE 02/09 18h50 (build 274) — à enrichir selon les histoires |
 | 19 | Cartes (Wallet) | ✅ VALIDÉE 02/09 20h10 (build 278) |
 | 20 | Ma Banque | ✅ VALIDÉE 02/09 20h10 (build 278) |
-| 21-24 | Messenger, Instagram, Snapchat, Facebook | 🔄 RE-TEST build 279 (refonte D91 complète : 4 apps réécrites, miroir vert 15h05) |
+| 21-24 | Messenger, Instagram, Snapchat, Facebook | 🔄 RE-TEST build 280 (lot D92 « juste milieu » sur la refonte D91) |
 | 25-28 | X, ChatGPT, Spotify, YouTube | à vérifier |
 
-Builds 276-277 rouges (corrigés) ; **278 VERT, validé 16/16 (02/09 20h10)** ; **279 (03/09 15h08) = refonte D91 des 4 sociales + Notes v3**.
+Builds 276-277 rouges (corrigés) ; **278 VERT, validé 16/16 (02/09 20h10)** ; **279 (03/09 15h08) = refonte D91 des 4 sociales + Notes v3** ; **280 (03/09 18h45) = lot D92 juste milieu** (retours 279).
 
 Ensuite : création des nouvelles apps (chacune naît avec ce niveau d'exigence).

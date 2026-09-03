@@ -14,45 +14,36 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 ## 🔔 DERNIER BUILD — à vérifier en priorité
 > Cette section est MISE À JOUR À CHAQUE BUILD (règle D89, 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
-**Build : TestFlight n° 278 — lancé le 02/09 à 19h14, compilé 19h15-19h21, publication TestFlight ~19h22 (disponible ~10 min après).**
+**Build : TestFlight n° 279 — lancé le 03/09 à 15h08 (disponible ~20 min après).** Contenu : **les 4 apps sociales reconstruites en entier** (D91 : Messenger, Instagram, Snapchat, Facebook — chacune réécrite contre tes vidéos et son rapport d'audit) + **Notes v3** (jaune mesuré `#DEA40B`, boutons blancs sur verre, recherche en bas des Dossiers). Le 278 (session 4 + globaux) est validé 16/16 ; le 275 (13 points) reste à confirmer si ce n'est pas fait.
 
-✅ **278 VALIDÉ par Joachim le 02/09 à 20h10 — 16/16 points.** Fichiers, Localiser, Cartes, Ma Banque validées (14/28). Reste à faire : la **checklist du 275 (13 points)** ci-dessous dans l'historique, puis la session 5. Retours de la **session 4** (Fichiers, Localiser, Santé, Cartes, Ma Banque) + 2 corrections globales. Les 276 (19h05) et 277 (19h13) ont échoué à la compilation et n'apparaîtront pas dans TestFlight. Précédent valide : 275 (02/09 18h45) — ses 13 points restent à vérifier si tu ne l'as pas encore fait.
+### Ce que tu avais demandé
+- Verdict du 03/09 : les 4 sociales « nettement moins abouties que le reste » → reprise globale, pas des retouches. Tes points Messenger (noms Facebook, non-lu, logo Facebook → app Facebook, notes/stories, espacement, appel vidéo distinct, réactions, Rappeler, boutons du bas, menu +, Ajouter comme ami, menu épuré, archives ouvrables, Communautés) et Instagram (stories centrées et fermables, cerclage, notifs → profil, logique « Vu », bulles, caméra DM retirée, flèche retirée, icônes de post) sont tous traités.
+- Notes : le jaune et les boutons blancs mesurés sur ta vidéo.
 
-### Ce que tu avais demandé (retours session 4)
-- Fichiers : Sélectionner mort ; Se connecter au serveur / Scanner / Compresser / Dupliquer inutiles ; « Ouvrir » (Infos) mort ; flèche muette dans Supprimés récemment ; micro dans la recherche ; iCloud Drive et Sur mon iPhone morts
-- Localiser : retirer les « + » ; 2 boutons de carte morts ; recentrer la carte à la sélection ; Memoji Apple au lieu d'emojis ; Itinéraire doit ouvrir Plans AVEC la destination ; « Étiquette de localisation » à retirer ; bouton « Localiser » (À proximité) artificiel
-- Santé : ✅ VALIDÉE (à enrichir plus tard selon les histoires) ; contenu qui remonte dans la zone heure/batterie (constaté aussi Safari)
-- Cartes/Wallet : QR codes et codes-barres visiblement faux ; cartes trop simples ; menus « … » au milieu de l'écran + « Supprimer la carte » inutile
-- Ma Banque : le virement doit avoir une conséquence réelle et persistante ; pavé numérique impossible à fermer ; (plus tard) détail des opérations
-- Global : plus aucun bouton vocal dans aucune app
-
-### Ce qui a été modifié dans ce build
-- **Global — zone système** : la bande heure/batterie de Sarah a maintenant un fond (matériau) dans TOUTES les apps : le contenu défile DESSOUS, jamais dedans (Santé, Safari, Mail, listes…)
-- **Global — micros** : 9 icônes de dictée retirées (Messages, Météo villes, Spotlight, Téléphone ×2, Messenger, Snapchat, ChatGPT ×2, Plans, Fichiers ×3) ; les micros « couper le son » des écrans d'appel restent (ce ne sont pas des boutons vocaux)
-- **Fichiers** : Sélectionner RÉEL (cocher → Partager / Supprimer) ; Scanner, Se connecter, Compresser, Dupliquer RETIRÉS ; « Ouvrir » ouvre le fichier ; Supprimés récemment → bouton **Récupérer** réel ; iCloud Drive et Sur mon iPhone ouvrent leur contenu ; micro retiré
-- **Localiser** : « + » retirés ; bouton carte pliée = **plan / satellite** réel ; bouton localisation = **recentre sur moi** ; toucher Chloé / Maman / un appareil / les clés **recentre la carte** dessus ; **Memoji** (Chloé, Maman, Sarah dans Moi) ; **Itinéraire ouvre Plans directement sur l'itinéraire** vers la personne/l'appareil ; « Étiquette de localisation » retirée ; bouton « Localiser » retiré
-- **Cartes/Wallet** : **vrai QR code** (généré par iOS, lisible) sur le billet TGV ; **vrai code-barres Code 128** sur la carte Phox ; cartes redessinées (puce, sans-contact, trame, Visa, logo SNCF, membre/points) ; « … » retirés ; clavier de l'ajout de carte masquable
-- **Ma Banque** : virement → **solde diminué immédiatement** + « Solde après opération » dans la confirmation + refus réel si solde insuffisant (découvert 200 €) ; pavé numérique fermé d'un tap ailleurs ou par « OK » ; **détail d'opération** au tap (type, dates, catégorie, référence, solde après) ; Partager le RIB réel
-- **Plans** : reçoit les demandes d'itinéraire de Localiser ; micro retiré ; « Ajouter » (bouton mort) retiré
-- **Notes — jaune** : INCHANGÉ. Ta vidéo SwissTransfer est bloquée pour mon environnement (protection anti-robot) — envoie-moi une **capture d'écran** (image) de l'écran Dossiers de la vraie app Notes, je prélèverai la couleur au pixel
+### Ce qui a changé — en une ligne par app
+- **Messenger** : réécrit (4 350 lignes). État réel (lu/non-lu, réactions, archives), mesures de ta vidéo (bulles `#1260FF`/`#2C2B30`, avatar 58 pt, espacement par blocs), barre de saisie dans le bon ordre, appel vocal ≠ appel vidéo, réactions par appui long, menu sans Rencontres/Événements/Reels, archive et Communautés réelles, logo f → Facebook.
+- **Instagram** : réécrit (3 650 lignes). Coquille iOS 26 : capsule d'onglets flottante, en-tête « Pour vous ⌄ », accent `#3C51FC`, anneau de story au bon dégradé, icônes de post maison, story fermable (✕ 44 pt ou glissé bas), commentaires et partage fidèles, DM à bulles dégradées, « Vu » sous ton dernier message seulement.
+- **Snapchat** : réécrit (3 150 lignes). Profil complet, Spotlight en fil vertical, Caméra à 4 étages, Chat avec FAB jaune et vrais pictogrammes de statut, conversation aux couleurs mesurées, carte verte avec 4 boutons, Découvrir en deux registres.
+- **Facebook** : réécrit (4 760 lignes). ☰ tiroir latéral, 6ᵉ onglet Profil, post en détail + commentaires pleine page (propres à chaque post), feuille de partage réelle, bleu `#0C59FD`, séparateurs 4 pt, « Rejoindre » bleu plein, Reels sombre, notifications qui ouvrent le post dans la pile (plus de piège), éclair → Messenger.
+- **Notes v3** : jaune `#DEA40B` réservé aux dossiers/chevrons, tout le reste blanc sur verre, recherche en bas de Dossiers, sous-titre « N notes ».
+- Ce qui dépend d'écrans jamais filmés est sobre et marqué à retoucher après ton tournage (liste dans docs/audit-sociales/SYNTHESE.md).
 
 ### ✅ À VÉRIFIER DANS CE BUILD (checklist)
-- [ ] Global — Santé, Safari, Mail, Réglages : faire défiler → le contenu passe SOUS la zone heure/batterie (fond visible), jamais dedans
-- [ ] Global — barres de recherche de Téléphone, Messages, Plans, Fichiers, Spotlight, Météo (villes) et champs de saisie Messenger / Snapchat / ChatGPT : plus aucun micro
-- [ ] Fichiers — … → Sélectionner → cocher 2 fichiers → corbeille : ils partent ; Explorer → Suppressions récentes → **Récupérer** les ramène
-- [ ] Fichiers — Infos d'un PDF → **Ouvrir** ouvre l'aperçu ; appui long : plus de Compresser/Dupliquer ; menu … : plus de Scanner / Se connecter
-- [ ] Fichiers — Explorer → Sur mon iPhone et iCloud Drive s'ouvrent avec leurs dossiers/fichiers
-- [ ] Localiser — plus de « + » ; bouton carte pliée bascule plan/satellite ; bouton localisation recentre sur le domicile
-- [ ] Localiser — toucher Chloé → la carte glisse sur Croix-Rousse ; toucher Maman → Théizé ; toucher AirPods → domicile
-- [ ] Localiser — Chloé et Maman ont un **Memoji** (visage 3D), Moi aussi ; Marc reste en silhouette (invitation)
-- [ ] Localiser — fiche Chloé → **Itinéraire** → Plans s'ouvre SUR l'itinéraire vers Chloé (destination déjà remplie)
-- [ ] Localiser — Moi : plus de ligne « Étiquette de localisation » ; Clés : plus de bouton « Localiser », mais Émettre un son + Itinéraire
-- [ ] Wallet — billet TGV : le QR ressemble à un vrai (essaie même de le scanner avec l'appareil photo de ton iPad : il contient la référence du billet) ; carte Phox : vrai code-barres avec chiffres dessous
-- [ ] Wallet — cartes : puce, sans-contact, trame, logos ; plus aucun « … »
-- [ ] Ma Banque — virement de 400 € à Maman → « Solde après opération » affiché, le solde du compte baisse de 400 € et l'opération est en tête de l'historique ; revenir dans Comptes : le solde reste diminué
-- [ ] Ma Banque — taper un montant → toucher ailleurs ou « OK » au-dessus du clavier → le pavé se ferme
-- [ ] Ma Banque — toucher une opération → fiche détail (catégorie, référence, solde après)
-- [ ] Régression — Notes, Rappels, Calendrier, Horloge, Dictaphone, Météo, Calculatrice : tour rapide
+- [ ] Messenger — liste : noms Facebook (Sylvie Lavisse, pas « Maman ») ; ouvrir Chloé (non lue) → retour : plus de point bleu
+- [ ] Messenger — conversation Chloé : espacement des bulles, avatar à gauche des messages reçus, « Appel vocal manqué » → Rappeler lance l'appel ; bouton vidéo → écran d'appel vidéo distinct
+- [ ] Messenger — barre du bas : + (menu réel), photo → viseur, image → pellicule → envoi, micro (appui long) → vocal, pouce → 👍 ; appui long sur un message → réactions
+- [ ] Messenger — logo f (haut) → ouvre Facebook ; Menu → Archive → la conversation archivée s'ouvre ; Communautés ; Notifications → « Ajouter comme ami(e) » bascule
+- [ ] Instagram — feed : « Pour vous ⌄ » (plus de « Instagram » ni de flèche), stories alignées et cerclage jaune→violet ; ouvrir une story → ✕ ou glisser vers le bas ferme, la capsule home reste accessible
+- [ ] Instagram — post : icônes cœur / bulle / triangle / signet, compteurs à côté ; double-tap = j'aime ; commentaire → feuille ; partage → feuille
+- [ ] Instagram — DM : plus de caméra à droite des lignes ; conversation Chloé : bulles dégradées, « Vu » sous ton dernier message ; notifications (cœur) → tap sur un profil l'ouvre
+- [ ] Snapchat — Chat : filtres en texte, FAB jaune → Nouveau Chat, statuts (bulle bleue / triangle / carré violet) ; conversation Sacha : bandeau gris, horodatages
+- [ ] Snapchat — Bitmoji d'en-tête → Profil complet ; Spotlight défile verticalement, cœur qui compte ; Caméra : colonne d'icônes, Lenses, onglets ; capture → édition → Envoyer à…
+- [ ] Snapchat — carte : fond vert, 4 boutons à droite qui répondent, tap sur une épingle → vue 3D
+- [ ] Facebook — ☰ en haut à gauche ouvre le tiroir Menu ; 6ᵉ onglet = ton profil ; badge rouge sur Reels ; Reels en barre sombre
+- [ ] Facebook — tap sur un post ou « Commenter » → page détail avec SES commentaires ; Répondre / 👍 / composer envoie ; Partager → feuille (Partager maintenant, Envoyer dans Messenger → Messenger)
+- [ ] Facebook — Notifications : tap → ouvre le post, retour normal (plus de second fil) ; Groupes → Rejoindre bleu plein bascule ; Ami(e)s → Confirmer / Supprimer ; éclair (haut droite) → Messenger
+- [ ] Notes — jaune plus doux réservé aux dossiers, boutons blancs, recherche en bas des Dossiers
+- [ ] Régression rapide — WhatsApp, Téléphone, Photos, Mail, Fichiers, Localiser, Wallet, Ma Banque
 
 ---
 
@@ -64,7 +55,7 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 | 3 | Horloge · Dictaphone (Météo ✅, Calculatrice ✅) | TestFlight **275** (02/09 18h41) |
 | finale | Réglages (passe dédiée, D89) | dernier lot |
 | 4 | Fichiers ✅ · Localiser ✅ · Cartes ✅ · Ma Banque ✅ (Santé ✅) | TestFlight **278** (02/09 19h14) — ✅ validé 20h10 |
-| 5 | Messenger · Instagram · Snapchat · Facebook | lot session 5 |
+| 5 | Messenger · Instagram · Snapchat · Facebook | **REFONTE D91** → TestFlight **279** (03/09 15h08) |
 | 6 | X · ChatGPT · Spotify · YouTube | lot session 6 |
 
 ---
@@ -270,25 +261,25 @@ On n'y revient pas, **sauf régression**. Si tu vois l'un de ces points cassé p
 
 # SESSION 5 (sociales — comparaison via tes comptes B, D71)
 
-## 20. MESSENGER
+## 20. MESSENGER — 🔧 REFONTE D91 (build 279) : juge l'ensemble, pas les anciens pièges
 **Écrans** : Discussions (recherche Meta AI réelle + rangée notes) ; Stories ; Notifications + suggestions ; Menu ; conversation Chloé (réactions, appel manqué + Rappeler, « Vu », séparateurs datés) ; groupe « Les filles » (auteurs + avatars) ; fiche de conversation ; membres (Tous/Admins) ; contenus multimédias (3 onglets pilules) ; appel vocal (minuteur, raccrocher) ; paramètres ; invitations (2 onglets) ; archive ; nouveau message (« À : » + suggestions)
 **Gestes & touchers** : bascules de fiche réelles (D62) ; envoi d'un message libre (D54 : non-distribution discrète hors moments d'histoire) ; chaque icône de la barre basse
 **Contenu Sarah** : Chloé, Maman, Les filles, Thomas, Julie kiné, Nadia, Léa ; suggestion « Marc Delorme » en clin d'œil
 **Pièges connus** : emojis en « ? » = artefact SIMULATEUR — sur device ils doivent être normaux, signale sinon
 
-## 21. INSTAGRAM
+## 21. INSTAGRAM — 🔧 REFONTE D91 (build 279)
 **Écrans** : feed (stories à anneau dégradé + publications) ; recherche (mosaïque 3 col / Récent / résultats comptes / Annuler) ; Reels (plein écran + rail cœur-commentaire-partage) ; profil Sarah « sarah.lvsr » (12 publications, 143 followers, 187 suivis, bio, Modifier/Partager, 3 onglets grille/reels/identifications avec états vides) ; profil tiers PRIVÉ (« Ce profil est privé » + Suivre à bascule) ; visionneuse de story (barre de progression + champ message) ; DM (liste) ; activité
 **Gestes & touchers** : DOUBLE-TAP j'aime réel ; chaque icône du rail Reels et de la barre basse (A/B, jamais mort) ; balayage entre stories
 **Contenu Sarah** : grille cohérente avec la pellicule (photographe amateur, quais de Lyon, brume) ; profil de Marc ? (à vérifier : ce qu'il montre ou cache)
 **Pièges connus** : zone orange D71 côté réel — jamais de like/follow avec ton identité réelle
 
-## 22. SNAPCHAT
+## 22. SNAPCHAT — 🔧 REFONTE D91 (build 279)
 **Écrans** : Chat (thème CLAIR ; chips My AI / Groupes / Près de moi ; statuts Reçu carré bleu / Remis flèche violette / « Appuyer pour Chatter » ; badge C+ 47) ; conversation (noms colorés MOI rouge / ami bleu + barre verticale, champ « Envoyer un Chat ») ; Snap Map (MapKit Lyon réel en CLAIR + épingles amis + chips + pilule % exploré + rangée amis) ; caméra (SOMBRE, viseur diégétique + capture) ; Stories (Amis·es ronds violets + Découvrir grille 2 col) ; Spotlight (SOMBRE, plein écran + rail)
 **Gestes & touchers** : balayages latéraux entre les 5 volets comme le vrai ; capture caméra ; envoi d'un chat
 **Contenu Sarah** : avatars Bitmoji rendus en émojis (décision D55 fabrication maison) — juge la cohérence, pas l'absence de Bitmoji
 **Pièges connus** : sur le VRAI Snapchat le chat est INTERDIT (D71 — présence + captures détectées) : compare depuis ton compte B avec prudence
 
-## 23. FACEBOOK
+## 23. FACEBOOK — 🔧 REFONTE D91 (build 279)
 **Écrans** : fil clair (stories + posts) ; commentaires ; Reels ; Ami(e)s ; Groupes ; Notifications ; Menu
 **Gestes & touchers** : J'AIME réel ; commentaire AVEC ENVOI réel ; Ami(e)s Confirmer/Supprimer RÉELS ; Groupes Rejoindre ; barre de navigation complète ; chaque action bascule et reste dans la session
 **Contenu Sarah** : casting cohérent (Chloé, Maman, la vie lyonnaise) ; ce que Facebook dit — ou ne dit pas — de Marc

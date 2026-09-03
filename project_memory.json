@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-03T11:10:00+02:00",
+  "date_derniere_maj": "2026-09-03T15:10:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1604,17 +1604,17 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "03/09 11h10 — Audit des 4 sociales livré (page + docs/audit-sociales/). Diagnostic : code générique, pas la vidéo. RECO refonte en lot + tournage 25 min demandé. 03/09 10h43 — Retours session 5 : D91 reprise globale des 4 sociales. Agent lance l audit contre les références archivées. 278 validé 16/16 (20h10) → 14/28 validées. Prochaine étape Joachim : checklist 275 (13 points) sur le 278, puis session 5. Agent : écarts Notes au-delà du jaune (vidéo), Notes v3 en attente de build. Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
+  "dernier_evenement": "03/09 15h10 — Miroir 4 sociales VERT, build TestFlight 279 lancé. 03/09 14h50 — Les 4 sociales v3 poussées (Messenger compile ; Instagram/Snapchat/Facebook en compilation miroir). 03/09 11h12 — GO D91. Refonte Messenger lancée. 03/09 11h10 — Audit des 4 sociales livré (page + docs/audit-sociales/). Diagnostic : code générique, pas la vidéo. RECO refonte en lot + tournage 25 min demandé. 03/09 10h43 — Retours session 5 : D91 reprise globale des 4 sociales. Agent lance l audit contre les références archivées. 278 validé 16/16 (20h10) → 14/28 validées. Prochaine étape Joachim : checklist 275 (13 points) sur le 278, puis session 5. Agent : écarts Notes au-delà du jaune (vidéo), Notes v3 en attente de build. Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
   "en_attente": [
-   "Joachim : GO sur le plan de refonte D91 + tournage complémentaire (1 session ~25 min, 20 prises — liste dans docs/audit-sociales/SYNTHESE.md)",
-   "AGENT dès le GO : refonte Messenger (socle + écrans filmés), boucle miroir, puis Instagram, Facebook, Snapchat",
+   "Joachim : checklist du 279 (15 points : 4 sociales v3 + Notes v3) — TestFlight ~15h30",
+   "Joachim : tournage complémentaire 20 prises (liste SYNTHESE.md) — toujours attendu",
    "Notes v3 codée, PAS buildée — part avec le build de lot",
    "Statut 275 (13 points) : non confirmé explicitement",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
    "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/ ; passe finale Réglages ; ce que le joueur peut supprimer"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-03 11h10",
+  "derniere_maj": "2026-09-03 15h10",
   "fil_hyperagent_actif": "https://hyperagent.com/thread/cmtkd5ab005h206ad1tpral2j (depuis le 02/09 19h25 ; précédent cmtim40hr08lo06ad89ww6nja figé)"
  },
  "workflow_memoire_persistante": {
@@ -2807,6 +2807,20 @@
    "mesures_cles": "Messenger : bulle envoyée #1260FF, reçue/champ #2C2B30, cartes #1F2326, séparateur #303437, avatar liste 58 pt, texte 17 pt, avatar 28 pt sur tout message reçu, Rappeler = bouton gris #515055 pleine largeur. Instagram : DM envoyé dégradé #AD29D5→#6B30FE, reçu #21242B, caméra composer #5249FF, icônes post = cercle à queue / triangle inversé / 2 traits + repost, compteurs inline. Snapchat : FAB jaune ⌀60, Moi #E63455, carte #D7EDC9, bandeau #E7EBEE, horodatage #898989. Facebook : séparateur 4 pt #C1C0C6, badge #DF1C2D, wordmark 30, avatar notif 60 + badge type, Rejoindre bleu plein, filet 1,5 pt onglet actif, badge rouge sur Reels, barre sombre #202020 sur Reels.",
    "reco_agent": "Refonte en lot Messenger → Instagram → Facebook → Snapchat, chacune : (1) socle = jetons de style mesurés + vraie coquille + store observable + purge D82 ; (2) écrans filmés absents recréés ; boucle miroir D63 écran par écran ; un seul build TestFlight (avec Notes v3). Ce qui dépend d écrans non filmés attend le tournage (retiré ou B crédible, jamais inventé). TENSION : ~170 Ko de Swift à réécrire quasi entièrement — plusieurs boucles.",
    "tournage_demande": "UNE session ~25 min, 20 prises : Messenger (menu + et sous-écrans, appel vocal puis vidéo, Rappeler, appui long reçu/envoyé + réactions, archive ouverte, Communautés, story+note d ami, non-lu avant/après) ; Instagram (onglet cœur + tap vers profil, story live d un tiers avec fermeture, Votre story, + haut gauche, ⌄ Pour vous, ≡ publication, profil perso complet) ; Facebook (Profil entier + ▾, tiroir ☰ déplié, Recherche, tap post / compteur / … / ✕, tap notification) ; Snapchat (Profil déroulé + public, Réglages, Recherche, Ajouter des amis, Nouveau Chat, fiche ami, story d ami, édition Snap + Envoyer à). Statut : DEMANDÉ à Joachim 03/09 11h10, en attente de GO + vidéos."
+  },
+  "refonte_sociales_2026_09_03": {
+   "heure": "14h50",
+   "methode": "D91 : 1 constructeur (sous-agent) par app, briefé avec le rapport d audit + frames + ancien code ; fichiers réécrits en entier, vérificateurs statiques python (accolades, identifiants, doublons de types, ternaires de styles, API iOS 18+, BarreHome jamais masquée). LPProto : registres de capture ecransX() réécrits par patchs, Routeur.allerFacebook()/allerMessenger() + cibles .facebook/.messenger.",
+   "livraisons": {
+    "messenger": "MessengerApp.swift v3 4 353 l., 80 types Msgr*, 22 écrans — poussé ba65702a, COMPILE (miroir index 2 vert 12h08, 22 captures comparées aux frames : fidèle)",
+    "instagram": "InstagramApp.swift v3 3 656 l., 94 types Ig*, coquille iOS 26 (capsule flottante, Pour vous ⌄), 16 écrans — poussé e613a00d",
+    "snapchat": "SnapchatApp.swift v3 3 148 l., 43 types Snap*, 9 écrans dont Profil et Spotlight fil — poussé e613a00d",
+    "facebook": "FacebookApp.swift v3 4 763 l., 70 types Fb*, tiroir ☰, onglet Profil, post détail + commentaires, partage e021 — poussé e613a00d"
+   },
+   "outillage": "codemagic.yaml miroir-captures : variable ECRANS_FICHIER (registre ciblable) ; api.py start accepte CLE=VALEUR ; registres outils/ecrans-messenger.txt (22) et outils/ecrans-sociales.txt (69).",
+   "etat": "Miroir 6a996bf7 VERT 15h05 (69 captures, 4 apps compilent du premier coup). Planches vérifiées : fidèles. Build TestFlight 279 lancé 15h08 (4 sociales v3 + Notes v3). Fiche Dernier build = 279 (15 points).",
+   "incidents": "Refus d autorisation répétés côté interface (Stop/Refuser) ont interrompu 3 constructeurs et 3 commandes entre 11h25 et 14h40 ; travail conservé et repris. Règle : relayer les rapports de sous-agents EN FRANÇAIS.",
+   "a_corriger_plus_tard": "Snapchat : pseudo affiché « sarah.mrchd » → harmoniser sur sarah.lvsr ; anniversaire Snapchat « 28 juil. » vs Facebook 14 mars 1994 (Poissons) → aligner ; Instagram : Marc Delaunay présent en DM/notifs (à arbitrer avec le canon : que montre Marc sur Instagram ?)."
   }
  }
 }

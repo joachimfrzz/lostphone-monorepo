@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-03T10:50:00+02:00",
+  "date_derniere_maj": "2026-09-03T11:10:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1604,17 +1604,17 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "03/09 10h43 — Retours session 5 : D91 reprise globale des 4 sociales. Agent lance l audit contre les références archivées. 278 validé 16/16 (20h10) → 14/28 validées. Prochaine étape Joachim : checklist 275 (13 points) sur le 278, puis session 5. Agent : écarts Notes au-delà du jaune (vidéo), Notes v3 en attente de build. Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
+  "dernier_evenement": "03/09 11h10 — Audit des 4 sociales livré (page + docs/audit-sociales/). Diagnostic : code générique, pas la vidéo. RECO refonte en lot + tournage 25 min demandé. 03/09 10h43 — Retours session 5 : D91 reprise globale des 4 sociales. Agent lance l audit contre les références archivées. 278 validé 16/16 (20h10) → 14/28 validées. Prochaine étape Joachim : checklist 275 (13 points) sur le 278, puis session 5. Agent : écarts Notes au-delà du jaune (vidéo), Notes v3 en attente de build. Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
   "en_attente": [
-   "AGENT : D91 — audit des 4 sociales contre les références archivées (refs-tierces-c2, refs-tierces2), puis refonte en lot + boucle miroir",
-   "Joachim : rien à tester sur les sociales tant que l audit/refonte n est pas livrée ; Snapchat/Facebook détails reportés",
-   "Notes v3 (jaune #DEA40B, boutons blancs) codée, PAS buildée — part avec le prochain build de lot",
-   "Statut 275 (13 points) : non confirmé explicitement (Joachim a enchaîné) — à reconfirmer au prochain build",
+   "Joachim : GO sur le plan de refonte D91 + tournage complémentaire (1 session ~25 min, 20 prises — liste dans docs/audit-sociales/SYNTHESE.md)",
+   "AGENT dès le GO : refonte Messenger (socle + écrans filmés), boucle miroir, puis Instagram, Facebook, Snapchat",
+   "Notes v3 codée, PAS buildée — part avec le build de lot",
+   "Statut 275 (13 points) : non confirmé explicitement",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
    "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/ ; passe finale Réglages ; ce que le joueur peut supprimer"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-03 10h50",
+  "derniere_maj": "2026-09-03 11h10",
   "fil_hyperagent_actif": "https://hyperagent.com/thread/cmtkd5ab005h206ad1tpral2j (depuis le 02/09 19h25 ; précédent cmtim40hr08lo06ad89ww6nja figé)"
  },
  "workflow_memoire_persistante": {
@@ -2793,6 +2793,20 @@
    },
    "snapchat_facebook": "Même verdict global, détails non fournis — Joachim attend d abord un vrai regard d ensemble de l agent sur les 4 apps.",
    "plan_agent": "(1) Consigner (fait). (2) Ré-extraire les références archivées (outils/refs-tierces-c2 parts 00-13 : Messenger 106 / Instagram 239 / Snapchat 114 écrans ; outils/refs-tierces2 parts 00-22 : Facebook 159) et faire un AUDIT écran par écran code vs référence pour chaque app → liste d écarts + liste des écrans jamais filmés (à demander à Joachim en une fois). (3) Refonte des 4 apps en lot, boucle miroir simulateur D63 (compilation + captures) AVANT tout TestFlight. (4) Un build TestFlight de lot (avec Notes v3)."
+  },
+  "audit_sociales_2026_09_03": {
+   "heure": "11h10",
+   "methode": "4 audits indépendants (sous-agents) contre les frames archivées (refs-tierces-c2 : Messenger 106 / Instagram 239 / Snapchat 114 ; refs-tierces2 : Facebook 159 ; 603×1311 px, 1 pt = 1,5 px), mesures PIL au pixel, test D82 de chaque bouton du code. Rapports : docs/audit-sociales/{SYNTHESE,messenger,instagram,snapchat,facebook}.md ; page web publiée dans le fil cmtkd5ab005h206ad1tpral2j.",
+   "diagnostic": "Cause commune : le code reproduit un souvenir générique de chaque app, pas la vidéo. Écrans les plus filmés absents (post+commentaires Facebook, Profil Snapchat, commentaires/partage Instagram, archives/appel Messenger), écrans jamais filmés inventés, couleurs/tailles/espacements presque jamais conformes.",
+   "chiffres": {
+    "messenger": "28 types d écrans filmés, 8 absents, 5 inventés, ≈35 boutons morts ; données static let → aucun état (nonLu jamais écrit) ; photo→appel = copier-coller ; espacement 3 pt uniforme vs 3 intra-rafale / 13-14 entre blocs",
+    "instagram": "coquille ~2022 vs iOS 26 (capsule flottante 370×52, Pour vous ⌄, DM en onglet) ; accent #3C51FC/#4D6CFF vs #0095F6 ×36 ; anneau story 79/93/104,5 pt, dégradé #D8BA00→#C916CA ; story bloquante masque BarreHome ; 9 écrans filmés absents, 6 inventés dont Notifications",
+    "snapchat": "5 écrans sur 9, Profil absent, Spotlight image figée, Caméra vide, 28/41 boutons morts, vraies données Joachim (741/108/49/143, dribble97tk) à retirer",
+    "facebook": "6e onglet = Profil, Menu = tiroir ☰ absent, post détail+commentaires (25 frames) absent, feuille de partage absente, 14 écrans absents, 23 boutons morts, bug notification → 2e fil sans sortie ; bleu #0C59FD"
+   },
+   "mesures_cles": "Messenger : bulle envoyée #1260FF, reçue/champ #2C2B30, cartes #1F2326, séparateur #303437, avatar liste 58 pt, texte 17 pt, avatar 28 pt sur tout message reçu, Rappeler = bouton gris #515055 pleine largeur. Instagram : DM envoyé dégradé #AD29D5→#6B30FE, reçu #21242B, caméra composer #5249FF, icônes post = cercle à queue / triangle inversé / 2 traits + repost, compteurs inline. Snapchat : FAB jaune ⌀60, Moi #E63455, carte #D7EDC9, bandeau #E7EBEE, horodatage #898989. Facebook : séparateur 4 pt #C1C0C6, badge #DF1C2D, wordmark 30, avatar notif 60 + badge type, Rejoindre bleu plein, filet 1,5 pt onglet actif, badge rouge sur Reels, barre sombre #202020 sur Reels.",
+   "reco_agent": "Refonte en lot Messenger → Instagram → Facebook → Snapchat, chacune : (1) socle = jetons de style mesurés + vraie coquille + store observable + purge D82 ; (2) écrans filmés absents recréés ; boucle miroir D63 écran par écran ; un seul build TestFlight (avec Notes v3). Ce qui dépend d écrans non filmés attend le tournage (retiré ou B crédible, jamais inventé). TENSION : ~170 Ko de Swift à réécrire quasi entièrement — plusieurs boucles.",
+   "tournage_demande": "UNE session ~25 min, 20 prises : Messenger (menu + et sous-écrans, appel vocal puis vidéo, Rappeler, appui long reçu/envoyé + réactions, archive ouverte, Communautés, story+note d ami, non-lu avant/après) ; Instagram (onglet cœur + tap vers profil, story live d un tiers avec fermeture, Votre story, + haut gauche, ⌄ Pour vous, ≡ publication, profil perso complet) ; Facebook (Profil entier + ▾, tiroir ☰ déplié, Recherche, tap post / compteur / … / ✕, tap notification) ; Snapchat (Profil déroulé + public, Réglages, Recherche, Ajouter des amis, Nouveau Chat, fiche ami, story d ami, édition Snap + Envoyer à). Statut : DEMANDÉ à Joachim 03/09 11h10, en attente de GO + vidéos."
   }
  }
 }

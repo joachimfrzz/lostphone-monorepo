@@ -100,7 +100,9 @@ struct EcranCapture: View {
         }
     }
 
-    // Messenger v3 (03/09) : le registre suit la refonte de MessengerApp.swift.
+    // Messenger v3.1 (03/09 soir, D92 — retours 279) : le registre suit la simplification
+    // de MessengerApp.swift. Écrans retirés : Communautés, « menuplus » (doublon de
+    // messenger#3). Écrans ajoutés : les listes complètes Invitations / Suggestions.
     // Les données viennent du store partagé via des accesseurs NON optionnels
     // (MessengerStore.convCapture/noteCapture/storyCapture/messageCapture) : aucun
     // état externe, aucun binding, aucune force-unwrap.
@@ -126,6 +128,10 @@ struct EcranCapture: View {
             MsgrParametresVue()
         case "messenger.invitations":
             MsgrInvitationsFacebookVue()
+        case "messenger.invitationstout":
+            MsgrListeCompleteVue(genre: .invitations)
+        case "messenger.suggestionstout":
+            MsgrListeCompleteVue(genre: .suggestions)
         case "messenger.invitationsmessage":
             MsgrInvitationsMessageVue()
         case "messenger.archive":
@@ -134,14 +140,10 @@ struct EcranCapture: View {
             MsgrNouveauMessageVue(ouvrir: { _ in })
         case "messenger.notifications":
             MsgrNotificationsVue().preferredColorScheme(.dark)
-        case "messenger.communautes":
-            MsgrCommunautesVue()
         case "messenger.story":
             MsgrVisionneuseStoryVue(story: MessengerStore.storyCapture())
         case "messenger.note":
             MsgrNoteAmieVue(note: MessengerStore.noteCapture())
-        case "messenger.menuplus":
-            MsgrMenuVue()
         case "messenger.reactions":
             MsgrFeuilleReactionsVue(message: MessengerStore.messageCapture(),
                                     conv: MessengerStore.convCapture("filles"),
@@ -151,10 +153,13 @@ struct EcranCapture: View {
         }
     }
 
-    // Instagram v3 (03/09) : le registre suit la réécriture d'InstagramApp.swift contre les
-    // 239 frames (audit/instagram.md). Chaque clé pointe une vue de capture Ig… qui possède
-    // SON PROPRE IgEtat (@StateObject) : aucun état externe, aucun binding, aucune valeur
-    // force-déballée, la capture ne dépend d'aucune interaction préalable.
+    // Instagram v3.1 (03/09 soir, D92 — retours 279) : le registre suit la refonte
+    // d'InstagramApp.swift. Chaque clé pointe une vue de capture Ig… qui possède SON PROPRE
+    // IgEtat (@StateObject) : aucun état externe, aucun binding, aucune valeur force-déballée,
+    // la capture ne dépend d'aucune interaction préalable. Les identifiants sont résolus par
+    // les accesseurs NON optionnels d'IgCatalogue / DonneesInsta.
+    // Écrans ajoutés au lot 280 : listes de relations, navigateur interne des liens de bio,
+    // appels audio et vidéo, « nouveau message », Enregistrements / Archives / Paramètres.
     // Les clés « instagram#0..4 » passent par SIMCTL_CHILD_ONGLET et retombent sur la racine
     // InstagramVue, qui lit ONGLET (0 feed · 1 reels · 2 DM · 3 recherche · 4 profil).
     @ViewBuilder
@@ -172,15 +177,25 @@ struct EcranCapture: View {
         case "instagram.story": IgCaptureStory()
         case "instagram.dm": IgCaptureDM()
         case "instagram.dmconv": IgCaptureDMConv()
+        case "instagram.relations": IgCaptureRelations()
+        case "instagram.navigateur": IgCaptureNavigateur()
+        case "instagram.appel": IgCaptureAppel()
+        case "instagram.appelvideo": IgCaptureAppelVideo()
+        case "instagram.nouveau": IgCaptureNouveauMessage()
+        case "instagram.enregistrements": IgCaptureEnregistrements()
+        case "instagram.archives": IgCaptureArchives()
+        case "instagram.parametres": IgCaptureParametres()
         default: InstagramVue()
         }
     }
 
-    // Snapchat v3 (03/09) : le registre suit la refonte de SnapchatApp.swift.
+    // Snapchat v3.1 D92 (03/09 soir) : registre aligné sur la simplification du lot 280.
+    // Retiré : « snapchat.reglages » (l'écran de réglages a disparu de l'app — D92).
+    // Ajouté : appel audio, appel vidéo, fiche d'ami·e, listes d'ami·es, demandes, notifications.
     // Les données viennent d'accesseurs NON optionnels de DonneesSnap
-    // (convCapture/decouvrirCapture/storyCapture) : aucun indice nu, aucun binding externe,
-    // aucune force-unwrap. Les clés « snapchat#0..4 » passent par ONGLET et retombent
-    // sur la racine SnapchatVue(), qui lit la variable d'environnement dans son init.
+    // (convCapture / storyCapture / decouvrirCapture / maStory) : aucun indice nu,
+    // aucun binding externe, aucune force-unwrap.
+    // Les clés « snapchat#0..4 » retombent sur la racine SnapchatVue(), qui lit ONGLET dans son init.
     // snapchat.camera / snapchat.spotlight passent par la COQUILLE (SnapchatVue(onglet:))
     // pour que la barre d'onglets et la BarreHome restent visibles sur la capture.
     @ViewBuilder
@@ -188,20 +203,30 @@ struct EcranCapture: View {
         switch cle {
         case "snapchat.conv":
             SnapConversationVue(ami: DonneesSnap.convCapture())
-        case "snapchat.story":
-            SnapVisionneuseDecouvrirVue(carte: DonneesSnap.storyCapture(), storyAmi: true)
-        case "snapchat.decouvrir":
-            SnapVisionneuseDecouvrirVue(carte: DonneesSnap.decouvrirCapture())
+        case "snapchat.appelaudio":
+            SnapAppelAudioVue(ami: DonneesSnap.convCapture())
+        case "snapchat.appelvideo":
+            SnapAppelVideoVue(ami: DonneesSnap.convCapture())
+        case "snapchat.ficheami":
+            SnapFicheAmiVue(ami: DonneesSnap.convCapture(), surCarte: { })
         case "snapchat.profil":
             SnapProfilVue()
-        case "snapchat.reglages":
-            SnapRouteVue(route: .reglages)
+        case "snapchat.amis":
+            SnapListeAmisVue(titre: "Mes amis·es", meilleurs: false)
+        case "snapchat.demandes":
+            SnapDemandesVue()
+        case "snapchat.notifications":
+            SnapNotificationsVue()
         case "snapchat.recherche":
             SnapRechercheVue()
         case "snapchat.nouveauchat":
             SnapNouveauChatVue()
+        case "snapchat.story":
+            SnapVisionneuseVue(story: DonneesSnap.storyCapture())
+        case "snapchat.decouvrir":
+            SnapVisionneuseVue(story: DonneesSnap.decouvrirCapture())
         case "snapchat.envoyer":
-            SnapEnvoyerAVue(cleImage: "p24")
+            SnapEnvoyerAVue(cleImage: "p12")
         case "snapchat.camera":
             SnapchatVue(onglet: 2)
         case "snapchat.spotlight":
@@ -211,21 +236,17 @@ struct EcranCapture: View {
         }
     }
 
-    // Facebook v3 (03/09) : le registre suit la refonte de FacebookApp.swift.
-    // Les clés « facebook#0..5 » passent par ONGLET et retombent sur la racine
-    // (0 Accueil · 1 Reels · 2 Ami(e)s · 3 Groupes · 4 Notifications · 5 Profil).
-    // Les onglets nommés passent par FacebookVue(ongletInitial:) pour garder la
-    // barre d'onglets et la BarreHome ; les écrans poussés/feuilles sont
-    // construits directement avec un état neuf (FbCapture.etat()).
+    // Facebook v3.1 D92 (03/09 soir) : plus aucune feuille/cover — les écrans présentés sont des calques
+    // de la ZStack racine ; les captures utilisent FbCapture.etat() (état neuf, aucun singleton mutable).
     @ViewBuilder
     private func ecransFacebook() -> some View {
         switch cle {
         case "facebook.story":
             FbStoryVue()
         case "facebook.detail":
-            FbPostDetailVue(post: DonneesFb.post("progres"), etat: FbCapture.etat())
+            FbPostDetailVue(post: DonneesFb.posts[0], etat: FbCapture.etat())
         case "facebook.partage":
-            FbPartageFeuille(post: DonneesFb.post("progres"), etat: FbCapture.etat())
+            FbPartageFeuille(post: DonneesFb.posts[0], etat: FbCapture.etat())
         case "facebook.menu":
             FacebookVue(tiroirInitial: true)
         case "facebook.recherche":

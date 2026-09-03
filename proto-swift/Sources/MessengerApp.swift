@@ -1,4 +1,5 @@
 // Messenger — v3 D91 (03/09) — reconstruit contre les 106 frames de Joachim, mesures audit/messenger.md
+// v3.1 D92 (03/09 soir) — retours 279 de Joachim : simplification + cohérence
 //
 // Doctrines appliquées :
 //  · D67 — la référence est l'enregistrement de Joachim (refs/c2/messenger/e001…e106, 1 pt = 1,5 px).
@@ -63,6 +64,8 @@ enum MsgrContenu: Equatable {
     case appel(manque: Bool, detail: String)      // « 47 s » ou « 5:09 PM »
     case systeme(String)
     case horodatage(String)                       // « 1 AOÛT À 18:37 »
+    // D92 03/09 : publication Facebook partagée dans la conversation (carte sobre, pas d'usine à gaz).
+    case postPartage(titre: String, sousTitre: String, imageCle: String)
 }
 
 struct MsgrMessage: Identifiable, Equatable {
@@ -92,6 +95,7 @@ struct MsgrMessage: Identifiable, Equatable {
         case .appel(let m, _): return m ? "Appel vocal manqué" : "Appel vocal"
         case .systeme(let t): return t
         case .horodatage(let t): return t
+        case .postPartage(let titre, _, _): return titre
         }
     }
 }
@@ -193,6 +197,15 @@ final class MessengerStore: ObservableObject {
     func messages(_ id: String) -> [MsgrMessage] { fils[id] ?? [] }
     var nombreNonLues: Int { conversations.filter { $0.nonLu }.count }
 
+    // D92 — compteurs = contenu réellement accessible : une invitation confirmée ou
+    // supprimée disparaît partout (écran Invitations, liste complète, Notifications).
+    var invitationsEnAttente: [MsgrSuggestion] {
+        invitationsFacebook.filter { !invitationsTraitees.contains($0.nom) }
+    }
+    var suggestionsVisibles: [MsgrSuggestion] {
+        suggestions.filter { !invitationsTraitees.contains($0.nom) }
+    }
+
     // ————— Écriture
     func marquerLue(_ id: String) {
         guard let i = conversations.firstIndex(where: { $0.id == id }), conversations[i].nonLu else { return }
@@ -264,13 +277,31 @@ final class MessengerStore: ObservableObject {
         fils[id] = nil
     }
 
-    func creerGroupe(nom: String, membres: [MsgrMembre]) -> String {
-        let identifiant = "groupe-\(UUID().uuidString.prefix(6))"
+    // ————— D92 03/09 : CONTRAT INTER-APPS (Facebook → Messenger)
+    // Facebook appelle cette méthode puis `Routeur.partage.allerMessenger(conversation:)`.
+    // La publication devient un message ENVOYÉ « post partagé » dans la conversation
+    // dont le nom == destinataire (créée si elle n'existe pas).
+    func recevoirPartagePost(titre: String, sousTitre: String, imageCle: String, destinataire: String) {
+        let identifiant = identifiantPour(destinataire)
+        var fil = fils[identifiant] ?? []
+        fil.append(MsgrMessage(deMoi: true,
+                               contenu: .postPartage(titre: titre,
+                                                     sousTitre: sousTitre,
+                                                     imageCle: imageCle)))
+        fils[identifiant] = fil
+        majApercu(identifiant, texte: "Vous : a partagé une publication")
+    }
+
+    /// Identifiant de la conversation portant ce nom ; la crée si besoin.
+    private func identifiantPour(_ nom: String) -> String {
+        if let c = conversations.first(where: { $0.nom == nom }) { return c.id }
+        if let c = archivees.first(where: { $0.nom == nom }) { return c.id }
+        let identifiant = "conv-\(UUID().uuidString.prefix(6))"
         let conv = MsgrConversation(id: identifiant, nom: nom, teinte: 0x5B7CFA,
-                                    apercu: "Vous avez créé le groupe.", date: "à l'instant",
-                                    groupe: true, membres: membres)
+                                    apercu: "Vous : a partagé une publication",
+                                    date: "à l'instant")
         conversations.insert(conv, at: 0)
-        fils[identifiant] = [MsgrMessage(contenu: .systeme("Vous avez créé le groupe « \(nom) »."))]
+        fils[identifiant] = []
         return identifiant
     }
 
@@ -302,6 +333,7 @@ final class MessengerStore: ObservableObject {
         case .appel(let m, _): return m ? "Appel vocal manqué" : "Appel vocal"
         case .systeme(let t): return t
         case .horodatage(let t): return t
+        case .postPartage: return "a partagé une publication"
         }
     }
 }
@@ -380,12 +412,18 @@ extension MessengerStore {
     }
 
     // Marc Delorme RETIRÉ des suggestions (§4.1 de l'audit).
+    // D92 : « Voir plus » ouvre la liste COMPLÈTE — il faut donc plus de suggestions
+    // que les 4 mises en avant sur l'écran Invitations (compteurs = contenu réel).
     static func suggestionsInitiales() -> [MsgrSuggestion] {
         [
             MsgrSuggestion(nom: "Vincent Berthier", detail: "Suivi(e) par Chloé Berthier", teinte: 0x3A6EA5),
             MsgrSuggestion(nom: "Atelier Poterie Lyon 3", detail: "Suivi(e) par 41 personnes", teinte: 0xB07A4A),
             MsgrSuggestion(nom: "Camille Roussel", detail: "Suivi(e) par 2 personnes", teinte: 0x8B5CF6),
             MsgrSuggestion(nom: "Hugo Da Silva", detail: "Suivi(e) par 318 personnes", teinte: 0x3F8F5C),
+            MsgrSuggestion(nom: "Inès Djellal", detail: "Suivi(e) par Léa Moreau", teinte: 0xFF9F0A),
+            MsgrSuggestion(nom: "Karim Benali", detail: "4 amis en commun", teinte: 0x5B7CFA),
+            MsgrSuggestion(nom: "Élodie Vasseur", detail: "Suivi(e) par 127 personnes", teinte: 0xC0567E),
+            MsgrSuggestion(nom: "Yoga Studio Part-Dieu", detail: "Suivi(e) par 63 personnes", teinte: 0x4E8F8B),
         ]
     }
 
@@ -394,6 +432,9 @@ extension MessengerStore {
             MsgrSuggestion(nom: "Christian Renaud", detail: "3 amis en commun", teinte: 0x8A6D5B),
             MsgrSuggestion(nom: "Manon Saint-Jeannet", detail: "Suivi(e) par 898 personnes", teinte: 0xA05B7A),
             MsgrSuggestion(nom: "Franck Soubielle", detail: "1 ami en commun", teinte: 0x4A7FA5),
+            MsgrSuggestion(nom: "Aurélie Pichon", detail: "2 amis en commun", teinte: 0x7A6BA8),
+            MsgrSuggestion(nom: "Damien Lorquet", detail: "1 ami en commun", teinte: 0x3F7F6A),
+            MsgrSuggestion(nom: "Sofia Marchetti", detail: "5 amis en commun", teinte: 0xB4713F),
         ]
     }
 
@@ -705,7 +746,7 @@ struct MsgrBoutonPlein: View {
     }
 }
 
-/// État vide sobre, réutilisé par Communautés, Invitations par message, Messages épinglés.
+/// État vide sobre, réutilisé par Invitations par message, Messages épinglés, Archive.
 struct MsgrEtatVide: View {
     let titre: String
     var detail: String = ""
@@ -738,8 +779,10 @@ extension MsgrEnTetePile where Droite == EmptyView {
 struct MessengerVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var store = MessengerStore.partage
+    @ObservedObject private var routeur = Routeur.partage
     @State private var onglet: Int = Int(ProcessInfo.processInfo.environment["ONGLET"] ?? "") ?? 0
     @State private var demandeRecherche: Int = 0
+    @State private var convRoutee: MsgrConversation? = nil
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -753,6 +796,19 @@ struct MessengerVue: View {
         .onChange(of: store.ongletDemande) { _, nouveau in
             if let n = nouveau { onglet = n; store.ongletDemande = nil }
         }
+        // D92 — contrat inter-apps : Facebook a partagé une publication puis demandé
+        // l'ouverture directe de la conversation du destinataire.
+        .onAppear { consommerRoute() }
+        .onChange(of: routeur.demande) { _, _ in consommerRoute() }
+        .fullScreenCover(item: $convRoutee) { c in MsgrConversationVue(conv: c) }
+    }
+
+    private func consommerRoute() {
+        guard let nom = Routeur.partage.consommerConversationMessenger() else { return }
+        onglet = 0
+        let trouvee = store.conversations.first { $0.nom == nom }
+            ?? store.archivees.first { $0.nom == nom }
+        if let c = trouvee { convRoutee = c }
     }
 
     @ViewBuilder private var contenuOnglet: some View {
@@ -1356,8 +1412,7 @@ struct MsgrVisionneuseStoryVue: View {
                 .lineLimit(1)
             Text(story.age).font(.system(size: 15)).foregroundStyle(.white.opacity(0.85))
             Spacer(minLength: 4)
-            Image(systemName: "ellipsis").font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
-            Image(systemName: "speaker.wave.2.fill").font(.system(size: 16)).foregroundStyle(.white)
+            // D92 (retours 279) : les 3 points et le bouton son sont RETIRÉS (C).
             Button { dismiss() } label: {
                 Image(systemName: "xmark").font(.system(size: 19, weight: .semibold)).foregroundStyle(.white)
             }
@@ -1548,6 +1603,69 @@ struct MsgrBulleLocalisation: View {
     }
 }
 
+/// Carte « publication Facebook partagée » (D92 — Facebook → Messenger).
+/// Représentation SOBRE et volontairement non interactive : image, titre gras,
+/// sous-titre gris, libellé « facebook.com ». Pas d'usine à gaz (règle du juste milieu).
+struct MsgrBullePost: View {
+    let titre: String
+    let sousTitre: String
+    let imageCle: String
+    let deMoi: Bool
+
+    private var fond: Color { deMoi ? MsgrStyle.bulleEnvoi : MsgrStyle.bulleRecue }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            if !imageCle.isEmpty { visuel }
+            texte
+        }
+        .frame(width: 232)
+        .background(RoundedRectangle(cornerRadius: MsgrStyle.rayonBulle, style: .continuous).fill(fond))
+    }
+
+    private var visuel: some View {
+        Color.clear
+            .frame(width: 232, height: 138)
+            .overlay(image)
+            .clipShape(UnevenRoundedRectangle(topLeadingRadius: MsgrStyle.rayonBulle,
+                                              bottomLeadingRadius: 0,
+                                              bottomTrailingRadius: 0,
+                                              topTrailingRadius: MsgrStyle.rayonBulle))
+    }
+
+    @ViewBuilder private var image: some View {
+        if let img = ChargeurPhoto.image(imageCle) {
+            Image(uiImage: img).resizable().scaledToFill()
+        } else {
+            LinearGradient(colors: [Color(hex: 0x3A3A3F), Color(hex: 0x232327)],
+                           startPoint: .top, endPoint: .bottom)
+        }
+    }
+
+    private var texte: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text("facebook.com")
+                .font(.system(size: 11))
+                .foregroundStyle(.white.opacity(0.6))
+            Text(titre)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(.white)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+            if !sousTitre.isEmpty {
+                Text(sousTitre)
+                    .font(.system(size: 13))
+                    .foregroundStyle(.white.opacity(0.65))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 11)
+        .padding(.vertical, 9)
+    }
+}
+
 /// Bloc d'appel (e009, e015) : 107 pt, rond 23 pt, bouton « Rappeler » gris plein pleine largeur.
 struct MsgrBlocAppel: View {
     let manque: Bool
@@ -1711,6 +1829,9 @@ struct MsgrRangeeMessage: View {
             MsgrBulleLocalisation(legende: l, deMoi: message.deMoi)
         case .appel(let manque, let detail):
             MsgrBlocAppel(manque: manque, detail: detail, rappeler: rappeler)
+        case .postPartage(let titre, let sousTitre, let imageCle):
+            MsgrBullePost(titre: titre, sousTitre: sousTitre,
+                          imageCle: imageCle, deMoi: message.deMoi)
         case .systeme, .horodatage:
             EmptyView()
         }
@@ -1743,17 +1864,17 @@ struct MsgrRangeeMessage: View {
 }
 
 // ============================================================================
-// MARK: - 10. BARRE DE SAISIE (P0-4 — ordre exact §2.4, 6 éléments, tous câblés)
+// MARK: - 10. BARRE DE SAISIE (§2.4 — 4 éléments après D92, tous câblés)
 // ============================================================================
 
+/// D92 (retours 279) : le bouton « + » (doublon des photos/images) et le dictaphone
+/// (message vocal) sont RETIRÉS (C). Il reste : appareil photo, pellicule, champ « Aa »
+/// avec emojis, puis pouce ou envoi.
 struct MsgrBarreSaisie: View {
     @Binding var saisie: String
     var focus: FocusState<Bool>.Binding
-    let ouvrirPlus: () -> Void
     let ouvrirViseur: () -> Void
     let ouvrirPellicule: () -> Void
-    let vocal: () -> Void
-    let indiceMicro: () -> Void
     let ouvrirEmojis: () -> Void
     let pouce: () -> Void
     let envoyer: () -> Void
@@ -1762,11 +1883,9 @@ struct MsgrBarreSaisie: View {
 
     var body: some View {
         HStack(spacing: 15) {
-            boutonPlus
             if vide {
                 glyphe("camera.fill", 20, ouvrirViseur)
                 glyphe("photo.fill", 20, ouvrirPellicule)
-                micro
             }
             champ
             if vide {
@@ -1787,19 +1906,6 @@ struct MsgrBarreSaisie: View {
         .padding(.vertical, 8)
     }
 
-    // 1 — « + » rond plein bleu ⌀ 21 pt, glyphe blanc
-    private var boutonPlus: some View {
-        Button(action: ouvrirPlus) {
-            Circle().fill(MsgrStyle.accent)
-                .frame(width: 21, height: 21)
-                .overlay(
-                    Image(systemName: "plus")
-                        .font(.system(size: 12, weight: .bold)).foregroundStyle(.white)
-                )
-        }
-        .buttonStyle(.plain)
-    }
-
     private func glyphe(_ nom: String, _ taille: CGFloat, _ action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: nom).font(.system(size: taille)).foregroundStyle(MsgrStyle.accent)
@@ -1807,20 +1913,7 @@ struct MsgrBarreSaisie: View {
         .buttonStyle(.plain)
     }
 
-    // 4 — micro : appui long = message vocal ; tap simple = indice (B crédible)
-    private var micro: some View {
-        Image(systemName: "mic.fill")
-            .font(.system(size: 19))
-            .foregroundStyle(MsgrStyle.accent)
-            .contentShape(Rectangle())
-            .onTapGesture { indiceMicro() }
-            .onLongPressGesture(minimumDuration: 0.5) {
-                Haptique.leger()
-                vocal()
-            }
-    }
-
-    // 5 — champ « Aa » capsule 39 pt, smiley bleu À L'INTÉRIEUR à droite
+    // Champ « Aa » capsule 39 pt, smiley bleu À L'INTÉRIEUR à droite
     private var champ: some View {
         HStack(spacing: 8) {
             TextField("", text: $saisie,
@@ -2119,7 +2212,6 @@ struct MsgrConversationVue: View {
     @State private var viseurVisible = false
     @State private var pelliculeVisible = false
     @State private var emojisVisibles = false
-    @State private var menuPlus = false
     @State private var menuPlusMessage = false
     @State private var indice: String? = nil
     @State private var citation: String? = nil
@@ -2150,9 +2242,6 @@ struct MsgrConversationVue: View {
         .fullScreenCover(isPresented: $viseurVisible) { viseur }
         .sheet(isPresented: $pelliculeVisible) { pellicule }
         .sheet(item: $reactionsVisibles) { m in feuilleReactions(m) }
-        .confirmationDialog("Ajouter à la discussion", isPresented: $menuPlus, titleVisibility: .visible) {
-            boutonsMenuPlus
-        }
         .confirmationDialog("Message", isPresented: $menuPlusMessage, titleVisibility: .visible) {
             boutonsMenuMessage
         }
@@ -2214,11 +2303,8 @@ struct MsgrConversationVue: View {
                 }
                 MsgrBarreSaisie(saisie: $saisie,
                                 focus: $champActif,
-                                ouvrirPlus: { menuPlus = true },
                                 ouvrirViseur: { viseurVisible = true },
                                 ouvrirPellicule: { pelliculeVisible = true },
-                                vocal: { envoyerVocal() },
-                                indiceMicro: { indice = "Maintenez le micro pour enregistrer un message vocal." },
                                 ouvrirEmojis: { emojisVisibles.toggle() },
                                 pouce: { envoyer(.texte("👍")) },
                                 envoyer: { envoyerTexte() })
@@ -2286,14 +2372,6 @@ struct MsgrConversationVue: View {
 
     @State private var cibleSecondaire: MsgrMessage? = nil
 
-    @ViewBuilder private var boutonsMenuPlus: some View {
-        Button("Appareil photo") { viseurVisible = true }
-        Button("Photos et vidéos") { pelliculeVisible = true }
-        Button("Position") { envoyer(.localisation("Lyon 3e · Rue Paul Bert")) }
-        Button("Autocollant") { envoyer(.autocollant("🥰")) }
-        Button("Annuler", role: .cancel) {}
-    }
-
     @ViewBuilder private var boutonsMenuMessage: some View {
         Button("Épingler") {
             if let m = cibleSecondaire { store.epingler(m.id, dans: courante.id) }
@@ -2337,10 +2415,6 @@ struct MsgrConversationVue: View {
         citation = nil
     }
 
-    private func envoyerVocal() {
-        envoyer(.vocal("0:07"))
-    }
-
     private func envoyer(_ contenu: MsgrContenu) {
         store.envoyer(contenu, dans: courante.id)
         indice = nil
@@ -2381,9 +2455,11 @@ struct MsgrConversationVue: View {
 
 /// Destinations poussées depuis la fiche. UNE seule `navigationDestination`
 /// est déclarée, au niveau du `NavigationStack` (règle anti-crash de build).
+/// D92 (retours 279) : `nouveauGroupe`, `moments` et `personnaliser` sont RETIRÉS (C)
+/// — options non utilisables qui donnaient une impression d'app inachevée.
 enum MsgrDestinationFiche: String, Identifiable, Hashable {
-    case medias, membres, sons, nouveauGroupe, moments, epingles
-    case confirmations, saisie, bloquer, restreindre, signaler, personnaliser, pseudos, rechercher
+    case medias, membres, sons, epingles
+    case confirmations, saisie, bloquer, restreindre, signaler, pseudos, rechercher
     var id: String { rawValue }
 }
 
@@ -2451,22 +2527,14 @@ struct MsgrFicheVue: View {
             Text(courante.nom)
                 .font(.system(size: 22, weight: .bold)).foregroundStyle(.white)
                 .multilineTextAlignment(.center)
-            Button {
-                destination = .personnaliser
-            } label: {
-                Text("Modifier le nom ou l'image")
-                    .font(.system(size: 15)).foregroundStyle(MsgrStyle.accent)
-            }
-            .buttonStyle(.plain)
         }
     }
 
+    // D92 : « Ajouter » et « Personnaliser » RETIRÉS (C). Restent Pseudos et Rechercher.
     private var ronds: some View {
-        HStack(spacing: 26) {
-            MsgrActionRonde(symbole: "person.badge.plus", titre: "Ajouter") { destination = .membres }
+        HStack(spacing: 40) {
             MsgrActionRonde(symbole: "textformat", titre: "Pseudos") { destination = .pseudos }
             MsgrActionRonde(symbole: "magnifyingglass", titre: "Rechercher") { destination = .rechercher }
-            MsgrActionRonde(symbole: "paintpalette", titre: "Personnaliser") { destination = .personnaliser }
         }
     }
 
@@ -2494,12 +2562,7 @@ struct MsgrFicheVue: View {
             MsgrSeparateurCarte()
             MsgrLigne(symbole: "speaker.wave.2.fill", titre: "Sons et notifications") { destination = .sons }
             MsgrSeparateurCarte()
-            MsgrLigne(symbole: "person.3.fill", titre: "Créer une nouvelle discussion de groupe") {
-                destination = .nouveauGroupe
-            }
-            MsgrSeparateurCarte()
-            MsgrLigne(symbole: "archivebox", titre: "Paramètres des moments") { destination = .moments }
-            MsgrSeparateurCarte()
+            // D92 : « Créer une nouvelle discussion de groupe » et « Paramètres des moments » RETIRÉS (C).
             MsgrLigne(symbole: "pin.fill", titre: "Messages épinglés") { destination = .epingles }
         }
     }
@@ -2590,11 +2653,6 @@ struct MsgrSousEcranFiche: View {
             MsgrEcranSobreVue(titre: "Sons et notifications",
                               message: "Les notifications de cette discussion sont actives.",
                               detail: "Sons, aperçus et vibreur suivent les réglages du téléphone.")
-        case .nouveauGroupe: MsgrNouveauGroupeVue(conv: conv)
-        case .moments:
-            MsgrEcranSobreVue(titre: "Paramètres des moments",
-                              message: "Aucun moment partagé",
-                              detail: "Les moments partagés dans cette discussion apparaîtront ici.")
         case .restreindre:
             MsgrEcranSobreVue(titre: "Restreindre",
                               message: "Cette discussion n'est pas restreinte",
@@ -2603,10 +2661,6 @@ struct MsgrSousEcranFiche: View {
             MsgrEcranSobreVue(titre: "Signaler",
                               message: "Merci pour votre signalement",
                               detail: "Nous examinerons cette conversation. Personne ne saura que vous l'avez signalée.")
-        case .personnaliser:
-            MsgrEcranSobreVue(titre: "Personnaliser",
-                              message: "Personnalisation indisponible",
-                              detail: "Thème, emoji et pseudos ne peuvent pas être modifiés pour l'instant.")
         case .pseudos: MsgrPseudosVue(conv: conv)
         case .rechercher: MsgrRechercheFilVue(conv: conv)
         }
@@ -2891,83 +2945,6 @@ struct MsgrRechercheFilVue: View {
     }
 }
 
-/// « Créer une nouvelle discussion de groupe » : crée RÉELLEMENT le groupe (D82).
-struct MsgrNouveauGroupeVue: View {
-    @Environment(\.dismiss) private var dismiss
-    @ObservedObject private var store = MessengerStore.partage
-    let conv: MsgrConversation
-    @State private var nom = ""
-    @State private var choisis: Set<String> = []
-    @State private var cree = false
-
-    private var candidats: [MsgrConversation] { store.conversations.filter { !$0.groupe } }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            MsgrEnTetePile(titre: "Nouveau groupe") { dismiss() }
-            champNom
-            ScrollView {
-                VStack(spacing: 0) {
-                    ForEach(candidats) { c in rangee(c) }
-                }
-                .padding(.horizontal, MsgrStyle.margeLaterale)
-            }
-            if cree {
-                Text("Groupe créé.").font(.system(size: 13)).foregroundStyle(MsgrStyle.inactif)
-                    .padding(.bottom, 6)
-            }
-            MsgrBoutonPlein(titre: "Créer le groupe") { creer() }
-                .padding(.horizontal, MsgrStyle.margeLaterale)
-                .padding(.bottom, 14)
-                .opacity(peutCreer ? 1 : 0.4)
-                .disabled(!peutCreer)
-        }
-        .background(MsgrStyle.fond.ignoresSafeArea())
-        .toolbar(.hidden, for: .navigationBar)
-        .preferredColorScheme(.dark)
-    }
-
-    private var peutCreer: Bool {
-        !nom.trimmingCharacters(in: .whitespaces).isEmpty && choisis.count >= 2
-    }
-
-    private var champNom: some View {
-        TextField("", text: $nom, prompt: Text("Nom du groupe").foregroundColor(MsgrStyle.inactif))
-            .font(.system(size: 16)).foregroundStyle(.white)
-            .padding(.horizontal, 14)
-            .frame(height: 39)
-            .background(Capsule().fill(MsgrStyle.champ))
-            .padding(.horizontal, MsgrStyle.margeLaterale)
-            .padding(.bottom, 12)
-    }
-
-    private func rangee(_ c: MsgrConversation) -> some View {
-        Button {
-            if choisis.contains(c.nom) { choisis.remove(c.nom) } else { choisis.insert(c.nom) }
-        } label: {
-            HStack(spacing: 12) {
-                MsgrAvatarConv(conv: c, taille: 44)
-                Text(c.nom).font(.system(size: 16)).foregroundStyle(.white)
-                Spacer()
-                Image(systemName: choisis.contains(c.nom) ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 20))
-                    .foregroundStyle(choisis.contains(c.nom) ? MsgrStyle.accent : MsgrStyle.inactif)
-            }
-            .padding(.vertical, 9)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func creer() {
-        let membres = candidats.filter { choisis.contains($0.nom) }
-            .map { MsgrMembre(nom: $0.nom, detail: "Ajoutée par Sarah Levasseur",
-                              photo: $0.photo, teinte: $0.teinte) }
-        _ = store.creerGroupe(nom: nom.trimmingCharacters(in: .whitespaces), membres: membres)
-        cree = true
-        Haptique.leger()
-    }
-}
 
 // ============================================================================
 // MARK: - 14. MEMBRES (e038, e041, e042, e057–e061) + feuille d'action (e058)
@@ -2979,6 +2956,7 @@ struct MsgrMembresVue: View {
     let conv: MsgrConversation
     @State private var admins = false
     @State private var cible: MsgrMembre? = nil
+    @State private var nomCible: String = ""
     @State private var indice: String? = nil
 
     private var membres: [MsgrMembre] {
@@ -3012,14 +2990,15 @@ struct MsgrMembresVue: View {
     }
 
     @ViewBuilder private var actionsMembre: some View {
+        // D92 — cohérence Messenger → Facebook : Facebook s'ouvre SUR le profil de la personne.
         Button("Voir le profil Facebook") {
-            Routeur.partage.allerFacebook()
+            guard !nomCible.isEmpty else { return }
+            Routeur.partage.allerFacebook(profil: nomCible)
         }
-        Button("Message") {
-            indice = "Discussion ouverte depuis la liste."
-        }
+        // D92 : « Message » RETIRÉ (C) — il n'ouvrait aucune discussion réelle.
         Button("Bloquer", role: .destructive) {
-            if let m = cible { store.bloquer(m.nom) }
+            guard !nomCible.isEmpty else { return }
+            store.bloquer(nomCible)
             indice = "Membre bloqué."
         }
         Button("Annuler", role: .cancel) {}
@@ -3039,10 +3018,7 @@ struct MsgrMembresVue: View {
                 }
                 .buttonStyle(.plain)
                 Spacer()
-                Button { indice = "Ajoutez des membres depuis la fiche de discussion." } label: {
-                    Image(systemName: "plus").font(.system(size: 21, weight: .medium)).foregroundStyle(.white)
-                }
-                .buttonStyle(.plain)
+                // D92 : le « + » d'ajout de membre est RETIRÉ (C), comme le rond « Ajouter » de la fiche.
             }
         }
         .padding(.horizontal, MsgrStyle.margeLaterale)
@@ -3068,7 +3044,10 @@ struct MsgrMembresVue: View {
                 Text(m.detail).font(.system(size: 13.5)).foregroundStyle(MsgrStyle.inactif).lineLimit(2)
             }
             Spacer(minLength: 6)
-            Button { cible = m } label: {
+            Button {
+                nomCible = m.nom
+                cible = m
+            } label: {
                 Image(systemName: "ellipsis")
                     .font(.system(size: 17, weight: .semibold)).foregroundStyle(MsgrStyle.inactif)
                     .frame(width: 38, height: 38)
@@ -3087,9 +3066,8 @@ struct MsgrMembresVue: View {
 struct MsgrMediasVue: View {
     @Environment(\.dismiss) private var dismiss
     let conv: MsgrConversation
-    @State private var filtre = 1                 // 0 Partagé par · 1 Photos · 2 Vidéos
+    @State private var filtre = 1                 // 1 Photos · 2 Vidéos (D92 : « Partagé par » retiré)
     @State private var sousOnglet = 0             // 0 Contenu · 1 Fichiers · 2 Liens
-    @State private var selection = false
     @State private var apercu: String? = nil
 
     private static let medias = ["p22", "p23", "p24", "p25", "p26", "p27", "p12", "p18", "p04"]
@@ -3128,11 +3106,7 @@ struct MsgrMediasVue: View {
                 }
                 .buttonStyle(.plain)
                 Spacer()
-                Button { selection.toggle() } label: {
-                    Text(selection ? "OK" : "Sélectionner")
-                        .font(.system(size: 15.5)).foregroundStyle(MsgrStyle.accent)
-                }
-                .buttonStyle(.plain)
+                // D92 : « Sélectionner » (et l'option de partage associée) RETIRÉS (C).
             }
         }
         .padding(.horizontal, MsgrStyle.margeLaterale)
@@ -3141,7 +3115,6 @@ struct MsgrMediasVue: View {
 
     private var pilules: some View {
         HStack(spacing: 10) {
-            MsgrPilule(titre: "Partagé par", actif: filtre == 0, chevron: true) { filtre = 0 }
             MsgrPilule(titre: "Photos", actif: filtre == 1) { filtre = 1 }
             MsgrPilule(titre: "Vidéos", actif: filtre == 2) { filtre = 2 }
             Spacer()
@@ -3153,14 +3126,13 @@ struct MsgrMediasVue: View {
     @ViewBuilder private var contenu: some View {
         if sousOnglet != 0 || filtre == 2 || visibles.isEmpty {
             Spacer()
-            MsgrEtatVide(titre: vide,
-                         detail: "Réinitialisez ou ajustez vos filtres pour voir plus de résultats.")
+            MsgrEtatVide(titre: vide, detail: detailVide)
             Spacer()
             Spacer()
         } else {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
-                    albums
+                    // D92 : « Créer des albums pour cette discussion » RETIRÉ (C).
                     Text("Tous les contenus multimédias (\(visibles.count))")
                         .font(.system(size: 16)).foregroundStyle(.white)
                         .padding(.horizontal, MsgrStyle.margeLaterale)
@@ -3171,32 +3143,24 @@ struct MsgrMediasVue: View {
         }
     }
 
+    // D92 : le message vide dit la VÉRITÉ sur ce qui manque (pas de « ajustez vos filtres »).
     private var vide: String {
         switch sousOnglet {
         case 1: return "Aucun fichier"
         case 2: return "Aucun lien"
-        default: return "Aucun contenu multimédia"
+        default: return filtre == 2 ? "Aucune vidéo" : "Aucun contenu multimédia"
         }
     }
 
-    private var albums: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Albums").font(.system(size: 15)).foregroundStyle(MsgrStyle.inactif)
-            HStack(spacing: 12) {
-                Circle().fill(MsgrStyle.carte).frame(width: 44, height: 44)
-                    .overlay(Image(systemName: "plus").font(.system(size: 17)).foregroundStyle(.white))
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Créer des albums pour cette discussion")
-                        .font(.system(size: 16)).foregroundStyle(.white)
-                    Text("Une fois créés, les albums apparaissent ici")
-                        .font(.system(size: 13.5)).foregroundStyle(MsgrStyle.inactif)
-                }
-                Spacer(minLength: 4)
-                Image(systemName: "chevron.right").font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(MsgrStyle.inactif)
-            }
+    private var detailVide: String {
+        switch sousOnglet {
+        case 1: return "Aucun fichier n'a été échangé dans cette discussion."
+        case 2: return "Aucun lien n'a été échangé dans cette discussion."
+        default:
+            return filtre == 2
+            ? "Aucune vidéo n'a été échangée dans cette discussion."
+            : "Les photos et vidéos échangées apparaîtront ici."
         }
-        .padding(.horizontal, MsgrStyle.margeLaterale)
     }
 
     private var grille: some View {
@@ -3421,7 +3385,7 @@ struct MsgrNotificationsVue: View {
                              detail: "Si vous avez des notifications, elles apparaîtront ici.")
                     .padding(.bottom, 26)
                 entete
-                ForEach(store.suggestions) { s in rangee(s) }
+                ForEach(store.suggestionsVisibles) { s in rangee(s) }
                 Spacer(minLength: 40)
             }
             .padding(.top, 6)
@@ -3503,8 +3467,9 @@ struct MsgrProfilSuggestionVue: View {
                 Haptique.leger()
             }
             .padding(.horizontal, 40)
+            // D92 — Facebook s'ouvre RÉELLEMENT sur le profil de cette personne.
             Button("Voir le profil Facebook") {
-                Routeur.partage.allerFacebook()
+                Routeur.partage.allerFacebook(profil: suggestion.nom)
             }
             .font(.system(size: 15)).foregroundStyle(MsgrStyle.accent)
             Spacer()
@@ -3520,8 +3485,9 @@ struct MsgrProfilSuggestionVue: View {
 // MARK: - 18. ONGLET MENU (e080) — libellés et ordre exacts
 // ============================================================================
 
+/// D92 (retours 279) : `communautes` est RETIRÉ (C).
 enum MsgrDestinationMenu: String, Identifiable, Hashable {
-    case parametres, communautes, invitationsMessage, archive, invitationsFacebook, ia
+    case parametres, invitationsMessage, archive, invitationsFacebook, ia
     var id: String { rawValue }
 }
 
@@ -3558,10 +3524,8 @@ struct MsgrMenuVue: View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
                 MsgrAvatar(photo: "p04", nom: "Sarah", teinte: 0x5B7CFA, taille: 44)
-                VStack(alignment: .leading, spacing: 1) {
-                    Text("Sarah Levasseur").font(.system(size: 16.5)).foregroundStyle(.white)
-                    Text("Changer de profil").font(.system(size: 13.5)).foregroundStyle(MsgrStyle.inactif)
-                }
+                // D92 : « Changer de profil » RETIRÉ (C) — Sarah n'a qu'un seul compte.
+                Text("Sarah Levasseur").font(.system(size: 16.5)).foregroundStyle(.white)
                 Spacer()
             }
             .padding(.horizontal, 12)
@@ -3574,8 +3538,7 @@ struct MsgrMenuVue: View {
 
     private var carteDeux: some View {
         VStack(spacing: 0) {
-            MsgrLigne(symbole: "person.3.fill", titre: "Communautés") { destination = .communautes }
-            MsgrSeparateurCarte()
+            // D92 : « Communautés » RETIRÉ (C).
             MsgrLigne(symbole: "ellipsis.bubble.fill", titre: "Invitations par message") {
                 destination = .invitationsMessage
             }
@@ -3600,7 +3563,6 @@ struct MsgrSousEcranMenu: View {
     var body: some View {
         switch destination {
         case .parametres: MsgrParametresVue()
-        case .communautes: MsgrCommunautesVue()
         case .invitationsMessage: MsgrInvitationsMessageVue()
         case .archive: MsgrArchiveVue()
         case .invitationsFacebook: MsgrInvitationsFacebookVue()
@@ -3787,71 +3749,6 @@ struct MsgrArchiveVue: View {
 }
 
 // ============================================================================
-// MARK: - 21. COMMUNAUTÉS (jamais filmé — §5-6, écran sobre et réel)
-// ============================================================================
-
-struct MsgrCommunautesVue: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var rejointe: String? = nil
-
-    private let communautes: [MsgrSuggestion] = [
-        MsgrSuggestion(nom: "Kinés de Lyon", detail: "312 membres · Professionnel", teinte: 0x3F8F5C),
-        MsgrSuggestion(nom: "Vide-dressing Lyon 3", detail: "1 204 membres · Achat-vente", teinte: 0xB07A4A),
-    ]
-
-    var body: some View {
-        VStack(spacing: 0) {
-            MsgrEnTetePile(titre: "Communautés") { dismiss() }
-            ScrollView {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Vos communautés")
-                        .font(.system(size: 15)).foregroundStyle(MsgrStyle.inactif)
-                    VStack(spacing: 0) {
-                        ForEach(communautes) { c in
-                            rangee(c)
-                            if c.id != communautes.last?.id { MsgrSeparateurCarte() }
-                        }
-                    }
-                    .background(RoundedRectangle(cornerRadius: 16).fill(MsgrStyle.carte))
-                }
-                .padding(.horizontal, MsgrStyle.margeLaterale)
-                .padding(.top, 4)
-            }
-        }
-        .background(MsgrStyle.fond.ignoresSafeArea())
-        .toolbar(.hidden, for: .navigationBar)
-        .preferredColorScheme(.dark)
-    }
-
-    private func rangee(_ c: MsgrSuggestion) -> some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 12).fill(Color(hex: c.teinte))
-                .frame(width: 46, height: 46)
-                .overlay(Text(String(c.nom.prefix(1)))
-                    .font(.system(size: 19, weight: .semibold)).foregroundStyle(.white))
-            VStack(alignment: .leading, spacing: 2) {
-                Text(c.nom).font(.system(size: 16.5)).foregroundStyle(.white)
-                Text(c.detail).font(.system(size: 13.5)).foregroundStyle(MsgrStyle.inactif)
-            }
-            Spacer(minLength: 6)
-            Button {
-                rejointe = c.nom
-                Haptique.leger()
-            } label: {
-                Text(rejointe == c.nom ? "Rejointe" : "Rejoindre")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(rejointe == c.nom ? MsgrStyle.inactif : Color.white)
-                    .padding(.horizontal, 13).padding(.vertical, 8)
-                    .background(Capsule().fill(rejointe == c.nom ? MsgrStyle.champ : MsgrStyle.boutonPlein))
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-    }
-}
-
-// ============================================================================
 // MARK: - 22. INVITATIONS PAR MESSAGE (e086–e088)
 // ============================================================================
 
@@ -3907,28 +3804,146 @@ struct MsgrInvitationsMessageVue: View {
 // MARK: - 23. INVITATIONS FACEBOOK (e099–e104)
 // ============================================================================
 
+/// Rangée d'invitation Facebook — Confirmer / Supprimer agissent RÉELLEMENT (D82).
+struct MsgrRangeeInvitation: View {
+    @ObservedObject private var store = MessengerStore.partage
+    let suggestion: MsgrSuggestion
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 13) {
+            MsgrAvatar(photo: suggestion.photo, nom: suggestion.nom,
+                       teinte: suggestion.teinte, taille: 72)
+            VStack(alignment: .leading, spacing: 7) {
+                Text(suggestion.nom)
+                    .font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                if !suggestion.detail.isEmpty {
+                    Text(suggestion.detail).font(.system(size: 14)).foregroundStyle(MsgrStyle.inactif)
+                }
+                HStack(spacing: 10) {
+                    MsgrBoutonPlein(titre: "Confirmer") {
+                        store.basculerAmi(suggestion.nom)
+                        store.traiterInvitation(suggestion.nom)
+                        Haptique.leger()
+                    }
+                    MsgrBoutonPlein(titre: "Supprimer", fond: MsgrStyle.carte) {
+                        store.traiterInvitation(suggestion.nom)
+                        Haptique.leger()
+                    }
+                }
+            }
+        }
+        .padding(.bottom, 6)
+    }
+}
+
+/// Rangée « Vous connaissez peut-être » — Ajouter / Supprimer agissent RÉELLEMENT (D82).
+struct MsgrRangeeSuggestion: View {
+    @ObservedObject private var store = MessengerStore.partage
+    let suggestion: MsgrSuggestion
+
+    private var ajoute: Bool { store.amisAjoutes.contains(suggestion.nom) }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 13) {
+            MsgrAvatar(photo: suggestion.photo, nom: suggestion.nom,
+                       teinte: suggestion.teinte, taille: 72)
+            VStack(alignment: .leading, spacing: 7) {
+                Text(suggestion.nom)
+                    .font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
+                if !suggestion.detail.isEmpty {
+                    Text(suggestion.detail).font(.system(size: 14)).foregroundStyle(MsgrStyle.inactif)
+                }
+                HStack(spacing: 10) {
+                    MsgrBoutonPlein(titre: ajoute ? "Demande envoyée" : "Ajouter comme ami(e)") {
+                        store.basculerAmi(suggestion.nom)
+                        Haptique.leger()
+                    }
+                    MsgrBoutonPlein(titre: "Supprimer", fond: MsgrStyle.carte) {
+                        store.traiterInvitation(suggestion.nom)
+                        Haptique.leger()
+                    }
+                }
+            }
+        }
+        .padding(.bottom, 6)
+    }
+}
+
+/// D92 — « Voir tout » / « Voir plus » : LISTE COMPLÈTE réelle, chaque rangée agit.
+enum MsgrGenreListe: String, Identifiable, Hashable {
+    case invitations, suggestions
+    var id: String { rawValue }
+
+    var titre: String {
+        switch self {
+        case .invitations: return "Toutes les invitations"
+        case .suggestions: return "Vous connaissez peut-être"
+        }
+    }
+}
+
+struct MsgrListeCompleteVue: View {
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject private var store = MessengerStore.partage
+    let genre: MsgrGenreListe
+
+    private var elements: [MsgrSuggestion] {
+        genre == .invitations ? store.invitationsEnAttente : store.suggestionsVisibles
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            MsgrEnTetePile(titre: genre.titre,
+                           sousTitre: "\(elements.count) personnes") { dismiss() }
+            if elements.isEmpty {
+                Spacer()
+                MsgrEtatVide(titre: "Plus personne ici",
+                             detail: "Vous avez traité toutes les demandes de cette liste.")
+                Spacer()
+                Spacer()
+            } else {
+                liste
+            }
+            BarreHome(action: { dismiss() }, sombre: false)
+        }
+        .background(MsgrStyle.fond.ignoresSafeArea())
+        .preferredColorScheme(.dark)
+    }
+
+    @ViewBuilder private var liste: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                ForEach(elements) { s in
+                    if genre == .invitations {
+                        MsgrRangeeInvitation(suggestion: s)
+                    } else {
+                        MsgrRangeeSuggestion(suggestion: s)
+                    }
+                }
+                Spacer(minLength: 30)
+            }
+            .padding(.horizontal, MsgrStyle.margeLaterale)
+            .padding(.top, 6)
+        }
+    }
+}
+
 struct MsgrInvitationsFacebookVue: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var store = MessengerStore.partage
-    @State private var tout = false
+    @State private var listeComplete: MsgrGenreListe? = nil
 
-    private var invitations: [MsgrSuggestion] {
-        store.invitationsFacebook.filter { !store.invitationsTraitees.contains($0.nom) }
-    }
+    // Mise en avant : 3 invitations et 4 suggestions ; le reste via « Voir tout » / « Voir plus ».
+    private var invitations: [MsgrSuggestion] { Array(store.invitationsEnAttente.prefix(3)) }
+    private var suggestions: [MsgrSuggestion] { Array(store.suggestionsVisibles.prefix(4)) }
 
     var body: some View {
         VStack(spacing: 0) {
             MsgrEnTetePile(titre: "Invitations Facebook") { dismiss() }
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    titreSection("Invitations", lien: "Voir tout") { tout = true }
-                    if invitations.isEmpty {
-                        MsgrEtatVide(titre: "Aucune invitation en attente").padding(.vertical, 20)
-                    } else {
-                        ForEach(invitations) { s in rangeeInvitation(s) }
-                    }
-                    titreSection("Vous connaissez peut-être…", lien: "Voir plus") { tout = true }
-                    ForEach(store.suggestions) { s in rangeeSuggestion(s) }
+                    sectionInvitations
+                    sectionSuggestions
                     Spacer(minLength: 40)
                 }
                 .padding(.horizontal, MsgrStyle.margeLaterale)
@@ -3938,6 +3953,22 @@ struct MsgrInvitationsFacebookVue: View {
         .background(MsgrStyle.fond.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
         .preferredColorScheme(.dark)
+        .fullScreenCover(item: $listeComplete) { g in MsgrListeCompleteVue(genre: g) }
+    }
+
+    @ViewBuilder private var sectionInvitations: some View {
+        titreSection("Invitations (\(store.invitationsEnAttente.count))",
+                     lien: "Voir tout") { listeComplete = .invitations }
+        if invitations.isEmpty {
+            MsgrEtatVide(titre: "Aucune invitation en attente").padding(.vertical, 20)
+        } else {
+            ForEach(invitations) { s in MsgrRangeeInvitation(suggestion: s) }
+        }
+    }
+
+    @ViewBuilder private var sectionSuggestions: some View {
+        titreSection("Vous connaissez peut-être…", lien: "Voir plus") { listeComplete = .suggestions }
+        ForEach(suggestions) { s in MsgrRangeeSuggestion(suggestion: s) }
     }
 
     private func titreSection(_ titre: String, lien: String,
@@ -3948,44 +3979,6 @@ struct MsgrInvitationsFacebookVue: View {
             Button(lien, action: action)
                 .font(.system(size: 16)).foregroundStyle(MsgrStyle.accent)
         }
-    }
-
-    private func rangeeInvitation(_ s: MsgrSuggestion) -> some View {
-        HStack(alignment: .top, spacing: 13) {
-            MsgrAvatar(photo: s.photo, nom: s.nom, teinte: s.teinte, taille: 72)
-            VStack(alignment: .leading, spacing: 7) {
-                Text(s.nom).font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
-                if !s.detail.isEmpty {
-                    Text(s.detail).font(.system(size: 14)).foregroundStyle(MsgrStyle.inactif)
-                }
-                HStack(spacing: 10) {
-                    MsgrBoutonPlein(titre: "Confirmer") { store.traiterInvitation(s.nom) }
-                    MsgrBoutonPlein(titre: "Supprimer", fond: MsgrStyle.carte) {
-                        store.traiterInvitation(s.nom)
-                    }
-                }
-            }
-        }
-        .padding(.bottom, 6)
-    }
-
-    private func rangeeSuggestion(_ s: MsgrSuggestion) -> some View {
-        HStack(alignment: .top, spacing: 13) {
-            MsgrAvatar(photo: s.photo, nom: s.nom, teinte: s.teinte, taille: 72)
-            VStack(alignment: .leading, spacing: 7) {
-                Text(s.nom).font(.system(size: 17, weight: .semibold)).foregroundStyle(.white)
-                HStack(spacing: 10) {
-                    MsgrBoutonPlein(titre: store.amisAjoutes.contains(s.nom)
-                                    ? "Demande envoyée" : "Ajouter comme ami(e)") {
-                        store.basculerAmi(s.nom)
-                    }
-                    MsgrBoutonPlein(titre: "Supprimer", fond: MsgrStyle.carte) {
-                        store.traiterInvitation(s.nom)
-                    }
-                }
-            }
-        }
-        .padding(.bottom, 6)
     }
 }
 

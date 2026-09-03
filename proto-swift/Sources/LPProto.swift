@@ -100,20 +100,54 @@ struct EcranCapture: View {
         }
     }
 
+    // Messenger v3 (03/09) : le registre suit la refonte de MessengerApp.swift.
+    // Les données viennent du store partagé via des accesseurs NON optionnels
+    // (MessengerStore.convCapture/noteCapture/storyCapture/messageCapture) : aucun
+    // état externe, aucun binding, aucune force-unwrap.
+    // Les clés « messenger#0..3 » passent par ONGLET et retombent sur la racine.
     @ViewBuilder
     private func ecransMessenger() -> some View {
         switch cle {
-        case "messenger.chloe": MsgrConversationVue(conv: DonneesMessenger.conversations[0])
-        case "messenger.filles": MsgrConversationVue(conv: DonneesMessenger.conversations[2])
-        case "messenger.fiche": MsgrFicheVue(conv: DonneesMessenger.conversations[2])
-        case "messenger.membres": MsgrMembresVue()
-        case "messenger.medias": MsgrMediasVue(conv: DonneesMessenger.conversations[2])
-        case "messenger.appel": MsgrAppelVue(conv: DonneesMessenger.conversations[0])
-        case "messenger.parametres": MsgrParametresVue()
-        case "messenger.invitations": MsgrInvitationsVue()
-        case "messenger.archive": MsgrArchiveVue()
-        case "messenger.nouveau": MsgrNouvelleDiscussionVue()
-        default: MessengerVue()
+        case "messenger.chloe":
+            MsgrConversationVue(conv: MessengerStore.convCapture("chloe"))
+        case "messenger.filles":
+            MsgrConversationVue(conv: MessengerStore.convCapture("filles"))
+        case "messenger.fiche":
+            MsgrFicheVue(conv: MessengerStore.convCapture("filles"))
+        case "messenger.membres":
+            MsgrMembresVue(conv: MessengerStore.convCapture("filles"))
+        case "messenger.medias":
+            MsgrMediasVue(conv: MessengerStore.convCapture("filles"))
+        case "messenger.appel":
+            MsgrAppelVue(conv: MessengerStore.convCapture("chloe"), mode: .vocal)
+        case "messenger.appelvideo":
+            MsgrAppelVue(conv: MessengerStore.convCapture("chloe"), mode: .video)
+        case "messenger.parametres":
+            MsgrParametresVue()
+        case "messenger.invitations":
+            MsgrInvitationsFacebookVue()
+        case "messenger.invitationsmessage":
+            MsgrInvitationsMessageVue()
+        case "messenger.archive":
+            MsgrArchiveVue()
+        case "messenger.nouveau":
+            MsgrNouveauMessageVue(ouvrir: { _ in })
+        case "messenger.notifications":
+            MsgrNotificationsVue()
+        case "messenger.communautes":
+            MsgrCommunautesVue()
+        case "messenger.story":
+            MsgrVisionneuseStoryVue(story: MessengerStore.storyCapture())
+        case "messenger.note":
+            MsgrNoteAmieVue(note: MessengerStore.noteCapture())
+        case "messenger.menuplus":
+            MsgrMenuVue()
+        case "messenger.reactions":
+            MsgrFeuilleReactionsVue(message: MessengerStore.messageCapture(),
+                                    conv: MessengerStore.convCapture("filles"),
+                                    retirer: { _ in })
+        default:
+            MessengerVue()
         }
     }
 
@@ -490,7 +524,7 @@ struct BarreHome: View {
 
 // ============================================================ ROUTEUR INTER-APPS (correctif P3, 20/08)
 // « Appeler » dans Ma Banque ouvre le clavier du Téléphone pré-rempli ; « Site web » dans Plans ouvre Safari.
-enum CibleRouteur { case telephone, safari, plans, mail, messages }
+enum CibleRouteur { case telephone, safari, plans, mail, messages, facebook, messenger }
 
 final class Routeur: ObservableObject {
     static let partage = Routeur()
@@ -520,6 +554,10 @@ final class Routeur: ObservableObject {
         mailCompose = adresse; cible = .mail; demande += 1
     }
     func allerMessages() { cible = .messages; demande += 1 }
+    // v3 03/09 (refonte Messenger) : le logo Facebook de Messenger ouvre RÉELLEMENT
+    // l'app Facebook de la coque, et réciproquement.
+    func allerFacebook() { cible = .facebook; demande += 1 }
+    func allerMessenger() { cible = .messenger; demande += 1 }
     func consommerNumero() -> String? { let n = numeroAppel; numeroAppel = nil; return n }
     func consommerMailCompose() -> String? { let a = mailCompose; mailCompose = nil; return a }
     func consommerPage() -> (String, String)? {
@@ -1191,6 +1229,8 @@ struct AccueilView: View {
                 case .plans: plansOuverts = true
                 case .mail: mailOuvert = true
                 case .messages: messagesOuvert = true
+                case .facebook: facebookOuvert = true
+                case .messenger: messengerOuvert = true
                 case nil: break
                 }
                 routeur.cible = nil

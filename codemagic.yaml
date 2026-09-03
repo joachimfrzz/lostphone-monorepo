@@ -133,6 +133,8 @@ workflows:
   # simulateur iPhone, la lance écran par écran (variable ECRAN, registre
   # outils/ecrans.txt) et photographie chaque écran. Artefact : captures.zip —
   # à transmettre dans le fil pour la comparaison pixel avec les références.
+  # 03/09/2026 (D91) : registre CIBLABLE — variable ECRANS_FICHIER passée à l'API
+  # (ex. outils/ecrans-messenger.txt) pour ne photographier qu'une app pendant sa refonte.
   miroir-captures:
     name: Miroir D63 — captures simulateur
     max_build_duration: 45
@@ -140,6 +142,8 @@ workflows:
 
     environment:
       xcode: latest
+      vars:
+        ECRANS_FICHIER: "outils/ecrans.txt"
 
     scripts:
       - name: Restaurer les fichiers binaires (photos, mémos, icônes)
@@ -167,6 +171,8 @@ workflows:
 
       - name: Captures écran par écran
         script: |
+          REGISTRE="${ECRANS_FICHIER:-outils/ecrans.txt}"
+          echo "Registre d'écrans : $REGISTRE"
           UDID=$(xcrun simctl list devices available | grep -E "iPhone (16|17)" | head -1 | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
           if [ -z "$UDID" ]; then
             UDID=$(xcrun simctl list devices available | grep "iPhone" | head -1 | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
@@ -190,9 +196,9 @@ workflows:
             xcrun simctl io "$UDID" screenshot "$DOSSIER/${ecran}.png"
             xcrun simctl terminate "$UDID" com.lostphone.game || true
             sleep 1
-          done < outils/ecrans.txt
+          done < "$REGISTRE"
           ls -la "$DOSSIER"
-          ATTENDU=$(grep -c . outils/ecrans.txt)
+          ATTENDU=$(grep -c . "$REGISTRE")
           OBTENU=$(ls "$DOSSIER" | wc -l | tr -d ' ')
           echo "Captures : $OBTENU / $ATTENDU"
           if [ "$OBTENU" -lt "$ATTENDU" ]; then

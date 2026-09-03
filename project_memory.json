@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-02T20:12:00+02:00",
+  "date_derniere_maj": "2026-09-03T10:50:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1604,16 +1604,17 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "278 validé 16/16 (20h10) → 14/28 validées. Prochaine étape Joachim : checklist 275 (13 points) sur le 278, puis session 5. Agent : écarts Notes au-delà du jaune (vidéo), Notes v3 en attente de build. Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
+  "dernier_evenement": "03/09 10h43 — Retours session 5 : D91 reprise globale des 4 sociales. Agent lance l audit contre les références archivées. 278 validé 16/16 (20h10) → 14/28 validées. Prochaine étape Joachim : checklist 275 (13 points) sur le 278, puis session 5. Agent : écarts Notes au-delà du jaune (vidéo), Notes v3 en attente de build. Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
   "en_attente": [
-   "Joachim : checklist du 275 (13 points : WhatsApp, Safari, Notes, Rappels, Calendrier, Horloge) — sur le 278 (cumulatif)",
-   "Notes v3 (jaune mesuré #DEA40B + boutons blancs verre) CODÉE, poussée, PAS buildée — à embarquer dans le prochain build de lot",
-   "Session 5 (Messenger, Instagram, Snapchat, Facebook) : à tester sur le 278 après le 275",
+   "AGENT : D91 — audit des 4 sociales contre les références archivées (refs-tierces-c2, refs-tierces2), puis refonte en lot + boucle miroir",
+   "Joachim : rien à tester sur les sociales tant que l audit/refonte n est pas livrée ; Snapchat/Facebook détails reportés",
+   "Notes v3 (jaune #DEA40B, boutons blancs) codée, PAS buildée — part avec le prochain build de lot",
+   "Statut 275 (13 points) : non confirmé explicitement (Joachim a enchaîné) — à reconfirmer au prochain build",
    "RAPPEL CRITIQUE : re-signature WDA (fix-input) avant le 2026-09-04",
-   "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/ ; passe finale Réglages ; ce que le joueur peut supprimer (Dictaphone, etc.)"
+   "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/ ; passe finale Réglages ; ce que le joueur peut supprimer"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-02 20h12",
+  "derniere_maj": "2026-09-03 10h50",
   "fil_hyperagent_actif": "https://hyperagent.com/thread/cmtkd5ab005h206ad1tpral2j (depuis le 02/09 19h25 ; précédent cmtim40hr08lo06ad89ww6nja figé)"
  },
  "workflow_memoire_persistante": {
@@ -2113,6 +2114,12 @@
    "date": "2026-09-02",
    "titre": "Principe « toute action annoncée produit son résultat » (généralisation de D82) + l historique Safari n est jamais effaçable par le joueur",
    "detail": "Joachim 18h29 : quand une interface indique explicitement qu une action est possible, elle doit produire le résultat annoncé ; si le jeu ne peut pas la réaliser, une réaction cohérente (erreur, indisponibilité, raison compréhensible) est obligatoire — jamais un bouton qui ne fait rien. Première application : la feuille de partage maison (FeuillePartage), utilisée partout, rendue RÉELLE (AirDrop → recherche puis aucun appareil ; WhatsApp → vrai envoi dans la conversation choisie via EnvoisJoueur ; Mail → compose ; Messages → ouvre l app ; Copier → UIPasteboard ; Enregistrer dans Fichiers → MagasinFichiers.ajouter, le fichier apparaît avec son contenu ; Imprimer → recherche puis aucune imprimante AirPrint). Corollaire Safari : le bouton « Effacer » de l historique est RETIRÉ — l historique peut porter des indices, le joueur ne doit pas pouvoir le détruire. Suppressions Dictaphone : statu quo, décision ultérieure sur ce que le joueur peut détruire."
+  },
+  "D91": {
+   "titre": "Reprise GLOBALE des 4 apps sociales (Messenger, Instagram, Snapchat, Facebook) au niveau du reste du téléphone",
+   "date": "2026-09-03",
+   "contenu": "Décision Joachim (10h43, retours session 5 sur le build 278) : les 4 sociales sont nettement en dessous du reste ; on ne corrige pas point par point, on les reprend dans leur ensemble avec l objectif du niveau de qualité et de ressemblance atteint sur les autres apps. Méthode : audit agent complet contre SES enregistrements archivés (D67), écarts listés, écrans manquants demandés en une fois, refonte en lot, boucle miroir D63, puis un seul build TestFlight. Ses retours détaillés Messenger/Instagram servent de cahier des charges minimal, pas de périmètre.",
+   "statut": "actée"
   }
  },
  "point_de_reprise_migration": {
@@ -2737,6 +2744,55 @@
    "heure": "20h10",
    "verdict": "« nickel sur les 16 points » — aucun écart. Validées : Fichiers, Localiser, Cartes (Wallet), Ma Banque. Correctifs globaux (zone système opaque, micros retirés) validés.",
    "validees": "14/28"
+  },
+  "session5_retours_2026_09_03": {
+   "heure": "10h43",
+   "verdict_global": "Joachim : les 4 sociales (Messenger, Instagram, Snapchat, Facebook) sont « nettement moins abouties et moins fidèles que le reste du téléphone ». Demande une REPRISE GLOBALE des 4 apps, pas des corrections point par point — objectif : le niveau de qualité/ressemblance des autres apps. Il n a détaillé que Messenger et Instagram ; Snapchat et Facebook : même verdict, détails à venir seulement si utile après l audit agent.",
+   "messenger": {
+    "discussions": [
+     "Noms de la liste = noms FACEBOOK des personnes, jamais des noms de contacts du téléphone (« Maman »)",
+     "Ouvrir une conversation non lue et lire → au retour la liste ne la montre plus comme non lue (état lu réel)",
+     "Tap sur le logo Facebook (écran principal) → ouvre l app Facebook",
+     "Rangée d avatars en haut = Stories ET Notes Messenger comme le vrai : je peux déjà partager une note sur mon profil → cohérence pour les autres profils aussi"
+    ],
+    "conversation": [
+     "Messages un peu trop collés — REVÉRIFIER l espacement sur la vidéo de référence (semble plus grand sur le vrai)",
+     "Appel vidéo visuellement différencié de l appel vocal (comme WhatsApp / Téléphone)",
+     "Réactions emoji sur les messages (appui long)",
+     "« Appel vocal manqué » → bouton Rappeler doit fonctionner",
+     "Boutons du bas incohérents : ajout image/photo, pouce, autres actions — ex. l action photo lance un appel. À recâbler UN PAR UN",
+     "Menu + s ouvre mais ses éléments ne font rien"
+    ],
+    "stories": "Non vérifiable : aucune story affichée actuellement → en afficher",
+    "notifications": "Plutôt bien ; « Ajouter comme ami » doit fonctionner réellement",
+    "menu": "SUPPRIMER (C) : icône 4 carrés en haut à droite, Facebook Rencontres, Événements Facebook, Facebook Reels",
+    "archives_communautes": [
+     "Archives : ouvrir réellement la conversation archivée",
+     "Bouton Communautés ne fonctionne pas"
+    ]
+   },
+   "instagram": {
+    "verdict": "« beaucoup de choses à revoir » — refonte plus globale que les points listés",
+    "stories": [
+     "Mal centrées",
+     "Ouverte, impossible de revenir en arrière (bloqué)",
+     "Affichage pas assez fidèle au vrai",
+     "Cerclage coloré d une nouvelle story : mauvaises couleurs / rendu"
+    ],
+    "notifications": "Page cœur globalement correcte ; une notif concernant un profil doit ouvrir ce profil",
+    "messages": [
+     "Logique « Vu » / « Pas encore de réponse » incompréhensible, pas naturelle",
+     "Bulles pas assez ressemblantes",
+     "Bouton photo/caméra à droite d une conversation : RETIRER (C)"
+    ],
+    "accueil": [
+     "Petite flèche à côté du mot Instagram : RETIRER",
+     "Icônes sous les publications pas fidèles (commentaire, partage, enregistrement)",
+     "Rendu général manque de fidélité"
+    ]
+   },
+   "snapchat_facebook": "Même verdict global, détails non fournis — Joachim attend d abord un vrai regard d ensemble de l agent sur les 4 apps.",
+   "plan_agent": "(1) Consigner (fait). (2) Ré-extraire les références archivées (outils/refs-tierces-c2 parts 00-13 : Messenger 106 / Instagram 239 / Snapchat 114 écrans ; outils/refs-tierces2 parts 00-22 : Facebook 159) et faire un AUDIT écran par écran code vs référence pour chaque app → liste d écarts + liste des écrans jamais filmés (à demander à Joachim en une fois). (3) Refonte des 4 apps en lot, boucle miroir simulateur D63 (compilation + captures) AVANT tout TestFlight. (4) Un build TestFlight de lot (avec Notes v3)."
   }
  }
 }

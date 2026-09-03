@@ -18,7 +18,7 @@ navigation & gestes · contenu narratif Sarah · animations.
 
 **Fiches de vérification détaillées des 28 apps** : `FICHES-VERIFICATION-APPS.md` (fichier unique, 02/09). Le dossier `fiches-verification/` (01/09) est remplacé — conservé une itération, suppression sur arbitrage.
 
-## Ordre & état (à jour du 02/09/2026 20h10 — 14/28 validées)
+## Ordre & état (à jour du 03/09/2026 10h50 — 14/28 validées)
 | # | App | État |
 |---|---|---|
 | 1 | Coque (verrouillage+accueil) | ✅ VALIDÉE 30/08 18h02 (v3 : « c'est parfait ») |
@@ -39,7 +39,8 @@ navigation & gestes · contenu narratif Sarah · animations.
 | 18 | Santé | ✅ VALIDÉE 02/09 18h50 (build 274) — à enrichir selon les histoires |
 | 19 | Cartes (Wallet) | ✅ VALIDÉE 02/09 20h10 (build 278) |
 | 20 | Ma Banque | ✅ VALIDÉE 02/09 20h10 (build 278) |
-| 21-28 | Messenger, Instagram, Snapchat, Facebook, X, ChatGPT, Spotify, YouTube | à vérifier |
+| 21-24 | Messenger, Instagram, Snapchat, Facebook | 🔧 REFONTE GLOBALE (D91, 03/09 10h43) — audit agent vs références puis reconstruction en lot |
+| 25-28 | X, ChatGPT, Spotify, YouTube | à vérifier |
 
 Builds 276 (19h05) et 277 (19h13) : rouges à la compilation, corrigés ; **278 (19h14 → 19h21) VERT, validé 16/16 par Joachim à 20h10**.
 

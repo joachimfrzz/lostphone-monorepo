@@ -133,7 +133,7 @@ struct EcranCapture: View {
         case "messenger.nouveau":
             MsgrNouveauMessageVue(ouvrir: { _ in })
         case "messenger.notifications":
-            MsgrNotificationsVue()
+            MsgrNotificationsVue().preferredColorScheme(.dark)
         case "messenger.communautes":
             MsgrCommunautesVue()
         case "messenger.story":
@@ -151,32 +151,97 @@ struct EcranCapture: View {
         }
     }
 
+    // Instagram v3 (03/09) : le registre suit la réécriture d'InstagramApp.swift contre les
+    // 239 frames (audit/instagram.md). Chaque clé pointe une vue de capture Ig… qui possède
+    // SON PROPRE IgEtat (@StateObject) : aucun état externe, aucun binding, aucune valeur
+    // force-déballée, la capture ne dépend d'aucune interaction préalable.
+    // Les clés « instagram#0..4 » passent par SIMCTL_CHILD_ONGLET et retombent sur la racine
+    // InstagramVue, qui lit ONGLET (0 feed · 1 reels · 2 DM · 3 recherche · 4 profil).
     @ViewBuilder
     private func ecransInstagram() -> some View {
         switch cle {
-        case "instagram.story": InstaStoryVue(compte: DonneesInsta.comptes[0])
-        case "instagram.profilprive": InstaProfilTiersVue(compte: DonneesInsta.comptes[3])
-        case "instagram.dm": InstaDMVue()
-        case "instagram.activite": InstaActiviteVue()
-        case "instagram.dmconv": FilGeneriqueVue(nom: "Chloé Berthier", teinte: 0xE64980, messages: [(false, "Regarde cette publication, ça m'a fait penser à toi 😍"), (true, "Ahah j'adore !! On y va ?"), (false, "Carrément, je regarde les dates")])
+        case "instagram.commentaires": IgCaptureCommentaires()
+        case "instagram.partage": IgCapturePartage()
+        case "instagram.detail": IgCaptureDetail()
+        case "instagram.notifications": IgCaptureNotifications()
+        case "instagram.activite": IgCaptureNotifications()
+        case "instagram.reels": IgCaptureReels()
+        case "instagram.recherche": IgCaptureRecherche()
+        case "instagram.profil": IgCaptureProfil()
+        case "instagram.profilprive": IgCaptureProfilPrive()
+        case "instagram.story": IgCaptureStory()
+        case "instagram.dm": IgCaptureDM()
+        case "instagram.dmconv": IgCaptureDMConv()
         default: InstagramVue()
         }
     }
 
+    // Snapchat v3 (03/09) : le registre suit la refonte de SnapchatApp.swift.
+    // Les données viennent d'accesseurs NON optionnels de DonneesSnap
+    // (convCapture/decouvrirCapture/storyCapture) : aucun indice nu, aucun binding externe,
+    // aucune force-unwrap. Les clés « snapchat#0..4 » passent par ONGLET et retombent
+    // sur la racine SnapchatVue(), qui lit la variable d'environnement dans son init.
+    // snapchat.camera / snapchat.spotlight passent par la COQUILLE (SnapchatVue(onglet:))
+    // pour que la barre d'onglets et la BarreHome restent visibles sur la capture.
     @ViewBuilder
     private func ecransSnapchat() -> some View {
         switch cle {
-        case "snapchat.conv": SnapConversationVue(ami: DonneesSnap.amis[0])
-        case "snapchat.story": VisualiseurContenuVue(titre: "Chloé 💛", sousTitre: "Story · il y a 3 h", emoji: "👩🏻‍🦰", teinte: 0xB84DFF)
-        default: SnapchatVue()
+        case "snapchat.conv":
+            SnapConversationVue(ami: DonneesSnap.convCapture())
+        case "snapchat.story":
+            SnapVisionneuseDecouvrirVue(carte: DonneesSnap.storyCapture(), storyAmi: true)
+        case "snapchat.decouvrir":
+            SnapVisionneuseDecouvrirVue(carte: DonneesSnap.decouvrirCapture())
+        case "snapchat.profil":
+            SnapProfilVue()
+        case "snapchat.reglages":
+            SnapRouteVue(route: .reglages)
+        case "snapchat.recherche":
+            SnapRechercheVue()
+        case "snapchat.nouveauchat":
+            SnapNouveauChatVue()
+        case "snapchat.envoyer":
+            SnapEnvoyerAVue(cleImage: "p24")
+        case "snapchat.camera":
+            SnapchatVue(onglet: 2)
+        case "snapchat.spotlight":
+            SnapchatVue(onglet: 4)
+        default:
+            SnapchatVue()
         }
     }
 
+    // Facebook v3 (03/09) : le registre suit la refonte de FacebookApp.swift.
+    // Les clés « facebook#0..5 » passent par ONGLET et retombent sur la racine
+    // (0 Accueil · 1 Reels · 2 Ami(e)s · 3 Groupes · 4 Notifications · 5 Profil).
+    // Les onglets nommés passent par FacebookVue(ongletInitial:) pour garder la
+    // barre d'onglets et la BarreHome ; les écrans poussés/feuilles sont
+    // construits directement avec un état neuf (FbCapture.etat()).
     @ViewBuilder
     private func ecransFacebook() -> some View {
         switch cle {
-        case "facebook.story": VisualiseurContenuVue(titre: "Chloé Berthier", sousTitre: "Story · il y a 5 h", imageCle: "p12")
-        default: FacebookVue()
+        case "facebook.story":
+            FbStoryVue()
+        case "facebook.detail":
+            FbPostDetailVue(post: DonneesFb.post("progres"), etat: FbCapture.etat())
+        case "facebook.partage":
+            FbPartageFeuille(post: DonneesFb.post("progres"), etat: FbCapture.etat())
+        case "facebook.menu":
+            FacebookVue(tiroirInitial: true)
+        case "facebook.recherche":
+            FbRechercheVue(etat: FbCapture.etat())
+        case "facebook.profil":
+            FacebookVue(ongletInitial: 5)
+        case "facebook.reels":
+            FacebookVue(ongletInitial: 1)
+        case "facebook.amis":
+            FacebookVue(ongletInitial: 2)
+        case "facebook.groupes":
+            FacebookVue(ongletInitial: 3)
+        case "facebook.notifications":
+            FacebookVue(ongletInitial: 4)
+        default:
+            FacebookVue()
         }
     }
 

@@ -16,7 +16,7 @@
   "mode_emploi": "Fournir ce fichier à un nouvel agent avec le prompt contenu dans amorcage_nouvel_agent.prompt_de_reprise. Toutes les sections sont autoportantes ; aucune information critique n'existe hors de ce fichier. Fichier maintenu en continu (voir workflow_memoire_persistante) : il représente toujours l'état le plus récent, le plus complet et le plus fidèle du projet.",
   "derniere_mise_a_jour": "2026-08-18T10:50:00+02:00",
   "date_derniere_mise_a_jour": "2026-08-18",
-  "date_derniere_maj": "2026-09-03T15:10:00+02:00",
+  "date_derniere_maj": "2026-09-03T15:20:00+02:00",
   "sauvegarde_github": "project_memory.json est poussé à la racine du repo privé après chaque mise à jour (institué le 2026-08-28)."
  },
  "amorcage_nouvel_agent": {
@@ -1604,7 +1604,7 @@
  },
  "etat_conversation": {
   "date": "2026-09-01 (21h15)",
-  "dernier_evenement": "03/09 15h10 — Miroir 4 sociales VERT, build TestFlight 279 lancé. 03/09 14h50 — Les 4 sociales v3 poussées (Messenger compile ; Instagram/Snapchat/Facebook en compilation miroir). 03/09 11h12 — GO D91. Refonte Messenger lancée. 03/09 11h10 — Audit des 4 sociales livré (page + docs/audit-sociales/). Diagnostic : code générique, pas la vidéo. RECO refonte en lot + tournage 25 min demandé. 03/09 10h43 — Retours session 5 : D91 reprise globale des 4 sociales. Agent lance l audit contre les références archivées. 278 validé 16/16 (20h10) → 14/28 validées. Prochaine étape Joachim : checklist 275 (13 points) sur le 278, puis session 5. Agent : écarts Notes au-delà du jaune (vidéo), Notes v3 en attente de build. Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
+  "dernier_evenement": "03/09 15h17 — BUILD 279 VERT et publié (refonte complète des 4 sociales + Notes v3). Attente : checklist 279 (15 points) + tournage complémentaire. 03/09 15h10 — Miroir 4 sociales VERT, build TestFlight 279 lancé. 03/09 14h50 — Les 4 sociales v3 poussées (Messenger compile ; Instagram/Snapchat/Facebook en compilation miroir). 03/09 11h12 — GO D91. Refonte Messenger lancée. 03/09 11h10 — Audit des 4 sociales livré (page + docs/audit-sociales/). Diagnostic : code générique, pas la vidéo. RECO refonte en lot + tournage 25 min demandé. 03/09 10h43 — Retours session 5 : D91 reprise globale des 4 sociales. Agent lance l audit contre les références archivées. 278 validé 16/16 (20h10) → 14/28 validées. Prochaine étape Joachim : checklist 275 (13 points) sur le 278, puis session 5. Agent : écarts Notes au-delà du jaune (vidéo), Notes v3 en attente de build. Vidéo Notes reçue et lue : jaune #DEA40B, réservé aux icônes dossier/chevrons/liens ; boutons blancs. NotesApp.swift v3 codé et poussé (pas de build). Session 4 codée (Fichiers, Localiser+Memoji, Wallet codes réels, Ma Banque) + 2 correctifs globaux (zone système, micros). Builds 276 et 277 ROUGES (compilation, corrigés), BUILD 278 VERT 19h21. 10/28 validées. Ancien fil planté 19h20 → reprise dans le fil cmtkd5ab005h206ad1tpral2j. Attente : capture d écran vraie app Notes (jaune) ; retours 275 (13 pts) + 278 (16 pts).",
   "en_attente": [
    "Joachim : checklist du 279 (15 points : 4 sociales v3 + Notes v3) — TestFlight ~15h30",
    "Joachim : tournage complémentaire 20 prises (liste SYNTHESE.md) — toujours attendu",
@@ -1614,7 +1614,7 @@
    "Arbitrages ouverts : Plans dans la campagne ; suppression fiches-verification/ ; passe finale Réglages ; ce que le joueur peut supprimer"
   ],
   "message_de_passation": "Nouveau fil : lis project_memory.json à la racine du repo GitHub joachimfrzz/lostphone-monorepo (intégration GitHub), adopte amorcage_nouvel_agent, applique D15 + push repo, reprends à etat_conversation. Le fichier contient 85 décisions (D01-D87, D64 perdue, D83 non consignée).",
-  "derniere_maj": "2026-09-03 15h10",
+  "derniere_maj": "2026-09-03 15h20",
   "fil_hyperagent_actif": "https://hyperagent.com/thread/cmtkd5ab005h206ad1tpral2j (depuis le 02/09 19h25 ; précédent cmtim40hr08lo06ad89ww6nja figé)"
  },
  "workflow_memoire_persistante": {
@@ -2821,6 +2821,13 @@
    "etat": "Miroir 6a996bf7 VERT 15h05 (69 captures, 4 apps compilent du premier coup). Planches vérifiées : fidèles. Build TestFlight 279 lancé 15h08 (4 sociales v3 + Notes v3). Fiche Dernier build = 279 (15 points).",
    "incidents": "Refus d autorisation répétés côté interface (Stop/Refuser) ont interrompu 3 constructeurs et 3 commandes entre 11h25 et 14h40 ; travail conservé et repris. Règle : relayer les rapports de sous-agents EN FRANÇAIS.",
    "a_corriger_plus_tard": "Snapchat : pseudo affiché « sarah.mrchd » → harmoniser sur sarah.lvsr ; anniversaire Snapchat « 28 juil. » vs Facebook 14 mars 1994 (Poissons) → aligner ; Instagram : Marc Delaunay présent en DM/notifs (à arbitrer avec le canon : que montre Marc sur Instagram ?)."
+  },
+  "build_279_2026_09_03": {
+   "heure": "15h05→15h17",
+   "statut": "VERT — upload App Store Connect réussi (Publishing success), buildId 6a9970a960991010f4f4c389, index 19",
+   "contenu": "Refonte D91 des 4 sociales (Messenger, Instagram, Snapchat, Facebook) + Notes v3",
+   "fiche": "Dernier build = 279, 15 points",
+   "attente": "retours Joachim"
   }
  }
 }

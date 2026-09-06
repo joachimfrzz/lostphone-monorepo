@@ -14,28 +14,25 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 ## 🔔 DERNIER BUILD — à vérifier en priorité
 > Cette section est MISE À JOUR À CHAQUE BUILD (règle D89, 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
-**Build : TestFlight n° 280 — lancé le 03/09 à 18h45, publication ~19h00 (disponible ~10-15 min après).** Lot **D92 « juste milieu »** : tes retours du 279 appliqués aux quatre sociales — simplification, cohérence des compteurs et des états, ponts Messenger ⇄ Facebook, et le bug de la barre home de Facebook. Notes v3 inchangée (verdict toujours attendu).
+**Build : TestFlight n° 281 — lancé le 06/09 à 20h12, publication ~20h30 (disponible ~10-15 min après).** Il contient **trois nouvelles apps de la vague A**, construites contre tes vidéos du 06/09 sous la doctrine D92 (juste milieu) : **PayPal**, **App Store**, **Musique**. Il reprend intégralement le 280 (4 sociales v3.1 + Notes v3) — dont tu ne m'as pas encore donné le verdict : sa checklist reste valable sur ce build.
 
-### Ce que tu avais demandé (retours du 279) → ce qui a été fait
-- **Messenger** : vocal et + retirés du composeur ; fiche allégée (Ajouter, Personnaliser, Créer un groupe, Paramètres des moments, Modifier nom/image, albums, partage retirés) ; viewer de story sans ⋯ ni son ; menu sans Changer de profil ni Communautés ; **Voir tout / Voir plus** ouvrent de vraies listes ; « Voir le profil Facebook » ouvre Facebook **sur la bonne personne**.
-- **Facebook** : **barre home corrigée à la racine** (plus aucune feuille/cover : tout est en calques sous la capsule, capsule dans la zone sûre, tiroir dessiné sous les barres) ; compteurs de commentaires = commentaires réels, réponses réellement dépliables, **plus de message « hors connexion »** ; Rejoindre un groupe bascule et le groupe apparaît dans Vos groupes ; auteur d'un reel → profil ; stories suggérées épurées et profil ouvrable ; profil de Sarah épuré, « N amis » et « N publications » → listes ; retour depuis un profil tiers ; « Quoi de neuf ? » = composer minimal (le post apparaît en tête du fil et dans le profil) ; **partage vers Messenger** → carte du post dans la conversation Messenger.
-- **Instagram** : ≡ retirés (posts, reels, recherche) ; Republier retiré ; partage d'un post RÉEL (carte dans la DM) ; sélecteur Pour vous / Suivi(e)s / Favoris filtre ; **lien de bio → navigateur intégré** (page portfolio) ; DM : ouverture en bas, appui long → réactions, appels audio/vidéo, barre = champ + caméra, aperçu mis à jour, plus d'état vocal collant, nouveau message réel ; recherche : tuiles → détail ; profils : **followers / suivis → listes réelles** (+ « et N autres » pour les grands comptes), 2 onglets, Modifier/Partager réels ; menu ≡ = Paramètres, Enregistrements, Archives ; viewer story épuré, message depuis une story → DM avec la story intégrée.
-- **Snapchat** : **simplifié de moitié** (3 148 → 2 606 lignes) : liste fidèle sans caméras, composeur caméra + champ + emoji, appels audio/vidéo, fiche ami ouvrable, carte sans Souvenirs/Tendances/Footsteps/stockage avec un avatar par ami et recentrage pour tous, profil simple (sarah.lvsr, avatar visible, listes = compteurs, demandes d'ami à jour partout), caméra réduite, plus de Snapchat+/Spotlight-profil/Anniversaire/Snapcode ni libellés bizarres.
+### Ce qui est nouveau
+- **PayPal** (icône page 2, à côté de Mail) : thème clair mesuré au pixel ; Accueil / solde 12,40 € / activité ; transaction ouverte ; Envoyer → montant → confirmation, avec **débit réel du solde** et refus crédible si insuffisant ; Portefeuille (Visa LCL •••• 4417) ; Notifications, Profil, Paramètres (1ʳᵉ page), Abonnements. **Indice** : paiements « Amis et famille » à Marc (120 € le 12/06 — la veille du Western Union —, 150 €, 200 €), un envoi de 300 € bloqué par PayPal le 16/08, et une demande d'argent reçue « GLOBAL MARINE CREW SUPPORT » 480 € (réf. 7845 d'OKAFOR).
+- **App Store** (icône existante, enfin ouvrable) : thème sombre ; barre d'onglets flottante iOS 26 ; Aujourd'hui / Jeux / Apps / Arcade à contenu fixe ; Recherche réelle + fiche d'app ; **Obtenir → anneau → Ouvrir** qui ouvre vraiment l'app du jeu ; **Mettre à jour** fait disparaître la ligne ; Compte de Sarah : achats, **abonnements** (dont deux **indices** : « GoldTrade Pro » 39,99 €/mois et « Cœur à Cœur » 24,99 €/mois toujours prélevés alors que les apps ont été supprimées), mises à jour (6).
+- **Musique** (icône existante, enfin ouvrable) : fond noir, rouge Apple Music, barre flottante + loupe ; Accueil « Pour vous » / Écoutés récemment ; Nouveautés ; Radio ; Bibliothèque (playlists, artistes, albums, morceaux — **127 morceaux exactement**, cohérents avec Spotify) ; album et playlist ouverts ; **lecteur plein écran ↔ mini-lecteur ↔ file d'attente toujours synchrones** (pas d'audio réel : état seulement). **Indice** : playlist « Marseille — le 28 ⚓️ », Marine « Tricheur » en pause à 0:41.
 
 ### ✅ À VÉRIFIER DANS CE BUILD (checklist)
-- [ ] Facebook — depuis n'importe quel écran (fil, post, commentaires, Reels, Groupes, tiroir ☰, partage, story) : la fausse capsule home est visible et ramène à l'accueil du JEU, jamais à ton iPhone
-- [ ] Facebook — post → commentaires : le compteur = ce que tu vois ; « Voir les réponses » les déplie ; aucun message « hors connexion » nulle part ensuite
-- [ ] Facebook — Rejoindre un groupe → bascule + visible dans « Vos groupes » ; auteur d'un reel → son profil ; retour depuis un profil tiers
-- [ ] Facebook — profil de Sarah : plus de stylo / croix / ⋯ / flèches / Créer en direct / Gérer ; « 5 amis » et « 3 publications » s'ouvrent
-- [ ] Facebook → Messenger — Partager un post → Envoyer dans Messenger → la carte du post est dans la conversation
-- [ ] Messenger → Facebook — notifications → « Voir le profil Facebook » → Facebook s'ouvre SUR cette personne
-- [ ] Messenger — composeur sans vocal ni + ; fiche allégée ; menu sans Changer de profil / Communautés ; Invitations : Voir tout et Voir plus ouvrent des listes
-- [ ] Instagram — DM : la conversation s'ouvre en bas ; appui long → réaction ; appels audio et vidéo ; envoyer un message → l'aperçu de la liste change ; plus d'interface vocale
-- [ ] Instagram — profil (le tien et un autre) : followers et suivis → listes ; 2 onglets ; lien de bio → page dans le navigateur intégré
-- [ ] Instagram — partager un post à quelqu'un → il apparaît dans sa DM ; envoyer un message depuis une story → la story est dans la DM
-- [ ] Instagram — recherche : une tuile s'ouvre ; feed : plus de ≡ ni de Republier ; Pour vous / Suivi(e)s change le fil
-- [ ] Snapchat — liste sans caméras ; conversation : appels, fiche ami, composeur simple ; carte : un avatar par ami, chacun recentre ; profil : amis / meilleurs amis / demandes cohérents ; caméra simple
-- [ ] Régression rapide — Notes v3 (jaune, boutons blancs) si pas encore jugée
+- [ ] PayPal — l'icône est sur la page 2 ; l'app s'ouvre en clair ; Accueil : solde, « Envoyer », activité ; une transaction s'ouvre
+- [ ] PayPal — Envoyer 5 € à Chloé → confirmation → le solde a baissé et la ligne est en tête de l'activité ; Envoyer 300 € à Marc → blocage crédible ; Envoyer plus que le solde → refus
+- [ ] PayPal — Portefeuille → carte Visa 4417 ; Profil / Paramètres / Abonnements s'ouvrent ; la demande « Global Marine Crew Support » se lit
+- [ ] App Store — Aujourd'hui / Jeux / Apps / Arcade / Recherche : chaque onglet répond ; recherche « kiné » → résultats ; une fiche s'ouvre (captures, notes)
+- [ ] App Store — Obtenir sur une app non installée → anneau → « Ouvrir » ; Mettre à jour une app → elle disparaît de la liste et le compteur baisse
+- [ ] App Store — avatar → Compte : achats groupés par date, Abonnements (GoldTrade Pro, Cœur à Cœur), Mises à jour
+- [ ] Musique — Accueil, Nouveautés, Radio, Bibliothèque : chaque onglet répond ; Morceaux = 127 ; un album et une playlist s'ouvrent
+- [ ] Musique — lecture : mini-lecteur, plein écran, file d'attente cohérents ; suivant / précédent ; recherche « Marine »
+- [ ] Musique — playlist « Marseille — le 28 » présente
+- [ ] Global — la fausse capsule home ramène à l'accueil du jeu depuis les trois apps ; aucun mot anglais
+- [ ] Rappel — checklist du 280 (4 sociales v3.1 + Notes v3) si pas encore faite
 
 ---
 

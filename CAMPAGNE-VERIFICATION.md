@@ -41,7 +41,7 @@ navigation & gestes · contenu narratif Sarah · animations.
 | 20 | Ma Banque | ✅ VALIDÉE 02/09 20h10 (build 278) |
 | 21-24 | Messenger, Instagram, Snapchat, Facebook | 🔄 RE-TEST build 280 (lot D92 « juste milieu » sur la refonte D91) |
 | 25-28 | X, ChatGPT, Spotify, YouTube | à vérifier |
-| A1-A3 | PayPal, App Store, Musique (vague A) | 🆕 build 281 (06/09) — construites D92 contre les vidéos du 06/09 |
+| A1-A3 | PayPal, App Store, Musique (vague A) | 🔄 À TESTER build 281 (publié 06/09 20h18) — construites D92 contre les vidéos du 06/09 |
 
 Builds 276-277 rouges (corrigés) ; **278 VERT, validé 16/16 (02/09 20h10)** ; **279 (03/09 15h08) = refonte D91 des 4 sociales + Notes v3** ; **280 (03/09 18h45) = lot D92 juste milieu** (retours 279) ; **281 (06/09 20h12) = vague A : PayPal, App Store, Musique**.
 

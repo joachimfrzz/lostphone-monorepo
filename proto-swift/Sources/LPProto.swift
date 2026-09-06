@@ -71,6 +71,9 @@ struct EcranCapture: View {
         case "spotify": SpotifyVue()
         case "youtube": ecransYt()
         case "cartes": ecransCartes()
+        case "musique": ecransMusique()
+        case "paypal": ecransPaypal()
+        case "appstore": ecransAppstore()
         default: VerrouillageView()
         }
     }
@@ -303,6 +306,119 @@ struct EcranCapture: View {
         case "cartes.ajout": AjoutCarteVue()
         case "cartes.reglages": RechercheCartesVue()
         default: CartesVueWallet()
+        }
+    }
+
+    // PayPal v1 D92 (06/09) — registre aligné sur les 263 frames de Joachim.
+    // Les clés « paypal#0..3 » retombent sur la racine PayPalVue(onglet:) : Accueil,
+    // Comptes, Envoyer/demander, Activité. Les données viennent d'accesseurs NON
+    // optionnels de PpCapture (aucun indice nu, aucune force-unwrap).
+    @ViewBuilder
+    private func ecransPaypal() -> some View {
+        switch cle {
+        case "paypal.solde":
+            PpEcranCapture { PpSoldeVue() }
+        case "paypal.transactions":
+            PpEcranCapture { PpToutesTransactionsVue() }
+        case "paypal.transaction":
+            PpEcranCapture { PpTransactionVue(tx: PpCapture.transaction()) }
+        case "paypal.paiement":
+            PpEcranCapture { PpTransactionVue(tx: PpCapture.paiement()) }
+        case "paypal.historique":
+            PpEcranCapture {
+                PpHistoriqueVue(tiers: "Marc", initiales: "M", teinte: 0x2F6F5F, marchand: false)
+            }
+        case "paypal.montant":
+            PpEcranCapture { PpMontantVue(contact: PpCapture.contact()) }
+        case "paypal.verifier":
+            PpFeuilleEnvoi(contact: PpCapture.contact(), montant: 25, note: "",
+                           surRefus: { _ in }, surInterruption: {}, surSucces: {})
+        case "paypal.interrompu":
+            PpInterrompuVue {}
+        case "paypal.confirmation":
+            PpConfirmationVue(destinataire: "Chloé", montant: "25,00 €") {}
+        case "paypal.demande":
+            PpEcranCapture { PpDemandeVue(demande: PpCapture.demande()) }
+        case "paypal.notifications":
+            PpEcranCapture { PpNotificationsVue() }
+        case "paypal.menu":
+            PpEcranCapture { PpMenuVue() }
+        case "paypal.profil":
+            PpEcranCapture { PpProfilVue() }
+        case "paypal.coordonnees":
+            PpEcranCapture { PpCoordonneesVue() }
+        case "paypal.parametres":
+            PpEcranCapture { PpParametresVue() }
+        case "paypal.notifsreglages":
+            PpEcranCapture { PpNotifsReglagesVue() }
+        case "paypal.securite":
+            PpEcranCapture { PpSecuriteVue() }
+        case "paypal.abonnements":
+            PpEcranCapture { PpAbonnementsVue() }
+        case "paypal.abonnement":
+            PpEcranCapture { PpAbonnementDetailVue(abonnement: PpCapture.abonnement()) }
+        case "paypal.portefeuille", "paypal.carte":
+            PpEcranCapture { PpCarteBancaireVue() }
+        default:
+            PayPalVue(onglet: PpCapture.ongletDemande)
+        }
+    }
+
+    // App Store v1 D92 (06/09) — 226 frames. Les clés « appstore#0..4 » passent par la COQUILLE
+    // (AppStoreVue(onglet:)) pour que la barre d'onglets flottante et la BarreHome restent visibles.
+    @ViewBuilder
+    private func ecransAppstore() -> some View {
+        switch cle {
+        case "appstore#0": AppStoreVue(onglet: 0).coquilleSarah()
+        case "appstore#1": AppStoreVue(onglet: 1).coquilleSarah()
+        case "appstore#2": AppStoreVue(onglet: 2).coquilleSarah()
+        case "appstore#3": AppStoreVue(onglet: 3).coquilleSarah()
+        case "appstore#4": AppStoreVue(onglet: 4).coquilleSarah()
+        case "appstore.recherche": AppStoreVue(onglet: 4).coquilleSarah()
+        default: AsCapture(cle: cle).coquilleSarah()
+        }
+    }
+
+    // Musique v1 D92 (06/09) — 180 frames de référence.
+    // Les écrans poussés passent par MuPile (le NavigationStack + son UNIQUE navigationDestination).
+    // « musique#0..4 » retombe sur la racine, qui lit ONGLET dans son init (comme SnapchatVue).
+    @ViewBuilder
+    private func ecransMusique() -> some View {
+        switch cle {
+        case "musique.album":
+            MuPile { MuAlbumVue(indice: 10) }
+        case "musique.playlist":
+            MuPile { MuPlaylistVue(indice: 0) }
+        case "musique.artiste":
+            MuPile { MuArtisteVue(nom: "Jul") }
+        case "musique.morceaux":
+            MuPile { MuListeMorceauxVue() }
+        case "musique.albums":
+            MuPile { MuListeAlbumsVue() }
+        case "musique.artistes":
+            MuPile { MuListeArtistesVue() }
+        case "musique.playlists":
+            MuPile { MuListePlaylistsVue() }
+        case "musique.favoris":
+            MuPile { MuFavorisVue() }
+        case "musique.telechargements":
+            MuPile { MuTelechargementsVue() }
+        case "musique.recents":
+            MuPile { MuRecentsVue() }
+        case "musique.titresmoment":
+            MuPile { MuTitresMomentVue() }
+        case "musique.station":
+            MuPile { MuStationVue(indice: 0) }
+        case "musique.genre":
+            MuPile { MuGenreVue(genre: "Électronique") }
+        case "musique.recherche":
+            MusiqueVue(onglet: 4).coquilleSarah()
+        case "musique.lecteur":
+            MuLecteurVueCapture()
+        case "musique.file":
+            MuFileVue()
+        default:
+            MusiqueVue().coquilleSarah()
         }
     }
 
@@ -1049,11 +1165,15 @@ struct AccueilView: View {
     @State private var chatgptOuvert = false
     @State private var spotifyOuvert = false
     @State private var youtubeOuvert = false
+    @State private var paypalOuvert = false
+    @State private var musiqueOuverte = false
+    @State private var appStoreOuvert = false
     @State private var page = 0
     // v2 correctifs 31/08 : badge WhatsApp de l'accueil = vraies non-lues (disparaît à zéro)
     @ObservedObject private var magasinWA = MagasinWA.partage
     private var badgeWA: String? { magasinWA.nonLues.isEmpty ? nil : "\(magasinWA.nonLues.count)" }
     @ObservedObject private var routeur = Routeur.partage
+    @ObservedObject private var pontAppStore = PontAppStore.partage
 
     // Page 1 : les apps « système » (ordre inspiré du réel) — Page 2 : le reste
     private let page1: [(String, Color, String, Color)] = [
@@ -1076,6 +1196,8 @@ struct AccueilView: View {
     ]
     private let page2: [(String, Color, String, Color)] = [
         ("Mail", Color(hex: 0x0A84FF), "envelope.fill", .white),
+        // PayPal v1 (06/09) — asset ic-paypal (carré plein 180×180, squircle appliqué par AppIcone)
+        ("PayPal", Color(hex: 0x002484), "p.circle.fill", .white),
         ("Musique", .white, "music.note", Color(hex: 0xFA2D48)),
         ("Messenger", Color(hex: 0x0084FF), "bolt.horizontal.circle.fill", .white),
         ("Instagram", Color(hex: 0xE1306C), "camera.circle", .white),
@@ -1098,6 +1220,7 @@ struct AccueilView: View {
         instagramOuvert = false; snapchatOuvert = false
         facebookOuvert = false; xOuvert = false; chatgptOuvert = false
         spotifyOuvert = false; youtubeOuvert = false
+        paypalOuvert = false; musiqueOuverte = false; appStoreOuvert = false
     }
 
     private func actionPour(_ nom: String) -> (() -> Void)? {
@@ -1125,6 +1248,9 @@ struct AccueilView: View {
         case "ChatGPT": return { chatgptOuvert = true }
         case "Spotify": return { spotifyOuvert = true }
         case "YouTube": return { youtubeOuvert = true }
+        case "Musique": return { musiqueOuverte = true }
+        case "PayPal": return { paypalOuvert = true }
+        case "App Store": return { appStoreOuvert = true }
         case "Mail": return { mailOuvert = true }
         case "WhatsApp": return { whatsappOuvert = true }
         case "Téléphone": return { telephoneOuvert = true }
@@ -1315,6 +1441,15 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $chatgptOuvert) { ChatGPTVue().coquilleSarah(claire: true) }
         .fullScreenCover(isPresented: $spotifyOuvert) { SpotifyVue().coquilleSarah() }
         .fullScreenCover(isPresented: $youtubeOuvert) { YouTubeVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $paypalOuvert) { PayPalVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $musiqueOuverte) { MusiqueVue().coquilleSarah() }
+        .fullScreenCover(isPresented: $appStoreOuvert) { AppStoreVue().coquilleSarah() }
+        // D82 : « Ouvrir » dans l'App Store ouvre RÉELLEMENT l'app du jeu (relais PontAppStore).
+        .onChange(of: pontAppStore.demande) { _, _ in
+            guard let nom = PontAppStore.partage.consommer() else { return }
+            appStoreOuvert = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { actionPour(nom)?() }
+        }
         .onChange(of: routeur.demande) { _, _ in
             // Navigation inter-apps : fermer l'app courante puis ouvrir la cible (P3)
             fermerToutesLesApps()
@@ -1361,6 +1496,7 @@ struct AppIcone: View {
         "Safari": "safari", "Météo": "meteo", "Localiser": "localiser",
         "WhatsApp": "whatsapp", "Snapchat": "snapchat", "Spotify": "spotify",
         "YouTube": "youtube", "Telegram": "telegram",
+        "PayPal": "paypal",
     ]
     static func cleAsset(_ nom: String) -> String { assets[nom] ?? "" }
 

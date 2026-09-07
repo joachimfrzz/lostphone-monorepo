@@ -49,3 +49,12 @@ if [ -f outils/memoji.tar.b64 ]; then
   tar xf /tmp/memoji.tar
   echo "Memoji restaurés ($(tar tf /tmp/memoji.tar | wc -l | tr -d ' ') images)."
 fi
+# Vague B 07/09 : icônes officielles Uber / SNCF Connect (180×180, fiches App Store) → Ressources/ic-uber.png, ic-sncf.png
+if [ -f outils/icones-vagueB.tar.b64 ]; then
+  mkdir -p /tmp/icones-vagueB proto-swift/Ressources
+  python3 -c "import base64; open('/tmp/icones-vagueB.tar','wb').write(base64.b64decode(open('outils/icones-vagueB.tar.b64').read()))"
+  tar xf /tmp/icones-vagueB.tar -C /tmp/icones-vagueB
+  cp /tmp/icones-vagueB/ic-uber-180.png proto-swift/Ressources/ic-uber.png
+  cp /tmp/icones-vagueB/ic-sncf-180.png proto-swift/Ressources/ic-sncf.png
+  echo "Icônes vague B restaurées (Uber, SNCF Connect)."
+fi

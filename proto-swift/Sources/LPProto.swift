@@ -74,6 +74,9 @@ struct EcranCapture: View {
         case "musique": ecransMusique()
         case "paypal": ecransPaypal()
         case "appstore": ecransAppstore()
+        case "uber": ecransUber()
+        case "sncf": ecransSncf()
+        case "facetime": ecransFacetime()
         default: VerrouillageView()
         }
     }
@@ -419,6 +422,137 @@ struct EcranCapture: View {
             MuFileVue()
         default:
             MusiqueVue().coquilleSarah()
+        }
+    }
+
+    // Vague B (07/09) — Uber (56 frames), SNCF Connect (196 frames), FaceTime (captures officielles Apple, D93).
+    // Registres remplis à l'intégration à partir des livraisons docs/vague-b/*-livraison.md.
+    @ViewBuilder
+    private func ecransUber() -> some View {
+        switch cle {
+        case "uber#0": UberVue(onglet: 0).coquilleSarah(claire: true)
+        case "uber#1": UberVue(onglet: 1).coquilleSarah(claire: true)
+        case "uber#2": UberVue(onglet: 2).coquilleSarah(claire: true)
+        case "uber#3": UberVue(onglet: 3).coquilleSarah(claire: true)
+        case "uber.destination": UbEcranCapture { UbDestinationVue(quand: "") }
+        case "uber.courses": UbEcranCapture { UbCoursesVue(destination: UbCapture.lieu(), quand: "") }
+        case "uber.reserver": UbEcranCapture { UbReserveVue() }
+        case "uber.heure": UbEcranCapture { UbHeureVue(destination: UbCapture.lieu()) }
+        case "uber.confirmation": UbEcranCapture { UbConfirmationVue(destination: UbCapture.lieu(), option: UbCapture.option()) }
+        case "uber.activite": UbEcranCapture { UbActiviteVue() }
+        case "uber.course": UbEcranCapture { UbCourseVue(course: UbCapture.course()) }
+        case "uber.reservation": UbEcranCapture { UbReservationVue(reservation: UbCapture.reservation()) }
+        case "uber.compte": UbEcranCapture { UbCompteVue() }
+        case "uber.wallet": UbEcranCapture { UbWalletVue() }
+        case "uber.parametres": UbEcranCapture { UbParametresVue() }
+        case "uber.coordonnees": UbEcranCapture { UbCoordonneesVue() }
+        case "uber.aide": UbEcranCapture { UbAideVue() }
+        case "uber.securite": UbEcranCapture { UbSecuriteVue() }
+        case "uber.messages": UbEcranCapture { UbMessagesVue() }
+        case "uber.message": UbEcranCapture { UbMessageVue(message: UbCapture.message()) }
+        case "uber.uberone": UbEcranCapture { UbUberOneVue() }
+        case "uber.services": UbEcranCapture { UbServicesVue() }
+        default: UberVue(onglet: UbCapture.ongletDemande).coquilleSarah(claire: true)
+        }
+    }
+
+    @ViewBuilder
+    private func ecransSncf() -> some View {
+        switch cle {
+        case "sncf.recherche":
+            SnEcranCapture {
+                SnRechercheVue(depart: "Lyon Part-Dieu",
+                               arrivee: "Marseille Saint-Charles", mode: .train)
+            }
+        case "sncf.destination":
+            SnEcranCapture {
+                SnDestinationVue(titre: "Rechercher", versRecherche: true, choisir: { _ in })
+            }
+        case "sncf.calendrier":
+            SnEcranCapture { SnCalendrierVue(offset: 0, heure: 10) { _, _ in } }
+        case "sncf.resultats":
+            SnEcranCapture {
+                SnResultatsVue(depart: "Lyon Part-Dieu", arrivee: "Marseille Saint-Charles",
+                               offset: 0, voyageurs: 1, directs: false, mode: .train)
+            }
+        case "sncf.trajet":
+            SnEcranCapture { SnTarifVue(trajet: SnCapture.trajet(), voyageurs: 1) }
+        case "sncf.tarif":
+            SnEcranCapture { SnConditionsVue() }
+        case "sncf.train":
+            SnEcranCapture { SnTrainVue(trajet: SnCapture.trajet()) }
+        case "sncf.panier":
+            SnEcranCapture { SnPanierVue() }
+                .onAppear { SnCapture.preparerPanier() }
+        case "sncf.paiement":
+            SnEcranCapture { SnPaiementVue() }
+                .onAppear { SnCapture.preparerPanier() }
+        case "sncf.billet":
+            SnEcranCapture { SnBilletVue(voyage: SnCapture.voyage()) }
+        case "sncf.voyages":
+            SnEcranCapture { SnVoyageVue(voyage: SnCapture.voyage()) }
+        case "sncf.horaires":
+            SnEcranCapture { SnHorairesVue(gare: "Lyon Part-Dieu") }
+        case "sncf.gare":
+            SnEcranCapture { SnGareRechercheVue() }
+        case "sncf.trafic":
+            SnEcranCapture { SnTraficVue() }
+        case "sncf.perturbation":
+            SnEcranCapture { SnPerturbationVue(perturbation: SnCapture.perturbation()) }
+        case "sncf.compte":
+            SnEcranCapture { SnCompteVue(onglet: .constant(3)) }
+        case "sncf.coordonnees":
+            SnEcranCapture { SnCoordonneesVue() }
+        case "sncf.identite":
+            SnEcranCapture { SnIdentiteVue { } }
+        case "sncf.parametres":
+            SnEcranCapture { SnParametresVue() }
+        case "sncf.affichage":
+            SnEcranCapture { SnAffichageVue() }
+        case "sncf.cartes":
+            SnEcranCapture { SnCartesReductionVue() }
+        case "sncf.qr":
+            SnEcranCapture { SnQrCartesVue() }
+        case "sncf.paiements":
+            SnEcranCapture { SnMoyensPaiementVue() }
+        case "sncf.alertes":
+            SnEcranCapture { SnAlertesBilletsVue() }
+        case "sncf.compagnons":
+            SnEcranCapture { SnCompagnonsVue() }
+        case "sncf.offre":
+            SnEcranCapture { SnOffreVue(offre: SnCapture.offre()) }
+        case "sncf.alerte3117":
+            SnEcranCapture { SnAlerteVue() }
+        case "sncf.notifications":
+            SnEcranCapture { SnNotificationsVue() }
+        case "sncf.aide":
+            SnEcranCapture { SnAideVue(question: "Comment fonctionne une option ?") }
+        default: SncfVue(onglet: SnCapture.ongletDemande).coquilleSarah()
+        }
+    }
+
+    @ViewBuilder
+    private func ecransFacetime() -> some View {
+        switch cle {
+        case "facetime#0":
+            FaceTimeVue().coquilleSarah()
+        case "facetime.nouveau":
+            FtEcranCapture { FtNouveauVue() }
+        case "facetime.appel":
+            FtEcranCapture { FtAppelVue(noms: ["Marc ❤️"], mode: .video) }
+        case "facetime.indisponible":
+            FtEcranCapture { FtAppelVue(noms: ["Marc ❤️"], mode: .video, indisponibleInitiale: true) }
+        case "facetime.enregistrement":
+            FtEcranCapture { FtEnregistrementVue(destinataire: "Marc ❤️", phaseInitiale: .relecture) }
+        case "facetime.messagevideo":
+            FtEcranCapture { FtLecteurMessageVue(message: FtCapture.message()) }
+        case "facetime.detail":
+            FtEcranCapture { FtDetailVue(appel: FtCapture.appel()) }
+        case "facetime.lien":
+            FtEcranCapture { FtLienVue() }
+        case "facetime.modifier":
+            FtEcranCapture { FtListeVue(chemin: .constant([]), editionInitiale: true) }
+        default: FaceTimeVue().coquilleSarah()
         }
     }
 
@@ -1168,6 +1302,9 @@ struct AccueilView: View {
     @State private var paypalOuvert = false
     @State private var musiqueOuverte = false
     @State private var appStoreOuvert = false
+    @State private var uberOuvert = false
+    @State private var sncfOuvert = false
+    @State private var facetimeOuvert = false
     @State private var page = 0
     // v2 correctifs 31/08 : badge WhatsApp de l'accueil = vraies non-lues (disparaît à zéro)
     @ObservedObject private var magasinWA = MagasinWA.partage
@@ -1207,6 +1344,10 @@ struct AccueilView: View {
         ("ChatGPT", .white, "circle.hexagongrid.fill", .black),
         ("Spotify", .black, "circle.circle.fill", Color(hex: 0x1ED760)),
         ("YouTube", .white, "play.rectangle.fill", Color(hex: 0xFF0000)),
+        // Vague B (07/09) : FaceTime (asset simulateur facetime) + icônes officielles App Store (ic-uber, ic-sncf, 180×180)
+        ("FaceTime", Color(hex: 0x30D158), "video.fill", .white),
+        ("Uber", .black, "car.fill", .white),
+        ("SNCF Connect", Color(hex: 0x0C131F), "tram.fill", Color(hex: 0x5FE3FF)),
     ]
 
     private func fermerToutesLesApps() {
@@ -1221,6 +1362,7 @@ struct AccueilView: View {
         facebookOuvert = false; xOuvert = false; chatgptOuvert = false
         spotifyOuvert = false; youtubeOuvert = false
         paypalOuvert = false; musiqueOuverte = false; appStoreOuvert = false
+        uberOuvert = false; sncfOuvert = false; facetimeOuvert = false
     }
 
     private func actionPour(_ nom: String) -> (() -> Void)? {
@@ -1251,6 +1393,9 @@ struct AccueilView: View {
         case "Musique": return { musiqueOuverte = true }
         case "PayPal": return { paypalOuvert = true }
         case "App Store": return { appStoreOuvert = true }
+        case "Uber": return { uberOuvert = true }
+        case "SNCF Connect": return { sncfOuvert = true }
+        case "FaceTime": return { facetimeOuvert = true }
         case "Mail": return { mailOuvert = true }
         case "WhatsApp": return { whatsappOuvert = true }
         case "Téléphone": return { telephoneOuvert = true }
@@ -1444,6 +1589,9 @@ struct AccueilView: View {
         .fullScreenCover(isPresented: $paypalOuvert) { PayPalVue().coquilleSarah(claire: true) }
         .fullScreenCover(isPresented: $musiqueOuverte) { MusiqueVue().coquilleSarah() }
         .fullScreenCover(isPresented: $appStoreOuvert) { AppStoreVue().coquilleSarah() }
+        .fullScreenCover(isPresented: $uberOuvert) { UberVue().coquilleSarah(claire: true) }
+        .fullScreenCover(isPresented: $sncfOuvert) { SncfVue().coquilleSarah() }
+        .fullScreenCover(isPresented: $facetimeOuvert) { FaceTimeVue().coquilleSarah() }
         // D82 : « Ouvrir » dans l'App Store ouvre RÉELLEMENT l'app du jeu (relais PontAppStore).
         .onChange(of: pontAppStore.demande) { _, _ in
             guard let nom = PontAppStore.partage.consommer() else { return }
@@ -1497,6 +1645,7 @@ struct AppIcone: View {
         "WhatsApp": "whatsapp", "Snapchat": "snapchat", "Spotify": "spotify",
         "YouTube": "youtube", "Telegram": "telegram",
         "PayPal": "paypal",
+        "Uber": "uber", "SNCF Connect": "sncf",
     ]
     static func cleAsset(_ nom: String) -> String { assets[nom] ?? "" }
 

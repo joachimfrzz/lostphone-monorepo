@@ -14,7 +14,7 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 ## 🔔 DERNIER BUILD — à vérifier en priorité
 > Cette section est MISE À JOUR À CHAQUE BUILD (règle D89, 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
-**Build : TestFlight n° 282 — PRÊT À LANCER, en attente de ton GO** (le code est poussé, le miroir simulateur est VERT : 64 écrans capturés, compilation réussie du premier coup). Il contiendra **trois nouvelles apps de la vague B**, construites le 07/09 sous la doctrine D92 : **Uber** et **SNCF Connect** contre tes vidéos du 07/09 (56 + 196 écrans), **FaceTime** uniquement contre les captures officielles Apple iOS 26 (D93 — tu n'avais aucun enregistrement). Il reprend intégralement le 281 (vague A « quasi parfaite », fixs reportés) et le 280.
+**Build : TestFlight n° 282 — lancé le 07/09 à 23h52 sur ton GO, publié à 00h01 (disponible ~10-15 min après).** Il contiendra **trois nouvelles apps de la vague B**, construites le 07/09 sous la doctrine D92 : **Uber** et **SNCF Connect** contre tes vidéos du 07/09 (56 + 196 écrans), **FaceTime** uniquement contre les captures officielles Apple iOS 26 (D93 — tu n'avais aucun enregistrement). Il reprend intégralement le 281 (vague A « quasi parfaite », fixs reportés) et le 280.
 
 ### Ce qui est nouveau
 - **Uber** (icône officielle, page 2) : accueil clair fidèle à ta vidéo (carte dessinée, « Où allez-vous ? », adresses récentes, Uber Eats), saisie de destination avec suggestions lyonnaises filtrées, choix de course (UberX / Wait & Save / Priority / Uber Pet, prix et heures calculés), « Choisissez UberX » → point de prise en charge → refus crédible « aucun chauffeur » (pas de course en direct, D92) ; **Réserver → crée réellement une course planifiée** visible dans Activité, annulable. **Indices** : course planifiée **ven. 28 août 05:40 Domicile → Gare Part-Dieu** (elle part rejoindre « Marc » à Marseille) ; deux courses le **17 juillet** (LCL Terreaux 10:52 puis Part-Dieu 11:35 — le jour du virement de 4 850 € et du Western Union). Compte, Wallet (Visa LCL 4417), Sécurité, Messages, Paramètres, Uber One (non abonnée).
@@ -48,7 +48,7 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 | 5 | Messenger · Instagram · Snapchat · Facebook | **REFONTE D91** → TestFlight **279** (03/09 15h08) |
 | 6 | X · ChatGPT · Spotify · YouTube | lot session 6 |
 | A | PayPal · App Store · Musique | TestFlight **281** (06/09 20h12) — « quasi parfait » 21h17 |
-| B | Uber · SNCF Connect · FaceTime | TestFlight **282** — miroir vert 07/09 22h05, en attente du GO |
+| B | Uber · SNCF Connect · FaceTime | TestFlight **282** (07/09 23h52, publié 00h01) |
 
 ---
 

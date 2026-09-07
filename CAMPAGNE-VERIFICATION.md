@@ -41,9 +41,9 @@ navigation & gestes · contenu narratif Sarah · animations.
 | 20 | Ma Banque | ✅ VALIDÉE 02/09 20h10 (build 278) |
 | 21-24 | Messenger, Instagram, Snapchat, Facebook | 🔄 RE-TEST build 280 (lot D92 « juste milieu » sur la refonte D91) |
 | 25-28 | X, ChatGPT, Spotify, YouTube | à vérifier |
-| B1-B3 | Uber, SNCF Connect, FaceTime (vague B) | 🟢 CONSTRUITES 07/09 (miroir vert 22h05, 64 écrans) — TestFlight 282 sur GO de Joachim |
+| B1-B3 | Uber, SNCF Connect, FaceTime (vague B) | 🔄 À TESTER build 282 (publié 08/09 00h01) — construites 07/09 D92/D93 |
 | A1-A3 | PayPal, App Store, Musique (vague A) | ✅ QUASI-VALIDÉES 06/09 21h17 (build 281 : « quasi parfait ») — petits fixs reportés, à lister |
 
-Builds 276-277 rouges (corrigés) ; **278 VERT, validé 16/16 (02/09 20h10)** ; **279 (03/09 15h08) = refonte D91 des 4 sociales + Notes v3** ; **280 (03/09 18h45) = lot D92 juste milieu** (retours 279) ; **281 (06/09 20h12) = vague A : PayPal, App Store, Musique** (quasi-validé) ; **282 (à lancer sur GO) = vague B : Uber, SNCF Connect, FaceTime**.
+Builds 276-277 rouges (corrigés) ; **278 VERT, validé 16/16 (02/09 20h10)** ; **279 (03/09 15h08) = refonte D91 des 4 sociales + Notes v3** ; **280 (03/09 18h45) = lot D92 juste milieu** (retours 279) ; **281 (06/09 20h12) = vague A : PayPal, App Store, Musique** (quasi-validé) ; **282 (07/09 23h52, publié 00h01) = vague B : Uber, SNCF Connect, FaceTime**.
 
 Ensuite : création des nouvelles apps (chacune naît avec ce niveau d'exigence).

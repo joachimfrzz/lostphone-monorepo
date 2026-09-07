@@ -500,7 +500,7 @@ struct EcranCapture: View {
         case "sncf.perturbation":
             SnEcranCapture { SnPerturbationVue(perturbation: SnCapture.perturbation()) }
         case "sncf.compte":
-            SnEcranCapture { SnCompteVue(onglet: .constant(3)) }
+            SncfVue(onglet: 3).coquilleSarah()
         case "sncf.coordonnees":
             SnEcranCapture { SnCoordonneesVue() }
         case "sncf.identite":
@@ -537,7 +537,7 @@ struct EcranCapture: View {
         case "facetime#0":
             FaceTimeVue().coquilleSarah()
         case "facetime.nouveau":
-            FtEcranCapture { FtNouveauVue() }
+            FaceTimeVue(recouvrementInitial: .nouveau).coquilleSarah()
         case "facetime.appel":
             FtEcranCapture { FtAppelVue(noms: ["Marc ❤️"], mode: .video) }
         case "facetime.indisponible":
@@ -549,7 +549,7 @@ struct EcranCapture: View {
         case "facetime.detail":
             FtEcranCapture { FtDetailVue(appel: FtCapture.appel()) }
         case "facetime.lien":
-            FtEcranCapture { FtLienVue() }
+            FaceTimeVue(recouvrementInitial: .lien).coquilleSarah()
         case "facetime.modifier":
             FtEcranCapture { FtListeVue(chemin: .constant([]), editionInitiale: true) }
         default: FaceTimeVue().coquilleSarah()

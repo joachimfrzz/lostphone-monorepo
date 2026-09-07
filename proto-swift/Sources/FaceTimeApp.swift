@@ -386,6 +386,13 @@ struct FaceTimeVue: View {
     @State private var enregistrementPour = ""
     @State private var messageOuvert: FtMessageVideo? = nil
 
+    /// Capture Miroir (07/09) : permet d'ouvrir la racine directement avec une feuille posée
+    /// SUR la liste (comme dans le jeu), au lieu de capturer la feuille seule sur fond noir.
+    init(recouvrementInitial: FtRecouvrement = .aucun, appelInitial: [String] = ["Marc ❤️"]) {
+        _recouvrement = State(initialValue: recouvrementInitial)
+        _appelNoms = State(initialValue: appelInitial)
+    }
+
     var body: some View {
         ZStack(alignment: .bottom) {
             FtTeinte.fond.ignoresSafeArea()

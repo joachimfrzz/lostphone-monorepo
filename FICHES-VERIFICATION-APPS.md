@@ -14,25 +14,26 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 ## 🔔 DERNIER BUILD — à vérifier en priorité
 > Cette section est MISE À JOUR À CHAQUE BUILD (règle D89, 02/09). Tu l'ouvres, tu sais quel build tu testes, ce qui a changé, et exactement quoi contrôler.
 
-**Build : TestFlight n° 281 — lancé le 06/09 à 20h12, publication ~20h30 (disponible ~10-15 min après).** Il contient **trois nouvelles apps de la vague A**, construites contre tes vidéos du 06/09 sous la doctrine D92 (juste milieu) : **PayPal**, **App Store**, **Musique**. Il reprend intégralement le 280 (4 sociales v3.1 + Notes v3) — dont tu ne m'as pas encore donné le verdict : sa checklist reste valable sur ce build.
+**Build : TestFlight n° 282 — PRÊT À LANCER, en attente de ton GO** (le code est poussé, le miroir simulateur est VERT : 64 écrans capturés, compilation réussie du premier coup). Il contiendra **trois nouvelles apps de la vague B**, construites le 07/09 sous la doctrine D92 : **Uber** et **SNCF Connect** contre tes vidéos du 07/09 (56 + 196 écrans), **FaceTime** uniquement contre les captures officielles Apple iOS 26 (D93 — tu n'avais aucun enregistrement). Il reprend intégralement le 281 (vague A « quasi parfaite », fixs reportés) et le 280.
 
 ### Ce qui est nouveau
-- **PayPal** (icône page 2, à côté de Mail) : thème clair mesuré au pixel ; Accueil / solde 12,40 € / activité ; transaction ouverte ; Envoyer → montant → confirmation, avec **débit réel du solde** et refus crédible si insuffisant ; Portefeuille (Visa LCL •••• 4417) ; Notifications, Profil, Paramètres (1ʳᵉ page), Abonnements. **Indice** : paiements « Amis et famille » à Marc (120 € le 12/06 — la veille du Western Union —, 150 €, 200 €), un envoi de 300 € bloqué par PayPal le 16/08, et une demande d'argent reçue « GLOBAL MARINE CREW SUPPORT » 480 € (réf. 7845 d'OKAFOR).
-- **App Store** (icône existante, enfin ouvrable) : thème sombre ; barre d'onglets flottante iOS 26 ; Aujourd'hui / Jeux / Apps / Arcade à contenu fixe ; Recherche réelle + fiche d'app ; **Obtenir → anneau → Ouvrir** qui ouvre vraiment l'app du jeu ; **Mettre à jour** fait disparaître la ligne ; Compte de Sarah : achats, **abonnements** (dont deux **indices** : « GoldTrade Pro » 39,99 €/mois et « Cœur à Cœur » 24,99 €/mois toujours prélevés alors que les apps ont été supprimées), mises à jour (6).
-- **Musique** (icône existante, enfin ouvrable) : fond noir, rouge Apple Music, barre flottante + loupe ; Accueil « Pour vous » / Écoutés récemment ; Nouveautés ; Radio ; Bibliothèque (playlists, artistes, albums, morceaux — **127 morceaux exactement**, cohérents avec Spotify) ; album et playlist ouverts ; **lecteur plein écran ↔ mini-lecteur ↔ file d'attente toujours synchrones** (pas d'audio réel : état seulement). **Indice** : playlist « Marseille — le 28 ⚓️ », Marine « Tricheur » en pause à 0:41.
+- **Uber** (icône officielle, page 2) : accueil clair fidèle à ta vidéo (carte dessinée, « Où allez-vous ? », adresses récentes, Uber Eats), saisie de destination avec suggestions lyonnaises filtrées, choix de course (UberX / Wait & Save / Priority / Uber Pet, prix et heures calculés), « Choisissez UberX » → point de prise en charge → refus crédible « aucun chauffeur » (pas de course en direct, D92) ; **Réserver → crée réellement une course planifiée** visible dans Activité, annulable. **Indices** : course planifiée **ven. 28 août 05:40 Domicile → Gare Part-Dieu** (elle part rejoindre « Marc » à Marseille) ; deux courses le **17 juillet** (LCL Terreaux 10:52 puis Part-Dieu 11:35 — le jour du virement de 4 850 € et du Western Union). Compte, Wallet (Visa LCL 4417), Sécurité, Messages, Paramètres, Uber One (non abonnée).
+- **SNCF Connect** (icône officielle, page 2) : thème bleu nuit mesuré sur ta vidéo ; « Bonjour Sarah ! » ; recherche → calendrier → résultats (TGV INOUI / OUIGO / TER, prix déterministes, Carte Avantage −30 % réelle) → tarif → **panier persistant** → paiement (échec crédible, aucun billet émis) ou **« Poser une option » qui crée réellement un voyage** dans Billets ; horaires en gare Lyon Part-Dieu (retards, supprimés) ; info trafic AURA (métro/tram TCL) ; Offres ; Compte complet ; chatbot scripté. **Indice** : e-billet **TGV INOUI 6171, ven. 28 août 06:44 Lyon Part-Dieu → 08:31 Marseille Saint-Charles, 39 €, acheté le 14 août** (QR code, voiture 12 place 58).
+- **FaceTime** (icône officielle simulateur, page 2) : liste iOS 26 en tuiles-affiches, filtre Tous / Manqués réel, « Modifier » réel, feuille « Nouveau FaceTime » avec filtrage des contacts, appel sortant → « X est indisponible » → Rappeler / **Enregistrer une vidéo** (viseur sombre, décompte, le message apparaît vraiment dans la tuile) ; fiche détail par contact avec tout l'historique. **Indice** : **6 appels vidéo de Sarah vers Marc, tous sans réponse ou annulés**, un seul contact réel — en **audio** (10 mai, 4 min) ; message vidéo de Chloé (0:22, transcription).
 
-### ✅ À VÉRIFIER DANS CE BUILD (checklist)
-- [ ] PayPal — l'icône est sur la page 2 ; l'app s'ouvre en clair ; Accueil : solde, « Envoyer », activité ; une transaction s'ouvre
-- [ ] PayPal — Envoyer 5 € à Chloé → confirmation → le solde a baissé et la ligne est en tête de l'activité ; Envoyer 300 € à Marc → blocage crédible ; Envoyer plus que le solde → refus
-- [ ] PayPal — Portefeuille → carte Visa 4417 ; Profil / Paramètres / Abonnements s'ouvrent ; la demande « Global Marine Crew Support » se lit
-- [ ] App Store — Aujourd'hui / Jeux / Apps / Arcade / Recherche : chaque onglet répond ; recherche « kiné » → résultats ; une fiche s'ouvre (captures, notes)
-- [ ] App Store — Obtenir sur une app non installée → anneau → « Ouvrir » ; Mettre à jour une app → elle disparaît de la liste et le compteur baisse
-- [ ] App Store — avatar → Compte : achats groupés par date, Abonnements (GoldTrade Pro, Cœur à Cœur), Mises à jour
-- [ ] Musique — Accueil, Nouveautés, Radio, Bibliothèque : chaque onglet répond ; Morceaux = 127 ; un album et une playlist s'ouvrent
-- [ ] Musique — lecture : mini-lecteur, plein écran, file d'attente cohérents ; suivant / précédent ; recherche « Marine »
-- [ ] Musique — playlist « Marseille — le 28 » présente
-- [ ] Global — la fausse capsule home ramène à l'accueil du jeu depuis les trois apps ; aucun mot anglais
-- [ ] Rappel — checklist du 280 (4 sociales v3.1 + Notes v3) si pas encore faite
+### ✅ À VÉRIFIER DANS CE BUILD (checklist, 12 points)
+- [ ] Uber — icône page 2 ; Accueil = ta vidéo (carte, champ, adresses, Uber Eats) ; les 4 onglets répondent
+- [ ] Uber — tape « Part » dans « Où allez-vous ? » → Gare Lyon Part-Dieu → liste des courses avec prix → Choisissez UberX → point de prise en charge → message « aucun chauffeur »
+- [ ] Uber — Réserver → heure → destination → « Réservez UberX » → la course apparaît dans Activité › À venir ; Annuler la réservation la retire
+- [ ] Uber — Activité › Passées : les courses du 17 juillet (LCL Terreaux, Part-Dieu) ; une course s'ouvre (carte, reçu, chauffeur) ; Compte → Wallet → Visa 4417
+- [ ] SNCF — icône page 2 ; « Bonjour Sarah ! » ; Billets › À venir : e-billet du 28 août → s'ouvre avec le QR code
+- [ ] SNCF — recherche Lyon Part-Dieu → Marseille Saint-Charles → calendrier → résultats (prix par jour) → un trajet → « Choisir cet aller » → Panier (pastille sur Billets)
+- [ ] SNCF — Panier : « Poser une option gratuitement » → le voyage « Option » apparaît dans Billets › À venir ; « Valider et payer » → Paiement → échec crédible, panier conservé
+- [ ] SNCF — Horaires en gare (Lyon Part-Dieu, départs/arrivées, retards) ; Info trafic (métro B) ; Compte → Coordonnées / Paramètres ; chatbot « option »
+- [ ] FaceTime — icône page 2 ; liste en tuiles ; Marc en rouge ; filtre Manqués ne laisse que Marc et Julie ; ⓘ Marc → fiche avec les 7 appels
+- [ ] FaceTime — Nouvel appel → tape « Ch » → Chloé → FaceTime → sonnerie → « Chloé est indisponible » → Enregistrer une vidéo → envoyer → la tuile Chloé passe en « ↗ Vidéo · À l'instant »
+- [ ] FaceTime — tuile Chloé ▶ 0:22 → message vidéo (transcription) ; Modifier → supprimer un appel → il disparaît (et reste disparu après fermeture)
+- [ ] Global — la fausse capsule home ramène à l'accueil du jeu depuis les trois apps ; aucun mot anglais ; aucune donnée à toi (Auch, Toulouse, ton nom)
 
 ---
 
@@ -46,6 +47,8 @@ Document unique, généré le 2026-09-02 depuis la mémoire projet (rapports S1�
 | 4 | Fichiers ✅ · Localiser ✅ · Cartes ✅ · Ma Banque ✅ (Santé ✅) | TestFlight **278** (02/09 19h14) — ✅ validé 20h10 |
 | 5 | Messenger · Instagram · Snapchat · Facebook | **REFONTE D91** → TestFlight **279** (03/09 15h08) |
 | 6 | X · ChatGPT · Spotify · YouTube | lot session 6 |
+| A | PayPal · App Store · Musique | TestFlight **281** (06/09 20h12) — « quasi parfait » 21h17 |
+| B | Uber · SNCF Connect · FaceTime | TestFlight **282** — miroir vert 07/09 22h05, en attente du GO |
 
 ---
 

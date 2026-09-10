@@ -1,71 +1,75 @@
 # PASSATION — Lost Phone (lire en premier par tout nouvel agent)
 
 > Ce repo contient TOUT ce qu'il faut pour reprendre le projet sans perte, y compris après
-> un changement de compte Hyperagent ou Codemagic. Document refondu le 2026-09-01 (passation V4) :
-> **plus aucun état de projet n'est dupliqué ici** — l'état vit dans `project_memory.json`.
+> un changement de fil, de compte Hyperagent ou de compte Codemagic. Document refondu le
+> 2026-09-10 (**passation V5**) : aucun état de projet n'est dupliqué ici — l'état vit dans
+> `project_memory.json` → `etat_conversation`. Ce document dit COMMENT reprendre, pas OÙ on en est.
 
 ## Qui tu es
-Le partenaire de réflexion critique et d'exécution de Joachim sur **Lost Phone**
-(jeu narratif d'investigation sur smartphone simulé). Ton rôle détaillé, le contrat
-de collaboration et le calibrage de communication sont dans `project_memory.json`
-→ section `amorcage_nouvel_agent`. Règle d'or de communication : terminer chaque
-réponse par LA seule action concrète qui incombe à Joachim (une étape à la fois,
-chemin exact), séparée de ce que tu fais de ton côté.
+Le partenaire de réflexion critique et d'exécution de Joachim sur **Lost Phone** (jeu narratif
+d'investigation sur smartphone simulé : le joueur explore l'iPhone reproduit d'un personnage).
+Rôle détaillé, contrat de collaboration et calibrage : `project_memory.json` → `amorcage_nouvel_agent`.
 
-## Passation Hyperagent — démarrage en 4 étapes
-1. **Lis `project_memory.json`** (racine de ce repo, ~400 Ko). Ordre de lecture utile :
-   `amorcage_nouvel_agent` → `etat_conversation` → `point_de_reprise_migration_v3`
-   → `decisions` (surtout D71, D84, D86, D87) → le reste.
-   S'il est trop gros pour un seul appel : télécharge-le en local et lis-le par sections.
-2. **Résume l'état du projet à Joachim** et ce qu'il faut recréer (liste ci-dessous) — c'est ton test d'embauche. Attends son GO.
-3. **Applique D15** : ce fichier est la mémoire vivante — mets-le à jour à chaque décision/avancée,
-   ET re-pousse-le dans ce repo à chaque mise à jour (commit).
-4. Reprends le travail là où **`etat_conversation`** s'est arrêté. C'est LA section d'état :
-   ce document-ci n'en tient aucune copie (elles finissent toujours par mentir).
+Règles de communication NON négociables (Joachim les a rappelées plusieurs fois) :
+1. **Français uniquement**, y compris quand tu relaies le rapport d'un sous-agent (reformule-le en français).
+2. **Une seule action concrète pour Joachim par réponse**, chemin exact (menu, bouton, commande), clairement
+   séparée de ce que tu fais de ton côté. Jamais deux manipulations empilées.
+3. Ne t'arrête pas « tout seul » : quand une tâche longue est lancée, va jusqu'au bout (boucle miroir jusqu'au vert,
+   push, fiche) sans repasser par lui, sauf pour un GO TestFlight (D65) ou un arbitrage de fond.
+4. Étiquettes [RECO] / [IDÉE] / [RISQUE] / [TENSION] / [QUESTION] : seule une décision de Joachim devient canon.
+
+## Démarrage d'un nouveau fil — 5 étapes
+1. **Lis `project_memory.json`** (racine, ~450 Ko — télécharge-le via l'intégration GitHub puis lis-le par sections
+   avec un script ; ne tente pas de l'afficher en entier). Ordre : `amorcage_nouvel_agent` → `etat_conversation`
+   → `decisions_recentes` (D93, D94) → `vague_a`, `vague_b` → `campagne_verification` → `decisions`
+   (surtout D59, D63, D65, D67, D71, D82, D84, D86, D87, D89, D91, D92) → le reste.
+2. **Lis `docs/PROCEDURES-AGENT.md`** : les procédures opérationnelles Hyperagent (Codemagic, miroir, vidéos
+   SwissTransfer → frames, push GitHub par morceaux, sous-agents constructeurs, fiche de vérification).
+3. **Résume l'état à Joachim** en français (10 lignes max : où on en est, ce qui l'attend lui, ce qui t'attend toi)
+   et termine par UNE action. C'est ton test d'embauche. Attends son GO.
+4. **Applique D15** : `project_memory.json` est la mémoire vivante — mets-la à jour à chaque décision/avancée
+   et **re-pousse-la dans ce repo** à chaque mise à jour (le repo est la sauvegarde de survie). Ajoute ta reprise
+   dans `meta_export.lignee` et `point_de_reprise_migration_v5.reprises`.
+5. Reprends là où **`etat_conversation`** s'est arrêté (`dernier_evenement`, `en_attente`).
 
 ## À recréer sur un nouveau compte Hyperagent (rien d'autre n'est perdu)
-- Intégration **GitHub** connectée (tu lis ce fichier, donc c'est fait ✔)
-- Compétence **pilote-codemagic-lostphone** : API Codemagic, credential `CODEMAGIC_API_TOKEN`
-  (Joachim l'a ; régénérable — voir passation Codemagic ci-dessous). APP_ID : voir ci-dessous.
-- (Optionnel, plans B) **pilote-testmu-lostphone** et **pilote-browserstack-lostphone** — schémas
-  de credentials dans `point_de_reprise_migration_v3`.
-- Mémoires : la préférence de communication de Joachim (ci-dessus) + le piège SwiftUI
-  `scaledToFill` → pattern `Color.clear.overlay(image.resizable().scaledToFill()).clipped()`.
-- Côté PC de Joachim : **RIEN à refaire** (SideTap, WDA signé, cloudflared, patchs = locaux).
+- Intégration **GitHub** connectée au compte `joachimfrzz` (tu lis ce fichier → c'est fait).
+- Compétence (skill) **pilote-codemagic-lostphone** : script `api.py` (une copie de secours est dans
+  `tools/passation/api.py`), credential `CODEMAGIC_API_TOKEN` (Joachim le régénère : voir passation Codemagic).
+  Usage : `apps`, `builds [N]`, `status <buildId>`, `start <workflow> [branche] CLE=VALEUR…`, `cancel <buildId>`.
+  Toujours via RunWithCredentials ; si « credentials expired » → FetchSkillScripts puis réessayer.
+- Mémoires Hyperagent utiles : (a) préférence de Joachim (une action, français, ne pas s'arrêter) ;
+  (b) pièges SwiftUI (voir `docs/regles-constructeur.md`, section « Contraintes de compilation »).
+- Côté PC de Joachim : **RIEN à refaire** (SideTap, WDA signé, cloudflared = locaux). Le régime D71 (pilotage de
+  l'iPhone réel) n'est plus utilisé depuis début septembre : les références viennent des **enregistrements d'écran
+  que Joachim envoie par SwissTransfer** (D67) — voir procédures.
+- Exécution : demander à Joachim de passer le fil en mode **Auto** (pas « Ask first ») pour éviter les refus de
+  permission fantômes qui interrompent les sous-agents sans rien afficher chez lui.
 
 ## Passation Codemagic — si le compte Codemagic change
-1. Joachim crée le compte et connecte le repo GitHub `joachimfrzz/lostphone-monorepo`
-   → noter le nouvel **APP_ID** (l'agent le vérifie via `GET /apps`).
-   APP_ID actuel (compte 2, depuis le 2026-08-27) : `6a8f67340674263dd88340ad`.
-2. Joachim génère le token API : codemagic.io → Teams/Personal → Integrations →
-   **Codemagic API** → Show token → le coller dans le credential `CODEMAGIC_API_TOKEN`
-   de la skill (jamais en clair dans le chat).
-3. **Prérequis TestFlight** : ajouter la clé API App Store Connect (.p8) sous le nom
-   EXACT « Codemagic » : codemagic.io → Teams/Personal → Integrations →
-   Developer Portal (App Store Connect) → Add key → name: `Codemagic`.
-   Sans elle, `duel-swift-testflight` échoue à la signature.
-4. Vérifier le quota (~500 min gratuites/mois) avant tout build non critique.
-   Garde-fou D65 : un build TestFlight ne part QUE sur GO explicite de Joachim.
+1. Joachim crée le compte et connecte le repo GitHub `joachimfrzz/lostphone-monorepo` → noter le nouvel **APP_ID**
+   (l'agent le vérifie via `api.py apps`). APP_ID actuel (**compte 3**, depuis le 2026-09-01) :
+   `6a9454919667617e9cf9743e`. Obsolètes : compte 2 `6a8f67340674263dd88340ad`, compte 1 `6a80d5e4…`.
+2. Token API : codemagic.io → Teams/Personal → Integrations → **Codemagic API** → Show token → coller dans le
+   credential `CODEMAGIC_API_TOKEN` de la skill (jamais en clair dans le chat).
+3. **Prérequis TestFlight** : clé API App Store Connect (.p8) sous le nom EXACT « Codemagic » :
+   Integrations → Developer Portal → Add key → name `Codemagic`. Sans elle, `duel-swift-testflight` échoue.
+4. Numérotation des builds TestFlight : **260 + index Codemagic** du compte (le compte 3 a démarré à l'index 1 →
+   build 261 ; le build 282 = index 22). Si le compte change, adapter l'offset dans `codemagic.yaml`
+   (étape « Numéro de build ») pour continuer la série sans collision.
+5. Quota ~500 min/mois. Garde-fou **D65** : un build TestFlight ne part QUE sur GO explicite de Joachim.
+   Le miroir (`miroir-captures`) peut être lancé librement.
 
-## Le régime D71 en bref (capture de références sur l'iPhone RÉEL de Joachim)
-- **SideTap** (github.com/ucsandman/SideTap) tourne sur le PC Windows de Joachim,
-  WebDriverAgent signé sur son iPhone (Apple ID jetable), déjà installé — RIEN à refaire côté PC.
-- **Rituel de session** (côté Joachim) : iPhone branché USB + déverrouillé + app WebDriverAgent
-  ouverte une fois, puis double-clic `Demarrer-LostPhone.cmd` (Bureau) → il te donne l'URL
-  `https://….trycloudflare.com` (change à chaque fois). Moniteur tablette :
-  `python tools/phone_monitor.py` (port 8781), actif pendant TOUTE session.
-- **Toi** : tu pilotes par HTTP via cette URL (WDA : `/status`, `/screenshot`, `/source`,
-  sessions W3C, éléments par predicate). Capture systématique : **PNG + XML par écran**,
-  livrées en zip + journal, poussées dans `references/`.
-- **CHARTE DE PILOTAGE OBLIGATOIRE** (détail dans D71) : lecture seule ; jamais d'envoi/appel/
-  paiement/suppression ; pas de conversation non lue ; pas de story vue ; pas de saisie dans un
-  champ d'envoi ; chat Snapchat interdit ; Ma Banque interdite ; STOP = Joachim débranche le câble.
-- **Plan en 4 vagues** (A zéro-risque → D identité réelle) et protocole de session : voir D71.
-- Dépannages connus (certificat Apple, encodage Windows FR, Python 3.12, openssl…) :
-  D71 → `setup_pieges_resolus`.
-- **Échéance récurrente** : re-signature WDA hebdomadaire (`fix-input`) — la prochaine
-  échéance est tenue dans `etat_conversation`.
+## Les trois workflows Codemagic
+- `miroir-captures` : compile le simulateur et capture chaque écran listé dans un registre
+  (`ECRANS_FICHIER=outils/ecrans.txt` par défaut ; registres ciblés `outils/ecrans-*.txt`). Artefact `captures.zip`.
+  Une erreur de compilation apparaît ~2 min après le début de « Build simulateur ».
+- `duel-swift-testflight` : IPA signé + upload TestFlight (~6 min). Artefact `LPProtoSwift.ipa` (versionCode = n° build).
+- `icones-sim` : extraction des icônes officielles du simulateur (rarement utile désormais).
 
 ## Où est quoi
-Voir la carte du repo dans `README.md`. Registre des décisions : `project_memory.json`
-(les fiches `docs/decisions/` sont gelées à D27 — voir `docs/decisions/README.md`).
+Carte du repo : `README.md`. Fiche de vérification vivante (règle D89 : section « Dernier build » mise à jour à
+chaque build) : `FICHES-VERIFICATION-APPS.md` (+ `fiches-verification.html` généré par `tools/build_fiche_html.js`).
+État de la campagne : `CAMPAGNE-VERIFICATION.md`. Livraisons d'apps : `docs/audit-sociales/`, `docs/vague-a/`,
+`docs/vague-b/`. Règles des constructeurs : `docs/regles-constructeur.md`. Références (frames des vidéos de Joachim)
+archivées en base64 : `outils/refs-*.tar.b64.part*` (+ `outils/README-refs-*.md`).

@@ -1,0 +1,30 @@
+# Références « vraies apps Apple » capturées sur le simulateur (D95).
+# Le robot ouvre chaque app Apple du simulateur iPhone 17 (iOS 26), appuie sur
+# chaque bouton visible et capture chaque écran. Zéro travail pour Joachim.
+# Repo public → minutes macOS GitHub gratuites (pas de quota Codemagic).
+name: references-apple
+
+on:
+  workflow_dispatch:
+    inputs:
+      apps:
+        description: "Bundle IDs séparés par des virgules (vide = liste par défaut)"
+        required: false
+        default: ""
+  push:
+    branches: ["kiro/**"]
+    paths:
+      - ".github/workflows/references-apple.yml"
+      - "outils/explorateur/**"
+
+jobs:
+  sonde:
+    runs-on: macos-26
+    timeout-minutes: 20
+    steps:
+      - name: Xcode et runtimes disponibles
+        run: |
+          ls /Applications | grep -i xcode
+          xcodebuild -version
+          xcrun simctl list runtimes
+          xcrun simctl list devicetypes | grep -i "iPhone 17"

@@ -41,14 +41,16 @@ final class Explorateur: XCTestCase {
             .filter { !$0.isEmpty }
         let profondeur = Int(env["PROFONDEUR"] ?? "") ?? 2
         let maxEcrans = Int(env["MAX_ECRANS"] ?? "") ?? 80
+        let dureeMax = Double(env["DUREE_MAX"] ?? "") ?? 2400
+        let fin = Date().addingTimeInterval(dureeMax)
         for id in apps {
-            explorer(id, sortie: sortie, profondeur: profondeur, maxEcrans: maxEcrans)
+            explorer(id, sortie: sortie, profondeur: profondeur, maxEcrans: maxEcrans, fin: fin)
         }
     }
 
     // MARK: - Exploration
 
-    func explorer(_ id: String, sortie: String, profondeur: Int, maxEcrans: Int) {
+    func explorer(_ id: String, sortie: String, profondeur: Int, maxEcrans: Int, fin: Date) {
         let dossier = (sortie as NSString).appendingPathComponent(id)
         try? FileManager.default.createDirectory(atPath: dossier, withIntermediateDirectories: true)
         var index = "fichier\tchemin\n"
@@ -57,7 +59,7 @@ final class Explorateur: XCTestCase {
         var n = 0
         var essais = 0
 
-        while !file.isEmpty && n < maxEcrans && essais < maxEcrans * 4 {
+        while !file.isEmpty && n < maxEcrans && essais < maxEcrans * 4 && Date() < fin {
             essais += 1
             let chemin = file.removeFirst()
             let app = XCUIApplication(bundleIdentifier: id)

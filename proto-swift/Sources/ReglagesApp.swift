@@ -114,6 +114,33 @@ struct RegGeneriqueVue: View {
 }
 
 // ============================================================ RÉGLAGES — RACINE
+// Nettoyage D95 (04/11/2026) : liste NATIVE (List .insetGrouped) au lieu d'un dessin à la main.
+// Mesures de référence (simulateur iPhone 17 iOS 26.5 + XML iPhone réel de Joachim 26.6.1, D78) :
+// rangées 52 pt, espace entre groupes 35 pt, titre large à y≈119 pt, carte Compte 90 pt (avatar 60 pt),
+// pilule Recherche en verre 346×48 pt à 28 pt du bas. La liste native donne ces métriques exactement.
+struct RegLigneNative<Destination: View>: View {
+    let symbole: String
+    let fond: Color
+    let nom: String
+    var valeur: String? = nil
+    @ViewBuilder let destination: () -> Destination
+    var body: some View {
+        NavigationLink {
+            destination()
+        } label: {
+            if let valeur {
+                LabeledContent {
+                    Text(valeur)
+                } label: {
+                    Label { Text(nom) } icon: { RegIcone(symbole: symbole, fond: fond) }
+                }
+            } else {
+                Label { Text(nom) } icon: { RegIcone(symbole: symbole, fond: fond) }
+            }
+        }
+    }
+}
+
 struct ReglagesVue: View {
     @Environment(\.dismiss) private var dismiss
     @State private var modeAvion = false
@@ -121,155 +148,141 @@ struct ReglagesVue: View {
 
     var body: some View {
         NavigationStack {
-            ZStack(alignment: .bottom) {
-                regFond.ignoresSafeArea()
-                ScrollView {
-                    VStack(spacing: 18) {
-                        HStack {
-                            Text("Réglages").font(.system(size: 33, weight: .bold)).foregroundStyle(regTexte)
-                            Spacer()
-                        }
-                        .padding(.horizontal, 18).padding(.top, 14)
-
-                        // Carte Compte Apple (canon : Sarah Levasseur)
-                        RegGroupe {
-                            NavigationLink { CompteAppleVue() } label: {
-                                HStack(spacing: 12) {
-                                    // Miroir phase B : la réf montre une PHOTO de profil — portrait pellicule
-                                    if let portrait = ChargeurPhoto.image("p04") {
-                                        Image(uiImage: portrait).resizable().scaledToFill()
-                                            .frame(width: 46, height: 46).clipShape(Circle())
-                                    } else {
-                                        AvatarMsg(nom: "Sarah Levasseur", taille: 46)
-                                    }
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text("Sarah Levasseur").font(.system(size: 18)).foregroundStyle(regTexte)
-                                        Text("Compte Apple, iCloud+ et autres")
-                                            .font(.system(size: 12.5)).foregroundStyle(regTexte2)
-                                    }
-                                    Spacer()
-                                    Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold))
-                                        .foregroundStyle(regTexte2.opacity(0.6))
+            List {
+                // Carte Compte Apple (canon : Sarah Levasseur)
+                Section {
+                    NavigationLink { CompteAppleVue() } label: {
+                        HStack(spacing: 8) {
+                            Group {
+                                if let portrait = ChargeurPhoto.image("p04") {
+                                    Image(uiImage: portrait).resizable().scaledToFill()
+                                } else {
+                                    AvatarMsg(nom: "Sarah Levasseur", taille: 60)
                                 }
-                                .padding(14)
-                                .contentShape(Rectangle())
-                            }.buttonStyle(.plain)
+                            }
+                            .frame(width: 60, height: 60).clipShape(Circle())
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Sarah Levasseur").font(.system(size: 20, weight: .regular))
+                                Text("Compte Apple, iCloud+ et autres")
+                                    .font(.system(size: 14)).foregroundStyle(.secondary)
+                            }
                         }
-
-                        RegGroupe {
-                            NavigationLink { MiseAJourVue() } label: {
-                                HStack {
-                                    Text("Mise à jour du logiciel cette nuit")
-                                        .font(.system(size: 16)).foregroundStyle(regTexte)
-                                    Spacer()
-                                    Text("1").font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
-                                        .frame(width: 22, height: 22)
-                                        .background(regRouge, in: Circle())
-                                    Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold))
-                                        .foregroundStyle(regTexte2.opacity(0.6))
-                                }
-                                .padding(.horizontal, 14).padding(.vertical, 11)
-                                .contentShape(Rectangle())
-                            }.buttonStyle(.plain)
-                        }
-
-                        RegGroupe {
-                            RegBascule(symbole: "airplane", fond: Color(hex: 0xFF9F0A), nom: "Mode Avion", valeur: $modeAvion)
-                            RegSeparateur()
-                            RegLigne(symbole: "wifi", fond: regBleu, nom: "Wi-Fi",
-                                     valeur: modeAvion ? "Non connecté" : "Livebox-2C48") { WiFiVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "personalhotspot", fond: regBleu, nom: "Bluetooth", valeur: "Oui") { BluetoothVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "antenna.radiowaves.left.and.right", fond: regVert, nom: "Données cellulaires") { DonneesCellVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "person.2.wave.2.fill", fond: regVert, nom: "Partage de connexion") { RegContenuVue(nom: "Partage de connexion") }
-                            RegSeparateur()
-                            RegLigne(symbole: "battery.100", fond: regVert, nom: "Batterie") { BatterieVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "network", fond: regBleu, nom: "VPN", valeur: "Déconnecté") { RegContenuVue(nom: "VPN") }
-                        }
-
-                        RegGroupe {
-                            RegLigne(symbole: "gear", fond: Color(hex: 0x8E8E93), nom: "Général") { GeneralVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "accessibility", fond: regBleu, nom: "Accessibilité") { RegContenuVue(nom: "Accessibilité") }
-                            RegSeparateur()
-                            RegLigne(symbole: "camera.fill", fond: Color(hex: 0x8E8E93), nom: "Appareil photo") { RegContenuVue(nom: "Appareil photo") }
-                            RegSeparateur()
-                            RegLigne(symbole: "sparkles", fond: Color(hex: 0x5E5CE6), nom: "Apple Intelligence et Siri") { RegContenuVue(nom: "Apple Intelligence et Siri") }
-                            RegSeparateur()
-                            RegLigne(symbole: "button.horizontal.top.press", fond: regBleu, nom: "Bouton Action") { RegContenuVue(nom: "Bouton Action") }
-                            RegSeparateur()
-                            RegLigne(symbole: "switch.2", fond: Color(hex: 0x8E8E93), nom: "Centre de contrôle") { CentreControleVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "square.grid.3x3.fill", fond: regBleu, nom: "Écran d'accueil et bibliothèque d'apps") { EcranAccueilVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "clock.fill", fond: Color(hex: 0x30B0C7), nom: "En veille") { RegContenuVue(nom: "En veille") }
-                            RegSeparateur()
-                            RegLigne(symbole: "photo.on.rectangle", fond: Color(hex: 0x30B0C7), nom: "Fond d'écran") { FondEcranVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "sun.max.fill", fond: regBleu, nom: "Luminosité et affichage") { LuminositeVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "magnifyingglass", fond: Color(hex: 0x8E8E93), nom: "Recherche") { RechercheReglagesInfoVue() }
-                        }
-
-                        RegGroupe {
-                            RegLigne(symbole: "bell.badge.fill", fond: regRouge, nom: "Notifications") { NotificationsVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "speaker.wave.3.fill", fond: regRouge, nom: "Sons et vibrations") { SonsVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "moon.fill", fond: Color(hex: 0x5E5CE6), nom: "Concentration") { RegContenuVue(nom: "Concentration") }
-                            RegSeparateur()
-                            RegLigne(symbole: "hourglass", fond: Color(hex: 0x5E5CE6), nom: "Temps d'écran") { TempsEcranVue() }
-                        }
-
-                        RegGroupe {
-                            RegLigne(symbole: "faceid", fond: regVert, nom: "Face ID et code") { FaceIDVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "sos", fond: regRouge, nom: "Appel d'urgence") { RegContenuVue(nom: "Appel d'urgence") }
-                            RegSeparateur()
-                            RegLigne(symbole: "hand.raised.fill", fond: regBleu, nom: "Confidentialité et sécurité") { ConfidentialiteVue() }
-                        }
-
-                        RegGroupe {
-                            RegLigne(symbole: "creditcard.fill", fond: Color(hex: 0x32ADE6), nom: "Cartes et Apple Pay") { CartesPayVue() }
-                            RegSeparateur()
-                            RegLigne(symbole: "gamecontroller.fill", fond: Color(hex: 0x8E8E93), nom: "Game Center") { RegContenuVue(nom: "Game Center") }
-                            RegSeparateur()
-                            RegLigne(symbole: "icloud.fill", fond: regBleu, nom: "iCloud") { ICloudVue() }
-                        }
-
-                        RegGroupe {
-                            RegLigne(symbole: "square.grid.2x2.fill", fond: Color(hex: 0x8E8E93), nom: "Apps") { AppsListeVue() }
-                        }
-
-                        Color.clear.frame(height: 80)
+                        .padding(.vertical, 3)
                     }
                 }
-                .scrollIndicators(.hidden)
 
-                // Pilule Recherche flottante (iOS 26)
-                HStack(spacing: 7) {
-                    Image(systemName: "magnifyingglass").font(.system(size: 15)).foregroundStyle(regTexte2)
-                    Text("Recherche").font(.system(size: 16)).foregroundStyle(regTexte2)
-                    Spacer()
-                    Image(systemName: "mic.fill").font(.system(size: 15)).foregroundStyle(regTexte2)
+                Section {
+                    NavigationLink { MiseAJourVue() } label: {
+                        HStack {
+                            Text("Mise à jour du logiciel cette nuit")
+                            Spacer()
+                            Text("1").font(.system(size: 15)).foregroundStyle(.white)
+                                .frame(minWidth: 23, minHeight: 23)
+                                .background(Color(.systemRed), in: Circle())
+                        }
+                    }
                 }
-                .padding(.horizontal, 14).padding(.vertical, 12)
-                .background(Color(hex: 0x2C2C2E), in: Capsule())
-                .overlay(Capsule().stroke(Color.white.opacity(0.10), lineWidth: 0.8))
-                .shadow(color: .black.opacity(0.5), radius: 10, y: 3)
-                .padding(.horizontal, 16).padding(.bottom, 8)
-                .contentShape(Capsule())
-                .onTapGesture { Haptique.leger(); rechercheVisible = true }
 
-            BarreHome { dismiss() }
+                Section {
+                    Toggle(isOn: $modeAvion) {
+                        Label { Text("Mode Avion") } icon: { RegIcone(symbole: "airplane", fond: Color(hex: 0xFF9F0A)) }
+                    }
+                    RegLigneNative(symbole: "wifi", fond: regBleu, nom: "Wi-Fi",
+                                   valeur: modeAvion ? "Non connecté" : "Livebox-2C48") { WiFiVue() }
+                    RegLigneNative(symbole: "personalhotspot", fond: regBleu, nom: "Bluetooth", valeur: "Oui") { BluetoothVue() }
+                    RegLigneNative(symbole: "antenna.radiowaves.left.and.right", fond: regVert, nom: "Données cellulaires") { DonneesCellVue() }
+                    RegLigneNative(symbole: "person.2.wave.2.fill", fond: regVert, nom: "Partage de connexion") { RegContenuVue(nom: "Partage de connexion") }
+                    RegLigneNative(symbole: "battery.100", fond: regVert, nom: "Batterie") { BatterieVue() }
+                    RegLigneNative(symbole: "network", fond: regBleu, nom: "VPN", valeur: "Déconnecté") { RegContenuVue(nom: "VPN") }
+                }
+
+                Section {
+                    RegLigneNative(symbole: "gear", fond: Color(hex: 0x8E8E93), nom: "Général") { GeneralVue() }
+                    RegLigneNative(symbole: "accessibility", fond: regBleu, nom: "Accessibilité") { RegContenuVue(nom: "Accessibilité") }
+                    RegLigneNative(symbole: "camera.fill", fond: Color(hex: 0x8E8E93), nom: "Appareil photo") { RegContenuVue(nom: "Appareil photo") }
+                    RegLigneNative(symbole: "sparkles", fond: Color(hex: 0x5E5CE6), nom: "Apple Intelligence et Siri") { RegContenuVue(nom: "Apple Intelligence et Siri") }
+                    RegLigneNative(symbole: "button.horizontal.top.press", fond: regBleu, nom: "Bouton Action") { RegContenuVue(nom: "Bouton Action") }
+                    RegLigneNative(symbole: "switch.2", fond: Color(hex: 0x8E8E93), nom: "Centre de contrôle") { CentreControleVue() }
+                    RegLigneNative(symbole: "square.grid.3x3.fill", fond: regBleu, nom: "Écran d'accueil et bibliothèque d'apps") { EcranAccueilVue() }
+                    RegLigneNative(symbole: "clock.fill", fond: Color(hex: 0x30B0C7), nom: "En veille") { RegContenuVue(nom: "En veille") }
+                    RegLigneNative(symbole: "photo.on.rectangle", fond: Color(hex: 0x30B0C7), nom: "Fond d'écran") { FondEcranVue() }
+                    RegLigneNative(symbole: "sun.max.fill", fond: regBleu, nom: "Luminosité et affichage") { LuminositeVue() }
+                    RegLigneNative(symbole: "magnifyingglass", fond: Color(hex: 0x8E8E93), nom: "Recherche") { RechercheReglagesInfoVue() }
+                }
+
+                Section {
+                    RegLigneNative(symbole: "bell.badge.fill", fond: regRouge, nom: "Notifications") { NotificationsVue() }
+                    RegLigneNative(symbole: "speaker.wave.3.fill", fond: regRouge, nom: "Sons et vibrations") { SonsVue() }
+                    RegLigneNative(symbole: "moon.fill", fond: Color(hex: 0x5E5CE6), nom: "Concentration") { RegContenuVue(nom: "Concentration") }
+                    RegLigneNative(symbole: "hourglass", fond: Color(hex: 0x5E5CE6), nom: "Temps d'écran") { TempsEcranVue() }
+                }
+
+                Section {
+                    RegLigneNative(symbole: "faceid", fond: regVert, nom: "Face ID et code") { FaceIDVue() }
+                    RegLigneNative(symbole: "sos", fond: regRouge, nom: "Appel d'urgence") { RegContenuVue(nom: "Appel d'urgence") }
+                    RegLigneNative(symbole: "hand.raised.fill", fond: regBleu, nom: "Confidentialité et sécurité") { ConfidentialiteVue() }
+                }
+
+                Section {
+                    RegLigneNative(symbole: "creditcard.fill", fond: Color(hex: 0x32ADE6), nom: "Cartes et Apple Pay") { CartesPayVue() }
+                    RegLigneNative(symbole: "gamecontroller.fill", fond: Color(hex: 0x8E8E93), nom: "Game Center") { RegContenuVue(nom: "Game Center") }
+                    RegLigneNative(symbole: "icloud.fill", fond: regBleu, nom: "iCloud") { ICloudVue() }
+                }
+
+                Section {
+                    RegLigneNative(symbole: "square.grid.2x2.fill", fond: Color(hex: 0x8E8E93), nom: "Apps") { AppsListeVue() }
+                }
             }
-            .toolbar(.hidden, for: .navigationBar)
+            .listStyle(.insetGrouped)
+            .listSectionSpacing(35)
+            .contentMargins(.bottom, 70, for: .scrollContent)
+            .navigationTitle("Réglages")
+            .navigationBarTitleDisplayMode(.large)
             .fullScreenCover(isPresented: $rechercheVisible) { RechercheReglagesVue() }
         }
+        // Pilule Recherche flottante iOS 26 : 346×48 pt, à 28 pt du bas de l'écran (mesuré).
+        .overlay(alignment: .bottom) {
+            PiluleRechercheReglages { Haptique.leger(); rechercheVisible = true }
+                .padding(.horizontal, 28)
+                .padding(.bottom, 28)
+                .ignoresSafeArea(edges: .bottom)
+        }
+        // Fausse capsule home à l'emplacement de la vraie (≈ 8 pt du bas), sous la pilule.
+        .overlay(alignment: .bottom) {
+            BarreHome { dismiss() }
+                .padding(.bottom, 3)
+                .ignoresSafeArea(edges: .bottom)
+        }
         .preferredColorScheme(.dark)
+    }
+}
+
+struct PiluleRechercheReglages: View {
+    let action: () -> Void
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass").font(.system(size: 17, weight: .medium))
+            Text("Recherche").font(.system(size: 17))
+            Spacer()
+            Image(systemName: "mic.fill").font(.system(size: 17))
+        }
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 16)
+        .frame(height: 48)
+        .modifier(VerreCapsule())
+        .contentShape(Capsule())
+        .onTapGesture(perform: action)
+    }
+}
+
+/// Effet « Liquid Glass » d'iOS 26 quand il est disponible, matériau translucide sinon.
+struct VerreCapsule: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.glassEffect(.regular, in: Capsule())
+        } else {
+            content.background(.ultraThinMaterial, in: Capsule())
+        }
     }
 }
 

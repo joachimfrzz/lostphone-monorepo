@@ -701,32 +701,32 @@ struct EcranCapture: View {
     private func ecransReglages() -> some View {
         switch cle {
         case "reglages": ReglagesVue()
-        case "reglages.compte": NavigationStack { CompteAppleVue() }
-        case "reglages.infosperso": NavigationStack { InfosPersoVue() }
-        case "reglages.securite": NavigationStack { ConnexionSecuVue() }
-        case "reglages.paiement": NavigationStack { PaiementVue() }
-        case "reglages.abonnements": NavigationStack { AbonnementsVue() }
-        case "reglages.icloud": NavigationStack { ICloudVue() }
-        case "reglages.maj": NavigationStack { MiseAJourVue() }
-        case "reglages.wifi": NavigationStack { WiFiVue() }
-        case "reglages.bluetooth": NavigationStack { BluetoothVue() }
-        case "reglages.cellulaire": NavigationStack { DonneesCellVue() }
-        case "reglages.batterie": NavigationStack { BatterieVue() }
-        case "reglages.batterie.utilisation": NavigationStack { UtilisationBatterieVue() }
-        case "reglages.batterie.sante": NavigationStack { EtatSanteVue() }
-        case "reglages.general": NavigationStack { GeneralVue() }
-        case "reglages.infos": NavigationStack { InformationsVue() }
-        case "reglages.stockage": NavigationStack { StockageVue() }
-        case "reglages.tempsecran": NavigationStack { TempsEcranVue() }
-        case "reglages.luminosite": NavigationStack { LuminositeVue() }
-        case "reglages.fond": NavigationStack { FondEcranVue() }
-        case "reglages.controle": NavigationStack { CentreControleVue() }
-        case "reglages.ecranaccueil": NavigationStack { EcranAccueilVue() }
-        case "reglages.notifications": NavigationStack { NotificationsVue() }
-        case "reglages.sons": NavigationStack { SonsVue() }
-        case "reglages.faceid": NavigationStack { FaceIDVue() }
-        case "reglages.confidentialite": NavigationStack { ConfidentialiteVue() }
-        case "reglages.cartes": NavigationStack { CartesPayVue() }
+        case "reglages.compte": SousPageCapture { CompteAppleVue() }
+        case "reglages.infosperso": SousPageCapture { InfosPersoVue() }
+        case "reglages.securite": SousPageCapture { ConnexionSecuVue() }
+        case "reglages.paiement": SousPageCapture { PaiementVue() }
+        case "reglages.abonnements": SousPageCapture { AbonnementsVue() }
+        case "reglages.icloud": SousPageCapture { ICloudVue() }
+        case "reglages.maj": SousPageCapture { MiseAJourVue() }
+        case "reglages.wifi": SousPageCapture { WiFiVue() }
+        case "reglages.bluetooth": SousPageCapture { BluetoothVue() }
+        case "reglages.cellulaire": SousPageCapture { DonneesCellVue() }
+        case "reglages.batterie": SousPageCapture { BatterieVue() }
+        case "reglages.batterie.utilisation": SousPageCapture { UtilisationBatterieVue() }
+        case "reglages.batterie.sante": SousPageCapture { EtatSanteVue() }
+        case "reglages.general": SousPageCapture { GeneralVue() }
+        case "reglages.infos": SousPageCapture { InformationsVue() }
+        case "reglages.stockage": SousPageCapture { StockageVue() }
+        case "reglages.tempsecran": SousPageCapture { TempsEcranVue() }
+        case "reglages.luminosite": SousPageCapture { LuminositeVue() }
+        case "reglages.fond": SousPageCapture { FondEcranVue() }
+        case "reglages.controle": SousPageCapture { CentreControleVue() }
+        case "reglages.ecranaccueil": SousPageCapture { EcranAccueilVue() }
+        case "reglages.notifications": SousPageCapture { NotificationsVue() }
+        case "reglages.sons": SousPageCapture { SonsVue() }
+        case "reglages.faceid": SousPageCapture { FaceIDVue() }
+        case "reglages.confidentialite": SousPageCapture { ConfidentialiteVue() }
+        case "reglages.cartes": SousPageCapture { CartesPayVue() }
         case "reglages.recherche": RechercheReglagesVue()
         default: VerrouillageView()
         }
@@ -2414,5 +2414,20 @@ extension Color {
                   green: Double((hex >> 8) & 0xFF) / 255,
                   blue: Double(hex & 0xFF) / 255,
                   opacity: 1)
+    }
+}
+
+
+/// Miroir (D95) : affiche une sous-page comme si on l'avait ouverte depuis la racine —
+/// barre de navigation avec le bouton retour rond d'iOS 26, comme sur le vrai téléphone.
+struct SousPageCapture<Contenu: View>: View {
+    @ViewBuilder let contenu: () -> Contenu
+    @State private var ouverte = true
+    var body: some View {
+        NavigationStack {
+            Color.black.ignoresSafeArea()
+                .navigationDestination(isPresented: $ouverte) { contenu() }
+        }
+        .preferredColorScheme(.dark)
     }
 }

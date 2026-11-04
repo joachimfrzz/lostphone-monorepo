@@ -11,7 +11,9 @@ let regBleu = Color(hex: 0x0A84FF)
 let regVert = Color(hex: 0x30D158)
 let regRouge = Color(hex: 0xFF453A)
 let regTexte = Color(hex: 0xF2F2F2)
-let regTexte2 = Color(hex: 0x8E8E93)
+let regTexte2 = Color(hex: 0x98989F)       // secondaryLabel sur #1C1C1E (mesuré)
+let regChevron = Color(hex: 0x5A5A5E)      // tertiaryLabel sur #1C1C1E (mesuré)
+let regSeparateur = Color(hex: 0x38383B)   // séparateur de liste iOS 26 (mesuré)
 
 // ============================================================ COMPOSANTS DE BASE
 struct RegIcone: View {
@@ -38,16 +40,17 @@ struct RegLigne<Destination: View>: View {
         } label: {
             HStack(spacing: 12) {
                 RegIcone(symbole: symbole, fond: fond)
-                Text(nom).font(.system(size: 16)).foregroundStyle(regTexte)
+                Text(nom).font(.system(size: 17)).foregroundStyle(regTexte)
                     .lineLimit(2).multilineTextAlignment(.leading)
                 Spacer()
                 if let valeur {
-                    Text(valeur).font(.system(size: 16)).foregroundStyle(regTexte2)
+                    Text(valeur).font(.system(size: 17)).foregroundStyle(regTexte2)
                 }
-                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(regTexte2.opacity(0.6))
+                Image(systemName: "chevron.forward").font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(regChevron)
             }
-            .padding(.horizontal, 14).padding(.vertical, 9)
+            .padding(.leading, 13).padding(.trailing, 18)
+            .frame(minHeight: 52)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -62,11 +65,12 @@ struct RegBascule: View {
     var body: some View {
         HStack(spacing: 12) {
             RegIcone(symbole: symbole, fond: fond)
-            Text(nom).font(.system(size: 16)).foregroundStyle(regTexte)
+            Text(nom).font(.system(size: 17)).foregroundStyle(regTexte)
             Spacer()
             Toggle("", isOn: $valeur).labelsHidden().tint(regVert)
         }
-        .padding(.horizontal, 14).padding(.vertical, 6)
+        .padding(.leading, 13).padding(.trailing, 16)
+        .frame(minHeight: 52)
     }
 }
 
@@ -74,7 +78,7 @@ struct RegGroupe<Contenu: View>: View {
     @ViewBuilder let contenu: () -> Contenu
     var body: some View {
         VStack(spacing: 0) { contenu() }
-            .background(regCarte, in: RoundedRectangle(cornerRadius: 12))
+            .background(regCarte, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
             .padding(.horizontal, 16)
     }
 }
@@ -82,7 +86,9 @@ struct RegGroupe<Contenu: View>: View {
 struct RegSeparateur: View {
     var retrait: CGFloat = 56
     var body: some View {
-        Divider().overlay(Color.white.opacity(0.08)).padding(.leading, retrait)
+        // Mesuré iOS 26 : #38383B, 1 pt, retrait 56 pt à gauche (depuis le bord de la carte), 16 pt à droite
+        Rectangle().fill(regSeparateur).frame(height: 1)
+            .padding(.leading, retrait).padding(.trailing, 16)
     }
 }
 
@@ -416,7 +422,7 @@ struct RechercheReglagesInfoVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     Text("Recherche et Chercher").font(.system(size: 13)).foregroundStyle(regTexte2)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20).padding(.top, 12)
                     RegGroupe {
@@ -447,7 +453,7 @@ struct CompteAppleVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 16) {
+                VStack(spacing: 35) {
                     // Phase E : photo de profil (portrait pellicule), comme la racine
                     Group {
                         if let portrait = ChargeurPhoto.image("p04") {
@@ -535,7 +541,7 @@ struct InfosPersoVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         HStack {
                             Text("Nom").font(.system(size: 16)).foregroundStyle(regTexte)
@@ -578,7 +584,7 @@ struct ConnexionSecuVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     Text("E-mails et numéros").font(.system(size: 13)).foregroundStyle(regTexte2)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20).padding(.top, 12)
                     RegGroupe {
@@ -638,7 +644,7 @@ struct PaiementVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     Text("Modes de paiement").font(.system(size: 13)).foregroundStyle(regTexte2)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20).padding(.top, 12)
                     RegGroupe {
@@ -711,7 +717,7 @@ struct AbonnementsVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         ForEach(Array(actifs.enumerated()), id: \.offset) { i, a in
                             NavigationLink {
@@ -775,7 +781,7 @@ struct RegAbonnementDetailVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         VStack(alignment: .leading, spacing: 0) {
                             HStack(spacing: 12) {
@@ -840,7 +846,7 @@ struct ICloudVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     // Barre de stockage
                     RegGroupe {
                         VStack(alignment: .leading, spacing: 8) {
@@ -931,7 +937,7 @@ struct MiseAJourVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         HStack {
                             Text("MÀJ automatiques").font(.system(size: 16)).foregroundStyle(regTexte)
@@ -1016,7 +1022,7 @@ struct WiFiVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         HStack {
                             Text("Wi-Fi").font(.system(size: 16)).foregroundStyle(regTexte)
@@ -1076,7 +1082,7 @@ struct BluetoothVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         HStack {
                             Text("Bluetooth").font(.system(size: 16)).foregroundStyle(regTexte)
@@ -1139,7 +1145,7 @@ struct DonneesCellVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         LigneBascule(nom: "Données cellulaires", valeur: $donnees)
                         RegSeparateur(retrait: 14)
@@ -1186,7 +1192,7 @@ struct BatterieVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     // Gros pourcentage + dernier niveau de charge
                     VStack(alignment: .leading, spacing: 6) {
                         HStack(alignment: .firstTextBaseline, spacing: 3) {
@@ -1337,7 +1343,7 @@ struct UtilisationBatterieVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     Text("Utilisation quotidienne").font(.system(size: 13)).foregroundStyle(regTexte2)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20).padding(.top, 12)
                     RegGroupe {
@@ -1428,7 +1434,7 @@ struct EtatSanteVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         HStack {
                             Text("État de santé de la batterie").font(.system(size: 16)).foregroundStyle(regTexte)
@@ -1524,46 +1530,79 @@ struct LigneActivite: View {
 
 // ============================================================ GÉNÉRAL
 struct GeneralVue: View {
+    // Nettoyage D95 (04/11) — structure relevée sur l'iPhone réel (XML D78, iOS 26.6.1),
+    // rendu natif (List .insetGrouped) et en-tête iOS 26 mesuré sur le simulateur.
     var body: some View {
-        ZStack {
-            regFond.ignoresSafeArea()
-            ScrollView {
-                VStack(spacing: 14) {
-                    RegGroupe {
-                        RegLigne(symbole: "info.circle", fond: Color(hex: 0x8E8E93), nom: "Informations") { InformationsVue() }
-                        RegSeparateur()
-                        RegLigne(symbole: "gear.badge", fond: Color(hex: 0x8E8E93), nom: "Mise à jour logicielle") { MiseAJourVue() }
-                        RegSeparateur()
-                        RegLigne(symbole: "internaldrive", fond: Color(hex: 0x8E8E93), nom: "Stockage de l'iPhone") { StockageVue() }
-                    }
-                    .padding(.top, 12)
-                    RegGroupe {
-                        RegLigne(symbole: "applelogo", fond: regRouge, nom: "AppleCare et garantie") { RegGeneriqueVue(nom: "AppleCare et garantie") }
-                    }
-                    RegGroupe {
-                        RegLigne(symbole: "dot.radiowaves.right", fond: regBleu, nom: "AirDrop") { RegContenuVue(nom: "AirDrop") }
-                        RegSeparateur()
-                        RegLigne(symbole: "play.tv", fond: regBleu, nom: "AirPlay et Continuité") { RegContenuVue(nom: "AirPlay et Continuité") }
-                        RegSeparateur()
-                        RegLigne(symbole: "rectangle.inset.filled", fond: Color(hex: 0x8E8E93), nom: "Image dans l'image") { RegContenuVue(nom: "Image dans l'image") }
-                        RegSeparateur()
-                        RegLigne(symbole: "camera.viewfinder", fond: Color(hex: 0x8E8E93), nom: "Capture d'écran") { RegContenuVue(nom: "Capture d'écran") }
-                        RegSeparateur()
-                        RegLigne(symbole: "car.fill", fond: regVert, nom: "CarPlay") { RegContenuVue(nom: "CarPlay") }
-                    }
-                    RegGroupe {
-                        RegLigne(symbole: "arrow.clockwise", fond: Color(hex: 0x8E8E93), nom: "Actualiser en arrière-plan") { RegContenuVue(nom: "Actualiser en arrière-plan") }
-                        RegSeparateur()
-                        RegLigne(symbole: "keyboard", fond: Color(hex: 0x8E8E93), nom: "Clavier") { RegContenuVue(nom: "Clavier") }
-                        RegSeparateur()
-                        RegLigne(symbole: "globe", fond: Color(hex: 0x8E8E93), nom: "Langue et région") { RegContenuVue(nom: "Langue et région") }
-                    }
-                    Color.clear.frame(height: 30)
-                }
+        List {
+            Section {
+                RegEnTete(symbole: "gear", fond: Color(hex: 0x8E8E93), titre: "Général",
+                          texte: "Gérez la configuration de votre iPhone et vos préférences générales pour ce dernier, telles que ses mises à jour logicielles, sa langue d’utilisation, les fonctionnalités CarPlay et AirDrop, et bien d’autres.")
+            }
+            Section {
+                RegLigneNative(symbole: "questionmark.square.dashed", fond: Color(hex: 0x8E8E93), nom: "Informations") { InformationsVue() }
+                RegLigneNative(symbole: "gear.badge", fond: Color(hex: 0x8E8E93), nom: "Mise à jour logicielle") { MiseAJourVue() }
+                RegLigneNative(symbole: "internaldrive.fill", fond: Color(hex: 0x8E8E93), nom: "Stockage de l’iPhone") { StockageVue() }
+            }
+            Section {
+                RegLigneNative(symbole: "applelogo", fond: regRouge, nom: "AppleCare et garantie") { RegGeneriqueVue(nom: "AppleCare et garantie") }
+            }
+            Section {
+                RegLigneNative(symbole: "dot.radiowaves.right", fond: regBleu, nom: "AirDrop") { RegContenuVue(nom: "AirDrop") }
+                RegLigneNative(symbole: "play.rectangle.fill", fond: regBleu, nom: "AirPlay et Continuité") { RegContenuVue(nom: "AirPlay et Continuité") }
+                RegLigneNative(symbole: "pip.fill", fond: Color(hex: 0x8E8E93), nom: "Image dans l’image") { RegContenuVue(nom: "Image dans l’image") }
+                RegLigneNative(symbole: "camera.viewfinder", fond: Color(hex: 0x8E8E93), nom: "Capture d’écran") { RegContenuVue(nom: "Capture d’écran") }
+                RegLigneNative(symbole: "carplay", fond: regVert, nom: "CarPlay") { RegContenuVue(nom: "CarPlay") }
+            }
+            Section {
+                RegLigneNative(symbole: "arrow.clockwise", fond: Color(hex: 0x8E8E93), nom: "Actualiser en arrière-plan") { RegContenuVue(nom: "Actualiser en arrière-plan") }
+                RegLigneNative(symbole: "keyboard.fill", fond: Color(hex: 0x8E8E93), nom: "Clavier") { RegContenuVue(nom: "Clavier") }
+                RegLigneNative(symbole: "calendar.badge.clock", fond: regBleu, nom: "Date et heure") { RegContenuVue(nom: "Date et heure") }
+                RegLigneNative(symbole: "book.closed.fill", fond: regBleu, nom: "Dictionnaires") { RegContenuVue(nom: "Dictionnaires") }
+                RegLigneNative(symbole: "globe", fond: regBleu, nom: "Langue et région") { RegContenuVue(nom: "Langue et région") }
+                RegLigneNative(symbole: "textformat", fond: Color(hex: 0x8E8E93), nom: "Polices") { RegContenuVue(nom: "Polices") }
+                RegLigneNative(symbole: "key.fill", fond: Color(hex: 0x8E8E93), nom: "Remplissage auto. et mots de passe") { RegContenuVue(nom: "Remplissage auto. et mots de passe") }
+            }
+            Section {
+                RegLigneNative(symbole: "tv.fill", fond: Color(hex: 0x3A3A3C), nom: "Fournisseur TV") { RegContenuVue(nom: "Fournisseur TV") }
+            }
+            Section {
+                RegLigneNative(symbole: "gear", fond: Color(hex: 0x8E8E93), nom: "VPN et gestion de l’appareil") { RegContenuVue(nom: "VPN et gestion de l’appareil") }
+            }
+            Section {
+                RegLigneNative(symbole: "checkmark.seal.fill", fond: Color(hex: 0x8E8E93), nom: "Mentions légales et certifications") { RegContenuVue(nom: "Mentions légales et certifications") }
+            }
+            Section {
+                RegLigneNative(symbole: "arrow.counterclockwise", fond: Color(hex: 0x8E8E93), nom: "Transférer ou réinitialiser l’iPhone") { RegGeneriqueVue(nom: "Transférer ou réinitialiser l’iPhone") }
+            }
+            Section {
+                Button("Éteindre") { Haptique.leger() }
             }
         }
+        .listStyle(.insetGrouped)
+        .listSectionSpacing(35)
         .navigationTitle("Général")
         .navigationBarTitleDisplayMode(.inline)
+        .preferredColorScheme(.dark)
+    }
+}
+
+/// En-tête iOS 26 des pages de premier niveau : grande icône 58 pt, titre gras, description.
+struct RegEnTete: View {
+    let symbole: String
+    let fond: Color
+    let titre: String
+    let texte: String
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(fond.gradient)
+                .frame(width: 58, height: 58)
+                .overlay(Image(systemName: symbole).font(.system(size: 34, weight: .medium)).foregroundStyle(.white))
+                .padding(.bottom, 12)
+            Text(titre).font(.system(size: 22, weight: .bold))
+            Text(texte).font(.system(size: 17)).foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 10)
     }
 }
 
@@ -1583,7 +1622,7 @@ struct InformationsVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         ForEach(Array(lignes.enumerated()), id: \.offset) { i, l in
                             HStack {
@@ -1620,7 +1659,7 @@ struct StockageVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
@@ -1707,7 +1746,7 @@ struct RegStockageAppVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         HStack { Text("Taille de l'app").font(.system(size: 16)).foregroundStyle(regTexte); Spacer(); Text(taille).font(.system(size: 16)).foregroundStyle(regTexte2) }.padding(.horizontal, 14).padding(.vertical, 9)
                         RegSeparateur(retrait: 14)
@@ -1748,7 +1787,7 @@ struct TempsEcranVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     Picker("", selection: $periode) {
                         Text("Semaine").tag(0)
                         Text("Jour").tag(1)
@@ -1829,7 +1868,7 @@ struct LuminositeVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     Text("Apparence").font(.system(size: 13)).foregroundStyle(regTexte2)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20).padding(.top, 12)
                     RegGroupe {
@@ -1908,7 +1947,7 @@ struct FondEcranVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     Text("ACTUEL").font(.system(size: 12, weight: .semibold)).foregroundStyle(regTexte2)
                         .padding(.top, 16)
                     HStack(spacing: 14) {
@@ -1967,7 +2006,7 @@ struct CentreControleVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Personnaliser le centre de contrôle")
@@ -2006,7 +2045,7 @@ struct EcranAccueilVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     Text("Nouvelles apps téléchargées").font(.system(size: 13)).foregroundStyle(regTexte2)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20).padding(.top, 12)
                     RegGroupe {
@@ -2061,7 +2100,7 @@ struct NotificationsVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     Text("Style des notifications").font(.system(size: 13)).foregroundStyle(regTexte2)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20).padding(.top, 12)
                     RegGroupe {
@@ -2100,7 +2139,7 @@ struct NotifAppVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         LigneBascule(nom: "Autoriser les notifications", valeur: $autoriser)
                     }
@@ -2129,7 +2168,7 @@ struct SonsVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         HStack {
                             Text("Retour clavier").font(.system(size: 16)).foregroundStyle(regTexte)
@@ -2268,7 +2307,7 @@ struct ConfidentialiteVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         RegLigne(symbole: "location.fill", fond: regBleu, nom: "Service de localisation", valeur: "Oui") { RegContenuVue(nom: "Service de localisation") }
                         RegSeparateur()
@@ -2306,7 +2345,7 @@ struct CartesPayVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         HStack(spacing: 12) {
                             RegIcone(symbole: "creditcard.fill", fond: Color(hex: 0x32ADE6))
@@ -2412,7 +2451,7 @@ struct CarteDetailVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RoundedRectangle(cornerRadius: 14)
                         .fill(LinearGradient(colors: [Color(hex: 0x00539B), Color(hex: 0x003A6E)],
                                              startPoint: .topLeading, endPoint: .bottomTrailing))
@@ -2488,7 +2527,7 @@ struct AppsListeVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     RegGroupe {
                         ForEach(Array(apps.enumerated()), id: \.offset) { i, a in
                             NavigationLink { RegAppVue(nom: a) } label: {
@@ -2713,7 +2752,7 @@ struct RegContenuVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     ForEach(Array(sections.enumerated()), id: \.offset) { _, section in
                         if let entete = section.entete {
                             Text(entete).font(.system(size: 13)).foregroundStyle(regTexte2)
@@ -2777,7 +2816,7 @@ struct RegAppVue: View {
         ZStack {
             regFond.ignoresSafeArea()
             ScrollView {
-                VStack(spacing: 14) {
+                VStack(spacing: 35) {
                     Text("Autoriser « \(nom) » à accéder à :").font(.system(size: 13)).foregroundStyle(regTexte2)
                         .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 20).padding(.top, 12)
                     RegGroupe {

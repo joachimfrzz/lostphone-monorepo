@@ -27,7 +27,7 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 60
     env:
-      REGISTRE: ${{ inputs.registre || 'outils/ecrans-apple.txt' }}
+      REGISTRE: ${{ inputs.registre || vars.REGISTRE_MIROIR || 'outils/ecrans-pilote.txt' }}
     steps:
       - uses: actions/checkout@v4
 

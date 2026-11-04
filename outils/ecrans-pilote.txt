@@ -1,3 +1,4 @@
 reglages
 reglages.general
 reglages.wifi
+reglages.batterie

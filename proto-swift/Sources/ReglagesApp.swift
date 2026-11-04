@@ -167,7 +167,6 @@ struct ReglagesVue: View {
                                     .font(.system(size: 14)).foregroundStyle(.secondary)
                             }
                         }
-                        .padding(.vertical, 3)
                     }
                 }
 
@@ -240,18 +239,22 @@ struct ReglagesVue: View {
             .navigationBarTitleDisplayMode(.large)
             .fullScreenCover(isPresented: $rechercheVisible) { RechercheReglagesVue() }
         }
-        // Pilule Recherche flottante iOS 26 : 346×48 pt, à 28 pt du bas de l'écran (mesuré).
-        .overlay(alignment: .bottom) {
-            PiluleRechercheReglages { Haptique.leger(); rechercheVisible = true }
-                .padding(.horizontal, 28)
-                .padding(.bottom, 28)
-                .ignoresSafeArea(edges: .bottom)
-        }
-        // Fausse capsule home à l'emplacement de la vraie (≈ 8 pt du bas), sous la pilule.
-        .overlay(alignment: .bottom) {
-            BarreHome { dismiss() }
-                .padding(.bottom, 3)
-                .ignoresSafeArea(edges: .bottom)
+        // Pilule Recherche flottante iOS 26 : 346×48 pt, à 28 pt du bas de l'écran (mesuré),
+        // puis fausse capsule home à l'emplacement de la vraie (≈ 8 pt du bas), sous la pilule.
+        // Le GeometryReader ignore la zone sûre : les marges se comptent depuis le bord réel de l'écran.
+        .overlay {
+            GeometryReader { _ in
+                VStack(spacing: 0) {
+                    Spacer()
+                    PiluleRechercheReglages { Haptique.leger(); rechercheVisible = true }
+                        .padding(.horizontal, 28)
+                        .padding(.bottom, 6)   // 6 + 22 (capsule home) = 28 pt du bord
+                    BarreHome { dismiss() }
+                        .padding(.bottom, 3)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .ignoresSafeArea()
         }
         .preferredColorScheme(.dark)
     }

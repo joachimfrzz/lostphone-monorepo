@@ -78,6 +78,7 @@ jobs:
           xcrun simctl spawn "$UDID" defaults write -g AppleLanguages -array fr-FR
           xcrun simctl spawn "$UDID" defaults write -g AppleLocale -string fr_FR
           xcrun simctl shutdown "$UDID"; xcrun simctl boot "$UDID"; xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl ui "$UDID" appearance dark
           xcrun simctl status_bar "$UDID" override --time 9:41 --dataNetwork wifi --wifiMode active \
             --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState discharging --batteryLevel 100
           echo "SORTIE=$RUNNER_TEMP/references-apple" >> "$GITHUB_ENV"
@@ -94,7 +95,9 @@ jobs:
           TEST_RUNNER_PROFONDEUR="$PROFONDEUR" TEST_RUNNER_MAX_ECRANS="$MAX_ECRANS" TEST_RUNNER_DUREE_MAX=2700 TEST_RUNNER_PAGES=4 \
           xcodebuild test -project outils/explorateur/Explorateur.xcodeproj -scheme Explorateur \
             -destination "id=$UDID" CODE_SIGNING_ALLOWED=NO 2>&1 | grep -E "error|Executed|TEST" || true
-          echo "Captures : $(find "$SORTIE" -name '*.png' | wc -l)"
+          NB=$(find "$SORTIE" -name '*.png' | wc -l | tr -d ' ')
+          echo "Captures : $NB"
+          [ "$NB" -gt 0 ] || { echo "ÉCHEC : aucune capture"; exit 1; }
           cat "$SORTIE"/*/INDEX.tsv || true
 
       - uses: actions/upload-artifact@v4

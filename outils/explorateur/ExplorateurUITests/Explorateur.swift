@@ -202,7 +202,7 @@ final class Explorateur: XCTestCase {
             if c.exists, c.isHittable, c.frame.height > 300 {
                 let haut = c.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.25))
                 let bas = c.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.85))
-                bas.press(forDuration: 0.05, thenDragTo: haut, withVelocity: .slow, thenHoldFor: 0.2)
+                bas.press(forDuration: 0.05, thenDragTo: haut, withVelocity: .slow, thenHoldForDuration: 0.2)
                 return true
             }
         }

@@ -1,0 +1,111 @@
+# Miroir D63 porté sur GitHub Actions (D95) : compile le prototype Swift pour le simulateur
+# iPhone 17 (iOS 26, français, barre d'état 09:41) et capture chaque écran d'un registre.
+# Équivalent de `miroir-captures` (codemagic.yaml), sans quota : repo public → minutes macOS gratuites.
+# Artefacts : captures (PNG pleine résolution) + planches (grilles par app).
+name: miroir
+
+on:
+  workflow_dispatch:
+    inputs:
+      registre:
+        description: "Registre d'écrans (ex. outils/ecrans-apple.txt)"
+        required: false
+        default: "outils/ecrans.txt"
+  push:
+    branches: ["kiro/**"]
+    paths:
+      - "proto-swift/**"
+      - "outils/ecrans*.txt"
+      - ".github/workflows/miroir.yml"
+
+concurrency:
+  group: miroir-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  miroir:
+    runs-on: macos-26
+    timeout-minutes: 60
+    env:
+      REGISTRE: ${{ inputs.registre || 'outils/ecrans-apple.txt' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restaurer les fichiers binaires (photos, mémos, icônes)
+        run: bash outils/decode-binaires.sh
+
+      - name: Icône de l'app Swift
+        run: |
+          cp moteur/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png \
+             proto-swift/Assets.xcassets/AppIcon.appiconset/icon-1024.png
+
+      - name: XcodeGen + projet
+        run: |
+          brew install xcodegen || (brew update && brew install xcodegen)
+          cd proto-swift && xcodegen generate
+
+      - name: Build simulateur (non signé)
+        run: |
+          set -o pipefail
+          xcodebuild -project proto-swift/LPProtoSwift.xcodeproj -scheme LPProtoSwift -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath build_sim \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log | grep -E "error:|warning: unre|BUILD" || true
+          grep -q "BUILD SUCCEEDED" build.log || { echo "=== ERREURS ==="; grep -E "error:" build.log | sort -u | head -60; exit 1; }
+
+      - name: Simulateur iPhone 17 (iOS 26 le plus récent, français, 09:41)
+        run: |
+          RUNTIME=$(xcrun simctl list runtimes | grep -oE 'com\.apple\.CoreSimulator\.SimRuntime\.iOS-26-[0-9]+' | sort -t- -k3 -n | tail -1)
+          UDID=$(xcrun simctl create "LP-iPhone17" com.apple.CoreSimulator.SimDeviceType.iPhone-17 "$RUNTIME")
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"; xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl spawn "$UDID" defaults write -g AppleLanguages -array fr-FR
+          xcrun simctl spawn "$UDID" defaults write -g AppleLocale -string fr_FR
+          xcrun simctl shutdown "$UDID"; xcrun simctl boot "$UDID"; xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl status_bar "$UDID" override --time 9:41 --dataNetwork wifi --wifiMode active \
+            --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState discharging --batteryLevel 100
+
+      - name: Captures écran par écran
+        run: |
+          echo "Registre : $REGISTRE"
+          APP=$(find build_sim/Build/Products -name "LPProtoSwift.app" -type d | head -1)
+          xcrun simctl install "$UDID" "$APP"
+          mkdir -p captures
+          while IFS= read -r ecran; do
+            [ -z "$ecran" ] && continue
+            case "$ecran" in \#*) continue;; esac
+            ECR="${ecran%%#*}"; ONG=""
+            case "$ecran" in *#*) ONG="${ecran#*#}";; esac
+            SIMCTL_CHILD_ECRAN="$ECR" SIMCTL_CHILD_ONGLET="$ONG" xcrun simctl launch "$UDID" com.lostphone.game >/dev/null
+            sleep 4
+            xcrun simctl io "$UDID" screenshot "captures/${ecran}.png" >/dev/null 2>&1
+            xcrun simctl terminate "$UDID" com.lostphone.game || true
+            sleep 1
+          done < "$REGISTRE"
+          ATTENDU=$(grep -v '^#' "$REGISTRE" | grep -c .)
+          OBTENU=$(ls captures | wc -l | tr -d ' ')
+          echo "Captures : $OBTENU / $ATTENDU"
+          [ "$OBTENU" -ge "$ATTENDU" ] || { echo "ÉCHEC : captures manquantes"; exit 1; }
+
+      - name: Planches
+        run: |
+          python3 -m pip install --quiet --break-system-packages pillow || python3 -m pip install --quiet pillow
+          python3 outils/planches.py captures planches --groupe prefixe
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: captures
+          path: captures
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: planches
+          path: planches
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: build-log
+          path: build.log
+          if-no-files-found: ignore

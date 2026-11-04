@@ -1,6 +1,7 @@
 # Références « vraies apps Apple » capturées sur le simulateur (D95).
-# Le robot ouvre chaque app Apple du simulateur iPhone 17 (iOS 26), appuie sur
-# chaque bouton visible et capture chaque écran. Zéro travail pour Joachim.
+# Le robot (outils/explorateur) ouvre chaque app Apple du simulateur iPhone 17
+# (iOS 26, français, barre d'état figée), appuie sur chaque bouton visible et
+# capture chaque écran. Zéro travail pour Joachim.
 # Repo public → minutes macOS GitHub gratuites (pas de quota Codemagic).
 name: references-apple
 
@@ -8,9 +9,17 @@ on:
   workflow_dispatch:
     inputs:
       apps:
-        description: "Bundle IDs séparés par des virgules (vide = liste par défaut)"
+        description: "Bundle IDs séparés par des virgules (vide = outils/explorateur/apps.txt)"
         required: false
         default: ""
+      profondeur:
+        description: "Nombre d'appuis enchaînés"
+        required: false
+        default: "2"
+      max_ecrans:
+        description: "Plafond d'écrans par app"
+        required: false
+        default: "80"
   push:
     branches: ["kiro/**"]
     paths:
@@ -18,13 +27,54 @@ on:
       - "outils/explorateur/**"
 
 jobs:
-  sonde:
+  explorer:
     runs-on: macos-26
-    timeout-minutes: 20
+    timeout-minutes: 120
+    env:
+      APPS: ${{ inputs.apps }}
+      PROFONDEUR: ${{ inputs.profondeur || '2' }}
+      MAX_ECRANS: ${{ inputs.max_ecrans || '80' }}
     steps:
-      - name: Xcode et runtimes disponibles
+      - uses: actions/checkout@v4
+
+      - name: Simulateur iPhone 17, iOS 26 le plus récent, français
         run: |
-          ls /Applications | grep -i xcode
-          xcodebuild -version
-          xcrun simctl list runtimes
-          xcrun simctl list devicetypes | grep -i "iPhone 17"
+          RUNTIME=$(xcrun simctl list runtimes | grep -oE 'com\.apple\.CoreSimulator\.SimRuntime\.iOS-26-[0-9]+' | sort -t- -k3 -n | tail -1)
+          echo "Runtime : $RUNTIME"
+          UDID=$(xcrun simctl create "LP-iPhone17" com.apple.CoreSimulator.SimDeviceType.iPhone-17 "$RUNTIME")
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl spawn "$UDID" defaults write -g AppleLanguages -array fr-FR
+          xcrun simctl spawn "$UDID" defaults write -g AppleLocale -string fr_FR
+          xcrun simctl shutdown "$UDID"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl status_bar "$UDID" override --time 9:41 --dataNetwork wifi --wifiMode active \
+            --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState discharging --batteryLevel 100
+
+      - name: Générer le projet du robot
+        run: |
+          brew install xcodegen || (brew update && brew install xcodegen)
+          cd outils/explorateur && xcodegen generate
+
+      - name: Explorer les apps
+        run: |
+          [ -z "$APPS" ] && APPS=$(grep -v '^#' outils/explorateur/apps.txt | grep . | paste -sd, -)
+          echo "Apps : $APPS"
+          SORTIE="$RUNNER_TEMP/references-apple"
+          mkdir -p "$SORTIE"
+          echo "SORTIE=$SORTIE" >> "$GITHUB_ENV"
+          set -o pipefail
+          TEST_RUNNER_SORTIE="$SORTIE" TEST_RUNNER_APPS="$APPS" \
+          TEST_RUNNER_PROFONDEUR="$PROFONDEUR" TEST_RUNNER_MAX_ECRANS="$MAX_ECRANS" \
+          xcodebuild test -project outils/explorateur/Explorateur.xcodeproj -scheme Explorateur \
+            -destination "id=$UDID" CODE_SIGNING_ALLOWED=NO 2>&1 | tail -80 || echo "Test terminé avec erreurs (captures conservées)"
+          find "$SORTIE" -name "*.png" | wc -l
+          for f in "$SORTIE"/*/INDEX.tsv; do echo "== $f"; tail -3 "$f"; done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: references-apple
+          path: ${{ env.SORTIE }}
+          if-no-files-found: error

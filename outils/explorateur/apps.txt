@@ -1,0 +1,2 @@
+com.apple.mobilenotes
+com.apple.Preferences

@@ -1,0 +1,39 @@
+name: Explorateur
+options:
+  bundleIdPrefix: com.lostphone.outils
+  deploymentTarget:
+    iOS: "26.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    GENERATE_INFOPLIST_FILE: YES
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGN_STYLE: Manual
+targets:
+  Hote:
+    type: application
+    platform: iOS
+    sources: [Hote]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lostphone.outils.hote
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+  ExplorateurUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [ExplorateurUITests]
+    dependencies:
+      - target: Hote
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lostphone.outils.explorateur
+        TEST_TARGET_NAME: Hote
+schemes:
+  Explorateur:
+    build:
+      targets:
+        Hote: all
+        ExplorateurUITests: [test]
+    test:
+      targets: [ExplorateurUITests]

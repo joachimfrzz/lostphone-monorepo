@@ -1,2 +1,23 @@
-com.apple.mobilenotes
+# Apps Apple à explorer (bundle IDs). Les absentes du simulateur sont ignorées.
 com.apple.Preferences
+com.apple.mobilecal
+com.apple.reminders
+com.apple.mobileslideshow
+com.apple.MobileAddressBook
+com.apple.MobileSMS
+com.apple.mobilesafari
+com.apple.DocumentsApp
+com.apple.Health
+com.apple.Passbook
+com.apple.findmy
+com.apple.Maps
+com.apple.mobilenotes
+com.apple.weather
+com.apple.mobiletimer
+com.apple.calculator
+com.apple.VoiceMemos
+com.apple.mobilemail
+com.apple.mobilephone
+com.apple.facetime
+com.apple.Music
+com.apple.AppStore

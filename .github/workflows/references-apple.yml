@@ -61,7 +61,17 @@ jobs:
       - name: Explorer les apps
         run: |
           [ -z "$APPS" ] && APPS=$(grep -v '^#' outils/explorateur/apps.txt | grep . | paste -sd, -)
-          echo "Apps : $APPS"
+          xcrun simctl listapps "$UDID" | grep -oE 'CFBundleIdentifier = "?[A-Za-z0-9.-]+' | sed -E 's/.*= "?//' | sort -u > "$RUNNER_TEMP/installees.txt"
+          echo "================ APPS INSTALLÉES ================"
+          cat "$RUNNER_TEMP/installees.txt"
+          echo "================================================="
+          RETENUES=""
+          for a in $(echo "$APPS" | tr ',' ' '); do
+            if grep -qx "$a" "$RUNNER_TEMP/installees.txt"; then RETENUES="$RETENUES,$a"; else echo "ABSENTE du simulateur : $a"; fi
+          done
+          APPS="${RETENUES#,}"
+          echo "Apps explorées : $APPS"
+          [ -z "$APPS" ] && { echo "Aucune app présente"; exit 1; }
           SORTIE="$RUNNER_TEMP/references-apple"
           mkdir -p "$SORTIE"
           echo "SORTIE=$SORTIE" >> "$GITHUB_ENV"

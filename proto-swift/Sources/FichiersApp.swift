@@ -100,7 +100,7 @@ struct FichiersVue: View {
             }
             .padding(3.5)
             .background(.ultraThinMaterial, in: Capsule())
-            .padding(.horizontal, 64.5).padding(.bottom, 8)
+            .padding(.horizontal, 64.5).padding(.bottom, 8).offset(y: 21)
 
             BarreHome { dismiss() }
         }
@@ -118,8 +118,8 @@ struct OngletFichiers: View {
             Image(systemName: symbole).font(.system(size: 23))
             Text(nom).font(.system(size: 10.5))
         }
-        .foregroundStyle(actif ? Color(hex: 0x0A84FF) : .secondary)
-        .padding(.vertical, 8).frame(maxWidth: .infinity)
+        .foregroundStyle(actif ? Color(hex: 0x0A84FF) : .white)
+        .padding(.vertical, 6).frame(maxWidth: .infinity)
         .background(actif ? Color(hex: 0x3A3A3C).opacity(0.85) : .clear, in: Capsule())
         .contentShape(Capsule())
         .onTapGesture(perform: action)
@@ -162,16 +162,20 @@ struct RecentsFichiersVue: View {
                             .frame(width: 44, height: 44).background(Color(hex: 0x1C1C1E), in: Circle())
                     }
                 }
-                Text("Récents").font(.system(size: 34, weight: .bold)).foregroundStyle(.white)
+                .offset(y: -6)
+                Text("Récents").font(.system(size: 34, weight: .bold)).foregroundStyle(.white).offset(y: -3)
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                     TextField("Rechercher", text: $recherche).foregroundStyle(.white).focused($rechercheFocalisee).submitLabel(.search)
                     if !recherche.isEmpty {
                         Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary).onTapGesture { recherche = ""; rechercheFocalisee = false }
+                    } else {
+                        Image(systemName: "mic.fill").foregroundStyle(.white)
                     }
                 }
                 .padding(.horizontal, 14).frame(height: 44)
                 .background(Color(hex: 0x1C1C1E), in: Capsule())
+                .offset(y: -3)
 
                 if !recherche.isEmpty {
                     HStack(spacing: 6) {

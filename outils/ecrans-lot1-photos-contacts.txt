@@ -1,0 +1,6 @@
+pcnr2.photos.phototheque
+pcnr2.photos.collections
+pcnr2.photos.detail
+photos.recherche
+photos.album
+divers2.contacts.listes

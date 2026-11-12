@@ -98,9 +98,9 @@ struct FichiersVue: View {
                 OngletFichiers(symbole: "folder.fill.badge.person.crop", nom: "Partagé", actif: onglet == 1) { onglet = 1 }
                 OngletFichiers(symbole: "folder.fill", nom: "Explorer", actif: onglet == 2) { onglet = 2 }
             }
-            .padding(6)
+            .padding(3.5)
             .background(.ultraThinMaterial, in: Capsule())
-            .padding(.horizontal, 40).padding(.bottom, 34)
+            .padding(.horizontal, 64.5).padding(.bottom, 8)
 
             BarreHome { dismiss() }
         }
@@ -115,11 +115,11 @@ struct OngletFichiers: View {
     let action: () -> Void
     var body: some View {
         VStack(spacing: 2) {
-            Image(systemName: symbole).font(.system(size: 17))
-            Text(nom).font(.system(size: 10))
+            Image(systemName: symbole).font(.system(size: 23))
+            Text(nom).font(.system(size: 10.5))
         }
         .foregroundStyle(actif ? Color(hex: 0x0A84FF) : .secondary)
-        .padding(.vertical, 7).frame(maxWidth: .infinity)
+        .padding(.vertical, 8).frame(maxWidth: .infinity)
         .background(actif ? Color(hex: 0x3A3A3C).opacity(0.85) : .clear, in: Capsule())
         .contentShape(Capsule())
         .onTapGesture(perform: action)
@@ -150,7 +150,6 @@ struct RecentsFichiersVue: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text("Récents").font(.system(size: 30, weight: .bold)).foregroundStyle(.white)
                     Spacer()
                     Menu {
                         // v3 02/09 : Sélectionner RÉEL ; « Scanner des documents » et « Se connecter au serveur » RETIRÉS (sans intérêt dans le jeu — Joachim)
@@ -159,10 +158,11 @@ struct RecentsFichiersVue: View {
                         Button { enListe = false } label: { Label("Icônes", systemImage: enListe ? "square.grid.2x2" : "checkmark") }
                         Button { enListe = true } label: { Label("Liste", systemImage: enListe ? "checkmark" : "list.bullet") }
                     } label: {
-                        Image(systemName: "ellipsis").font(.system(size: 16)).foregroundStyle(Color(hex: 0x0A84FF))
-                            .frame(width: 32, height: 32).background(Color(hex: 0x1C1C1E), in: Circle())
+                        Image(systemName: "ellipsis").font(.system(size: 19, weight: .bold)).foregroundStyle(.white)
+                            .frame(width: 44, height: 44).background(Color(hex: 0x1C1C1E), in: Circle())
                     }
                 }
+                Text("Récents").font(.system(size: 34, weight: .bold)).foregroundStyle(.white)
                 HStack(spacing: 8) {
                     Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                     TextField("Rechercher", text: $recherche).foregroundStyle(.white).focused($rechercheFocalisee).submitLabel(.search)
@@ -170,8 +170,8 @@ struct RecentsFichiersVue: View {
                         Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary).onTapGesture { recherche = ""; rechercheFocalisee = false }
                     }
                 }
-                .padding(.horizontal, 12).frame(height: 38)
-                .background(Color(hex: 0x1C1C1E), in: RoundedRectangle(cornerRadius: 11))
+                .padding(.horizontal, 14).frame(height: 44)
+                .background(Color(hex: 0x1C1C1E), in: Capsule())
 
                 if !recherche.isEmpty {
                     HStack(spacing: 6) {

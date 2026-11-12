@@ -291,10 +291,10 @@ enum DonneesFb {
             FbCommentaire(id: "d1", auteur: "Sofiane Belkacem", teinte: 0x30D1C4, date: "2 j",
                           texte: "Attention aux frais cachés, lisez les CGV avant.", likes: 41,
                           fils: [
-                            FbCommentaire(id: "d1r1", auteur: "Marie-Pierre Fourez", teinte: 0xE64980, date: "2 j",
+                            FbCommentaire(id: "d1r1", auteur: "Marie-Pierre Vasseur", teinte: 0xE64980, date: "2 j",
                                           texte: "Merci du conseil, j'allais m'inscrire.", likes: 7)
                           ]),
-            FbCommentaire(id: "d2", auteur: "Marie-Pierre Fourez", teinte: 0xE64980, date: "1 j",
+            FbCommentaire(id: "d2", auteur: "Marie-Pierre Vasseur", teinte: 0xE64980, date: "1 j",
                           texte: "J'ai jamais reçu la carte au bout de 3 semaines.", likes: 17)
         ])
 
@@ -563,7 +563,7 @@ enum DonneesFb {
     ]
 
     static let invitations: [FbPersonne] = [
-        FbPersonne(id: "i1", nom: "Marie-Pierre Fourez", teinte: 0xE64980,
+        FbPersonne(id: "i1", nom: "Marie-Pierre Vasseur", teinte: 0xE64980,
                    badgeHoraire: "2 h", anciennete: "4 a"),
         FbPersonne(id: "i2", nom: "Dorian Delzers", teinte: 0x5B7CFA, detail: "Suivi(e) par 191 personnes",
                    badgeHoraire: "1 h", anciennete: "1 a"),
@@ -683,9 +683,9 @@ enum DonneesFb {
                            FbSegment(texte: ".")],
                 horaire: "2 j"),
         FbNotif(id: "n2", teinte: 0x8E44AD, badge: "person.badge.plus",
-                segments: [FbSegment(texte: "Marie-Pierre Fourez", gras: true),
+                segments: [FbSegment(texte: "Marie-Pierre Vasseur", gras: true),
                            FbSegment(texte: " souhaite vous ajouter à ses ami(e)s.")],
-                horaire: "2 h", personneCible: "Marie-Pierre Fourez"),
+                horaire: "2 h", personneCible: "Marie-Pierre Vasseur"),
         FbNotif(id: "n3", photo: "p33", teinte: 0xFF9F0A, badge: "bell.fill",
                 segments: [FbSegment(texte: "Atelier Poterie Lyon 3", gras: true),
                            FbSegment(texte: " a publié : « Les inscriptions de septembre sont ouvertes ! »")],

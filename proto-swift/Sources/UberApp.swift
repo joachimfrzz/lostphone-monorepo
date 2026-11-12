@@ -12,7 +12,7 @@
 //   Aucun écran inventé de mémoire : le détail d'une course passée est un ASSEMBLAGE de
 //   briques filmées (carte + itinéraire d'e004, rangées d'adresse d'e002, prix, bouton noir).
 //
-// D59 : le contenu de Joachim (Auch, Colomiers, Toulouse, « Joachim Fourez », Pizzeria
+// D59 : le contenu de Joachim (Auch, Colomiers, Toulouse, le nom du créateur, Pizzeria
 //   L'Olivette, Crousty Rice, notifications BlackHatWorld) n'est qu'un gabarit. Tout est
 //   remplacé par Sarah Levasseur (Lyon, 14 rue des Fantasques 69001), cohérente avec
 //   Ma Banque (Visa LCL •••• 4417), PayPal et WhatsApp (« Marc ❤️ »).

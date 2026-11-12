@@ -14,7 +14,7 @@
 //   « Poser une option gratuitement » (officiel/09_07).
 //   Aucun écran inventé : ce qui n'existe dans aucune source a été retiré.
 //
-// D59 : le contenu de Joachim (Auch/Toulouse, « Joachim Fourez », 28/07/2003,
+// D59 : le contenu de Joachim (Auch/Toulouse, le nom du créateur, 28/07/2003,
 //   06 43 49 14 26, liO/TER Occitanie, Île-de-France) n'est qu'un GABARIT. Tout est
 //   remplacé par Sarah Levasseur : Lyon Part-Dieu, 14 rue des Fantasques 69001 Lyon,
 //   née le 03/04/1991, 06 •• •• •• 42, sarah.levasseur@icloud.com, Carte Avantage

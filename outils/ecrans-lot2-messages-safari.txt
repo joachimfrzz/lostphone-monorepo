@@ -1,0 +1,9 @@
+messages
+messages.conversation
+messages.fiche
+messages.nouveau
+messages.suppressions
+messages.indesirables
+safari
+safari.onglets
+safari.historique

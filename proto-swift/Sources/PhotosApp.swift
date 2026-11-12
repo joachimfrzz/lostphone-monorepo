@@ -1135,7 +1135,6 @@ struct RecherchePhotosVue: View {
                             .focused($focalise)
                             .submitLabel(.search)
                             .autocorrectionDisabled()
-                            .textInputAutocapitalization(.never)
                         if !saisie.isEmpty {
                             Image(systemName: "xmark.circle.fill").font(.system(size: 15)).foregroundStyle(phTexte2)
                                 .onTapGesture { saisie = "" }
@@ -1342,7 +1341,7 @@ struct SectionTitrePhotos: View {
             Spacer()
             if let accessoire {
                 Text(accessoire).font(.system(size: 15, weight: .semibold)).foregroundStyle(phBleu)
-                    .padding(.horizontal, 14).frame(height: 28)
+                    .padding(.horizontal, 12.5).frame(height: 28)
                     .background(phCarte, in: Capsule())
             }
             Image(systemName: "chevron.down").font(.system(size: 13, weight: .bold)).foregroundStyle(phBleu)
@@ -1364,13 +1363,13 @@ struct CarteEpinglee<Destination: View>: View {
                 .overlay(alignment: .topTrailing) {
                     if symbole == "heart.fill" {
                         Image(systemName: "heart.fill").font(.system(size: 19)).foregroundStyle(.white)
-                            .padding(.top, 10).padding(.trailing, 12)
+                            .padding(.top, 9).padding(.trailing, 8)
                     }
                 }
                 .overlay(alignment: .bottomLeading) {
-                    Text(nom).font(.system(size: 16)).foregroundStyle(.white)
+                    Text(nom).font(.system(size: 14)).foregroundStyle(.white)
                         .multilineTextAlignment(.leading).lineLimit(2)
-                        .padding(.leading, 14).padding(.trailing, 6).padding(.bottom, 12)
+                        .padding(.leading, 10).padding(.trailing, 6).padding(.bottom, 8)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
         }

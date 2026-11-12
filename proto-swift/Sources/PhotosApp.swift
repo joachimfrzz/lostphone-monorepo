@@ -300,18 +300,20 @@ struct PhotosVue: View {
                     if onglet == 0 { PhototequeVue() } else { CollectionsPhotosVue() }
                 }
 
-                HStack(spacing: 10) {
+                HStack(spacing: 0) {
                     HStack(spacing: 0) {
                         OngletPhotos(symbole: "photo.on.rectangle", nom: "Photothèque", actif: onglet == 0) { onglet = 0 }
                         OngletPhotos(symbole: "square.stack", nom: "Collections", actif: onglet == 1) { onglet = 1 }
                     }
                     .padding(.vertical, 8).padding(.horizontal, 8)
                     .background(Color(hex: 0x1D1D1D), in: Capsule())
+                    Spacer()
                     Image(systemName: "magnifyingglass")
-                        .font(.system(size: 18)).foregroundStyle(phTexte)
-                        .padding(13).background(Color(hex: 0x1D1D1D), in: Circle())
+                        .font(.system(size: 24)).foregroundStyle(phTexte)
+                        .frame(width: 61, height: 61).background(Color(hex: 0x1D1D1D), in: Circle())
                         .onTapGesture { Haptique.leger(); rechercheVisible = true }
                 }
+                .padding(.horizontal, 21)
                 .padding(.bottom, 6)
 
             BarreHome { dismiss() }
@@ -335,7 +337,7 @@ struct OngletPhotos: View {
             Text(nom).font(.system(size: 10, weight: actif ? .semibold : .regular))
                 .foregroundStyle(actif ? phBleu : phTexte2)
         }
-        .padding(.horizontal, 16).padding(.vertical, 4)
+        .padding(.horizontal, 18.5).padding(.vertical, 4)
         .background(actif ? Color(hex: 0x303030) : .clear, in: Capsule())
         .contentShape(Rectangle())
         .onTapGesture { Haptique.leger(); action() }
@@ -383,13 +385,7 @@ struct PhototequeVue: View {
             VStack(spacing: 0) {
                 // En-tête (v2 étape 5 : « Synchronisation suspendue » retirée — décision Joachim)
                 HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Photothèque").font(.system(size: 26, weight: .bold)).foregroundStyle(phTexte)
-                        if filtre != 0 {
-                            Text(filtre == 1 ? "Favorites" : "Captures d'écran")
-                                .font(.system(size: 12.5)).foregroundStyle(phBleu)
-                        }
-                    }
+                    Text("Photothèque").font(.system(size: 34, weight: .bold)).foregroundStyle(phTexte)
                     Spacer()
                     // v2 étape 5 : menu ANCRÉ au bouton, filtres RÉELS
                     Menu {
@@ -400,9 +396,9 @@ struct PhototequeVue: View {
                         }
                     } label: {
                         Image(systemName: "line.3.horizontal.decrease")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.system(size: 18, weight: .semibold))
                             .foregroundStyle(filtre == 0 ? phTexte : phBleu)
-                            .padding(10).background(phCarte, in: Circle())
+                            .frame(width: 44, height: 44).background(phCarte, in: Circle())
                     }
                     // v2 étape 5 (fiabilisé 31/08) : sélection RÉELLE — vrai Button
                     Button {
@@ -411,14 +407,22 @@ struct PhototequeVue: View {
                         selection.removeAll()
                         if modeSelection && portee == 0 { portee = 2 } // la sélection se fait sur les vignettes
                     } label: {
-                        Text(modeSelection ? "Annuler" : "Sélect.").font(.system(size: 15)).foregroundStyle(phTexte)
-                            .padding(.horizontal, 13).padding(.vertical, 8)
+                        Text(modeSelection ? "Annuler" : "Sélect.").font(.system(size: 17)).foregroundStyle(phTexte)
+                            .padding(.horizontal, 17).frame(height: 44)
                             .background(phCarte, in: Capsule())
                             .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 6)
+                .padding(.horizontal, 16).padding(.top, 0)
+                // Sous-titre : effectif de la photothèque (ou filtre actif), comme le vrai iOS 26
+                HStack {
+                    Text(filtre == 0 ? "\(photosFiltrees.count) Photos" : (filtre == 1 ? "Favorites" : "Captures d'écran"))
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(filtre == 0 ? phTexte : phBleu)
+                    Spacer()
+                }
+                .padding(.horizontal, 16).padding(.top, -2).padding(.bottom, 12)
 
                 switch portee {
                 case 0: vueAnnees
@@ -433,7 +437,7 @@ struct PhototequeVue: View {
                     .font(.system(size: 13, weight: .semibold)).foregroundStyle(phTexte)
                     .padding(.horizontal, 12).padding(.vertical, 6)
                     .background(.ultraThinMaterial, in: Capsule())
-                    .padding(.top, 74)
+                    .padding(.top, 100)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 16)
                     .allowsHitTesting(false)
@@ -1160,14 +1164,17 @@ struct CollectionsPhotosVue: View {
             VStack(alignment: .leading, spacing: 22) {
                 HStack {
                     // v2 étape 5 : « Synchronisation suspendue » retirée (décision Joachim)
-                    Text("Collections").font(.system(size: 26, weight: .bold)).foregroundStyle(phTexte)
+                    Text("Collections").font(.system(size: 34, weight: .bold)).foregroundStyle(phTexte)
                     Spacer()
                     // v2 étape 5 : le profil SL s'ouvre vraiment
-                    AvatarMsg(nom: "Sarah Levasseur", taille: 34)
+                    Image(systemName: "ellipsis").font(.system(size: 18, weight: .bold)).foregroundStyle(phTexte)
+                        .frame(width: 44, height: 44).background(phCarte, in: Circle())
+                        .padding(.trailing, 6)
+                    AvatarMsg(nom: "Sarah Levasseur", taille: 44)
                         .contentShape(Circle())
                         .onTapGesture { Haptique.leger(); profilVisible = true }
                 }
-                .padding(.horizontal, 16).padding(.top, 8)
+                .padding(.leading, 16.5).padding(.trailing, 20.5).padding(.top, 0)
                 .sheet(isPresented: $profilVisible) { ProfilPhotosVue() }
 
                 // Souvenirs
@@ -1188,12 +1195,12 @@ struct CollectionsPhotosVue: View {
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                             .padding(12)
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 24.5)
                 }.buttonStyle(.plain)
 
                 // Épinglées
                 SectionTitrePhotos(nom: "Épinglées", accessoire: "Modifier")
-                HStack(spacing: 10) {
+                HStack(spacing: 12) {
                     CarteEpinglee(nom: "Favorites", symbole: "heart.fill", photo: magasin.lesFavoris.first?.id) {
                         AlbumVue(titre: "Favorites", items: magasin.lesFavoris)
                     }
@@ -1204,7 +1211,7 @@ struct CollectionsPhotosVue: View {
                         PlanPhotosVue()
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 24.5)
 
                 // Albums
                 SectionTitrePhotos(nom: "Albums")
@@ -1245,7 +1252,7 @@ struct CollectionsPhotosVue: View {
                             }
                         }.buttonStyle(.plain)
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 24.5)
                 }
 
                 // Personnes
@@ -1258,7 +1265,7 @@ struct CollectionsPhotosVue: View {
                         PersonnePhotos(nom: "Papa", photo: "p03")
                         PersonnePhotos(nom: "", photo: "p49") // non nommé : « Marc »…
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 24.5)
                 }
 
                 // Types de média
@@ -1281,7 +1288,7 @@ struct CollectionsPhotosVue: View {
                     }.buttonStyle(.plain)
                 }
                 .background(phCarte, in: RoundedRectangle(cornerRadius: 12))
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 24.5)
 
                 // Autres
                 SectionTitrePhotos(nom: "Autres")
@@ -1312,7 +1319,7 @@ struct CollectionsPhotosVue: View {
                     }.buttonStyle(.plain)
                 }
                 .background(phCarte, in: RoundedRectangle(cornerRadius: 12))
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 24.5)
 
                 Color.clear.frame(height: 120)
             }
@@ -1325,15 +1332,19 @@ struct SectionTitrePhotos: View {
     let nom: String
     var accessoire: String? = nil
     var body: some View {
-        HStack {
-            Text(nom).font(.system(size: 19, weight: .bold)).foregroundStyle(phTexte)
-            Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundStyle(phTexte2)
+        HStack(spacing: 6) {
+            Text(nom).font(.system(size: 22, weight: .bold)).foregroundStyle(phTexte)
+            Image(systemName: "chevron.right").font(.system(size: 14, weight: .semibold)).foregroundStyle(phTexte2)
             Spacer()
             if let accessoire {
-                Text(accessoire).font(.system(size: 14)).foregroundStyle(phBleu)
+                Text(accessoire).font(.system(size: 15, weight: .semibold)).foregroundStyle(phBleu)
+                    .padding(.horizontal, 14).frame(height: 28)
+                    .background(phCarte, in: Capsule())
             }
+            Image(systemName: "chevron.down").font(.system(size: 13, weight: .bold)).foregroundStyle(phBleu)
+                .frame(width: 28, height: 28).background(phCarte, in: Circle())
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 24.5)
     }
 }
 
@@ -1344,23 +1355,34 @@ struct CarteEpinglee<Destination: View>: View {
     @ViewBuilder let destination: () -> Destination
     var body: some View {
         NavigationLink { destination() } label: {
-            VStack(alignment: .leading, spacing: 6) {
-                ZStack {
-                    if let photo, let img = ChargeurPhoto.image(photo) {
-                        Image(uiImage: img).resizable().scaledToFill()
-                    } else {
-                        Rectangle().fill(phCarte)
-                        Image(systemName: symbole).font(.system(size: 22)).foregroundStyle(phTexte2)
+            Color.clear.aspectRatio(1, contentMode: .fit)
+                .overlay { fond }
+                .overlay(alignment: .topTrailing) {
+                    if symbole == "heart.fill" {
+                        Image(systemName: "heart.fill").font(.system(size: 19)).foregroundStyle(.white)
+                            .padding(.top, 10).padding(.trailing, 12)
                     }
                 }
-                .frame(height: 100).clipped()
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                Text(nom).font(.system(size: 12.5)).foregroundStyle(phTexte)
-                    .lineLimit(1)
-            }
+                .overlay(alignment: .bottomLeading) {
+                    Text(nom).font(.system(size: 16)).foregroundStyle(.white)
+                        .multilineTextAlignment(.leading).lineLimit(2)
+                        .padding(.leading, 14).padding(.trailing, 6).padding(.bottom, 12)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
         }
         .buttonStyle(.plain)
         .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder private var fond: some View {
+        if let photo, let img = ChargeurPhoto.image(photo) {
+            ZStack {
+                Image(uiImage: img).resizable().scaledToFill()
+                LinearGradient(colors: [.clear, .black.opacity(0.45)], startPoint: .center, endPoint: .bottom)
+            }
+        } else {
+            LinearGradient(colors: [Color(hex: 0x48484B), Color(hex: 0x2A2A2D)], startPoint: .top, endPoint: .bottom)
+        }
     }
 }
 
@@ -1489,31 +1511,68 @@ struct ProfilPhotosVue: View {
 }
 
 struct AlbumVue: View {
+    @Environment(\.dismiss) private var dismiss
     let titre: String
     let items: [PhotoItem]
     @State private var photoOuverte: PhotoItem? = nil
+
+    private func rond(_ symbole: String, action: @escaping () -> Void = {}) -> some View {
+        Button(action: action) {
+            Image(systemName: symbole).font(.system(size: 19, weight: .semibold)).foregroundStyle(phTexte)
+                .frame(width: 44, height: 44)
+                .background(phCarte, in: Circle())
+                .overlay(Circle().stroke(Color.white.opacity(0.08), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+    }
+
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             phFond.ignoresSafeArea()
-            if items.isEmpty {
-                VStack(spacing: 8) {
-                    Image(systemName: "photo.on.rectangle").font(.system(size: 34)).foregroundStyle(phTexte2)
-                    Text("Aucune photo").font(.system(size: 15)).foregroundStyle(phTexte2)
+            VStack(spacing: 0) {
+                HStack {
+                    rond("chevron.left") { dismiss() }
+                    Spacer()
+                    rond("ellipsis")
                 }
-            } else {
-                ScrollView {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 3), spacing: 2) {
-                        ForEach(items) { p in
-                            TuilePhoto(item: p)
-                                .onTapGesture { photoOuverte = p }
+                .padding(.horizontal, 16)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(titre).font(.system(size: 34, weight: .bold)).foregroundStyle(phTexte)
+                    HStack(spacing: 6) {
+                        if titre == "Favorites" {
+                            Image(systemName: "heart").font(.system(size: 15, weight: .semibold)).foregroundStyle(phTexte)
                         }
+                        Text("\(items.count) \(items.count > 1 ? "Photos" : "Photo")")
+                            .font(.system(size: 17, weight: .semibold)).foregroundStyle(phTexte)
                     }
-                    Color.clear.frame(height: 60)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 18).padding(.top, 5).padding(.bottom, 12)
+
+                if items.isEmpty {
+                    Spacer()
+                    VStack(spacing: 2) {
+                        Text("Aucune photo ou vidéo").font(.system(size: 20)).foregroundStyle(phTexte2)
+                        Text("Vous pouvez synchroniser des photos et vidéos sur votre iPhone via le Finder.")
+                            .font(.system(size: 17)).foregroundStyle(phTexte2).multilineTextAlignment(.center)
+                    }
+                    .padding(.horizontal, 36)
+                    Spacer()
+                    Spacer()
+                } else {
+                    ScrollView {
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: 3), spacing: 2) {
+                            ForEach(items) { p in
+                                TuilePhoto(item: p)
+                                    .onTapGesture { photoOuverte = p }
+                            }
+                        }
+                        Color.clear.frame(height: 60)
+                    }
                 }
             }
         }
-        .navigationTitle("\(titre) · \(items.count)")
-        .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .navigationBar)
         .fullScreenCover(item: $photoOuverte) { p in PhotoDetailVue(depart: p) }
     }
 }

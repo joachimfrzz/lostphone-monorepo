@@ -72,7 +72,7 @@ extension View {
     func regListeSousPage() -> some View {
         self.listStyle(.insetGrouped)
             .listSectionSpacing(35)
-            .contentMargins(.horizontal, 4, for: .scrollContent)
+            .contentMargins(.horizontal, 20, for: .scrollContent)
             .padding(.top, -17)
             .environment(\.regTailleIcone, 28)
             .preferredColorScheme(.dark)

@@ -196,8 +196,8 @@ struct SanteVue: View {
                         Image(systemName: "heart.fill").font(.system(size: 17))
                         Text("Résumé").font(.system(size: 10))
                     }
-                    .foregroundStyle(onglet == 0 ? Color(hex: 0xFA5252) : .secondary)
-                    .padding(.vertical, 7).padding(.horizontal, 20)
+                    .foregroundStyle(onglet == 0 ? Color(hex: 0x0A9BFF) : .white)
+                    .padding(.vertical, 7).padding(.horizontal, 24)
                     .background(onglet == 0 ? Color(hex: 0x3A3A3C).opacity(0.85) : .clear, in: Capsule())
                     .contentShape(Capsule())
                     .onTapGesture { onglet = 0 }
@@ -205,21 +205,22 @@ struct SanteVue: View {
                         Image(systemName: "square.grid.2x2.fill").font(.system(size: 17))
                         Text("Parcourir").font(.system(size: 10))
                     }
-                    .foregroundStyle(onglet == 1 ? Color(hex: 0xFA5252) : .secondary)
-                    .padding(.vertical, 7).padding(.horizontal, 20)
+                    .foregroundStyle(onglet == 1 ? Color(hex: 0x0A9BFF) : .white)
+                    .padding(.vertical, 7).padding(.horizontal, 24)
                     .background(onglet == 1 ? Color(hex: 0x3A3A3C).opacity(0.85) : .clear, in: Capsule())
                     .contentShape(Capsule())
                     .onTapGesture { onglet = 1 }
                 }
                 .padding(6)
                 .background(.ultraThinMaterial, in: Capsule())
-                Image(systemName: "magnifyingglass").font(.system(size: 17)).foregroundStyle(.white)
-                    .frame(width: 46, height: 46)
+                Spacer()
+                Image(systemName: "magnifyingglass").font(.system(size: 24)).foregroundStyle(.white)
+                    .frame(width: 61, height: 61)
                     .background(.ultraThinMaterial, in: Circle())
                     .contentShape(Circle())
                     .onTapGesture { rechercheVisible = true }
             }
-            .padding(.bottom, 34)
+            .padding(.horizontal, 21).padding(.bottom, 8).offset(y: 21)
 
             BarreHome { dismiss() }
         }

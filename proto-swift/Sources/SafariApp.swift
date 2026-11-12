@@ -452,7 +452,7 @@ struct SafariVue: View {
                         }
                     }
                 }
-                .padding(.bottom, barreReduite ? 60 : 118)
+                .padding(.bottom, barreReduite ? 60 : 96)
             }
             .id(rechargement)
 
@@ -476,7 +476,7 @@ struct SafariVue: View {
                     }
                     .background(.ultraThinMaterial)
                 }
-                .padding(.bottom, 108)
+                .padding(.bottom, 96)
             }
 
             // Barre du bas : complète, ou réduite (aA > Masquer la barre d'outils)
@@ -529,11 +529,26 @@ struct SafariVue: View {
         .sheet(isPresented: $partageAlerte) { FeuillePartage(element: urlActive) }
     }
 
-    // ——— Barre d'adresse + contrôles bas
+    // ——— Barre du bas iOS 26 (cotes relevées sur l'iPhone réel : y 792 → 840, retour/avant 81 pt,
+    //     capsule d'adresse 191 pt, bouton « … » rond de 48 pt, marges 33 pt)
+    private var verreBarre: some ShapeStyle { Color(hex: 0x1C1C1E).opacity(0.94) }
+
     private var barreBasse: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 10) {
-                // v2 Safari : bouton aA RÉEL (zoom, lecteur, barre d'outils)
+        HStack(spacing: 7) {
+            HStack(spacing: 0) {
+                Image(systemName: "chevron.left").font(.system(size: 19, weight: .medium))
+                    .foregroundStyle(.white.opacity(pileArriere.isEmpty ? 0.35 : 1))
+                    .frame(width: 41, height: 48).contentShape(Rectangle())
+                    .onTapGesture { arriere() }
+                Image(systemName: "chevron.right").font(.system(size: 19, weight: .medium))
+                    .foregroundStyle(.white.opacity(pileAvant.isEmpty ? 0.35 : 1))
+                    .frame(width: 41, height: 48).contentShape(Rectangle())
+                    .onTapGesture { avant() }
+            }
+            .background(verreBarre, in: Capsule())
+            .overlay(Capsule().stroke(Color.white.opacity(0.10), lineWidth: 1))
+
+            HStack(spacing: 0) {
                 Menu {
                     Text("Zoom \(Int(zoom * 100)) %")
                     Button { Haptique.leger(); zoom = min(1.3, zoom + 0.15) } label: {
@@ -557,62 +572,52 @@ struct SafariVue: View {
                 } label: {
                     Image(systemName: "textformat.size").font(.system(size: 15))
                         .foregroundStyle(lecteurActif || zoom != 1.0 ? Color(hex: 0x0A84FF) : .white.opacity(0.85))
-                        .frame(width: 30, height: 44)
+                        .frame(width: 41, height: 40)
                         .contentShape(Rectangle())
                 }
                 if saisieActive {
                     TextField("Rechercher ou saisir une adresse", text: $saisie)
                         .focused($champFocalise)
-                        .font(.system(size: 15)).foregroundStyle(.white)
+                        .font(.system(size: 17)).foregroundStyle(.white)
                         .autocapitalization(.none)
                         .onSubmit { naviguer(saisie) }
                 } else {
                     Text(urlActive.isEmpty ? "Rechercher ou saisir une adresse" : urlActive)
-                        .font(.system(size: 15))
+                        .font(.system(size: 17))
                         .foregroundStyle(urlActive.isEmpty ? Color.secondary : Color.white)
+                        .lineLimit(1)
                         .frame(maxWidth: .infinity)
                         .contentShape(Rectangle())
                         .onTapGesture { saisieActive = true; champFocalise = true; saisie = "" }
                 }
                 Image(systemName: "arrow.clockwise").font(.system(size: 14)).foregroundStyle(.white.opacity(0.85))
+                    .frame(width: 30, height: 40)
                     .contentShape(Rectangle())
                     .onTapGesture { Haptique.leger(); rechargement += 1 }
             }
-            .padding(.horizontal, 14).frame(height: 44)
-            .background(Color(hex: 0x3A3A3C), in: RoundedRectangle(cornerRadius: 13))
-            .padding(.horizontal, 12)
+            .frame(height: 48)
+            .background(verreBarre, in: Capsule())
+            .overlay(Capsule().stroke(Color.white.opacity(0.10), lineWidth: 1))
 
-            HStack {
-                Image(systemName: "chevron.left").font(.system(size: 19))
-                    .opacity(pileArriere.isEmpty ? 0.35 : 1)
-                    .contentShape(Rectangle())
-                    .onTapGesture { arriere() }
-                Spacer()
-                Image(systemName: "chevron.right").font(.system(size: 19))
-                    .opacity(pileAvant.isEmpty ? 0.35 : 1)
-                    .contentShape(Rectangle())
-                    .onTapGesture { avant() }
-                Spacer()
-                Image(systemName: "square.and.arrow.up").font(.system(size: 18))
-                    .contentShape(Rectangle())
-                    .onTapGesture { partageAlerte = true }
-                Spacer()
-                Image(systemName: "book").font(.system(size: 18))
-                    .contentShape(Rectangle())
-                    .onTapGesture { historiqueVisible = true }
-                Spacer()
-                Image(systemName: "square.on.square").font(.system(size: 18))
-                    .contentShape(Rectangle())
-                    .onTapGesture { ongletsVisibles = true }
+            Menu {
+                Button { partageAlerte = true } label: { Label("Partager", systemImage: "square.and.arrow.up") }
+                Button { Haptique.leger() } label: { Label("Ajouter à Signets", systemImage: "bookmark") }
+                Button { Haptique.leger() } label: { Label("Ajouter un signet à…", systemImage: "book") }
+                Divider()
+                Button { nouvelOnglet() } label: { Label("Nouvel onglet", systemImage: "plus") }
+                Button { modePrive = true; nouvelOnglet() } label: { Label("Nouvel onglet privé", systemImage: "hand.raised") }
+                Divider()
+                Button { historiqueVisible = true } label: { Label("Signets", systemImage: "book") }
+                Button { ongletsVisibles = true } label: { Label("Tous les onglets", systemImage: "square.on.square") }
+            } label: {
+                Image(systemName: "ellipsis").font(.system(size: 19, weight: .bold)).foregroundStyle(.white)
+                    .frame(width: 48, height: 48)
+                    .background(verreBarre, in: Circle())
+                    .overlay(Circle().stroke(Color.white.opacity(0.10), lineWidth: 1))
             }
-            .foregroundStyle(Color(hex: 0x0A84FF))
-            .padding(.horizontal, 28)
-            .padding(.bottom, 12)   // v2 Safari : dégagé de la zone home
         }
-        .padding(.top, 8)
-        .background(.ultraThinMaterial)
-        .padding(.bottom, 18)       // v2 Safari : la barre d'outils s'arrête AU-DESSUS de la capsule home
-        .background(Color(hex: 0x1C1C1E).opacity(0.9).ignoresSafeArea(edges: .bottom))
+        .padding(.horizontal, 33)
+        .padding(.bottom, 12)       // la barre s'arrête AU-DESSUS de la capsule home du jeu
     }
 
     private var suggestions: [String] {

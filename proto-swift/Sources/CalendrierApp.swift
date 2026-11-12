@@ -376,11 +376,14 @@ struct CalendrierVue: View {
     @State private var nomNouveau = ""
     let ouvrirRecherche: Bool
     let ouvrirCreation: Bool
+    let feuilleInitiale: CalFeuille
 
-    // Les deux drapeaux ne servent qu'au mode capture (calendrier.nouveau / calendrier.recherche)
-    init(recherche: Bool = false, creation: Bool = false) {
+    // Les paramètres ne servent qu'au mode capture (calendrier.nouveau, .recherche, .mois, .calendriers…)
+    init(recherche: Bool = false, creation: Bool = false, feuille: CalFeuille = .aucune, niveau: CalNiveau = .jour) {
         self.ouvrirRecherche = recherche
         self.ouvrirCreation = creation
+        self.feuilleInitiale = feuille
+        _niveau = State(initialValue: niveau)
     }
 
     var body: some View {
@@ -411,6 +414,7 @@ struct CalendrierVue: View {
         .onAppear {
             if ouvrirCreation { etat.ouvrirCreation(CalDate.aujourdhui) }
             if ouvrirRecherche { etat.recherche = true }
+            if feuilleInitiale != .aucune { etat.feuille = feuilleInitiale }
         }
         .onDisappear { etat.toutFermer() }
     }

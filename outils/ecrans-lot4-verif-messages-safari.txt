@@ -1,0 +1,6 @@
+messages
+messages.conversation
+safari
+safari.onglets
+photos#0
+contacts.fiche

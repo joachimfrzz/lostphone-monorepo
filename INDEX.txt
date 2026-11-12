@@ -1,0 +1,5 @@
+./INDEX.txt
+./captures/reglages.general.png
+./captures/reglages.infos.png
+./captures/reglages.png
+./planches/planche-reglages.jpg

@@ -298,20 +298,20 @@ struct MessagesVue: View {
                 HStack {
                     if filtre == .messages {
                         if modeSelection {
-                            Text("Terminé").font(.system(size: 16, weight: .semibold)).foregroundStyle(msgTexte)
-                                .padding(.horizontal, 14).padding(.vertical, 8)
+                            Text("Terminé").font(.system(size: 17, weight: .semibold)).foregroundStyle(msgTexte)
+                                .padding(.horizontal, 16).frame(height: 44)
                                 .background(msgChamp, in: Capsule())
                                 .onTapGesture { modeSelection = false; selection.removeAll() }
                         } else {
-                            Text("Modifier").font(.system(size: 16)).foregroundStyle(msgTexte)
-                                .padding(.horizontal, 14).padding(.vertical, 8)
+                            Text("Modifier").font(.system(size: 17)).foregroundStyle(msgTexte)
+                                .padding(.horizontal, 16).frame(height: 44)
                                 .background(msgChamp, in: Capsule())
                                 .onTapGesture { Haptique.leger(); menuModifier.toggle() }
                         }
                     } else {
-                        Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold))
+                        Image(systemName: "chevron.left").font(.system(size: 19, weight: .semibold))
                             .foregroundStyle(msgTexte)
-                            .padding(10).background(msgChamp, in: Circle())
+                            .frame(width: 44, height: 44).background(msgChamp, in: Circle())
                             .onTapGesture { filtre = .messages }
                     }
                     Spacer()
@@ -320,12 +320,12 @@ struct MessagesVue: View {
                         Spacer()
                     }
                     Image(systemName: "line.3.horizontal.decrease")
-                        .font(.system(size: 15, weight: .semibold)).foregroundStyle(msgTexte)
-                        .padding(10)
+                        .font(.system(size: 18, weight: .semibold)).foregroundStyle(msgTexte)
+                        .frame(width: 44, height: 44)
                         .background(filtre == .messages ? msgChamp : Color(hex: 0x0A84FF), in: Circle())
                         .onTapGesture { Haptique.leger(); menuFiltres.toggle() }
                 }
-                .padding(.horizontal, 14).padding(.top, 6)
+                .padding(.horizontal, 16).padding(.top, 0)
 
                 // Menu Modifier (déroulant)
                 if menuModifier {
@@ -380,8 +380,8 @@ struct MessagesVue: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("Messages")
-                        .font(.system(size: 33, weight: .bold)).foregroundStyle(msgTexte)
-                        .padding(.horizontal, 18).padding(.top, 56).padding(.bottom, 8)
+                        .font(.system(size: 34, weight: .bold)).foregroundStyle(msgTexte)
+                        .padding(.horizontal, 16.5).padding(.top, 56).padding(.bottom, 8)
                     ForEach(Array(convs.enumerated()), id: \.element.id) { indice, conv in
                         HStack(spacing: 0) {
                             if modeSelection {
@@ -401,7 +401,7 @@ struct MessagesVue: View {
                         // Mini-lignes de séparation entre conversations (référence IMG_3486)
                         if indice < convs.count - 1 {
                             Divider().overlay(Color.white.opacity(0.13))
-                                .padding(.leading, 73).padding(.trailing, 16)
+                                .padding(.leading, 83).padding(.trailing, 16)
                         }
                     }
                     Color.clear.frame(height: 90)
@@ -412,13 +412,13 @@ struct MessagesVue: View {
         .overlay(alignment: .bottom) {
             HStack(spacing: 10) {
                 HStack(spacing: 7) {
-                    Image(systemName: "magnifyingglass").font(.system(size: 15)).foregroundStyle(msgTexte2)
+                    Image(systemName: "magnifyingglass").font(.system(size: 17)).foregroundStyle(msgTexte2)
                     TextField("", text: $recherche,
                               prompt: Text("Recherche").foregroundStyle(msgTexte2))
-                        .font(.system(size: 16)).foregroundStyle(msgTexte)
+                        .font(.system(size: 17)).foregroundStyle(msgTexte)
                     // v2 correctifs 31/08 : micro retiré (aucune commande vocale dans le jeu)
                 }
-                .padding(.horizontal, 13).padding(.vertical, 11)
+                .padding(.horizontal, 13).frame(height: 47)
                 .background(Color(hex: 0x1F1F21), in: Capsule())
                 Image(systemName: "square.and.pencil")
                     .font(.system(size: 18, weight: .medium)).foregroundStyle(msgTexte)
@@ -546,22 +546,24 @@ struct LigneConvMsg: View {
             AvatarMsg(nom: conv.nom, taille: 45)
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
-                    Text(conv.nom).font(.system(size: 16, weight: .semibold)).foregroundStyle(msgTexte)
+                    Text(conv.nom).font(.system(size: 17, weight: .semibold)).foregroundStyle(msgTexte)
                         .lineLimit(1)
                     Spacer()
                     if cloche {
                         Image(systemName: "bell.slash.fill").font(.system(size: 12))
                             .foregroundStyle(msgTexte2.opacity(0.8))
                     }
-                    Text(dateAffichee).font(.system(size: 14)).foregroundStyle(msgTexte2)
+                    Text(dateAffichee).font(.system(size: 15)).foregroundStyle(msgTexte2)
                     Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(msgTexte2.opacity(0.7))
                 }
-                Text(apercuAffiche).font(.system(size: 14.5)).foregroundStyle(msgTexte2)
+                Text(apercuAffiche).font(.system(size: 15.5)).foregroundStyle(msgTexte2)
                     .lineLimit(2).multilineTextAlignment(.leading)
+                Spacer(minLength: 0)
             }
         }
-        .padding(.horizontal, 16).padding(.vertical, 7)
+        .padding(.leading, 26).padding(.trailing, 16).padding(.vertical, 12)
+        .frame(height: 87, alignment: .top)
         .contentShape(Rectangle())
     }
 }
@@ -615,29 +617,34 @@ struct MsgConvVue: View {
         ZStack(alignment: .bottom) {
             msgFond.ignoresSafeArea()
             VStack(spacing: 0) {
-                // En-tête : retour / avatar+nom / FaceTime
-                HStack {
-                    Image(systemName: "chevron.left").font(.system(size: 19, weight: .semibold))
-                        .foregroundStyle(msgTexte)
-                        .padding(10).contentShape(Rectangle())
-                        .onTapGesture { dismiss() }
-                    Spacer()
-                    VStack(spacing: 3) {
-                        AvatarMsg(nom: conv.nom, taille: 44)
-                        HStack(spacing: 2) {
-                            Text(conv.nom).font(.system(size: 12)).foregroundStyle(msgTexte)
-                            Image(systemName: "chevron.right").font(.system(size: 9, weight: .semibold))
+                // En-tête : retour / avatar+nom / FaceTime (iOS 26 : avatar de 60 pt, nom dans une capsule)
+                ZStack(alignment: .top) {
+                    HStack {
+                        Image(systemName: "chevron.left").font(.system(size: 19, weight: .semibold))
+                            .foregroundStyle(msgTexte)
+                            .frame(width: 44, height: 44).background(msgChamp, in: Circle())
+                            .contentShape(Circle())
+                            .onTapGesture { dismiss() }
+                        Spacer()
+                        Image(systemName: "video").font(.system(size: 19)).foregroundStyle(msgTexte)
+                            .frame(width: 44, height: 44).background(msgChamp, in: Circle())
+                            .contentShape(Circle())
+                            .onTapGesture { Haptique.leger(); appelVideo = true }
+                    }
+                    VStack(spacing: -5) {
+                        AvatarMsg(nom: conv.nom, taille: 60)
+                        HStack(spacing: 4) {
+                            Text(conv.nom).font(.system(size: 17, weight: .semibold)).foregroundStyle(msgTexte)
+                            Image(systemName: "chevron.right").font(.system(size: 11, weight: .semibold))
                                 .foregroundStyle(msgTexte2)
                         }
+                        .padding(.horizontal, 14).frame(height: 32)
+                        .background(msgChamp, in: Capsule())
                     }
                     .contentShape(Rectangle())
                     .onTapGesture { Haptique.leger(); ficheVisible = true }
-                    Spacer()
-                    Image(systemName: "video").font(.system(size: 19)).foregroundStyle(msgTexte)
-                        .padding(10).contentShape(Rectangle())
-                        .onTapGesture { Haptique.leger(); appelVideo = true }
                 }
-                .padding(.horizontal, 6).padding(.top, 2).padding(.bottom, 6)
+                .padding(.horizontal, 16).padding(.top, 0).padding(.bottom, 6)
 
                 ScrollViewReader { lecteur in
                     ScrollView {
@@ -707,7 +714,7 @@ struct MsgConvVue: View {
                     .padding(.horizontal, 13).padding(.vertical, 8)
                     .background(Color(hex: 0x1F1F21), in: Capsule())
                 }
-                .padding(.horizontal, 12).padding(.vertical, 7)
+                .padding(.horizontal, 28).padding(.vertical, 7)
             }
 
             // Menu + (comme la référence : Appareil photo, Photos, Autocollants…)
@@ -1167,7 +1174,7 @@ struct MsgIndesirablesVue: View {
                             }.buttonStyle(.plain)
                             if indice < magasin.indesirables.count - 1 {
                                 Divider().overlay(Color.white.opacity(0.13))
-                                    .padding(.leading, 73).padding(.trailing, 16)
+                                    .padding(.leading, 83).padding(.trailing, 16)
                             }
                         }
                     }

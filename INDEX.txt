@@ -1,0 +1,7 @@
+./INDEX.txt
+./captures/photos#0.png
+./captures/photos#1.png
+./captures/photos.album.png
+./captures/photos.detail.png
+./captures/photos.recherche.png
+./planches/planche-photos.jpg

@@ -1098,7 +1098,7 @@ struct RecherchePhotosVue: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 16).padding(.top, 22)
+                    .padding(.horizontal, 16).padding(.top, 13)
                     Spacer()
                 } else if resultats.isEmpty {
                     Spacer()
@@ -1133,6 +1133,9 @@ struct RecherchePhotosVue: View {
                                   prompt: Text("Rechercher dans votre photothèque").foregroundStyle(phTexte2))
                             .font(.system(size: 17)).foregroundStyle(phTexte)
                             .focused($focalise)
+                            .submitLabel(.search)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
                         if !saisie.isEmpty {
                             Image(systemName: "xmark.circle.fill").font(.system(size: 15)).foregroundStyle(phTexte2)
                                 .onTapGesture { saisie = "" }
@@ -1140,7 +1143,7 @@ struct RecherchePhotosVue: View {
                             Image(systemName: "mic.fill").font(.system(size: 17)).foregroundStyle(phTexte2)
                         }
                     }
-                    .padding(.horizontal, 13).padding(.vertical, 13)
+                    .padding(.horizontal, 7).padding(.vertical, 13)
                     .background(Color(hex: 0x1F1F21), in: Capsule())
                     Image(systemName: "xmark").font(.system(size: 17, weight: .semibold)).foregroundStyle(phTexte)
                         .padding(15).background(Color(hex: 0x1F1F21), in: Circle())
@@ -1149,6 +1152,7 @@ struct RecherchePhotosVue: View {
                 .padding(.horizontal, 9).padding(.vertical, 8)
             }
         }
+        .preferredColorScheme(.dark)
         .onAppear { focalise = true }
         .fullScreenCover(item: $photoOuverte) { p in PhotoDetailVue(depart: p) }
     }

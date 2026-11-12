@@ -236,10 +236,10 @@ struct ContactsListeVue: View {
                             .font(.system(size: 17)).foregroundStyle(ctGris)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.leading, 18).frame(height: 38)
-                        Rectangle().fill(Color.white.opacity(0.16)).frame(height: 0.7).padding(.leading, 18)
+                        Rectangle().fill(Color.white.opacity(0.16)).frame(height: 0.7).padding(.leading, 18).padding(.trailing, 17)
                         ForEach(Array(section.items.enumerated()), id: \.element.id) { index, c in
                             if index > 0 {
-                                Rectangle().fill(Color.white.opacity(0.16)).frame(height: 0.7).padding(.leading, 68)
+                                Rectangle().fill(Color.white.opacity(0.16)).frame(height: 0.7).padding(.leading, 68).padding(.trailing, 17)
                             }
                             ligne(c)
                         }
@@ -317,8 +317,7 @@ struct ContactsListeVue: View {
                 .overlay(Circle().stroke(Color.white.opacity(0.10), lineWidth: 1))
         }
         .padding(.leading, 28).padding(.trailing, 29)
-        .padding(.bottom, 29)
-        .ignoresSafeArea(edges: .bottom)
+        .padding(.bottom, -5)
     }
 }
 
@@ -370,7 +369,7 @@ struct ContactFicheVue: View {
     }
 
     private var gros: some View {
-        Circle().fill(Color.white.opacity(0.10))
+        Circle().fill(Color.white.opacity(0.05))
             .frame(width: 202, height: 202)
             .overlay(Circle().stroke(Color.white.opacity(0.28), lineWidth: 1.5))
             .overlay(Text(contact.initiales).font(.system(size: 84, weight: .medium)).foregroundStyle(.white))
@@ -383,7 +382,7 @@ struct ContactFicheVue: View {
                 .font(.system(size: 37, weight: .bold)).foregroundStyle(.white)
                 .lineLimit(1).minimumScaleFactor(0.6)
                 .padding(.top, 35)
-            HStack(spacing: 24) {
+            HStack(spacing: 12) {
                 boutonAction("message.fill")
                 boutonAction("phone.fill")
                 boutonAction("video.fill")
@@ -417,7 +416,7 @@ struct ContactFicheVue: View {
         return VStack(spacing: 0) {
             ForEach(Array(champs.enumerated()), id: \.offset) { index, paire in
                 if index > 0 {
-                    Rectangle().fill(Color.white.opacity(0.14)).frame(height: 0.7).padding(.leading, 15)
+                    Rectangle().fill(Color.white.opacity(0.14)).frame(height: 0.7).padding(.horizontal, 15)
                 }
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
@@ -464,7 +463,7 @@ struct ContactFicheVue: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 15).frame(height: 52)
             if !dernier {
-                Rectangle().fill(Color.white.opacity(0.14)).frame(height: 0.7).padding(.leading, 15)
+                Rectangle().fill(Color.white.opacity(0.14)).frame(height: 0.7).padding(.horizontal, 15)
             }
         }
     }
@@ -498,12 +497,12 @@ struct ContactsListesVue: View {
                     Spacer()
                     Image(systemName: "chevron.down").font(.system(size: 15, weight: .semibold)).foregroundStyle(ctGris)
                 }
-                .padding(.horizontal, 32).frame(height: 56).padding(.top, 10)
+                .padding(.horizontal, 32).frame(height: 56).padding(.top, 2)
 
                 VStack(spacing: 0) {
                     ligneCarte(icone: nil, texte: "iCloud (tous)", nombre: DonneesContacts.tous.count, titre: "Tous les contacts")
                     ForEach(DonneesContacts.listes) { l in
-                        Rectangle().fill(Color.white.opacity(0.14)).frame(height: 0.7).padding(.leading, 32)
+                        Rectangle().fill(Color.white.opacity(0.14)).frame(height: 0.7).padding(.horizontal, 16)
                         ligneCarte(icone: nil, texte: l.nom,
                                    nombre: DonneesContacts.contacts(dansListe: l.nom).count, titre: l.nom)
                     }
@@ -519,9 +518,9 @@ struct ContactsListesVue: View {
 
     private func ligneCarte(icone: String?, texte: String, nombre: Int, titre: String) -> some View {
         Button { ouvrir(titre) } label: {
-            HStack(spacing: 12) {
+            HStack(spacing: 9) {
                 if let icone = icone {
-                    Image(systemName: icone).font(.system(size: 20)).foregroundStyle(.white)
+                    Image(systemName: icone).font(.system(size: 18)).foregroundStyle(.white)
                 }
                 Text(texte).font(.system(size: 18)).foregroundStyle(.white)
                 Spacer()

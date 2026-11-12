@@ -1,0 +1,12 @@
+./INDEX.txt
+./captures/messages.conversation.png
+./captures/messages.fiche.png
+./captures/messages.indesirables.png
+./captures/messages.nouveau.png
+./captures/messages.png
+./captures/messages.suppressions.png
+./captures/safari.historique.png
+./captures/safari.onglets.png
+./captures/safari.png
+./planches/planche-messages.jpg
+./planches/planche-safari.jpg

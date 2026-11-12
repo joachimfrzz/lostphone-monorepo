@@ -531,7 +531,7 @@ struct SafariVue: View {
 
     // ——— Barre du bas iOS 26 (cotes relevées sur l'iPhone réel : y 792 → 840, retour/avant 81 pt,
     //     capsule d'adresse 191 pt, bouton « … » rond de 48 pt, marges 33 pt)
-    private var verreBarre: some ShapeStyle { Color(hex: 0x1C1C1E).opacity(0.94) }
+    private var verreBarre: Color { Color(hex: 0x1C1C1E).opacity(0.94) }
 
     private var barreBasse: some View {
         HStack(spacing: 7) {

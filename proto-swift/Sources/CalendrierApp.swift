@@ -351,17 +351,19 @@ struct CalBarreBasse: View {
     }
 }
 
-// Numéro de jour (18 pt, pastille 39 pt)
+// Numéro de jour (18 pt, pastille 39 pt par défaut ; la bande de semaine du jour utilise 17 / 35)
 struct CalChiffre: View {
     let jour: Int
     let texte: Color
     let fond: Color
     var gras: Bool = false
+    var police: CGFloat = 18
+    var pastille: CGFloat = 39
     var body: some View {
         Text("\(jour)")
-            .font(.system(size: 18, weight: gras ? Font.Weight.semibold : Font.Weight.medium))
+            .font(.system(size: police, weight: gras ? Font.Weight.semibold : Font.Weight.medium))
             .foregroundStyle(texte)
-            .frame(width: 39, height: 39)
+            .frame(width: pastille, height: pastille)
             .background(Circle().fill(fond))
     }
 }
@@ -982,7 +984,7 @@ struct JourVue: View {
         } else if estAuj {
             texte = CalTeinte.rouge
         }
-        return CalChiffre(jour: d.j, texte: texte, fond: fond, gras: estSel)
+        return CalChiffre(jour: d.j, texte: texte, fond: fond, gras: estSel, police: 17, pastille: 35)
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
             .onTapGesture {
@@ -1079,7 +1081,7 @@ struct CalGrilleHeures: View {
         ZStack(alignment: .topLeading) {
             Rectangle().fill(CalTeinte.separateur).frame(height: 1).padding(.leading, 63)
             Text(String(format: "%02d:00", h))
-                .font(.system(size: 11.5))
+                .font(.system(size: 10.5))
                 .foregroundStyle(CalTeinte.gris)
                 .frame(width: 53, alignment: .trailing)
                 .offset(y: -7)

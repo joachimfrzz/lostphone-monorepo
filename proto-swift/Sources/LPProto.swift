@@ -690,8 +690,8 @@ struct EcranCapture: View {
     private func ecransRappels() -> some View {
         switch cle {
         case "rappels": RappelsVue()
-        case "rappels.tous": NavigationStack { FiltreVue(titre: "Tous", teinte: Color(hex: 0x8E8E93), filtre: { _ in true }) }
-        case "rappels.termines": NavigationStack { TerminesVue() }
+        case "rappels.tous": SousPageCapture { FiltreVue(titre: "Tous", teinte: Color(hex: 0x8E8E93), filtre: { _ in true }) }
+        case "rappels.termines": SousPageCapture { TerminesVue() }
         case "rappels.detail": DetailRappelVue(rappelId: MagasinRappels.partage.rappels[0].id)
         case "rappels.nouveau": NouveauRappelVue()
         default: VerrouillageView()

@@ -597,7 +597,12 @@ struct RapEnteteAccueil: View {
             } else {
                 HStack(spacing: 0) {
                     boutonIcone("magnifyingglass", action: rechercher)
-                    boutonIcone("text.badge.plus", action: nouvelleListe)
+                    Button(action: nouvelleListe) {
+                        RapIconeNouvelleListe()
+                            .frame(width: 51, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
                 }
                 .modifier(RapVerre(forme: Capsule()))
                 Button(action: basculer) {
@@ -624,6 +629,36 @@ struct RapEnteteAccueil: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// Icône « nouvelle liste » d'iOS 26 : carré arrondi, deux lignes à puce, pastille « + » en bas à droite.
+struct RapIconeNouvelleListe: View {
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .stroke(Color.white, lineWidth: 1.8)
+                .frame(width: 22, height: 22)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 3) {
+                    Circle().stroke(Color.white, lineWidth: 1.4).frame(width: 4.5, height: 4.5)
+                    Capsule().fill(Color.white).frame(width: 7, height: 1.6)
+                }
+                HStack(spacing: 3) {
+                    Circle().stroke(Color.white, lineWidth: 1.4).frame(width: 4.5, height: 4.5)
+                    Capsule().fill(Color.white).frame(width: 4, height: 1.6)
+                }
+            }
+            .offset(x: -1.5, y: -2)
+            ZStack {
+                Circle().fill(Color.black).frame(width: 15, height: 15)
+                Circle().fill(Color.white).frame(width: 12, height: 12)
+                Image(systemName: "plus")
+                    .font(.system(size: 8, weight: .black))
+                    .foregroundStyle(Color.black)
+            }
+            .offset(x: 9, y: 8)
+        }
     }
 }
 
@@ -1133,7 +1168,7 @@ struct FiltreVue: View {
                     Text(titre)
                         .font(.system(size: 34, weight: .bold)).foregroundStyle(teinte)
                         .lineLimit(1)
-                        .padding(.horizontal, 16).padding(.top, 14).padding(.bottom, 8)
+                        .padding(.horizontal, 16).padding(.top, 5).padding(.bottom, 8)
                     corps
                     Spacer(minLength: 140)
                 }

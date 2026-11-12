@@ -1,0 +1,10 @@
+calendrier
+calendrier.annee
+calendrier.jour
+calendrier.nouveau
+calendrier.recherche
+rappels
+rappels.tous
+rappels.termines
+rappels.detail
+rappels.nouveau

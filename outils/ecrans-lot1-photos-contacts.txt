@@ -3,3 +3,6 @@ photos#1
 photos.detail
 photos.recherche
 photos.album
+contacts
+contacts.fiche
+contacts.listes

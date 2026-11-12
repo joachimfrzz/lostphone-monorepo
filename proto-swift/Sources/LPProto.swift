@@ -47,6 +47,7 @@ struct EcranCapture: View {
         case "notes": ecransNotes()
         case "partage": ecransPartage()
         case "photos": ecransPhotos()
+        case "contacts": ecransContacts()
         case "plans": ecransPlans()
         case "rappels": ecransRappels()
         case "reglages": ecransReglages()
@@ -673,6 +674,14 @@ struct EcranCapture: View {
         case "photos.recherche": NavigationStack { RecherchePhotosVue() }
         case "photos.album": NavigationStack { AlbumVue(titre: "Festival", items: Array(DonneesPhotos.toutes.prefix(9))) }
         default: VerrouillageView()
+        }
+    }
+    @ViewBuilder
+    private func ecransContacts() -> some View {
+        switch cle {
+        case "contacts.listes": ContactsVue(chemin: [])
+        case "contacts.fiche": ContactsVue(chemin: [.liste("Tous les contacts"), .fiche("Chloé|")])
+        default: ContactsVue()
         }
     }
     @ViewBuilder

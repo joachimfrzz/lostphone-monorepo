@@ -1068,21 +1068,21 @@ struct RecherchePhotosVue: View {
             phFond.ignoresSafeArea()
             VStack(spacing: 0) {
                 HStack {
-                    Text("Recherche").font(.system(size: 26, weight: .bold)).foregroundStyle(phTexte)
+                    Text("Recherche").font(.system(size: 34, weight: .bold)).foregroundStyle(phTexte)
                     Spacer()
                 }
-                .padding(.horizontal, 16).padding(.top, 14)
+                .padding(.horizontal, 16).padding(.top, 4)
                 HStack(spacing: 4) {
                     Text("Certains résultats peuvent ne pas apparaître.")
-                        .font(.system(size: 12.5)).foregroundStyle(phTexte2)
-                    Image(systemName: "info.circle").font(.system(size: 11)).foregroundStyle(phTexte2)
+                        .font(.system(size: 15)).foregroundStyle(phTexte2)
+                    Image(systemName: "info.circle").font(.system(size: 15)).foregroundStyle(Color(hex: 0x0A84FF))
                     Spacer()
                 }
-                .padding(.horizontal, 16).padding(.top, 2)
+                .padding(.horizontal, 16).padding(.top, 5)
 
                 if saisie.isEmpty {
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("Suggestions").font(.system(size: 15, weight: .semibold)).foregroundStyle(phTexte)
+                        Text("Suggestions").font(.system(size: 20, weight: .bold)).foregroundStyle(phTexte)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
                                 ForEach(["Chloé", "Festival", "Parc", "Selfies", "Maman"], id: \.self) { s in
@@ -1124,23 +1124,25 @@ struct RecherchePhotosVue: View {
                 // Champ bas
                 HStack(spacing: 8) {
                     HStack(spacing: 7) {
-                        Image(systemName: "magnifyingglass").font(.system(size: 15)).foregroundStyle(phTexte2)
+                        Image(systemName: "magnifyingglass").font(.system(size: 17)).foregroundStyle(phTexte2)
                         TextField("", text: $saisie,
                                   prompt: Text("Rechercher dans votre photothèque").foregroundStyle(phTexte2))
-                            .font(.system(size: 15.5)).foregroundStyle(phTexte)
+                            .font(.system(size: 17)).foregroundStyle(phTexte)
                             .focused($focalise)
                         if !saisie.isEmpty {
                             Image(systemName: "xmark.circle.fill").font(.system(size: 15)).foregroundStyle(phTexte2)
                                 .onTapGesture { saisie = "" }
+                        } else {
+                            Image(systemName: "mic.fill").font(.system(size: 17)).foregroundStyle(phTexte2)
                         }
                     }
-                    .padding(.horizontal, 13).padding(.vertical, 11)
+                    .padding(.horizontal, 13).padding(.vertical, 13)
                     .background(Color(hex: 0x1F1F21), in: Capsule())
-                    Image(systemName: "xmark").font(.system(size: 15, weight: .semibold)).foregroundStyle(phTexte)
-                        .padding(12).background(Color(hex: 0x1F1F21), in: Circle())
+                    Image(systemName: "xmark").font(.system(size: 17, weight: .semibold)).foregroundStyle(phTexte)
+                        .padding(15).background(Color(hex: 0x1F1F21), in: Circle())
                         .onTapGesture { dismiss() }
                 }
-                .padding(.horizontal, 14).padding(.vertical, 8)
+                .padding(.horizontal, 9).padding(.vertical, 8)
             }
         }
         .onAppear { focalise = true }

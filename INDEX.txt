@@ -1,0 +1,13 @@
+./INDEX.txt
+./captures/calendrier.annee.png
+./captures/calendrier.jour.png
+./captures/calendrier.nouveau.png
+./captures/calendrier.png
+./captures/calendrier.recherche.png
+./captures/rappels.detail.png
+./captures/rappels.nouveau.png
+./captures/rappels.png
+./captures/rappels.termines.png
+./captures/rappels.tous.png
+./planches/planche-calendrier.jpg
+./planches/planche-rappels.jpg

@@ -1,0 +1,3 @@
+# Une ligne par exécution : <run_id> <motif d artefact>
+41905740538 *
+41883413659 *

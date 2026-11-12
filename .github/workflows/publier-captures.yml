@@ -1,0 +1,64 @@
+# Publie les artefacts d'une exécution (miroir, references-apple) sur une branche git
+# `captures/<run_id>`, pour qu'un agent sans accès au stockage d'artefacts puisse les lire par git.
+# Branche orpheline, poussée en force : aucun historique, supprimable sans risque.
+name: publier-captures
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Identifiant de l'exécution dont on publie les artefacts"
+        required: true
+      motif:
+        description: "Motif de nom d'artefact (ex. captures, ref-*)"
+        required: false
+        default: "*"
+  push:
+    branches: ["claude/**"]
+    paths:
+      - ".github/workflows/publier-captures.yml"
+      - "outils/publier-captures.txt"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: outils/publier-captures.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Liste des exécutions à publier
+        run: |
+          if [ -n "${{ inputs.run_id }}" ]; then
+            echo "${{ inputs.run_id }} ${{ inputs.motif }}" > /tmp/liste.txt
+          else
+            grep -v '^#' outils/publier-captures.txt | grep -v '^$' > /tmp/liste.txt
+          fi
+          cat /tmp/liste.txt
+
+      - name: Télécharger et pousser
+        run: |
+          set -e
+          while read -r ID MOTIF; do
+            D=/tmp/pub/$ID
+            mkdir -p "$D"
+            gh run download "$ID" -R "$GITHUB_REPOSITORY" -p "${MOTIF:-*}" -D "$D"
+            cd "$D"
+            find . -type f | sort > INDEX.txt
+            wc -l INDEX.txt
+            git init -q -b "captures/$ID"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -q -m "Captures de l'exécution $ID"
+            git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "captures/$ID"
+            cd /
+          done < /tmp/liste.txt

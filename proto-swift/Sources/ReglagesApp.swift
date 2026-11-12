@@ -1657,7 +1657,7 @@ struct RegEnTete: View {
             Text(titre).font(.system(size: 22, weight: .bold))
             Text(texte).font(.system(size: 17)).foregroundStyle(.secondary).lineSpacing(1.5)
         }
-        .padding(.top, 7)
+        .padding(.top, 3.5).padding(.bottom, 1)
     }
 }
 

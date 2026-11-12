@@ -16,15 +16,66 @@ let regChevron = Color(hex: 0x5A5A5E)      // tertiaryLabel sur #1C1C1E (mesuré
 let regSeparateur = Color(hex: 0x38383B)   // séparateur de liste iOS 26 (mesuré)
 
 // ============================================================ COMPOSANTS DE BASE
+// Taille de l'icône de rangée : 29 pt sur la racine, 28 pt dans les sous-pages (mesuré sur le simulateur iOS 26).
+struct RegTailleIconeCle: EnvironmentKey {
+    static let defaultValue: CGFloat = 29
+}
+
+extension EnvironmentValues {
+    var regTailleIcone: CGFloat {
+        get { self[RegTailleIconeCle.self] }
+        set { self[RegTailleIconeCle.self] = newValue }
+    }
+}
+
+/// Rune Bluetooth dessinée (le symbole SF « personalhotspot » est celui du Partage de connexion).
+struct RegRuneBluetooth: Shape {
+    func path(in r: CGRect) -> Path {
+        var p = Path()
+        p.move(to: CGPoint(x: r.minX, y: r.minY + r.height * 0.25))
+        p.addLine(to: CGPoint(x: r.maxX, y: r.minY + r.height * 0.75))
+        p.addLine(to: CGPoint(x: r.minX + r.width * 0.5, y: r.maxY))
+        p.addLine(to: CGPoint(x: r.minX + r.width * 0.5, y: r.minY))
+        p.addLine(to: CGPoint(x: r.maxX, y: r.minY + r.height * 0.25))
+        p.addLine(to: CGPoint(x: r.minX, y: r.minY + r.height * 0.75))
+        return p
+    }
+}
+
 struct RegIcone: View {
     let symbole: String
     let fond: Color
     var teinte: Color = .white
+    @Environment(\.regTailleIcone) private var taille
+
     var body: some View {
         RoundedRectangle(cornerRadius: 7)
             .fill(fond)
-            .frame(width: 30, height: 30)
-            .overlay(Image(systemName: symbole).font(.system(size: 16)).foregroundStyle(teinte))
+            .frame(width: taille, height: taille)
+            .overlay(glyphe)
+    }
+
+    @ViewBuilder private var glyphe: some View {
+        if symbole == "reg.bluetooth" {
+            RegRuneBluetooth()
+                .stroke(teinte, style: StrokeStyle(lineWidth: 1.7, lineCap: .round, lineJoin: .round))
+                .frame(width: taille * 0.34, height: taille * 0.56)
+        } else {
+            Image(systemName: symbole).font(.system(size: taille * 0.53)).foregroundStyle(teinte)
+        }
+    }
+}
+
+extension View {
+    /// Liste de sous-page iOS 26 : marges latérales 20 pt (mesuré), 35 pt entre groupes,
+    /// première carte à 18 pt sous la barre (la liste native en met 35).
+    func regListeSousPage() -> some View {
+        self.listStyle(.insetGrouped)
+            .listSectionSpacing(35)
+            .contentMargins(.horizontal, 4, for: .scrollContent)
+            .padding(.top, -17)
+            .environment(\.regTailleIcone, 28)
+            .preferredColorScheme(.dark)
     }
 }
 
@@ -194,9 +245,9 @@ struct ReglagesVue: View {
                     }
                     RegLigneNative(symbole: "wifi", fond: regBleu, nom: "Wi-Fi",
                                    valeur: modeAvion ? "Non connecté" : "Livebox-2C48") { WiFiVue() }
-                    RegLigneNative(symbole: "personalhotspot", fond: regBleu, nom: "Bluetooth", valeur: "Oui") { BluetoothVue() }
+                    RegLigneNative(symbole: "reg.bluetooth", fond: regBleu, nom: "Bluetooth", valeur: "Oui") { BluetoothVue() }
                     RegLigneNative(symbole: "antenna.radiowaves.left.and.right", fond: regVert, nom: "Données cellulaires") { DonneesCellVue() }
-                    RegLigneNative(symbole: "person.2.wave.2.fill", fond: regVert, nom: "Partage de connexion") { RegContenuVue(nom: "Partage de connexion") }
+                    RegLigneNative(symbole: "personalhotspot", fond: regVert, nom: "Partage de connexion") { RegContenuVue(nom: "Partage de connexion") }
                     RegLigneNative(symbole: "battery.100", fond: regVert, nom: "Batterie") { BatterieVue() }
                     RegLigneNative(symbole: "network", fond: regBleu, nom: "VPN", valeur: "Déconnecté") { RegContenuVue(nom: "VPN") }
                 }
@@ -250,13 +301,19 @@ struct ReglagesVue: View {
         // Le GeometryReader ignore la zone sûre : les marges se comptent depuis le bord réel de l'écran.
         .overlay {
             GeometryReader { _ in
-                VStack(spacing: 0) {
-                    Spacer()
-                    PiluleRechercheReglages { Haptique.leger(); rechercheVisible = true }
-                        .padding(.horizontal, 28)
-                        .padding(.bottom, 6)   // 6 + 22 (capsule home) = 28 pt du bord
-                    BarreHome { dismiss() }
-                        .padding(.bottom, 3)
+                ZStack(alignment: .bottom) {
+                    // La vraie app n'affiche rien sous la pilule : la liste s'arrête à 847 pt (mesuré).
+                    Color.black.frame(height: 27)
+                    VStack(spacing: 0) {
+                        Spacer()
+                        PiluleRechercheReglages { Haptique.leger(); rechercheVisible = true }
+                            .padding(.horizontal, 28)
+                            .padding(.bottom, 6)   // 6 + 22 (capsule home) = 28 pt du bord
+                        // Geste « home » conservé mais capsule invisible (absente de la vraie app).
+                        BarreHome { dismiss() }
+                            .opacity(0.01)
+                            .padding(.bottom, 3)
+                    }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
@@ -273,10 +330,10 @@ struct PiluleRechercheReglages: View {
             Image(systemName: "magnifyingglass").font(.system(size: 17, weight: .medium))
             Text("Recherche").font(.system(size: 17))
             Spacer()
-            Image(systemName: "mic.fill").font(.system(size: 17))
+            Image(systemName: "mic").font(.system(size: 17))
         }
         .foregroundStyle(.secondary)
-        .padding(.horizontal, 16)
+        .padding(.leading, 18).padding(.trailing, 22)
         .frame(height: 48)
         .modifier(VerreCapsule())
         .contentShape(Capsule())
@@ -1578,11 +1635,9 @@ struct GeneralVue: View {
                 Button("Éteindre") { Haptique.leger() }
             }
         }
-        .listStyle(.insetGrouped)
-        .listSectionSpacing(35)
+        .regListeSousPage()
         .navigationTitle("Général")
         .navigationBarTitleDisplayMode(.inline)
-        .preferredColorScheme(.dark)
     }
 }
 
@@ -1593,52 +1648,50 @@ struct RegEnTete: View {
     let titre: String
     let texte: String
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 5) {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .fill(fond.gradient)
-                .frame(width: 58, height: 58)
+                .frame(width: 59, height: 59)
                 .overlay(Image(systemName: symbole).font(.system(size: 34, weight: .medium)).foregroundStyle(.white))
-                .padding(.bottom, 12)
+                .padding(.bottom, 9)
             Text(titre).font(.system(size: 22, weight: .bold))
-            Text(texte).font(.system(size: 17)).foregroundStyle(.secondary)
+            Text(texte).font(.system(size: 17)).foregroundStyle(.secondary).lineSpacing(1.5)
         }
-        .padding(.vertical, 10)
+        .padding(.top, 7)
     }
 }
 
 struct InformationsVue: View {
-    private let lignes: [(String, String)] = [
-        ("Nom", "iPhone de Sarah"),
-        ("Version d'iOS", "26.6.1"),
-        ("Nom du modèle", "iPhone 15"),
-        ("N° du modèle", "MTP63ZD/A"),
-        ("N° de série", "H7QX2L4KP9"),
-        ("Capacité", "256 Go"),
-        ("Photos", "9 412"),
-        ("Applications", "34"),
-        ("Morceaux", "217"),
-    ]
+    // Structure relevée sur la référence (021/022) : 2 groupes + « Réglages des certificats »,
+    // rangées natives 52 pt, « Version d’iOS » avec chevron. Valeurs = canon Sarah.
     var body: some View {
-        ZStack {
-            regFond.ignoresSafeArea()
-            ScrollView {
-                VStack(spacing: 35) {
-                    RegGroupe {
-                        ForEach(Array(lignes.enumerated()), id: \.offset) { i, l in
-                            HStack {
-                                Text(l.0).font(.system(size: 16)).foregroundStyle(regTexte)
-                                Spacer()
-                                Text(l.1).font(.system(size: 16)).foregroundStyle(regTexte2)
-                            }
-                            .padding(.horizontal, 14).padding(.vertical, 9)
-                            if i < lignes.count - 1 { RegSeparateur(retrait: 14) }
-                        }
-                    }
-                    .padding(.top, 12)
-                    Color.clear.frame(height: 30)
+        List {
+            Section {
+                LabeledContent("Nom", value: "iPhone de Sarah")
+                NavigationLink { MiseAJourVue() } label: {
+                    LabeledContent("Version d’iOS", value: "26.6.1")
                 }
+                LabeledContent("Nom du modèle", value: "iPhone 15")
+                LabeledContent("N° du modèle", value: "MTP63ZD/A")
+                LabeledContent("Numéro de série", value: "H7QX2L4KP9")
+            }
+            Section {
+                LabeledContent("Morceaux", value: "217")
+                LabeledContent("Vidéos", value: "186")
+                LabeledContent("Photos", value: "9 412")
+                LabeledContent("Applications", value: "34")
+                LabeledContent("Capacité", value: "256 Go")
+                LabeledContent("Disponible", value: "68,6 Go")
+            }
+            Section {
+                NavigationLink { RegGeneriqueVue(nom: "Réglages des certificats") } label: {
+                    Text("Réglages des certificats")
+                }
+            } header: {
+                Color.clear.frame(height: 30)
             }
         }
+        .regListeSousPage()
         .navigationTitle("Informations")
         .navigationBarTitleDisplayMode(.inline)
     }

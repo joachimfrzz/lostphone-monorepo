@@ -100,7 +100,7 @@ struct FichiersVue: View {
             }
             .padding(3.5)
             .background(.ultraThinMaterial, in: Capsule())
-            .padding(.horizontal, 64.5).padding(.bottom, 8).offset(y: 21)
+            .padding(.horizontal, 64.5).padding(.bottom, 8).offset(y: 8)
 
             BarreHome { dismiss() }
         }

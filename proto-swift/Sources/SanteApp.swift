@@ -220,7 +220,7 @@ struct SanteVue: View {
                     .contentShape(Circle())
                     .onTapGesture { rechercheVisible = true }
             }
-            .padding(.horizontal, 21).padding(.bottom, 8).offset(y: 21)
+            .padding(.horizontal, 21).padding(.bottom, 8).offset(y: 8)
 
             BarreHome { dismiss() }
         }

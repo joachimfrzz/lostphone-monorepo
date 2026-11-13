@@ -864,6 +864,9 @@ struct BarreHome: View {
             if v.translation.height < -15 { action() }
         })
         .frame(maxWidth: .infinity)   // centrage seulement, sans zone tactile
+        // 13/11 : barre un peu plus bas (+10 pt) pour se rapprocher du vrai iPhone, sans coller au bord
+        // (le vrai geste « balayer vers le haut » reste réservé au bord du téléphone).
+        .offset(y: 10)
     }
 }
 

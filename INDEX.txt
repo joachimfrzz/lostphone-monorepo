@@ -1,0 +1,10 @@
+./INDEX.txt
+./captures/cartes.carte.png
+./captures/cartes.png
+./captures/fichiers#0.png
+./captures/fichiers#1.png
+./captures/fichiers.dossier.png
+./captures/plans.fiche.png
+./captures/plans.png
+./captures/sante#0.png
+./captures/sante#1.png

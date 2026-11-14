@@ -1,0 +1,5 @@
+./INDEX.txt
+./captures/fichiers.dossier.png
+./captures/plans.fiche.png
+./captures/plans.png
+./captures/sante#1.png

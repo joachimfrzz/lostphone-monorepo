@@ -133,7 +133,7 @@ struct PlansVue: View {
                         // v3 : micro retiré (le joueur n'utilise pas la voix)
                     }
                     .padding(.horizontal, 12).frame(height: 40)
-                    .background(Color(hex: 0x2C2C2E), in: RoundedRectangle(cornerRadius: 11))
+                    .background(Color(hex: 0x2C2C2E), in: Capsule())
                     Circle().fill(Color(hex: 0x2C2C2E)).frame(width: 40, height: 40)
                         .overlay(Text("S").font(.system(size: 16, weight: .semibold)).foregroundStyle(.white))
                 }
@@ -166,7 +166,7 @@ struct PlansVue: View {
                             Image(systemName: "chevron.right").font(.system(size: 11)).foregroundStyle(.secondary)
                             Spacer()
                         }
-                        HStack(spacing: 20) {
+                        HStack(spacing: 8) {
                             LieuRapide(symbole: "house.fill", couleur: 0x5AA3DC, nom: "Domicile", sous: "Proche") {
                                 lieuOuvert = LieuPlan(nom: "Domicile", sousTitre: "14 rue des Capucins, Lyon",
                                                       categorie: "house.fill", horaires: "—", distance: "0 m",
@@ -206,8 +206,12 @@ struct PlansVue: View {
                 }
                 Spacer(minLength: 10)
             }
-            .frame(maxHeight: recherche.isEmpty ? 330 : 380, alignment: .top)
-            .background(.ultraThinMaterial, in: UnevenRoundedRectangle(topLeadingRadius: 20, topTrailingRadius: 20))
+            .frame(maxHeight: recherche.isEmpty ? 377 : 420, alignment: .top)
+            // 14/11 iOS 26 : fiche flottante en verre (marges latérales ~9 pt, grands coins), comme la référence du robot
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 44, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 44, style: .continuous))
+            .padding(.horizontal, 9)
+            .padding(.bottom, 4)
             .simultaneousGesture(TapGesture().onEnded { if !recherche.isEmpty { return }; champRecherche = false })
 
             BarreHome { dismiss() }
@@ -256,8 +260,8 @@ struct LieuRapide: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 5) {
-                Circle().fill(Color(hex: couleur)).frame(width: 48, height: 48)
-                    .overlay(Image(systemName: symbole).font(.system(size: 19)).foregroundStyle(.white))
+                Circle().fill(Color(hex: couleur)).frame(width: 82, height: 82)
+                    .overlay(Image(systemName: symbole).font(.system(size: 34)).foregroundStyle(.white))
                 Text(nom).font(.system(size: 12)).foregroundStyle(.white)
                 if !sous.isEmpty {
                     Text(sous).font(.system(size: 10)).foregroundStyle(.secondary)
